@@ -1,0 +1,98 @@
+version: "3.1"
+rules:
+ 
+- rule: greet
+  steps:
+    - intent: greet
+    - action: utter_greet
+
+- rule: respond from sheet for academic_pressure
+  steps:
+    - intent: academic_pressure
+    - action: action_respond_from_sheet
+
+- rule: respond from sheet for anxiety
+  steps:
+    - intent: anxiety
+    - action: action_respond_from_sheet
+
+- rule: respond from sheet for bullying
+  steps:
+    - intent: bullying
+    - action: action_respond_from_sheet
+
+- rule: respond from sheet for burnout
+  steps:
+    - intent: burnout
+    - action: action_respond_from_sheet
+
+- rule: respond from sheet for depression
+  steps:
+    - intent: depression
+    - action: action_respond_from_sheet
+
+- rule: respond from sheet for family_problems
+  steps:
+    - intent: family_problems
+    - action: action_respond_from_sheet
+
+- rule: respond from sheet for financial_stress
+  steps:
+    - intent: financial_stress
+    - action: action_respond_from_sheet
+
+- rule: respond from sheet for grief_loss
+  steps:
+    - intent: grief_loss
+    - action: action_respond_from_sheet
+
+- rule: respond from sheet for loneliness
+  steps:
+    - intent: loneliness
+    - action: action_respond_from_sheet
+
+- rule: respond from sheet for low_self_esteem
+  steps:
+    - intent: low_self_esteem
+    - action: action_respond_from_sheet
+
+- rule: respond from sheet for relationship_issues
+  steps:
+    - intent: relationship_issues
+    - action: action_respond_from_sheet
+
+- rule: respond from sheet for sleep_problems
+  steps:
+    - intent: sleep_problems
+    - action: action_respond_from_sheet
+
+- rule: respond from sheet for stress
+  steps:
+    - intent: stress
+    - action: action_respond_from_sheet
+
+- rule: respond from sheet for substance_abuse
+  steps:
+    - intent: substance_abuse
+    - action: action_respond_from_sheet
+
+- rule: respond from sheet for time_management
+  steps:
+    - intent: time_management
+    - action: action_respond_from_sheet
+
+- rule: crisis route
+  steps:
+    - intent: safety_critical
+    - action: utter_crisis
+
+- rule: goodbye
+  steps:
+    - intent: goodbye
+    - action: utter_goodbye
+
+# Optional: ensure low-confidence messages still hit your sheet
+- rule: spreadsheet responder on fallback
+  steps:
+    - intent: nlu_fallback
+    - action: action_respond_from_sheet

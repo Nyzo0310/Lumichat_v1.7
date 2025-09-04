@@ -1,0 +1,822 @@
+version: "3.1"
+nlu:
+
+- intent: greet
+  examples: |
+    - hi
+    - hello
+    - hey
+    - good morning
+    - good afternoon
+    - good evening
+
+- intent: goodbye
+  examples: |
+    - bye
+    - goodbye
+    - see you
+    - thanks, bye
+    - talk to you later
+
+- intent: anxiety
+  examples: |
+    - feel anxious all the time.
+    - I worry about things a lot.
+    - I get nervous before presentations.
+    - My heart races when I have to speak in class.
+    - I can’t control my anxiety.
+    - I feel tense even when nothing is wrong.
+    - I panic before exams.
+    - I’m afraid something bad will happen.
+    - I avoid social situations because of anxiety.
+    - I overthink everything.
+    - I’m anxious about my future.
+    - I feel sick when I’m nervous.
+    - My mind goes blank when I’m anxious.
+    - I can’t relax at night because I’m worrying.
+    - My anxiety keeps me from enjoying things.
+    - I dread going to crowded places like the cafeteria.
+    - Lately, my chest feels tight whenever I have a lot on my mind.
+    - I keep replaying awkward moments in my head and it makes me more anxious.
+    - My thoughts race so fast I can’t keep up with them.
+    - I get anxious even during happy moments, and I don’t know why.
+    - I’m scared I’ll disappoint my family if I fail.
+    - I feel on edge all day, like something bad is going to happen.
+    - Sometimes my anxiety makes it hard to breathe.
+    - I keep checking if I locked the door because I’m so anxious.
+    - My friends don’t understand how anxious I get about social events.
+    - I feel butterflies in my stomach before any big event.
+    - I can’t stop fidgeting when I’m nervous.
+    - I always think people are judging me, even if they aren’t.
+    - My heart feels like it’s pounding out of my chest when I get nervous.
+    - I feel like I can’t escape my worries, even when I’m trying to relax.
+    - I get headaches when I’m feeling anxious.
+    - I’m afraid I’ll make mistakes and everyone will notice.
+    - My appetite changes when I’m anxious—sometimes I can’t eat, other times I overeat.
+    - I struggle to make decisions because I worry about making the wrong choice.
+    - I feel like I’m not good enough compared to others.
+    - My mind races at night and I can’t sleep.
+    - I feel like I can’t trust my own judgment.
+    - I feel disconnected from reality when my anxiety is high.
+    - I keep imagining worst-case scenarios.
+    - I get nauseous when I’m nervous.
+    - My anxiety makes it hard to start new projects.
+    - I find myself apologizing constantly because I’m afraid of upsetting people.
+    - I lose my train of thought easily when anxious.
+    - I get anxious when people raise their voices, even if it’s not at me.
+    - I can’t seem to relax, no matter what I do.
+    - My legs shake when I’m nervous.
+    - I’m afraid to ask for help because I don’t want to be a burden.
+    - I feel like people are watching my every move.
+    - I freeze up when someone asks me a question I’m not expecting.
+    - I get anxious when someone disagrees with me.
+    - I feel exhausted after socializing, even if it went well.
+    - My anxiety makes it hard to concentrate in class.
+    - I get anxious when my phone rings unexpectedly.
+    - I feel like I always need to be in control.
+    - I worry that if I relax, something will go wrong.
+    - I get anxious when plans change at the last minute.
+    - I can’t enjoy hobbies because I’m too anxious to start.
+    - My thoughts keep going back to embarrassing moments from years ago.
+    - I get anxious if I forget something, even if it’s small.
+    - I’m afraid to try new things because I might fail.
+    - My hands get cold and sweaty when I’m nervous.
+    - I get anxious when people talk about the future.
+    - I feel overwhelmed when I have to make a schedule.
+    - I get anxious when I have to meet new people online.
+
+- intent: depression
+  examples: |
+    - I feel empty inside.
+    - I can’t focus on my studies.
+    - I feel worthless.
+    - My grades are dropping because I feel sad.
+    - I don’t care about anything anymore.
+    - I feel numb and disconnected from everything.
+    - I find it hard to talk to anyone about how I feel.
+    - I think my friends would be better off without me.
+    - I keep sleeping during the day.
+    - I can’t find the energy to do basic things like showering or eating.
+    - I don’t want to get out of the house anymore.
+    - I feel stuck and nothing ever changes.
+    - I’m constantly irritable and snap at people for no reason.
+    - I feel like everything is pointless.
+    - I have trouble making decisions, even about small things.
+    - I avoid my friends and family.
+    - My body aches for no reason.
+    - I lost interest in my studies and school activities.
+    - I feel overwhelmed by little things.
+    - I feel guilty all the time, even when I haven’t done anything wrong.
+    - I have no appetite and skip meals.
+    - I gained weight because I can’t stop eating when I’m sad.
+    - I feel anxious and sad at the same time.
+    - I feel like I’m moving in slow motion.
+    - I’m tired of pretending to be okay around everyone.
+    - I feel like I’ll never get better.
+    - I feel isolated even when I’m with people.
+    - I can’t finish tasks because I lose interest halfway through.
+    - I avoid looking in the mirror because I don’t like myself.
+    - I get headaches and stomachaches when I’m sad.
+    - I don’t see the point in making plans for the future.
+    - I push people away even when I want support.
+    - I feel like crying all the time.
+    - I have trouble remembering things lately.
+    - I get angry easily and then feel guilty about it.
+    - I don’t recognize myself anymore.
+    - I’m afraid to tell anyone how I feel.
+    - I have nightmares or trouble sleeping.
+    - I feel like giving up on everything.
+    - I feel down most days and can’t seem to shake it.
+    - I have no motivation to do anything lately.
+    - I feel hopeless about my future.
+    - I don’t enjoy the things I used to like.
+    - I feel tired all the time, even after sleeping.
+    - Nothing makes me happy anymore.
+    - I want to be alone most of the time.
+    - I cry for no reason.
+    - I feel like I’m a burden to others.
+    - I have trouble getting out of bed.
+
+- intent: stress
+  examples: |
+    - I feel overwhelmed by everything I need to do.
+    - My schoolwork is piling up and I can’t keep up.
+    - I’m under so much pressure to do well in my classes.
+    - I can’t sleep because I’m always thinking about deadlines.
+    - I get headaches when I’m stressed out.
+    - I feel like I’m always running out of time.
+    - My heart races when I think about everything I have to do.
+    - I can’t focus on anything because I’m too stressed.
+    - I get angry over small things when I’m stressed.
+    - I have trouble eating when I’m stressed.
+    - I feel exhausted but can’t seem to relax.
+    - My family expects a lot from me and it stresses me out.
+    - I get stomachaches when I’m stressed.
+    - I feel like I’m always behind, no matter what I do.
+    - I can’t say no when people ask me for help, and it stresses me out.
+    - I cry when I get too stressed.
+    - I feel like there’s never enough time in the day.
+    - My hands get sweaty when I’m stressed out.
+    - I forget things easily when I’m stressed.
+    - I feel tense in my shoulders and neck when I’m stressed.
+    - I get overwhelmed when my plans change unexpectedly.
+    - I can’t relax, even when I try to take a break.
+    - I get easily frustrated with people around me.
+    - I eat too much junk food when I’m stressed.
+    - I worry about letting people down.
+    - I can’t sit still when I’m stressed.
+    - I feel pressure to be perfect in everything I do.
+    - I get short with my friends when I’m stressed.
+    - I have trouble enjoying things I used to like when I’m stressed.
+    - My mind goes blank when I’m under pressure.
+    - I keep getting sick when I’m stressed.
+    - I worry about the future all the time.
+    - I have trouble asking for help when I’m stressed.
+    - I feel drained after being around people.
+    - I start projects but can’t finish them when I’m stressed.
+    - I get tension headaches when I have too much to do.
+    - I get irritable when I haven’t had enough sleep because of stress.
+    - I feel like there’s no way to catch up.
+    - I have trouble breathing deeply when I’m stressed.
+    - I lose my appetite when I’m stressed.
+    - I feel like crying for no reason when I’m stressed.
+    - My thoughts keep racing and I can’t slow down.
+    - I feel pressure from my family to succeed.
+    - I get shaky or my hands tremble when I’m stressed.
+    - I keep making mistakes because I’m too stressed to think straight.
+    - I get anxious when people expect too much from me.
+    - I have trouble enjoying my weekends because I’m still stressed about school.
+    - I find it hard to make decisions when I’m stressed.
+    - I clench my jaw or grind my teeth when I’m stressed.
+
+- intent: academic_pressure
+  examples: |
+    - I feel like everyone expects me to get high grades.
+    - The pressure to maintain my scholarship is too much.
+    - I’m scared I’ll disappoint my parents if I don’t do well.
+    - There’s so much competition in my course, I feel left behind.
+    - I feel guilty when I relax instead of studying.
+    - I can’t keep up with all my subjects.
+    - I feel pressured to be at the top of my class.
+    - My classmates seem to understand things faster than me.
+    - I always worry about failing exams.
+    - My family keeps asking about my grades.
+    - I feel like I don’t have time for anything except studying.
+    - I’m afraid my friends will judge me if I get low grades.
+    - I’m overwhelmed by all the deadlines and projects.
+    - I’m stressed about meeting my professors’ expectations.
+    - I feel like I have to be perfect to succeed.
+    - My parents compare me to other students.
+    - I’m worried I won’t finish all my assignments on time.
+    - I’m losing motivation to study because of so much pressure.
+    - I keep thinking about school even during weekends.
+    - I feel sick whenever there’s a big test coming up.
+    - My classmates keep talking about grades, which stresses me out.
+    - I get nervous just seeing my school portal or grades online.
+    - I feel like I’m never good enough academically.
+    - I can’t keep up with online classes and assignments.
+    - I feel like everyone is expecting me to succeed.
+    - I can’t enjoy hobbies because I’m always worried about school.
+    - I get anxious before submitting any assignment.
+    - I’m always comparing my performance with others.
+    - I feel like I can’t ask questions in class because I might look stupid.
+    - My parents have high expectations for me.
+    - I feel mentally exhausted from all the academic demands.
+    - I get headaches thinking about unfinished schoolwork.
+    - I’m scared to fail because everyone will know.
+    - I feel pressured to join extra-curriculars for my resume.
+    - I’m afraid to ask for help because I might look weak.
+    - I’m having trouble balancing school and personal life.
+    - I feel like my grades are the only thing that matters.
+    - I’m scared to check my grades.
+    - I get frustrated when I don’t get perfect scores.
+    - I’m worried about keeping my scholarship if my grades drop.
+    - I feel like giving up when things get hard at school.
+    - I’m pressured to finish group work perfectly.
+    - I’m scared of disappointing my teachers.
+    - I can’t relax even during holidays because of school.
+    - I’m anxious about not graduating on time.
+    - I feel like my life revolves only around academics.
+    - I don’t want to talk to anyone about my academic struggles.
+    - I’m afraid to make mistakes in front of my classmates.
+
+- intent: relationship_issues
+  examples: |
+    - I always fight with my partner and it's exhausting.
+    - My partner and I don’t talk like we used to.
+    - I feel jealous when my partner talks to others.
+    - I think my partner is losing interest in me.
+    - I feel like I’m the only one putting effort into our relationship.
+    - My partner doesn’t understand how stressed I am.
+    - I feel like my partner controls my actions.
+    - My partner gets angry easily and it scares me.
+    - I feel alone even when I’m with my partner.
+    - We barely spend time together because of our schedules.
+    - My partner makes me feel insecure about myself.
+    - I’m afraid my partner will leave me for someone else.
+    - My partner doesn’t support my goals or ambitions.
+    - We keep having the same arguments over and over.
+    - I feel like I’m losing myself in this relationship.
+    - My partner keeps secrets from me.
+    - My partner doesn’t respect my boundaries.
+    - My partner is always busy and I feel neglected.
+    - My partner brings up my past mistakes in every argument.
+    - I feel like my partner doesn’t listen to me.
+    - My partner and I have different priorities.
+    - My partner is jealous of my friends.
+    - We have different plans for the future.
+    - I’m not happy in my relationship but I’m afraid to leave.
+    - My partner is always criticizing me.
+    - My partner doesn’t want to talk about problems.
+    - I feel like my partner takes me for granted.
+    - My partner doesn’t apologize when they’re wrong.
+    - My partner ignores me when we fight.
+    - My partner flirts with other people and it bothers me.
+    - I feel pressure to change for my partner.
+    - I think my partner is cheating on me.
+    - My partner makes fun of me in front of others.
+    - My partner never wants to compromise.
+    - My partner gets jealous of my achievements.
+    - I feel anxious before seeing my partner.
+    - My partner doesn’t include me in their plans.
+    - My partner jokes about breaking up.
+    - My partner lies about small things.
+    - I’m always the one making an effort to fix things.
+    - My partner doesn’t want to meet my friends or family.
+    - My partner’s words sometimes hurt my feelings.
+    - My partner is always on their phone when we’re together.
+    - My partner wants to control who I talk to.
+    - My partner is secretive about their social media.
+    - My partner doesn’t seem interested in my life anymore.
+    - My partner compares me to their ex.
+    - My partner rarely shows affection.
+    - I feel like I’m always apologizing.
+    - My partner blames me for everything.
+
+- intent: low_self_esteem
+  examples: |
+    - I don’t feel good enough no matter how hard I try.
+    - I always compare myself to others and feel like I don’t measure up.
+    - I feel useless and like I don’t matter.
+    - I get nervous to speak up in class because I think people will judge me.
+    - I don’t think I’m attractive or interesting.
+    - I don’t think I’ll ever be successful.
+    - People rarely notice me and I feel invisible.
+    - I keep thinking I’m a failure.
+    - I don’t like looking at myself in the mirror.
+    - I feel like nobody really cares about me.
+    - I avoid trying new things because I’m scared I’ll mess up.
+    - I always feel like a burden to others.
+    - I struggle to accept compliments from people.
+    - I don’t think I’m as smart as everyone else.
+    - I feel uncomfortable in social situations.
+    - I think people secretly don’t like me.
+    - I always second-guess my decisions.
+    - I find it hard to believe in myself.
+    - I apologize for everything, even things that aren’t my fault.
+    - I avoid looking people in the eye.
+    - I don’t have confidence in my abilities.
+    - I feel awkward in group conversations.
+    - I think others see me as weak.
+    - I struggle to say no, even when I’m overwhelmed.
+    - I always expect the worst in situations.
+    - I downplay my achievements.
+    - I don’t feel like I have any special talents.
+    - I’m afraid to speak my mind.
+    - I feel embarrassed easily.
+    - I worry that I disappoint everyone.
+    - I feel like I’m not interesting to talk to.
+    - I think my friends only tolerate me.
+    - I don’t think I’ll ever fit in.
+    - I don’t trust myself to make good choices.
+    - I’m afraid to stand up for myself.
+    - I doubt that anyone would miss me if I disappeared.
+    - I get uncomfortable when people look at me.
+    - I’m scared of being rejected.
+    - I’m always apologizing for who I am.
+    - I find it hard to believe I deserve good things.
+    - I’m nervous to try out for clubs or activities.
+    - I never feel satisfied with myself.
+    - I always blame myself for problems.
+    - I think people don’t want me around.
+    - I struggle to accept praise.
+    - I’m afraid to take up space or speak out.
+
+- intent: loneliness
+  examples: |
+    - I always feel alone, even when I'm around people.
+    - I don’t have anyone to talk to about my problems.
+    - I feel invisible to everyone around me.
+    - My friends are busy and I feel left out.
+    - I just moved and don’t know anyone here.
+    - I eat lunch alone almost every day.
+    - I feel like nobody understands me.
+    - I don't fit in with any group.
+    - I miss my old friends and feel disconnected.
+    - I feel like I’m always the outsider.
+    - I have a hard time starting conversations.
+    - I feel like everyone already has their group of friends.
+    - I don't have anyone to spend time with on weekends.
+    - I feel isolated because of my shyness.
+    - My classmates don’t invite me to hang out.
+    - I feel like nobody notices when I’m not around.
+    - I only have online friends and no one to hang out with in person.
+    - I feel left out when people make plans without me.
+    - I don’t have anyone to call when I’m upset.
+    - I wish I had someone to talk to before bed.
+    - I always feel like a third wheel.
+    - I feel like my family doesn’t understand me.
+    - I don’t get invited to parties or gatherings.
+    - I don’t know how to reach out to people.
+    - I feel lonely even when I’m with my friends.
+    - I feel like nobody really knows me.
+    - I have trouble trusting people enough to get close.
+    - I feel disconnected from everyone at school.
+    - I spend most of my time alone.
+    - I wish someone would check in on me.
+    - I don’t feel like I belong anywhere.
+    - I find it hard to trust new people.
+    - I miss having close friendships.
+    - I feel disconnected from my family.
+    - I only talk to people online and not in person.
+    - I feel left out of group chats and conversations.
+    - I wish I had a best friend.
+    - I don’t feel comfortable sharing my feelings with anyone.
+    - I feel like I have to hide my true self.
+    - I struggle to maintain friendships.
+    - I’m afraid people will judge me if I reach out.
+    - I feel like nobody notices my absence.
+    - I have a hard time opening up to people.
+    - I don’t know how to start making new friends.
+    - I wish someone would invite me to join them.
+    - I feel sad when I see others together and I’m alone.
+    - I feel like I’ll always be alone.
+    - I don’t feel comfortable in large groups.
+    - I wish someone understood what I’m going through.
+
+- intent: family_problems
+  examples: |
+    - My parents are always fighting and it stresses me out.
+    - I feel like I can’t talk to my family about anything.
+    - My family doesn’t support my choices.
+    - I feel pressured by my family to do things I don’t want.
+    - My parents compare me to my siblings.
+    - There’s always so much drama at home.
+    - I feel like the black sheep in my family.
+    - My parents don’t understand what I’m going through.
+    - My family always criticizes me.
+    - I feel responsible for my family’s problems.
+    - My parents don’t respect my privacy.
+    - My family ignores my feelings.
+    - My family expects me to be perfect.
+    - My family argues about money all the time.
+    - I have to take care of younger siblings and it’s overwhelming.
+    - My family doesn’t accept my identity.
+    - I feel like I’m always walking on eggshells at home.
+    - My parents don’t believe in mental health issues.
+    - My parents make all my decisions for me.
+    - I feel left out at home.
+    - My family doesn’t listen to me.
+    - My parents expect me to solve their problems.
+    - My parents don’t let me make my own choices.
+    - My family doesn’t appreciate what I do for them.
+    - I feel scared when my parents yell.
+    - My family never celebrates my achievements.
+    - I have to hide my true self at home.
+    - My family is always busy and I feel neglected.
+    - My family jokes about things that hurt me.
+    - My parents set unrealistic expectations for me.
+    - My family has different values from me.
+    - My parents use my mistakes against me.
+    - My family doesn’t respect my boundaries.
+    - I feel like an outsider in my own home.
+    - My parents don’t support my dreams.
+    - My family avoids talking about our problems.
+    - My parents blame me for their arguments.
+    - I have to hide my feelings at home.
+    - My family gossips about me.
+    - My parents force me to choose sides in their arguments.
+    - My family dismisses my mental health struggles.
+    - My family’s negativity affects my mood.
+    - My parents never apologize for hurting me.
+    - My family ignores my achievements but notices my mistakes.
+    - I feel like my family is ashamed of me.
+    - My parents treat my siblings better than me.
+    - My family makes fun of my interests.
+    - My parents threaten to disown me if I don’t do what they want.
+    - My family’s expectations make me anxious.
+
+- intent: burnout
+  examples: |
+    - I feel so tired all the time, no matter how much I sleep.
+    - I’m losing motivation to do things I used to enjoy.
+    - I can’t focus on my studies at all anymore.
+    - I’m always stressed and I feel like I can’t catch up.
+    - I feel emotionally numb, like I don’t care about anything.
+    - I just want to give up on everything.
+    - I feel like I’m running on autopilot every day.
+    - No matter how much I do, it never feels like enough.
+    - I can’t remember the last time I really relaxed.
+    - I keep getting sick and I think it’s from stress.
+    - I’m always irritable and snap at people easily.
+    - I just want to disappear and not deal with anything.
+    - I dread waking up in the morning.
+    - My grades are slipping and I just don’t care anymore.
+    - I feel guilty for not being productive.
+    - I can’t sleep because I’m always thinking about my to-do list.
+    - I feel like I’m letting everyone down.
+    - I have headaches and body pains all the time.
+    - I feel like nothing excites me anymore.
+    - I’m losing touch with my friends because I’m always busy.
+    - I cry for no reason sometimes.
+    - I feel numb and disconnected from my emotions.
+    - I have no energy for anything, not even things I like.
+    - I feel like my work will never be done.
+    - I keep making mistakes because I’m so tired.
+    - I can’t remember things like I used to.
+    - I just don’t care about anything anymore.
+    - I push myself to keep going even when I’m exhausted.
+    - I get angry or frustrated over small things.
+    - I don’t feel like myself anymore.
+    - I just want everything to stop for a while.
+    - I feel like I can’t do anything right.
+    - I feel trapped by my responsibilities.
+    - I have no motivation to get out of bed.
+    - I get sick more often now.
+    - My body feels heavy and sluggish.
+    - I feel guilty for resting, even when I need it.
+    - I zone out and can’t pay attention in class.
+    - I don’t want to see or talk to anyone.
+    - I feel overwhelmed just thinking about my to-do list.
+    - I keep putting things off because I’m so tired.
+    - I don’t know how to relax anymore.
+    - I feel hopeless about the future.
+    - I’m afraid to ask for help because I don’t want to burden others.
+    - I feel stuck and nothing changes.
+    - I wish I could just run away from everything.
+
+- intent: substance_abuse
+  examples: |
+    - I think I’m drinking too much lately.
+    - My friends pressure me to try drugs and I’m not sure what to do.
+    - I use substances to escape stress and problems.
+    - I regret things I do when I’m drunk or high.
+    - I can’t stop thinking about using, even when I know it’s bad for me.
+    - I drink or use drugs when I feel lonely or bored.
+    - I’m worried I might be addicted.
+    - My substance use is affecting my grades and relationships.
+    - My family doesn’t know about my drinking or drug use.
+    - I don’t like who I become when I’m using.
+    - I use substances to help me sleep or relax.
+    - My friends use all the time and I feel left out if I don’t join.
+    - I’ve tried to quit but I always go back.
+    - I use substances to feel more confident in social situations.
+    - I’m scared of what will happen if I keep using.
+    - I hide my substance use from everyone.
+    - I spend too much money on alcohol or drugs.
+    - I want to stop, but I don’t know how.
+    - I use substances when I feel stressed about school.
+    - My grades are dropping because of my substance use.
+    - I worry my friends will judge me if I stop using.
+    - I’m afraid to talk to anyone about my substance use.
+    - I use substances to forget my problems.
+    - I feel ashamed about my substance use.
+    - My family has a history of addiction and I’m worried about myself.
+    - I drink or use drugs to deal with social anxiety.
+    - I’ve lost friends because of my substance use.
+    - I keep promising myself I’ll stop, but I never do.
+    - My substance use started just for fun, but now I feel like I need it.
+    - I feel anxious when I don’t have access to substances.
+    - My substance use is affecting my health.
+    - I keep my substance use a secret from my partner.
+    - I feel like I need substances to have fun.
+    - I feel alone in my struggle with addiction.
+    - I use substances to cope with family problems.
+    - I’m scared I’ll get in trouble because of my substance use.
+    - My substance use is affecting my job or extracurricular activities.
+    - I can’t relax without substances.
+    - I keep making promises to quit but can’t stick to them.
+    - I feel like no one would understand what I’m going through.
+    - My substance use is out of control.
+    - I use substances to avoid feeling sad or anxious.
+    - I feel like substances are the only thing that help me cope.
+    - I’ve missed important events because of my substance use.
+    - I want to change, but it feels impossible.
+    - I feel embarrassed about my substance use.
+    - My substance use has hurt people I care about.
+
+- intent: sleep_problems
+  examples: |
+    - I can’t fall asleep even when I’m really tired.
+    - I keep waking up in the middle of the night.
+    - I always feel tired, no matter how much I sleep.
+    - My mind races with worries when I try to sleep.
+    - I stay up late on my phone and can’t fall asleep.
+    - I wake up feeling exhausted, even after a full night’s sleep.
+    - I have trouble waking up in the morning.
+    - I have nightmares almost every night.
+    - I can’t sleep because of noise at home.
+    - I get anxious at bedtime because I know I won’t sleep well.
+    - I stay up all night to finish assignments.
+    - I keep napping during the day and can’t sleep at night.
+    - I can’t sleep because I’m worried about the future.
+    - I keep having dreams about school stress.
+    - I sleep at odd hours and can’t keep a regular schedule.
+    - I feel restless at night and can’t get comfortable.
+    - I wake up too early and can’t fall back asleep.
+    - I use my phone in bed to distract myself, but I still can’t sleep.
+    - My body feels tense when I try to relax at night.
+    - I get headaches from not sleeping enough.
+    - I always wake up feeling groggy.
+    - I can’t sleep when I’m upset about something.
+    - I sleep all day and stay up all night.
+    - I can’t fall asleep without background noise.
+    - I wake up to check my phone and can’t go back to sleep.
+    - I get anxious about not getting enough sleep.
+    - I feel restless even when I’m lying down.
+    - I can’t stop thinking about my to-do list at night.
+    - I feel more awake at night than during the day.
+    - I keep tossing and turning for hours.
+    - I have trouble falling asleep after using caffeine.
+    - I wake up sweating or feeling hot at night.
+    - I’m so tired that I nap during class.
+    - I worry that my sleep issues are hurting my health.
+    - I can’t sleep because I’m hungry at night.
+    - I keep waking up from bad dreams.
+    - I sleep in on weekends and can’t wake up for class.
+    - My sleep schedule is messed up after exams.
+    - I have trouble sleeping in a new place.
+    - I get headaches from not sleeping well.
+    - I keep waking up before my alarm.
+    - I nap a lot but still feel tired.
+    - I use sleep aids but they don’t always work.
+    - I can’t fall asleep after a stressful day.
+    - I feel like I never get enough rest.
+
+- intent: time_management
+  examples: |
+    - I can never finish my tasks on time.
+    - I always end up cramming the night before deadlines.
+    - I don’t know how to prioritize what’s important.
+    - I keep missing deadlines because I forget them.
+    - I get distracted easily and can’t focus.
+    - I feel overwhelmed by my schedule.
+    - I always feel like there’s not enough time in the day.
+    - I procrastinate and leave everything until the last minute.
+    - I can’t balance school, work, and personal life.
+    - I often forget about assignments until it’s too late.
+    - I start projects but never finish them.
+    - I try to do everything at once and end up doing nothing.
+    - I stay up late to finish work and feel tired all the time.
+    - I spend too much time on social media instead of studying.
+    - I feel stressed when my to-do list gets too long.
+    - I’m always running late for classes and meetings.
+    - I say yes to too many things and overcommit myself.
+    - I can’t seem to stick to any routine.
+    - I feel guilty taking breaks when I have a lot to do.
+    - I get sidetracked by other people’s requests.
+    - I keep forgetting about important events or appointments.
+    - I get stuck on small tasks and run out of time for bigger ones.
+    - I have trouble switching between different tasks.
+    - I feel behind even when I work hard.
+    - I spend too much time planning and not enough doing.
+    - I lose track of time when studying or working.
+    - I keep putting off things I don’t want to do.
+    - I feel anxious when I look at my schedule.
+    - I waste a lot of time deciding what to do next.
+    - I can’t say no when people ask for my help.
+    - I forget to take care of myself when I’m busy.
+    - I try to multitask but end up getting less done.
+    - I keep missing out on things I want to do.
+    - I don’t know how to organize my time.
+    - I get overwhelmed by big projects.
+    - I can’t relax because I’m always thinking about what’s next.
+    - I feel like I’m always rushing.
+    - I don’t have time for friends or hobbies.
+    - I find myself doing unimportant things instead of what matters.
+    - I get stuck trying to make things perfect.
+    - I keep forgetting what I was supposed to do.
+    - I lose track of my progress on long-term goals.
+    - I can’t find time to exercise or eat healthy.
+    - I struggle to stick to my plans.
+    - I waste time looking for things I need.
+    - I don’t know how to say no to new commitments.
+    - I forget to take breaks and end up exhausted.
+    - I feel like I’m always behind no matter what I do.
+
+- intent: financial_stress
+  examples: |
+    - I’m worried about not having enough money for tuition.
+    - My family is struggling to make ends meet.
+    - I can’t afford the materials required for my classes.
+    - I’m embarrassed about my financial situation.
+    - I have to choose between food and school expenses.
+    - My part-time job isn’t enough to cover my expenses.
+    - I feel guilty asking my family for money.
+    - I’m behind on my bills and don’t know what to do.
+    - I have to work long hours just to keep up.
+    - I’m stressed about paying rent every month.
+    - I worry I won’t be able to finish school because of money.
+    - I feel left out when my friends can afford things I can’t.
+    - I’m constantly worried about money.
+    - I skip meals to save money.
+    - My scholarship isn’t enough to cover my expenses.
+    - I feel pressure to help support my family.
+    - I’m worried about student loans after graduation.
+    - I can’t afford internet or a device for online classes.
+    - My parents lost their jobs and I don’t know what to do.
+    - I worry about unexpected expenses like medical bills.
+    - I have trouble managing my money.
+    - I wish I could save money, but I can’t.
+    - I get anxious every time I check my bank account.
+    - I can’t afford transportation to school.
+    - I can’t buy books or materials for class.
+    - I feel hopeless about my financial future.
+    - I have to skip social events because I can’t afford them.
+    - I feel like I’ll never get out of debt.
+    - I feel guilty spending money on myself.
+    - I can’t concentrate on schoolwork because of money worries.
+    - I feel jealous of classmates who don’t have money problems.
+    - I wish my family understood how stressed I am about money.
+    - I’m worried I won’t be able to pay for graduation fees.
+    - I’m embarrassed to talk about my financial situation.
+    - I worry I can’t support myself after graduation.
+    - I feel like my financial stress never ends.
+    - I can’t afford health care or insurance.
+    - I’m worried about supporting younger siblings.
+    - I don’t have enough money for basic needs.
+    - I feel alone in dealing with my financial problems.
+    - I’m scared I’ll have to drop out because of money.
+    - I want to help my family but don’t know how.
+    - I don’t know how to make a budget.
+    - I feel anxious about money all the time.
+    - I’m afraid to talk to my teachers about my financial situation.
+    - I’m frustrated that financial stress affects my relationships.
+    - I wish I didn’t have to worry about money all the time.
+    - I worry I’ll never be financially stable.
+
+- intent: bullying
+  examples: |
+    - People keep making fun of me at school.
+    - I get harassed online and it makes me feel awful.
+    - My classmates spread rumors about me.
+    - I feel scared to go to school because of bullying.
+    - I’m bullied because of my appearance.
+    - My friends stopped talking to me after others started bullying me.
+    - People call me names online and it hurts.
+    - I don’t know how to make the bullying stop.
+    - I get threatened by people at school.
+    - I feel completely alone because of bullying.
+    - People make jokes about things that hurt me.
+    - I’m bullied for my gender or identity.
+    - I feel powerless against bullies.
+    - I don’t want to go to class because of bullying.
+    - I’m bullied for my accent or the way I speak.
+    - People take photos of me without my permission.
+    - I get mean comments on my social media posts.
+    - I feel unsafe walking in certain areas of school.
+    - I’m bullied because of my family background.
+    - My grades are dropping because of bullying.
+    - I feel like nobody cares about what I’m going through.
+    - I’m bullied because of my religion or beliefs.
+    - I’m afraid the bullying will never stop.
+    - I get left out of group activities.
+    - My classmates spread lies about me online.
+    - I’m scared to stand up for myself.
+    - I cry when I think about how people treat me.
+    - People laugh at me for things I can’t control.
+    - I’m bullied for my disability.
+    - My teachers don’t notice the bullying.
+    - I wish I could disappear because of how I’m treated.
+    - I’m bullied for my clothes or what I have.
+    - People threaten to post embarrassing things about me.
+    - I feel hopeless that things will ever get better.
+    - I’ve lost interest in things because of bullying.
+    - I get blamed for things I didn’t do.
+    - I’m bullied in group chats with classmates.
+    - People laugh at me when I make mistakes.
+    - My family doesn’t know I’m being bullied.
+    - I’m afraid to go online because of bullies.
+    - I feel different and get picked on for it.
+    - People spread embarrassing photos or videos of me.
+    - I’m bullied for my grades or academic performance.
+    - I feel like nobody will help me.
+    - My mental health is suffering because of bullying.
+    - I get left out of group projects on purpose.
+    - I wish people would just leave me alone.
+    - People make fun of my accent, name, or culture.
+    - I feel like I have no one to turn to.
+
+- intent: grief_loss
+  examples: |
+    - I still miss my loved one who passed away.
+    - I can’t stop thinking about my breakup.
+    - I feel lost since things changed at home.
+    - I wish I could see my friend again.
+    - I’m struggling after losing my pet.
+    - I cry every time I think about my loss.
+    - I feel alone in my grief.
+    - My friends don’t understand what I’m going through.
+    - I feel guilty about things I said or didn’t say.
+    - I can’t focus on anything since my loss.
+    - I’m angry that things had to change.
+    - I don’t know how to move forward.
+    - I keep dreaming about the person I lost.
+    - I feel numb since everything changed.
+    - I can’t imagine life without them.
+    - I feel like I’m stuck in the past.
+    - I’m scared of forgetting the person I lost.
+    - I get overwhelmed by my emotions sometimes.
+    - I feel like I have to hide my feelings from others.
+    - I can’t stop thinking about the day everything changed.
+    - I lost motivation for things I used to love.
+    - I’m afraid to get close to people again.
+    - I wish I could have said goodbye.
+    - I feel like people expect me to be over it by now.
+    - I keep going over “what if” scenarios in my head.
+    - I feel exhausted by my grief.
+    - I feel like I’ll never be happy again.
+    - I have trouble talking about my loss.
+    - I feel like my grief is getting worse, not better.
+    - I’m struggling after moving to a new place.
+    - I feel like I can’t talk to anyone about what happened.
+    - I get sad at unexpected times.
+    - I feel angry at the person I lost.
+    - I don’t know how to support a friend who is grieving.
+    - I feel like everything reminds me of my loss.
+    - I avoid places or things that remind me of my loss.
+    - I’m struggling with losing a friendship.
+    - I get overwhelmed by special dates or anniversaries.
+    - I feel like I’m letting my loved one down by moving on.
+    - I can’t sleep since my loss.
+    - I’m afraid I’ll never feel “normal” again.
+    - I feel like my loss changed who I am.
+    - I wish I could have done more.
+    - I want to remember my loved one but don’t know how.
+    - I’m worried people are tired of hearing about my grief.
+    - I feel pressure to “be strong” for others.
+    - I get emotional in public and feel embarrassed.
+    - I don’t know if I’ll ever heal from my loss.
+
+- intent: safety_critical
+  examples: |
+    - I want to end my life
+    - I plan to kill myself tonight
+    - I cut myself
+    - I overdosed
+    - I'm going to hurt someone
+    - my partner hits me
+    - there is sexual abuse at home
+    - they threatened to kill me
+    - I want to die
+    - I don't want to live anymore
+    - I'm thinking about suicide
+    - I took too many pills
+    - I'm afraid I might hurt someone
+    - my father hits me
+    - I'm being sexually abused
+    - they said they will kill me after class
+
+- regex: red_flag_terms
+  examples: |
+    - (?i)(kill myself|end my life|suicide|suicidal|overdose|od|hurt myself|hurt someone|sexual abuse|rape|goodbye note|plan to (die|kill))

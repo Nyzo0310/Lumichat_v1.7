@@ -1,0 +1,62 @@
+version: "3.1"
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
+
+slots:
+  # existing
+  lang:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: custom
+
+  # NEW: required because your action returns SlotSet("risk_level", ...)
+  risk_level:
+    type: text
+    influence_conversation: false
+    # programmatic slot (set by actions), so a custom mapping is fine
+    mappings:
+      - type: custom
+
+intents:
+  - greet
+  - goodbye
+  - academic_pressure
+  - anxiety
+  - bullying
+  - burnout
+  - depression
+  - family_problems
+  - financial_stress
+  - grief_loss
+  - loneliness
+  - low_self_esteem
+  - relationship_issues
+  - sleep_problems
+  - stress
+  - substance_abuse
+  - time_management
+  - safety_critical
+  # recommended so rules can route uncertain messages too
+  - nlu_fallback
+  - out_of_scope
+
+actions:
+  - action_respond_from_sheet
+  - action_safety_protocol   # NEW
+
+responses:
+  utter_crisis:
+    - text: >
+        Thank you for telling me. Your safety matters a lot.
+        If you’re in immediate danger or have a plan to harm yourself or others,
+        please contact local emergency services or go to a safe place now.
+        Would you like me to help you reach a trusted person or a counselor?
+
+  utter_greet:
+    - text: "Hi! How can I help you today?"
+
+  utter_goodbye:
+    - text: "Take care! If you need anything else, I’m here."

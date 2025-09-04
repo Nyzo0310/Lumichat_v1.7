@@ -1,0 +1,6 @@
+[
+  {
+    "name": "red_flag_terms",
+    "pattern": "(?i)(kill myself|end my life|suicide|suicidal|overdose|od|hurt myself|hurt someone|sexual abuse|rape|goodbye note|plan to (die|kill))"
+  }
+]

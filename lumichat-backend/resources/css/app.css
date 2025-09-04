@@ -1,0 +1,456 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =========================================================================
+   1) GLOBAL IMPORTS
+   ========================================================================= */
+@import "./pages/profile.css";
+
+/* =========================================================================
+   2) PIXEL-BASED LAYOUT & SIDEBAR (YOUR ORIGINAL)
+   ========================================================================= */
+.layout-wrapper { display: flex; min-height: 100vh; }
+
+body {
+  @apply bg-gray-50 text-gray-900;
+}
+.dark body {
+  @apply bg-gray-900 text-gray-100;
+}
+
+/* ---- sidebar (original) ---- */
+#sidebar {
+  /* your new gradient */
+  background: linear-gradient(135deg, #059669 0%, #7c3aed 100%) !important;
+  background-size: 200% 200%;
+  animation: gradientBG 12s ease infinite !important;
+
+  position: fixed; top: 0; left: 0; z-index: 40;
+  width: 256px; height: 100vh; display: flex; flex-direction: column;
+  border-radius: 0 0 12px 0;
+  background: linear-gradient(to bottom, #4338ca, #4f46e5);
+  transition: transform 0.3s ease-in-out;
+}
+#sidebar svg { stroke: #cbd5e1; }
+#sidebar a:hover svg { stroke: #ffffff; }
+body.sidebar-hidden #sidebar { transform: translateX(-256px); }
+
+/* close button (inside sidebar) – original baseline */
+.sidebar-close-btn {
+  display: inline-flex; justify-content: center; align-items: center;
+  width: 24px; height: 24px; color: #ffffff;
+}
+body.sidebar-hidden .sidebar-close-btn { display: none; }
+
+body:not(.chat-entered) .fade-once { animation: fadeSlideIn 0.8s ease-out; }
+
+/* ALWAYS-VISIBLE ☰ BUTTON (original) */
+.sidebar-open-btn {
+  display: none;
+  position: fixed; top: 1rem; left: 1rem; z-index: 70;
+  display: inline-flex !important; align-items: center; justify-content: center;
+  width: 2.5rem; height: 2.5rem;
+  background: #ffffff; color: #4b5563; border-radius: 0.375rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer;
+  transition: transform 0.2s, opacity 0.2s;
+}
+.sidebar-open-btn:hover { transform: scale(1.1); }
+body:not(.sidebar-hidden) .sidebar-open-btn { display: none !important; }
+
+/* =========================================================================
+   3) MAIN CONTENT & HEADER (original)
+   ========================================================================= */
+.main-content {
+  flex: 1 1 auto; display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+  margin-left: 256px; transition: margin-left 0.3s ease-in-out;
+}
+body.sidebar-hidden .main-content { margin-left: 0; }
+
+.header-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 20px 24px; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.08); z-index: 10;
+}
+.header-left { display: flex; align-items: center; gap: 12px; }
+.page-title { font-size: 18px; font-weight: 500; color: #1f2937; }
+.header-right { margin-right: 30px; }
+
+.main-panel { flex: 1 1 auto; overflow-y: auto; padding: 16px; }
+body:not(.sidebar-hidden) .main-panel { padding-left: 0; padding-right: 8px; }
+
+/* =========================================================================
+   4) CHAT UI CORE (original)
+   ========================================================================= */
+.chat-container { display: flex; justify-content: center; align-items: flex-start; padding: 0 24px; height: calc(100vh - 144px); }
+.chat-panel {
+  display: flex; flex-direction: column; width: 100%; max-width: 880px; height: 100%;
+  background: #ffffff; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); transition: background 0.8s ease-in-out;
+}
+@media (min-width: 1280px) { .chat-panel { max-width: 1040px; } }
+@media (min-width: 1536px) { .chat-panel { max-width: 1160px; } }
+.chat-header { display: flex; align-items: center; gap: 16px; padding: 24px; border-bottom: 1px solid #e5e7eb; font-size: 18px; font-weight: 600; }
+.chat-messages { flex: 1 1 auto; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; padding: 24px; background: #f9fafb; }
+#chat-message { border: 0 !important; outline: 0 !important; box-shadow: none !important; }
+#chat-message:focus, #chat-message:focus-visible { outline: 0 !important; box-shadow: none !important; }
+.chat-input { display: flex; gap: 8px; padding: 16px; background: #ffffff; border-top: 1px solid #e5e7eb; }
+.input-field { flex: 1; padding: 8px 16px; border: 1px solid #d1d5db; border-radius: 4px 0 0 4px; outline: none; }
+.input-field:focus { box-shadow: 0 0 0 2px #6366f1; }
+.send-button { padding: 8px 16px; background: #4f46e5; color: #ffffff; border: none; border-radius: 0 4px 4px 0; cursor: pointer; }
+.send-button:hover { background: #4338ca; }
+.chat-footer-note { text-align: center; font-size: 12px; color: #6b7280; margin-top: 20px; }
+.bubble-user, .bubble-bot { display: inline-block; max-width: 320px; padding: 8px 16px; border-radius: 12px; font-size: 14px; }
+.bubble-user { background: #4f46e5; color: #ffffff; }
+.bubble-bot  { background: #d1d5db; color: #1f2937; }
+.bubble-timestamp { font-size: 12px; color: #9ca3af; margin-top: 4px; }
+
+/* =========================================================================
+   5) GREETING CARD (original)
+   ========================================================================= 
+.greeting-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); border-radius: 12px; padding: 40px 24px; text-align: center; animation: fadeSlideIn 0.8s ease-out forwards; }
+.greeting-logo { width: 60px; height: 60px; margin-bottom: 12px; }
+.greeting-heading { font-size: 1.5rem; font-weight: 600; color: #ffffff; margin-bottom: 24px; font-family: 'Segoe UI', sans-serif; }
+.greeting-form { display: flex; width: 100%; max-width: 400px; margin-bottom: 16px; border: 2px solid #ffffff; border-radius: 999px; overflow: hidden; background-color: rgba(255,255,255,0.15); }
+.greeting-input { flex: 1; padding: 12px 18px; border: none; background: transparent; color: #ffffff; outline: none; font-size: 1rem; }
+.greeting-input::placeholder { color: #e0e7ff; }
+.greeting-send-btn { background-color: #4f46e5; color: white; border: none; padding: 0 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-left: 1px solid rgba(255,255,255,0.25); transition: background 0.2s ease; }
+.greeting-send-btn:hover { background-color: #4338ca; }
+.greeting-send-btn .icon { width: 20px; height: 20px; stroke-width: 2.5; }
+.greeting-note { font-size: 0.875rem; color: #e0e7ff; margin-top: 8px; }*/
+
+/* =========================================================================
+   6) ANIMATIONS (original)
+   ========================================================================= */
+@keyframes fadeSlideIn { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+.fade-in { animation: fadeSlideIn 0.8s ease-out; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeInUp {
+  animation: fadeInUp 0.8s ease-out both;
+}
+
+@keyframes pulseOnce {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+.animate-pulseOnce {
+  animation: pulseOnce 1s ease-in-out;
+}
+
+
+/* =========================================================================
+   7) RESPONSIVE BREAKPOINTS (original)
+   ========================================================================= */
+@media (max-width: 1024px) { .main-content { margin-left: 0; } }
+@media (max-width: 640px) {
+  .chat-container { padding: 0 12px; }
+  .chat-header { padding: 16px; font-size: 16px; }
+  .chat-input { padding: 12px; }
+  .chat-panel { max-width: 100%; }
+}
+
+/* =========================================================================
+   😎 PROFILE PAGE ENHANCEMENTS (original)
+   ========================================================================= */
+.profile-greeting-wrapper { text-align: center; margin-top: -20px; margin-bottom: 2rem; animation: fadeSlideIn 0.6s ease-out forwards; }
+.profile-greeting-wrapper h2 { font-size: 1.875rem; font-weight: 700; color: #111827; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; letter-spacing: -0.5px; }
+.profile-greeting-wrapper p { font-size: 0.95rem; color: #6b7280; font-family: 'Inter', 'Segoe UI', sans-serif; margin-top: 4px; }
+.typing-indicator { background: #e0e7ff; color: #4f46e5; font-style: italic; padding: 8px 16px; border-radius: 12px; animation: fadeSlideIn 0.4s ease-out; }
+@import "./pages/profile.css";
+
+/* =========================================================================
+   8) UTILITY: Always-On Hamburger Button (original)
+   ========================================================================= */
+.sidebar-open-btn {
+  position: fixed; top: 1rem; left: 1rem; z-index: 60;
+  display: inline-flex !important; align-items: center; justify-content: center;
+  width: 2.5rem; height: 2.5rem; background: #ffffff; color: #4b5563; border-radius: 0.375rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.sidebar-open-btn:hover { transform: scale(1.1); }
+body:not(.sidebar-hidden) .sidebar-open-btn { display: none !important; }
+
+/* Legacy hidden behavior */
+body.sidebar-hidden #sidebar { transform: translateX(-256px); }
+body.sidebar-hidden .main-content { margin-left: 0; }
+
+/* =========================================================================
+   9) ADDITIONAL ANIMATIONS (original)
+   ========================================================================= */
+.fade-in { animation: fadeIn 0.5s ease-in-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.hidden { display: none !important; }
+@keyframes slideInFromRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes sidebarFlip { 0% { transform: perspective(600px) rotateY(-15deg); opacity:0; } 100% { transform: perspective(600px) rotateY(0); opacity:1; } }
+@keyframes pulse { 0%, 100% { transform: scale(1); opacity:1; } 50% { transform: scale(1.1); opacity:.7; } }
+.sidebar-open-btn, .sidebar-close-btn {
+  font-size: 1.25rem; padding: 0.5rem; background: var(--color-bg);
+  border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transition: transform var(--transition-speed) ease, opacity var(--transition-speed);
+}
+.sidebar-open-btn:hover, .sidebar-close-btn:hover { animation: pulse 1.2s infinite; }
+#sidebar { animation: sidebarFlip 0.6s ease both; }
+.chat-panel { animation: slideInFromRight 0.5s ease both; }
+
+/* =========================================================================
+   10) BUBBLE SHADOWS & INPUT RIPPLE (original)
+   ========================================================================= */
+.bubble-user, .bubble-bot { box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; }
+.bubble-user::before, .bubble-bot::before {
+  content: ''; position: absolute; bottom: -6px; width: 12px; height: 6px; background: inherit; border-radius: 50%; filter: blur(2px); opacity: .4;
+}
+.bubble-user::before { right: 12px; }
+.bubble-bot::before { left: 12px; }
+.bubble-timestamp { opacity: .6; font-size: .75rem; transition: opacity .3s ease; }
+.bubble-user:hover ~ .bubble-timestamp, .bubble-bot:hover ~ .bubble-timestamp { opacity: 1; }
+.chat-input button { overflow: hidden; position: relative; }
+.chat-input button::after {
+  content: ''; position: absolute; width: 0; height: 0; top: 50%; left: 50%; background: rgba(255,255,255,0.3);
+  border-radius: 50%; transform: translate(-50%,-50%); transition: width .4s ease, height .4s ease, opacity .4s ease;
+}
+.chat-input button:active::after { width: 200%; height: 200%; opacity: 1; transition: 0s; }
+
+/* =========================================================================
+   11) SIDEBAR LINK STYLES (original, kept)
+   ========================================================================= */
+#sidebar nav a { color: #fff !important; display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 0.5rem; transition: background 0.2s ease, color 0.2s ease; }
+#sidebar nav a svg { stroke: currentColor; fill: none; }
+#sidebar nav a:hover { background: rgba(255,255,255,0.1) !important; color: #ffffff; }
+#sidebar nav a.bg-white\/20 { background: rgba(255,255,255,0.2) !important; }
+#sidebar nav a.active, #sidebar nav a.active svg { background: rgba(255,255,255,0.25); color: #ffffff; }
+
+/* =========================================================================
+   12) GRADIENT UPGRADE (original)
+   ========================================================================= */
+#sidebar { background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); background-size: 200% 200%; animation: gradientBG 12s ease infinite; }
+@keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+/* =========================================================================
+   13) NEW — RESPONSIVE TOGGLE SUPPORT (IDs + classes together)
+   ========================================================================= */
+
+/* (A) Ensure main offset on desktop */
+@media (min-width: 1024px) {
+  .main-content { margin-left: 256px; }
+}
+body.sidebar-hidden .header-bar {
+  padding-left: 4.50rem; /* 24px (base) -> ~76px total; adjust to taste */
+}
+.hamburger-icon {
+    width: 24px;    /* Adjust size */
+    height: 24px;
+    object-fit: contain;
+}
+.sidebar-open-btn {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.sidebar-open-btn:hover .hamburger-icon {
+    filter: brightness(0.85);
+    transform: scale(1.05);
+    transition: all 0.2s ease;
+}
+
+/* (B) Hamburger styles for BOTH #sidebar-open and .sidebar-open-btn */
+#sidebar-open { display: none; }                 /* default hidden */
+body.sidebar-hidden #sidebar-open {              /* show when sidebar is closed */
+  display: inline-flex !important;
+}
+.sidebar-open-btn {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 70;
+  display: none; /* revealed by rules below */
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: #fff;
+  color: #4b5563;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,.12);
+  transition: transform .2s, opacity .2s;
+}
+#sidebar-open:hover, .sidebar-open-btn:hover { transform: scale(1.06); }
+
+/* Show hamburger when sidebar is hidden (mobile only) */
+@media (max-width: 1024px) {
+  body.sidebar-hidden #sidebar-open,
+  body.sidebar-hidden .sidebar-open-btn {
+    display: inline-flex !important;
+  }
+}
+
+/* If you ALSO want the hamburger on desktop when hidden, uncomment:
+body.sidebar-hidden #sidebar-open,
+body.sidebar-hidden .sidebar-open-btn {
+  display: inline-flex !important;
+}
+*/
+
+/* (C) Close (X) styles – visible on ALL breakpoints */
+#sidebar-close,
+.sidebar-close-btn {
+  position: absolute;           /* header must be relative */
+  top: 0.75rem;
+  right: 0.75rem;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  color: #fff;
+  background: rgba(255,255,255,0.12);
+  border-radius: 0.5rem;
+  z-index: 60;
+  transition: background .2s ease, transform .2s ease;
+}
+#sidebar-close:hover, .sidebar-close-btn:hover {
+  background: rgba(255,255,255,0.2);
+  transform: scale(1.05);
+}
+
+/* (D) Section label helper (used in Blade) */
+#sidebar .section-label {
+  font-size: 0.72rem; letter-spacing: 0.18em; font-weight: 800;
+  color: rgba(255,255,255,0.85); padding: 0 0.75rem; margin-bottom: 0.5rem;
+}
+/* --- Sidebar icon helpers --- */
+.sidebar-icon {
+  width: 1.25rem;   /* 20px */
+  height: 1.25rem;
+  object-fit: contain;
+  image-rendering: -webkit-optimize-contrast;
+  filter: drop-shadow(0 0 0 rgba(0,0,0,0)); /* keeps layout stable */
+}
+
+/* If your PNGs are dark/black, this makes them appear white on gradient */
+.icon-white {
+  filter: invert(1) brightness(1.2);
+  opacity: 0.95;
+}
+.logout-icon {
+    background-color: transparent !important;
+    filter: none !important;
+}
+.edit-btn {
+    transition: background 0.2s ease;
+}
+.edit-btn:hover {
+    background-color: #5b21b6; /* deeper violet */
+}
+
+@layer base {
+  body { @apply text-gray-900 dark:text-gray-100; }
+}
+
+/* Reusable card shell (already used on Settings; use everywhere for cards) */
+@layer components {
+  .card-shell{
+    @apply bg-white border border-gray-200 rounded-2xl shadow-sm
+           dark:bg-gray-800 dark:border-gray-700;
+  }
+
+  /* Headings & help text that auto-adapt */
+  .title-dynamic { @apply text-gray-900 dark:text-gray-100; }
+  .muted-dynamic { @apply text-gray-500 dark:text-gray-400; }
+
+  /* Buttons (optional defaults) */
+  .btn-primary{
+    @apply inline-flex items-center justify-center rounded-xl px-5 py-2.5
+           font-semibold bg-indigo-600 text-white hover:bg-indigo-700
+           focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500;
+  }
+  .btn-secondary{
+    @apply inline-flex items-center justify-center rounded-xl px-4 py-2.5
+           font-semibold bg-white text-gray-800 border border-gray-200 hover:bg-gray-50
+           dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 dark:hover:bg-gray-700;
+  }
+
+  /* Inputs: nicer borders in dark mode (works with @tailwindcss/forms) */
+  .input-dynamic {
+    @apply rounded-lg border-gray-300 bg-white text-gray-900 placeholder-gray-400
+           focus:border-indigo-500 focus:ring-indigo-500
+           dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-500;
+  }
+
+  /* Support & Feedback pill-card buttons (from earlier) */
+  .sf-btn{
+    @apply w-full inline-flex items-center justify-center gap-2
+           rounded-xl px-5 py-4 font-semibold
+           border shadow-[0_1px_0_rgba(0,0,0,0.03)]
+           transition hover:-translate-y-0.5
+           focus:outline-none focus-visible:ring-2;
+  }
+  .sf-blue   { @apply bg-indigo-50  border-indigo-200 text-indigo-700  hover:bg-indigo-100  focus-visible:ring-indigo-300; }
+  .sf-purple { @apply bg-purple-50  border-purple-200 text-purple-700  hover:bg-purple-100  focus-visible:ring-purple-300; }
+  .sf-red    { @apply bg-rose-50    border-rose-200   text-rose-700    hover:bg-rose-100    focus-visible:ring-rose-300; }
+  .sf-gray   { @apply bg-gray-50    border-gray-200   text-gray-800    hover:bg-gray-100    focus-visible:ring-gray-300; }
+
+  .dark .sf-blue   { @apply bg-indigo-700/60  border-indigo-500 text-white hover:bg-indigo-600/80  focus-visible:ring-indigo-500; }
+  .dark .sf-purple { @apply bg-purple-700/60  border-purple-500 text-white hover:bg-purple-600/80  focus-visible:ring-purple-500; }
+  .dark .sf-red    { @apply bg-rose-700/60    border-rose-500   text-white hover:bg-rose-600/80    focus-visible:ring-rose-500; }
+  .dark .sf-gray   { @apply bg-gray-700       border-gray-500   text-white hover:bg-gray-600       focus-visible:ring-gray-500; }
+}
+
+/* Optional: chat bubbles if you add these classes on your chat page */
+.bubble-ai    { @apply bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100; }
+.bubble-user  { @apply bg-indigo-600 text-white dark:bg-indigo-500; }
+
+/* Anonymous toggle switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
+}
+
+.checkbox {
+  display: none;
+}
+
+.slider {
+  width: 100%;
+  height: 100%;
+  background-color: lightgray;
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  border: 2px solid transparent;
+  transition: .3s;
+  box-shadow: 0 0 10px 0 rgb(0, 0, 0, 0.25) inset;
+  cursor: pointer;
+}
+
+.slider::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  transform: translateX(-24px);
+  border-radius: 20px;
+  transition: .3s;
+  box-shadow: 0 0 10px 3px rgb(0, 0, 0, 0.25);
+}
+
+.checkbox:checked ~ .slider::before {
+  transform: translateX(24px);
+}
+
+.checkbox:checked ~ .slider {
+  background-color: #2196F3;
+}
+
+
+
