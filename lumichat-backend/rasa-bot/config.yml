@@ -1,3 +1,4 @@
+assistant_id: lumichat-bot
 recipe: default.v1
 language: en
 
@@ -5,23 +6,36 @@ pipeline:
   - name: WhitespaceTokenizer
   - name: RegexFeaturizer
   - name: LexicalSyntacticFeaturizer
+
+  - name: LanguageModelFeaturizer
+    model_name: "bert"
+    model_weights: "bert-base-multilingual-cased"
+
   - name: CountVectorsFeaturizer
+    min_ngram: 1
+    max_ngram: 2
   - name: CountVectorsFeaturizer
     analyzer: char_wb
     min_ngram: 3
     max_ngram: 5
+
   - name: DIETClassifier
-    epochs: 60
-    constrain_similarities: true     # <- add this
+    epochs: 200
+    constrain_similarities: true
+    entity_recognition: true
+    learning_rate: 0.001
+
   - name: EntitySynonymMapper
+  - name: RegexEntityExtractor
+
   - name: FallbackClassifier
-    threshold: 0.35
-    ambiguity_threshold: 0.1
+    threshold: 0.45
+    ambiguity_threshold: 0.05
 
 policies:
   - name: RulePolicy
-  - name: MemoizationPolicy
+    core_fallback_action_name: "utter_fallback"
+    core_fallback_threshold: 0.3
   - name: TEDPolicy
-    epochs: 50
-    constrain_similarities: true     # <- add this
-assistant_id: 20250816-194459-fresh-clone
+    epochs: 120
+  - name: MemoizationPolicy

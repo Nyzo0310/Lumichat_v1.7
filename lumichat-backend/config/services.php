@@ -38,6 +38,10 @@ return [
     'hotline_text'     => env('CRISIS_HOTLINE_TEXT', 'Text HOME to 741741'),
     'hotline_url'      => env('CRISIS_HOTLINE_URL', 'https://988lifeline.org/'),
     ],
-
+    
+    'rasa' => [
+        'base_url' => env('RASA_BASE_URL', 'http://localhost:5005'),
+        'rest_path' => env('RASA_REST_PATH', '/webhooks/rest/webhook'),
+    ],
 
 ];

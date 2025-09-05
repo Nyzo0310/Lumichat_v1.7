@@ -1,0 +1,99 @@
+version: "3.1"
+stories:
+
+# =========================
+# GREETING → WELCOME
+# =========================
+- story: greet and welcome
+  steps:
+    - intent: greet
+    - action: utter_greet
+
+# =========================
+# EMOTIONAL INPUT → REFLECTIVE RESPONSE
+# =========================
+- story: user sad → empathy
+  steps:
+    - intent: express_sadness
+    - action: utter_empathy_sad
+
+- story: user anxious → grounding
+  steps:
+    - intent: express_anxiety
+    - action: utter_empathy_anxious
+
+- story: user stressed → support
+  steps:
+    - intent: express_stress
+    - action: utter_empathy_stressed
+
+- story: user happy → celebrate
+  steps:
+    - intent: express_happiness
+    - action: utter_celebrate
+
+# =========================
+# APPOINTMENT REQUEST → FORM
+# =========================
+- story: appointment happy path
+  steps:
+    - intent: book_appointment
+    - action: appointment_form
+    - active_loop: appointment_form
+    - slot_was_set:
+        - requested_slot: appointment_date
+    - slot_was_set:
+        - appointment_date: "tomorrow"   # example value
+    - slot_was_set:
+        - requested_slot: appointment_time
+    - slot_was_set:
+        - appointment_time: "3pm"
+    - slot_was_set:
+        - requested_slot: consent
+    - slot_was_set:
+        - consent: "yes"
+    - active_loop: null
+    - action: action_submit_appointment
+
+# Denied consent branch
+- story: appointment user denies
+  steps:
+    - intent: book_appointment
+    - action: appointment_form
+    - active_loop: appointment_form
+    - slot_was_set:
+        - requested_slot: consent
+    - intent: deny
+    - action: utter_goodbye
+
+# =========================
+# CRISIS → HOTLINE + NEXT STEPS
+# =========================
+- story: crisis immediate help
+  steps:
+    - intent: crisis_help
+    - action: utter_crisis_intro
+    - action: utter_crisis_hotlines
+    - action: utter_crisis_next_steps
+    - action: action_offer_appointment_link
+
+# =========================
+# THANKS / GOODBYE
+# =========================
+- story: thanks close
+  steps:
+    - intent: thank
+    - action: utter_thanks
+
+- story: goodbye close
+  steps:
+    - intent: goodbye
+    - action: utter_goodbye
+
+# =========================
+# SMALLTALK
+# =========================
+- story: smalltalk route
+  steps:
+    - intent: smalltalk
+    - action: utter_smalltalk_default

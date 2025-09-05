@@ -1,98 +1,114 @@
 version: "3.1"
+
 rules:
- 
-- rule: greet
+
+# =========================
+# SIMPLE INTENTS → RESPONSES/ACTIONS
+# =========================
+- rule: respond to greeting
   steps:
     - intent: greet
     - action: utter_greet
 
-- rule: respond from sheet for academic_pressure
+- rule: respond to sadness
   steps:
-    - intent: academic_pressure
-    - action: action_respond_from_sheet
+    - intent: express_sadness
+    - action: action_reflective_support
 
-- rule: respond from sheet for anxiety
+- rule: respond to anxiety
   steps:
-    - intent: anxiety
-    - action: action_respond_from_sheet
+    - intent: express_anxiety
+    - action: action_reflective_support
 
-- rule: respond from sheet for bullying
+- rule: respond to stress
   steps:
-    - intent: bullying
-    - action: action_respond_from_sheet
+    - intent: express_stress
+    - action: action_reflective_support
 
-- rule: respond from sheet for burnout
+- rule: respond to happiness
   steps:
-    - intent: burnout
-    - action: action_respond_from_sheet
+    - intent: express_happiness
+    - action: action_reflective_support
 
-- rule: respond from sheet for depression
+- rule: respond to thanks
   steps:
-    - intent: depression
-    - action: action_respond_from_sheet
+    - intent: thank
+    - action: utter_thanks
 
-- rule: respond from sheet for family_problems
-  steps:
-    - intent: family_problems
-    - action: action_respond_from_sheet
-
-- rule: respond from sheet for financial_stress
-  steps:
-    - intent: financial_stress
-    - action: action_respond_from_sheet
-
-- rule: respond from sheet for grief_loss
-  steps:
-    - intent: grief_loss
-    - action: action_respond_from_sheet
-
-- rule: respond from sheet for loneliness
-  steps:
-    - intent: loneliness
-    - action: action_respond_from_sheet
-
-- rule: respond from sheet for low_self_esteem
-  steps:
-    - intent: low_self_esteem
-    - action: action_respond_from_sheet
-
-- rule: respond from sheet for relationship_issues
-  steps:
-    - intent: relationship_issues
-    - action: action_respond_from_sheet
-
-- rule: respond from sheet for sleep_problems
-  steps:
-    - intent: sleep_problems
-    - action: action_respond_from_sheet
-
-- rule: respond from sheet for stress
-  steps:
-    - intent: stress
-    - action: action_respond_from_sheet
-
-- rule: respond from sheet for substance_abuse
-  steps:
-    - intent: substance_abuse
-    - action: action_respond_from_sheet
-
-- rule: respond from sheet for time_management
-  steps:
-    - intent: time_management
-    - action: action_respond_from_sheet
-
-- rule: crisis route
-  steps:
-    - intent: safety_critical
-    - action: utter_crisis
-
-- rule: goodbye
+- rule: respond to goodbye
   steps:
     - intent: goodbye
     - action: utter_goodbye
 
-# Optional: ensure low-confidence messages still hit your sheet
-- rule: spreadsheet responder on fallback
+- rule: respond to smalltalk
+  steps:
+    - intent: smalltalk
+    - action: utter_smalltalk_default
+
+# =========================
+# CRISIS HANDLING (HIGH PRIORITY)
+# =========================
+- rule: crisis protocol
+  condition:
+    - active_loop: null
+  steps:
+    - intent: crisis_help
+    - action: utter_crisis_intro
+    - action: utter_crisis_hotlines
+    - action: utter_crisis_next_steps
+    - action: action_offer_appointment_link
+
+# =========================
+# APPOINTMENT FORM LIFECYCLE
+# =========================
+# Single entry point: one empathetic turn, then start the form.
+- rule: start appointment form with empathy
+  steps:
+    - intent: book_appointment
+    - action: action_reflective_support
+    - action: appointment_form
+    - active_loop: appointment_form
+
+# Keep form running on simple affirmations like "yes", "sige", etc.
+- rule: keep appointment form on affirm
+  condition:
+    - active_loop: appointment_form
+  steps:
+    - intent: affirm
+    - action: appointment_form
+
+# Optional: allow user to cancel during the form (deny -> stop)
+- rule: cancel appointment form on deny
+  condition:
+    - active_loop: appointment_form
+  steps:
+    - intent: deny
+    - action: action_deactivate_loop
+    - active_loop: null
+    - action: utter_goodbye
+
+# Submit the form (after all required slots are filled).
+- rule: submit appointment form
+  condition:
+    - active_loop: appointment_form
+  steps:
+    - action: appointment_form
+    - active_loop: null
+    - action: action_submit_appointment
+
+# NOTE:
+# You DO NOT need explicit rules to ask each slot.
+# Rasa automatically calls utter_ask_{slot} based on your domain and form.
+
+# =========================
+# OUT OF SCOPE / FALLBACK
+# =========================
+- rule: handle out of scope
+  steps:
+    - intent: out_of_scope
+    - action: utter_out_of_scope
+
+- rule: nlu fallback
   steps:
     - intent: nlu_fallback
-    - action: action_respond_from_sheet
+    - action: utter_fallback

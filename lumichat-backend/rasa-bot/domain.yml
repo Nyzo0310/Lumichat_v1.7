@@ -1,62 +1,134 @@
 version: "3.1"
 
-session_config:
-  session_expiration_time: 60
-  carry_over_slots_to_new_session: true
+intents:
+  - greet
+  - express_sadness
+  - express_anxiety
+  - express_stress
+  - express_happiness
+  - book_appointment
+  - crisis_help
+  - thank
+  - goodbye
+  - smalltalk
+  - affirm
+  - deny
+  - out_of_scope
+  - nlu_fallback
+
+entities:
+  - date
+  - time
 
 slots:
-  # existing
-  lang:
+  appointment_date:
     type: text
     influence_conversation: true
     mappings:
-      - type: custom
+      - type: from_entity
+        entity: date
+      - type: from_text
+        conditions:
+          - active_loop: appointment_form
+            requested_slot: appointment_date
 
-  # NEW: required because your action returns SlotSet("risk_level", ...)
-  risk_level:
+  appointment_time:
     type: text
-    influence_conversation: false
-    # programmatic slot (set by actions), so a custom mapping is fine
+    influence_conversation: true
     mappings:
-      - type: custom
+      - type: from_entity
+        entity: time
+      - type: from_text
+        conditions:
+          - active_loop: appointment_form
+            requested_slot: appointment_time
 
-intents:
-  - greet
-  - goodbye
-  - academic_pressure
-  - anxiety
-  - bullying
-  - burnout
-  - depression
-  - family_problems
-  - financial_stress
-  - grief_loss
-  - loneliness
-  - low_self_esteem
-  - relationship_issues
-  - sleep_problems
-  - stress
-  - substance_abuse
-  - time_management
-  - safety_critical
-  # recommended so rules can route uncertain messages too
-  - nlu_fallback
-  - out_of_scope
+  consent:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_intent
+        value: "yes"
+        intent: affirm
+      - type: from_intent
+        value: "no"
+        intent: deny
+      - type: from_text
+        conditions:
+          - active_loop: appointment_form
+            requested_slot: consent
 
-actions:
-  - action_respond_from_sheet
-  - action_safety_protocol   # NEW
+forms:
+  appointment_form:
+    required_slots:
+      - appointment_date
+      - appointment_time
+      - consent
 
 responses:
-  utter_crisis:
-    - text: >
-        Thank you for telling me. Your safety matters a lot.
-        If you’re in immediate danger or have a plan to harm yourself or others,
-        please contact local emergency services or go to a safe place now.
-        Would you like me to help you reach a trusted person or a counselor?
+  utter_fallback:
+    - text: "I didn’t quite get that, but I’m here to listen. Could you say it another way? / Wala kaayo nako masabti, pero ania ko maminaw. Pwede nimo usbon pagpasabot?"
 
   utter_greet:
-    - text: "Hi! How can I help you today?"
+    - text: "Hi! I’m LumiCHAT. I’m here to listen and support you. How are you feeling today? / Kumusta? Andam ko maminaw ug motabang."
+
+  utter_empathy_sad:
+    - text: "I’m really sorry you’re going through this. Your feelings matter. Want to share what’s been weighing on you? / Gimingaw ko sa imong kahimtang—pwede nimo isulti unsay naka-bug-at nimo?"
+
+  utter_empathy_anxious:
+    - text: "Anxiety can feel overwhelming. Let’s take it one step at a time. What’s making you feel on edge? / Lisod ang kabalaka; usa-usa nato ni. Unsay naka-kulba nimo karon?"
+
+  utter_empathy_stressed:
+    - text: "There’s a lot on your plate. We can sort it out together. What’s the most stressful part right now? / Daghan kaayo kag giatubang; atong hinay-hinayon. Unsay pinaka-kapoy nga bahin karon?"
+
+  utter_celebrate:
+    - text: "Love to hear that! What helped you feel better today? / Maayo kaayo na! Unsa’y nakatabang nimo nga mas maayo imong gibati karon?"
+
+  # ---- Form prompts (names must match the form slots) ----
+  utter_ask_appointment_date:
+    - text: "Got it. What date works for you? (e.g., today, tomorrow)"
+    - text: "Sige. Kanus-a ka gusto? (pananglitan: karon, ugma)"
+
+  utter_ask_appointment_time:
+    - text: "Noted. What time works for you? (e.g., 10am)"
+    - text: "Noted. Unsa nga oras nimo gusto? (pananglitan: alas 10 sa buntag)"
+
+  utter_ask_consent:
+    - text: "Before we proceed, do I have your consent to book and share details with the counselor? / Mosugot ka ba nga i-book tika ug ipaambit ang detalye sa counselor?"
+
+  # Optional final confirmation text (your action may send the link instead)
+  utter_submit_appointment:
+    - text: "Your appointment is set. Please check this link for counselor availability: {APPOINTMENT_LINK}"
+
+  # ---- Crisis messages ----
+  utter_crisis_intro:
+    - text: "I’m really glad you reached out. Your safety is the top priority right now. / Salamat sa pag-reach out—imong kaluwasan ang pinaka-importante karon."
+
+  utter_crisis_hotlines:
+    - text: "If you’re in immediate danger, contact local emergency services. Hopeline PH 24/7: 0917-558-4673 / (02) 804-4673. / Kung emerhensya, tawag dayon sa local emergency services."
+
+  utter_crisis_next_steps:
+    - text: "I can also help you connect with our counselor—would you like to proceed to the appointment page now? / Matabangan tika maka-connect sa counselor—gusto ka mo-padayon sa appointment page karon?"
+
+  # ---- Closers / smalltalk ----
+  utter_thanks:
+    - text: "You’re welcome. I’m here anytime. / Walay sapayan—ania ra ko permi."
 
   utter_goodbye:
-    - text: "Take care! If you need anything else, I’m here."
+    - text: "Take care. Message me anytime. / Amping—pwede ra ka mo-chat kanunay."
+
+  utter_smalltalk_default:
+    - text: "I’m LumiCHAT, your student support assistant. I can listen and help you book a counselor. / Ako si LumiCHAT—maminaw ko ug motabang sa pag-book sa counselor."
+
+  utter_out_of_scope:
+    - text: "I’m focused on well-being and counseling support. I can help you talk through feelings or book an appointment. / Nakatutok ko sa kaayuhan ug counseling support—maka-tabang ko makig-istorya o mag-book ug appointment."
+
+actions:
+  - action_reflective_support
+  - action_offer_appointment_link
+  - action_submit_appointment
+  - validate_appointment_form
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
