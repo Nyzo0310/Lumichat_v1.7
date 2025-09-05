@@ -1,66 +1,138 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+---
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## 👩‍💻 Developer Setup — Clone & Install
 
-## About Laravel
+### ✅ Prerequisites
+- **PHP** 8.2+ and **Composer** 2.x  
+- **Node.js** 18/20 LTS and **npm**  
+- **MySQL** 8+ (or MariaDB 10.5+)  
+- **Python** 3.10 (recommended for Rasa 3.x) and **pip**  
+- Git
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+> Note: We **do not commit** `.venv/`, `rasa-bot/models/`, `*.tar.gz`, `/vendor`, `/node_modules`, or `.env`. Each dev creates these locally.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 🔁 Clone the Repo
+```bash
+git clone https://github.com/Nyzo0310/Lumichat_v1.7.git
+cd Lumichat_v1.7
+🧱 Laravel Backend Setup
+bash
+Copy code
+cd lumichat-backend
 
-## Learning Laravel
+# PHP deps
+composer install
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+# Env + app key
+cp .env.example .env
+php artisan key:generate
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+# Edit .env → set your DB credentials:
+# DB_CONNECTION=mysql
+# DB_HOST=127.0.0.1
+# DB_PORT=3306
+# DB_DATABASE=lumichat
+# DB_USERNAME=root
+# DB_PASSWORD=secret
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# DB schema
+php artisan migrate   # add --seed if seeds are available
 
-## Laravel Sponsors
+# Frontend assets
+npm install
+npm run dev
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+# (Linux/macOS) ensure writable:
+# sudo chmod -R 775 storage bootstrap/cache
 
-### Premium Partners
+# Run Laravel
+php artisan serve
+# -> http://127.0.0.1:8000
+🤖 Rasa Bot Setup
+bash
+Copy code
+cd lumichat-backend/rasa-bot
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+# Create & activate a virtual env (do NOT commit .venv/)
+python -m venv .venv
 
-## Contributing
+# Windows:
+.venv\Scripts\activate
+# macOS/Linux:
+# source .venv/bin/activate
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# Install Python deps
+# If requirements.txt is missing, create it on a machine that already works:  pip freeze > requirements.txt
+pip install -r requirements.txt
 
-## Code of Conduct
+# Train NLU/Core
+rasa train
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# Run in two terminals:
+# 1) Rasa server (REST API):
+rasa run --enable-api -p 5005
+# 2) Actions server (if using custom actions):
+rasa run actions -p 5055
+🌐 Laravel ↔️ Rasa Connection
+Add these to lumichat-backend/.env (or adjust to your ports):
 
-## Security Vulnerabilities
+ini
+Copy code
+# Rasa
+RASA_BASE_URL=http://127.0.0.1:5005
+RASA_REST_WEBHOOK=/webhooks/rest/webhook
+RASA_ACTION_SERVER=http://127.0.0.1:5055/webhook
+RASA_TIMEOUT=20
+Your Laravel code should POST to:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+bash
+Copy code
+${RASA_BASE_URL}${RASA_REST_WEBHOOK}
+with a JSON body like:
 
-## License
+json
+Copy code
+{ "sender": "<user-id>", "message": "hello" }
+🧪 Common Commands
+Laravel
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+bash
+Copy code
+php artisan serve                    # run app
+php artisan migrate                  # apply migrations
+npm run dev                          # Vite dev
+npm run build                        # production build
+Rasa
+
+bash
+Copy code
+rasa train                           # retrain after editing data/*
+rasa run --enable-api -p 5005        # Rasa server
+rasa run actions -p 5055             # custom actions
+🛠️ Troubleshooting
+“Class or file permissions” (Linux/macOS):
+chmod -R 775 storage bootstrap/cache
+
+“Cannot connect to DB”: verify .env DB_* values and run php artisan migrate.
+
+“Rasa not responding”: ensure both rasa run …5005 and rasa run actions …5055 are running.
+
+Yellow “M” in VS Code but git status clean: Developer: Reload Window.
+
+Large files rejected on push: artifacts/venv/models are intentionally ignored; do not commit them.
+
+📦 What Not to Commit (already in .gitignore)
+bash
+Copy code
+.venv/
+rasa-bot/models/
+*.tar.gz
+/vendor/
+/node_modules/
+.env
+/storage/*.key
+/bootstrap/cache/
+/storage/logs/
+/storage/framework/*
