@@ -12,3 +12,16 @@ yarn-error.log
 .idea
 .vscode
 .DS_Store
+.venv/
+venv/
+.rasa/
+__pycache__/
+lumichat-backend/rasa-bot/models/
+*.tar.gz
+/vendor/
+/node_modules/
+/.env
+/storage/*.key
+/bootstrap/cache/
+/storage/logs/
+/storage/framework/*
