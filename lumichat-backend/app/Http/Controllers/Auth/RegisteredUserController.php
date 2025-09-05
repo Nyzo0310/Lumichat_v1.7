@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterRequest;
 use App\Models\Registration;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -36,6 +37,7 @@ class RegisteredUserController extends Controller
 
         // Force lowercase email
         $data['email'] = Str::lower($data['email']);
+        $hashedPassword = Hash::make($data['password']);
 
         Registration::create([
             'full_name'      => $data['full_name'],
@@ -44,6 +46,17 @@ class RegisteredUserController extends Controller
             'course'         => $data['course'],
             'year_level'     => $data['year_level'],
             'password'       => Hash::make($data['password']),
+        ]);
+         // Save to tbl_users
+        User::create([
+            'name'                 => $data['full_name'],
+            'email'                => $data['email'],
+            'course'               => $data['course'],
+            'year_level'           => $data['year_level'],
+            'contact_number'       => $data['contact_number'],
+            'password'             => $hashedPassword,
+            'role'                 => User::ROLE_STUDENT,  // default role
+            'appointments_enabled' => false,               // default setting
         ]);
 
         return redirect()
