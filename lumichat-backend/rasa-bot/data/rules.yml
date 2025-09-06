@@ -2,9 +2,7 @@ version: "3.1"
 
 rules:
 
-# =========================
-# SIMPLE INTENTS → RESPONSES/ACTIONS
-# =========================
+# SIMPLE INTENTS
 - rule: respond to greeting
   steps:
     - intent: greet
@@ -30,6 +28,11 @@ rules:
     - intent: express_happiness
     - action: action_reflective_support
 
+- rule: respond to smalltalk
+  steps:
+    - intent: smalltalk
+    - action: utter_smalltalk_default
+
 - rule: respond to thanks
   steps:
     - intent: thank
@@ -40,14 +43,7 @@ rules:
     - intent: goodbye
     - action: utter_goodbye
 
-- rule: respond to smalltalk
-  steps:
-    - intent: smalltalk
-    - action: utter_smalltalk_default
-
-# =========================
-# CRISIS HANDLING (HIGH PRIORITY)
-# =========================
+# CRISIS HANDLING
 - rule: crisis protocol
   condition:
     - active_loop: null
@@ -56,12 +52,8 @@ rules:
     - action: utter_crisis_intro
     - action: utter_crisis_hotlines
     - action: utter_crisis_next_steps
-    - action: action_offer_appointment_link
 
-# =========================
 # APPOINTMENT FORM LIFECYCLE
-# =========================
-# Single entry point: one empathetic turn, then start the form.
 - rule: start appointment form with empathy
   steps:
     - intent: book_appointment
@@ -69,15 +61,22 @@ rules:
     - action: appointment_form
     - active_loop: appointment_form
 
-# Keep form running on simple affirmations like "yes", "sige", etc.
-- rule: keep appointment form on affirm
+# accept date/time while the form runs
+- rule: accept inform_date during appointment form
   condition:
     - active_loop: appointment_form
   steps:
-    - intent: affirm
+    - intent: inform_date
     - action: appointment_form
 
-# Optional: allow user to cancel during the form (deny -> stop)
+- rule: accept inform_time during appointment form
+  condition:
+    - active_loop: appointment_form
+  steps:
+    - intent: inform_time
+    - action: appointment_form
+
+# cancel form on deny
 - rule: cancel appointment form on deny
   condition:
     - active_loop: appointment_form
@@ -87,7 +86,7 @@ rules:
     - active_loop: null
     - action: utter_goodbye
 
-# Submit the form (after all required slots are filled).
+# submit after all required slots filled
 - rule: submit appointment form
   condition:
     - active_loop: appointment_form
@@ -96,13 +95,7 @@ rules:
     - active_loop: null
     - action: action_submit_appointment
 
-# NOTE:
-# You DO NOT need explicit rules to ask each slot.
-# Rasa automatically calls utter_ask_{slot} based on your domain and form.
-
-# =========================
 # OUT OF SCOPE / FALLBACK
-# =========================
 - rule: handle out of scope
   steps:
     - intent: out_of_scope

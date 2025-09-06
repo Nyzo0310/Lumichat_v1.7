@@ -2,15 +2,13 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use App\Models\ActivityLog;
 use App\Models\User;
 use App\Models\ChatSession;
 use App\Models\Appointment;
 use Illuminate\Support\Str;
-use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Http\Request;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -18,11 +16,13 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-         RateLimiter::for('chat-send', function (Request $request) {
-        $key = optional($request->user())->id ?? $request->ip();
-        return [ Limit::perMinute(20)->by($key) ];
-    });
-        // when a user registers
+        // ✅ Force HTTPS in production so reset links are https://
+        if (app()->environment('production')) {
+            URL::forceScheme('https');
+        }
+
+        // --- your existing model events below ---
+
         User::created(function (User $user) {
             ActivityLog::create([
                 'event'        => 'user.registered',
@@ -34,7 +34,6 @@ class AppServiceProvider extends ServiceProvider
             ]);
         });
 
-        // when a chat session is created
         ChatSession::created(function (ChatSession $session) {
             ActivityLog::create([
                 'event'        => 'chat_session.started',
@@ -46,7 +45,6 @@ class AppServiceProvider extends ServiceProvider
             ]);
         });
 
-        // when an appointment is created
         Appointment::created(function (Appointment $appt) {
             ActivityLog::create([
                 'event'        => 'appointment.created',

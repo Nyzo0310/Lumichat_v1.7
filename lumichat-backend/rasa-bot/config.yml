@@ -6,11 +6,6 @@ pipeline:
   - name: WhitespaceTokenizer
   - name: RegexFeaturizer
   - name: LexicalSyntacticFeaturizer
-
-  - name: LanguageModelFeaturizer
-    model_name: "bert"
-    model_weights: "bert-base-multilingual-cased"
-
   - name: CountVectorsFeaturizer
     min_ngram: 1
     max_ngram: 2
@@ -18,24 +13,21 @@ pipeline:
     analyzer: char_wb
     min_ngram: 3
     max_ngram: 5
-
   - name: DIETClassifier
     epochs: 200
     constrain_similarities: true
     entity_recognition: true
     learning_rate: 0.001
-
   - name: EntitySynonymMapper
   - name: RegexEntityExtractor
-
   - name: FallbackClassifier
-    threshold: 0.45
-    ambiguity_threshold: 0.05
+    threshold: 0.30
+    ambiguity_threshold: 0.10
 
 policies:
+  - name: MemoizationPolicy
   - name: RulePolicy
     core_fallback_action_name: "utter_fallback"
     core_fallback_threshold: 0.3
   - name: TEDPolicy
     epochs: 120
-  - name: MemoizationPolicy

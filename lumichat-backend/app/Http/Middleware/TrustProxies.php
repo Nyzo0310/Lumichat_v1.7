@@ -8,21 +8,18 @@ use Illuminate\Http\Request;
 class TrustProxies extends Middleware
 {
     /**
-     * The trusted proxies for this application.
-     *
-     * @var array<int, string>|string|null
+     * For local dev, don't trust any proxies (null).
+     * In production behind a load balancer, set to '*' or an array of proxy IPs.
      */
-    protected $proxies;
+    protected $proxies = null; // or '*', but only in production
 
     /**
-     * The headers that should be used to detect proxies.
-     *
-     * @var int
+     * Use a portable bitmask instead of HEADER_X_FORWARDED_ALL.
+     * (Works across Symfony/Laravel versions.)
      */
     protected $headers =
         Request::HEADER_X_FORWARDED_FOR |
         Request::HEADER_X_FORWARDED_HOST |
-        Request::HEADER_X_FORWARDED_PORT |
         Request::HEADER_X_FORWARDED_PROTO |
-        Request::HEADER_X_FORWARDED_AWS_ELB;
+        Request::HEADER_X_FORWARDED_PORT;
 }

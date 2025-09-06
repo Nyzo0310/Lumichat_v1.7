@@ -1,8 +1,6 @@
 version: "3.1"
 nlu:
-# =========================
 # GREETINGS
-# =========================
 - intent: greet
   examples: |
     - hi
@@ -21,9 +19,7 @@ nlu:
     - maayong hapon
     - maayong gabii
 
-# =========================
 # EMOTIONAL STATES
-# =========================
 - intent: express_sadness
   examples: |
     - I'm sad
@@ -82,10 +78,10 @@ nlu:
     - maayo akong gibati karon
     - nindot akong adlaw
     - ok ra kaayo ko
+    - i'm good how are you?
+    - i'm fine, how are you?
 
-# =========================
 # APPOINTMENT BOOKING
-# =========================
 - intent: book_appointment
   examples: |
     - I want to book a counselor
@@ -104,8 +100,6 @@ nlu:
     - today
     - tomorrow
     - tommorow
-    - now
-    - this afternoon
     - next monday
     - ugma
     - karon
@@ -126,10 +120,9 @@ nlu:
     - buntag
     - hapon
     - gabii
+    - now
 
-# =========================
-# CRISIS / SUICIDAL / URGENT HELP
-# =========================
+# CRISIS
 - intent: crisis_help
   examples: |
     - I want to die
@@ -147,9 +140,7 @@ nlu:
     - gusto ko mawala
     - hadlok ko basin naay buhaton nako akong kaugalingon
 
-# =========================
 # GENERAL SUPPORT / CLOSERS
-# =========================
 - intent: thank
   examples: |
     - thanks
@@ -187,9 +178,7 @@ nlu:
     - kinsa ka
     - unsa ang lumichat
 
-# =========================
-# AFFIRM / DENY (used by forms/consent)
-# =========================
+# AFFIRM / DENY
 - intent: affirm
   examples: |
     - yes
@@ -214,9 +203,7 @@ nlu:
     - ayaw sa
     - basin unya
 
-# =========================
-# OUT OF SCOPE / FALLBACK
-# =========================
+# OUT OF SCOPE
 - intent: out_of_scope
   examples: |
     - tell me a joke about hacking the school wifi
