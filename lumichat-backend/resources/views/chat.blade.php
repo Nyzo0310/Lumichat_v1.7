@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Chat')
 
+
 @section('content')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -206,6 +207,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function sendMessage(text) {
+  
     const cleaned = sanitizeClientSide(text);
     if (!cleaned) return;
 
