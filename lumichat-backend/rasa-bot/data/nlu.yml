@@ -84,16 +84,42 @@ nlu:
 # APPOINTMENT BOOKING
 - intent: book_appointment
   examples: |
-    - I want to book a counselor
-    - can you schedule me with a counselor
-    - I'd like an appointment
-    - help me book a session
+    - i want to book a counselor
+    - can you help me book a counselor
+    - help me to book a counselor
+    - book me a counseling session
+    - i’d like an appointment with the counselor
+    - schedule me with a counselor
+    - please set an appointment with a counselor
+    - can you schedule a counseling session
+    - i want to talk to a counselor
+    - can you arrange a meeting with a counselor
+    - reserve a slot with the counselor
+    - i need to book counseling
+    - can i book an appointment
+    - i want to book an appointment
+    - book an appointment for me
+    - make an appointment with the counselor
+    - schedule an appointment
+    - i need a counseling appointment
     - pa-schedule ko sa counselor
     - magpa-iskedyul ko sa counselor
     - mo-book ko ug appointment
-    - I want to talk to a counselor
-    - can you help set a meeting with counselor
-    - reserve a slot with the counselor
+    - gusto ko makig-istorya sa counselor
+    - tabangi ko pag-book sa counselor
+    - pwede ko magpa-appointment
+    - schedule ko palihog
+    - can you help me schedule
+    - i want to schedule a counseling session
+    - can i schedule a session
+    - set a meeting with counselor
+    - book counselor now
+
+# Helpful regex features to bias the classifier (RegexFeaturizer is in your pipeline)
+- regex: book_appt_pattern
+  examples: |
+    - (?i)\b(book|schedule|appointment|reserve|set|arrange)\b.*\b(counsel+or|counsel+er|counseling|counselling)\b
+    - (?i)\b(counsel+or|counsel+er|counseling|counselling)\b.*\b(book|schedule|appointment|reserve|set|arrange)\b
 
 - intent: inform_date
   examples: |
@@ -182,15 +208,17 @@ nlu:
 - intent: affirm
   examples: |
     - yes
+    - yeah
     - yup
-    - sure
+    - ok
     - okay
+    - sure
+    - proceed
+    - please
+    - yes please
     - go ahead
-    - sounds good
     - sige
     - oo
-    - o
-    - pwede
 
 - intent: deny
   examples: |

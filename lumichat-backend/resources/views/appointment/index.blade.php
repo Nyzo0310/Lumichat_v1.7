@@ -49,7 +49,7 @@
         </label>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-          <select id="counselorSelect" name="counselor_id" class="...">
+            <select id="counselorSelect" name="counselor_id"
                     class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
               <option value="">Select a counselor</option>
               @foreach($counselors as $c)

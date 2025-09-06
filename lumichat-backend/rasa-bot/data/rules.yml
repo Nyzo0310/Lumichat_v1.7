@@ -2,7 +2,9 @@ version: "3.1"
 
 rules:
 
+# ------------------------------
 # SIMPLE INTENTS
+# ------------------------------
 - rule: respond to greeting
   steps:
     - intent: greet
@@ -43,7 +45,9 @@ rules:
     - intent: goodbye
     - action: utter_goodbye
 
+# ------------------------------
 # CRISIS HANDLING
+# ------------------------------
 - rule: crisis protocol
   condition:
     - active_loop: null
@@ -51,9 +55,18 @@ rules:
     - intent: crisis_help
     - action: utter_crisis_intro
     - action: utter_crisis_hotlines
-    - action: utter_crisis_next_steps
+    - action: utter_crisis_next_steps   # <-- this asks "proceed to appointment?"
 
+# NEW: After crisis next-steps prompt, user says yes → send link
+- rule: after crisis next steps, affirm → submit appointment
+  steps:
+    - action: utter_crisis_next_steps
+    - intent: affirm
+    - action: action_submit_appointment
+
+# ------------------------------
 # APPOINTMENT FORM LIFECYCLE
+# ------------------------------
 - rule: start appointment form with empathy
   steps:
     - intent: book_appointment
@@ -61,7 +74,15 @@ rules:
     - action: appointment_form
     - active_loop: appointment_form
 
-# accept date/time while the form runs
+# FIXED: outside any form, a plain affirm can submit appointment (e.g. generic offer flows)
+- rule: outside form, affirm → submit appointment
+  condition:
+    - active_loop: null
+  steps:
+    - intent: affirm
+    - action: action_submit_appointment
+
+# accept date while the form runs
 - rule: accept inform_date during appointment form
   condition:
     - active_loop: appointment_form
@@ -69,11 +90,20 @@ rules:
     - intent: inform_date
     - action: appointment_form
 
+# accept time while the form runs
 - rule: accept inform_time during appointment form
   condition:
     - active_loop: appointment_form
   steps:
     - intent: inform_time
+    - action: appointment_form
+
+# NEW: accept affirm (consent) while the form runs
+- rule: accept affirm during appointment form (consent)
+  condition:
+    - active_loop: appointment_form
+  steps:
+    - intent: affirm
     - action: appointment_form
 
 # cancel form on deny
@@ -95,7 +125,9 @@ rules:
     - active_loop: null
     - action: action_submit_appointment
 
+# ------------------------------
 # OUT OF SCOPE / FALLBACK
+# ------------------------------
 - rule: handle out of scope
   steps:
     - intent: out_of_scope

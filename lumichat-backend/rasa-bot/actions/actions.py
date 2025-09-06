@@ -181,14 +181,15 @@ def parse_time(value: str) -> Optional[str]:
 
 
 def normalize_yes_no(value: Optional[str]) -> Text:
-    """Normalize 'yes/no' style answers (English & Cebuano)."""
     v = (value or "").strip().lower()
-    if v in {"yes", "y", "oo", "sige", "oo, sige", "oo sige", "yup", "yeah", "okay", "ok", "go ahead", "sure"}:
+    if v in {
+        "yes","y","yep","yeah","yup","sure","ok","okay","okk","okie",
+        "go ahead","please","yes please","proceed","sige","oo","oo, sige","oo sige"
+    }:
         return "yes"
-    if v in {"no", "dili", "ayaw", "nope", "not now", "maybe later"}:
+    if v in {"no","nope","nah","not now","maybe later","dili","ayaw"}:
         return "no"
     return v or ""
-
 
 # -----------------------------------------------------------------------------
 # Conversational actions
@@ -328,14 +329,14 @@ class ValidateAppointmentForm(FormValidationAction):
 # Submit appointment action
 # -----------------------------------------------------------------------------
 class ActionSubmitAppointment(Action):
-    """Called after the appointment form completes. Sends booking link if consent is 'yes'."""
-
     def name(self) -> Text:
         return "action_submit_appointment"
 
-    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict) -> List[EventType]:
+    def run(self, dispatcher, tracker, domain):
         lang = _lang(tracker.latest_message.get("metadata") or {})
         consent = normalize_yes_no(tracker.get_slot("consent"))
+        if consent not in {"yes", "no"}:
+            consent = normalize_yes_no((tracker.latest_message.get("text") or ""))
 
         if consent != "yes":
             dispatcher.utter_message(text=_one(
@@ -345,17 +346,12 @@ class ActionSubmitAppointment(Action):
             ))
             return [SlotSet("consent", None)]
 
-        link = _appointment_link()
-        dispatcher.utter_message(text=_one(
-            lang,
-            f"Yes, we have a counselor available. Please check this link for availability: {link}",
-            f"Oo, adunay counselor nga available. Palihug tan-awa ang link para sa availability: {link}",
-        ))
+        # IMPORTANT: send the placeholder; Laravel replaces {APPOINTMENT_LINK} with a real <a> button.
+        msg_en  = "Yes, we have a counselor available. Please tap here to book: {APPOINTMENT_LINK}"
+        msg_ceb = "Oo, adunay counselor nga available. I-tap diri para magpa-book: {APPOINTMENT_LINK}"
+        dispatcher.utter_message(text=_one(lang, msg_en, msg_ceb))
 
-        # Clear one-shot slots if you want
         return [SlotSet("consent", None)]
-        # Optionally also clear:
-        # return [SlotSet("consent", None), SlotSet("appointment_date", None), SlotSet("appointment_time", None)]
 
 
 # Exported names (handy for tests/imports)

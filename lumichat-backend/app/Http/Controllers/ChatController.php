@@ -18,6 +18,18 @@ class ChatController extends Controller
     /* =========================================================================
      | Helpers: language, risk, appointment, crisis
      * =========================================================================*/
+    private function confirmedAfterOffer(string $text, int $sessionId): bool
+    {
+        $t = mb_strtolower($text);
+        if (!preg_match('/\b(yes|yeah|yup|sure|ok(?:ay)?|sige|go|go ahead|proceed|please|yes please)\b/u', $t)) {
+            return false;
+        }
+        $lastBot = \App\Models\Chat::where('chat_session_id', $sessionId)->where('sender','bot')->latest('sent_at')->first();
+        if (!$lastBot) return false;
+        try { $last = \Illuminate\Support\Facades\Crypt::decryptString($lastBot->message); }
+        catch (\Throwable $e) { $last = (string) $lastBot->message; }
+        return (bool) preg_match('/\b(counsel(?:or|ling)|appointment|schedule|book|connect)\b/i', $last);
+    }
 
     private function inferLanguage(string $t): string
     {
@@ -133,18 +145,27 @@ HTML;
     {
         $t = mb_strtolower($text);
 
-        $rx = [
+        // Strong signals: action + counselor/therapy/advisor (your originals)
+        $strong = [
             '/\b(appoint(?:ment)?|schedule|book|booking|reserve|set\s*an?\s*appointment)\b[\s\S]{0,80}\b(counsel(?:or|ling)|therap(?:ist|y)|advisor)\b/iu',
             '/\b(counsel(?:or|ling)|therap(?:ist|y)|advisor)\b[\s\S]{0,80}\b(appoint(?:ment)?|schedule|book|booking|reserve|set\s*an?\s*appointment)\b/iu',
             '/\b(i\s+want|i\'?d\s+like|can\s+i|please)\b[\s\S]{0,40}\b(schedule|book|appointment)\b[\s\S]{0,40}\b(counsel(?:or|ling)|therap(?:ist|y)|advisor)\b/iu',
             '/\bsee\s+(?:a\s+)?counselor\b/iu',
             '/\b(pa-?schedule|magpa-?iskedyul|mo-?book)\b[\s\S]{0,80}\b(counsel(?:or|ing)?|konselor|tambag|makig[- ]?istorya)\b/iu',
         ];
-        foreach ($rx as $r) if (preg_match($r, $t)) return true;
+        foreach ($strong as $r) if (preg_match($r, $t)) return true;
 
-        $hasAction = preg_match('/\b(appoint(?:ment)?|schedule|book|booking|reserve)\b/iu', $t);
-        $hasPerson = preg_match('/\b(counsel(?:or|ling)|therap(?:ist|y)|advisor)\b/iu', $t);
-        return $hasAction && $hasPerson;
+        // Soft signals: user says they want an appointment/schedule/booking even without the word "counselor"
+        if (preg_match('/\b(appoint(?:ment)?|schedule|book(?:ing)?|reserve|set\s*(?:an?|up)?\s*appointment)\b/iu', $t)) {
+            return true;
+        }
+
+        // Conversational phrasing: “can I talk to someone”, “speak with someone”
+        if (preg_match('/\b(talk to|speak with|see|meet)\b[\s\S]{0,40}\b(someone|somebody|counsel(?:or)?|advisor|therap(?:ist)?)\b/iu', $t)) {
+            return true;
+        }
+
+        return false;
     }
 
     /* =========================================================================
@@ -310,7 +331,7 @@ HTML;
         }
 
         // 6.5) Inject appointment CTA when user asked & Rasa didn’t add it
-        $askedForAppt = $this->wantsAppointment($text);
+        $askedForAppt = $this->wantsAppointment($text) || $this->confirmedAfterOffer($text, $sessionId);
         $hasApptPlaceholder = false;
         foreach ($botReplies as $rpl) {
             if (is_string($rpl) && str_contains($rpl, '{APPOINTMENT_LINK}')) { $hasApptPlaceholder = true; break; }

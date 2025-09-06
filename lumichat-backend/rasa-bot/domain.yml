@@ -95,11 +95,11 @@ responses:
 
 actions:
   - action_reflective_support
-  - action_submit_appointment
+  - action_ask_appointment_date
+  - action_ask_appointment_time
+  - action_ask_consent
   - validate_appointment_form
-  - action_ask_appointment_date   # NEW
-  - action_ask_appointment_time   # NEW
-  - action_ask_consent            # NEW
+  - action_submit_appointment
 
 session_config:
   session_expiration_time: 60
