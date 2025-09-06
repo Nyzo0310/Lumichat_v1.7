@@ -49,9 +49,11 @@
 
         <div class="text-[11px] text-gray-400 mr-2" id="char-counter">0/2000</div>
 
-        <button type="submit" class="btn-primary m-1 rounded-full px-5 py-2" id="sendBtn" disabled>
-          Send
-        </button>
+       <button id="sendBtn" disabled
+  class="btn-primary m-1 rounded-full px-5 py-2 disabled:opacity-50 disabled:pointer-events-none">
+  Send
+</button>
+
       </div>
     </form>
   </div>
@@ -82,14 +84,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function sanitizeClientSide(raw) {
-    // Trim, collapse whitespace, remove zero-width/invisible chars
     let s = (raw || '').replace(INVISIBLE_RE, '');
     s = s.replace(/\s+/g, ' ').trim();
     return s;
   }
 
   function linkifyText(text) {
-    // Turn plain http(s) URLs into anchors
     return String(text).replace(URL_RE, (m) => {
       const href = m;
       return `<a href="${href}" target="_blank" rel="noopener noreferrer">${href}</a>`;
@@ -97,7 +97,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function sanitizeBotHtml(html) {
-    // Allow only <a> (href|target|rel|class) and <br>; strip everything else to text
     const tmp = document.createElement('div');
     tmp.innerHTML = html;
 
@@ -106,35 +105,25 @@ document.addEventListener("DOMContentLoaded", () => {
         if (child.nodeType === Node.ELEMENT_NODE) {
           const tag = child.tagName.toLowerCase();
           if (tag === 'a') {
-            // href must be http(s)
             const href = child.getAttribute('href') || '';
             if (!/^https?:\/\//i.test(href)) {
-              // replace the whole element with its text
               child.replaceWith(document.createTextNode(child.textContent));
               continue;
             }
             child.setAttribute('target', '_blank');
             child.setAttribute('rel', 'noopener noreferrer');
-            // Keep only href/target/rel/class
             for (const attr of Array.from(child.attributes)) {
               const n = attr.name.toLowerCase();
-              if (!['href','target','rel','class'].includes(n)) {
-                child.removeAttribute(attr.name);
-              }
+              if (!['href','target','rel','class'].includes(n)) child.removeAttribute(attr.name);
             }
-            // Recurse into <a>
             walk(child);
           } else if (tag === 'br') {
-            // allow <br> as-is
             continue;
           } else {
-            // Replace disallowed tags with their text content
             const textNode = document.createTextNode(child.textContent);
             child.replaceWith(textNode);
           }
-        } else if (child.nodeType === Node.DOCUMENT_TYPE_NODE) {
-          child.remove();
-        } else if (child.nodeType === Node.COMMENT_NODE) {
+        } else if (child.nodeType === Node.DOCUMENT_TYPE_NODE || child.nodeType === Node.COMMENT_NODE) {
           child.remove();
         }
       }
@@ -145,30 +134,34 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderBotContent(textOrHtml) {
-    // If it contains angle brackets, treat as HTML and sanitize; otherwise linkify plain text.
-    if (/[<>]/.test(textOrHtml)) {
-      return sanitizeBotHtml(textOrHtml);
-    }
+    if (/[<>]/.test(textOrHtml)) return sanitizeBotHtml(textOrHtml);
     return sanitizeBotHtml(linkifyText(textOrHtml));
   }
 
   function updateCounter() {
-    const val = input.value || '';
-    counter.textContent = `${val.length}/2000`;
-    // Disable when empty/whitespace-only after sanitize
-    sendBtn.disabled = sanitizeClientSide(val).length === 0;
-  }
+  const val = input.value || '';
+  const len = val.length;
+
+  counter.textContent = `${len}/2000`;
+  sendBtn.disabled = sanitizeClientSide(val).length === 0;
+
+  // minimal “limit reached” cue
+  counter.classList.toggle('text-red-600', len >= 2000);
+  input.title = len >= 2000 ? '2,000 character limit reached' : '';
+}
 
   function appendUserBubble(text, time = '') {
     messages.insertAdjacentHTML('beforeend', `
-      <div class="self-end text-right animate__animated animate__zoomIn">
+      <div class="self-end text-right animate__animated animate__zoomIn chat-user-wrap">
         <div class="inline-block bubble-user px-4 py-2 rounded-2xl max-w-xs"></div>
         <div class="msg-time text-[10px] text-gray-400 dark:text-gray-500 mt-1">${time}</div>
       </div>
     `);
-    messages.lastElementChild.querySelector('.bubble-user').textContent = text;
+    const wrap   = messages.lastElementChild;
+    const timeEl = wrap.querySelector('.msg-time');
+    wrap.querySelector('.bubble-user').textContent = text;
     scrollToBottom();
-    return messages.lastElementChild.querySelector('.msg-time');
+    return { wrap, timeEl };
   }
 
   function appendBotBubble(textOrHtml, time = '') {
@@ -184,7 +177,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function linkifyExistingBotBubbles() {
-    // For history rendered from Blade as plain text, make URLs clickable
     document.querySelectorAll('#chat-messages .bubble-ai').forEach(el => {
       const txt = el.textContent || '';
       el.innerHTML = renderBotContent(txt);
@@ -203,18 +195,30 @@ document.addEventListener("DOMContentLoaded", () => {
     scrollToBottom();
   }
 
+  function showValidationErrors(data) {
+    let msg = data?.message || 'Validation failed.';
+    const firstField = data?.errors && Object.keys(data.errors)[0];
+    if (firstField) {
+      const firstError = data.errors[firstField]?.[0];
+      if (firstError) msg = firstError;
+    }
+    appendWarnBubble(msg);
+  }
+
   async function sendMessage(text) {
     const cleaned = sanitizeClientSide(text);
     if (!cleaned) return;
 
-    // show user bubble immediately
-    const timeEl = appendUserBubble(cleaned, '');
+    // quick client guard for obvious HTML in user input
+    if (/[<>]/.test(text)) {
+      appendWarnBubble('HTML is not allowed in messages.');
+      return;
+    }
 
-    // optimistic disable (double-click protection); a fresh idempotency key per send
+    const { wrap, timeEl } = appendUserBubble(cleaned, '');
     sendBtn.disabled = true;
 
     try {
-      // rotate idempotency key per request
       const idem = crypto.randomUUID ? crypto.randomUUID() : (Date.now()+'-'+Math.random().toString(16).slice(2));
       idemEl.value = idem;
 
@@ -228,15 +232,36 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({ message: cleaned, _idem: idem })
       });
 
+      if (res.status === 429) {
+        wrap.remove();
+        const retry = res.headers.get('Retry-After');
+        appendWarnBubble(`Too many attempts. ${retry ? `Try again in ${retry} seconds.` : ''}`);
+        return;
+      }
+
+      // Non-OK (e.g., 422 validation): remove optimistic bubble and show real error
+      if (!res.ok) {
+        let data = null;
+        try { data = await res.json(); } catch (_) {}
+        wrap.remove();
+        if (res.status === 422 && data) {
+          showValidationErrors(data);
+        } else {
+          appendWarnBubble('No reply from LumiCHAT Assistant.');
+          if (data?.message) console.error('POST /chat failed', res.status, data.message);
+        }
+        return;
+      }
+
       const ct = res.headers.get('content-type') || '';
       if (!ct.includes('application/json')) {
+        wrap.remove();
         appendWarnBubble('No reply from LumiCHAT Assistant.');
         console.error('Non-JSON response from /chat:', await res.text());
         return;
       }
 
       const data = await res.json();
-
       if (data?.user_message?.time_human && timeEl) {
         timeEl.textContent = data.user_message.time_human;
       }
@@ -244,13 +269,14 @@ document.addEventListener("DOMContentLoaded", () => {
       if (Array.isArray(data?.bot_reply) && data.bot_reply.length > 0) {
         for (const r of data.bot_reply) {
           const txt = typeof r === 'string' ? r : (r?.text ?? '');
-          const t = typeof r === 'object' ? (r?.time_human ?? '') : '';
+          const t   = typeof r === 'object' ? (r?.time_human ?? '') : '';
           if (txt) appendBotBubble(txt, t);
         }
       } else {
         appendWarnBubble('No reply from LumiCHAT Assistant.');
       }
     } catch (err) {
+      wrap.remove();
       appendWarnBubble('No reply from LumiCHAT Assistant.');
       console.error('POST /chat failed', err);
     } finally {
@@ -260,30 +286,29 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // --- Enter to send (Shift+Enter inserts newline; IME-safe) ---
+  // Enter to send (Shift+Enter inserts newline; IME-safe)
   input.addEventListener('keydown', (e) => {
-    if (e.isComposing) return; // respect IME composition
+    if (e.isComposing) return;
     if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey) {
-      e.preventDefault(); // don't insert newline
+      e.preventDefault();
       const raw = input.value;
       const cleaned = sanitizeClientSide(raw);
       if (!cleaned) return;
-      input.value = '';      // clear box immediately
+      input.value = '';
       updateCounter();
-      sendMessage(cleaned);  // fire
+      sendMessage(cleaned);
     }
   });
 
-  // --- Robust paste (sanitize, enforce maxlength, insert at caret) ---
+  // Robust paste (sanitize, enforce maxlength, insert at caret)
   input.addEventListener('paste', (e) => {
     const cd = e.clipboardData || window.clipboardData;
-    if (!cd) return; // fallback to default behavior
+    if (!cd) return;
     e.preventDefault();
 
     const clip = cd.getData('text');
     if (clip == null) return;
 
-    // Remove invisible chars, keep user newlines for editing
     const sanitized = String(clip).replace(INVISIBLE_RE, '');
 
     const start = input.selectionStart ?? input.value.length;
@@ -313,7 +338,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   input.addEventListener('input', updateCounter);
   updateCounter();
-  linkifyExistingBotBubbles(); // make existing bot bubbles clickable
+  linkifyExistingBotBubbles();
   scrollToBottom();
 });
 </script>

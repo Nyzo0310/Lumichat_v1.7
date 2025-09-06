@@ -3,335 +3,531 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Chat;
+use App\Models\ChatSession;
+use App\Models\ActivityLog;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Route; // <-- added
+use Illuminate\Support\Str;
 
-class AppointmentController extends Controller
+class ChatController extends Controller
 {
-    /** minutes per slot */
-    private const STEP_MINUTES = 30;
+    /* =========================================================================
+     | Helpers: language, risk, appointment, crisis
+     * =========================================================================*/
 
-    /** statuses that block a time from being offered again */
-    private const BLOCKING_STATUSES = ['pending', 'confirmed', 'completed'];
+    /**
+     * Very lightweight EN vs CEB language inference for metadata.
+     */
+    private function inferLanguage(string $t): string
+    {
+        $x = mb_strtolower($t);
+        $cebWords = [
+            'nag','ko','kaayo','unsa','karon','gani','balaka','kulba','kapoy','nalipay',
+            'gusto','pa-schedule','magpa-iskedyul','pwede','palihug','bug-at','dili',
+            'maayong','kumusta','mohilak','hikog','paglaum','jud','lagi','bitaw'
+        ];
+        $hits = 0;
+        foreach ($cebWords as $w) {
+            if (str_contains($x, $w)) $hits++;
+        }
+        return $hits >= 2 ? 'ceb' : 'en';
+    }
 
-    /** Mon–Fri only */
-    private const WEEKDAY_MIN = 1; // Monday
-    private const WEEKDAY_MAX = 5; // Friday
+    /**
+     * From a bilingual string like "EN … / CEB …", return one side.
+     * If no slash is present, return as-is.
+     */
+private function pickLanguageVariant(string $reply, string $lang): string
+{
+    // Only split on " / " (with spaces) so we don't split "https://"
+    $parts = preg_split('/\s+\/\s+/u', $reply, 2);
+    if (count($parts) === 2) {
+        return ($lang === 'ceb') ? trim($parts[1]) : trim($parts[0]);
+    }
+    return $reply;
+}
 
-    /* Booking page */
+
+
+    /**
+     * Risk evaluator (English + Bisaya).
+     * Returns: 'high' | 'moderate' | 'low'
+     */
+    private function evaluateRiskLevel(string $text): string
+    {
+        $t = mb_strtolower($text);
+        $t = preg_replace('/\s+/u', ' ', $t ?? '');
+
+        // HIGH
+        $high = [
+            // EN direct suicidality / self-harm
+            '\bi\s*(?:wanna|want(?:\s*to)?|plan|planning|intend|need|will|gonna)\s*(?:to\s*)?(?:die|kill myself|end (?:it|my life)|commit suicide|unalive|disappear|be gone)\b',
+            '\b(?:kill myself|commit suicide|end it all|no reason to live|life is pointless)\b',
+            '\bi\s*(?:wish|want)\s*(?:i\s*)?(?:were|was)\s*dead\b',
+            '\bi\s*(?:can\'?t|cannot)\s*go on\b',
+            '\b(?:jump off|overdose|poison myself|hang myself)\b',
+            '\b(?:self[- ]harm|cut(?:ting)? myself)\b',
+            // CEB
+            '\bgusto na ko mamatay\b',
+            '\bmaghikog\b',
+            '\bwala na koy paglaum\b',
+            '\bgusto ko mawala\b',
+            '\btapuson na nako tanan\b',
+        ];
+        foreach ($high as $p) {
+            if (preg_match('/' . $p . '/iu', $t)) return 'high';
+        }
+
+        // Co-occurrence heuristic
+        $acts   = ['suicide','die','unalive','kill myself','end my life','end it','jump','overdose','poison','cut','disappear','be gone','mamatay','hikog','wala na koy paglaum','mawala'];
+        $intent = ['wanna','want','plan','planning','thinking','feel like','i should','i will','i might','really want','gonna','gusto','buot','tingali','murag'];
+        foreach ($acts as $a) foreach ($intent as $b) {
+            if (str_contains($t, $a) && str_contains($t, $b)) return 'high';
+        }
+
+        // MODERATE
+        $moderate = [
+            '\bi\s*(?:hate|loath|despise)\s*myself\b',
+            '\b(?:i (?:want|wish) (?:to )?disappear|i (?:don\'?t|do not) want to exist|i wish i wasn\'?t here|i wish i never existed)\b',
+            '\b(?:i(?:\'m| am)? (?:not ?ok(?:ay)?|empty|worthless|a burden|beyond help))\b',
+            '\b(?:give up on life|i don\'?t want to live|i feel like dying)\b',
+            '\b(?:depress(?:ed|ing)?|anxious|panic|overwhelmed|burnout|stressed)\b',
+            // CEB
+            '\bnagkabalaka ko\b',
+            '\bkulba\b',
+            '\bkapoy kaayo\b',
+            '\bbug-at kaayo\b',
+            '\bna[- ]?overwhelm\b',
+            '\bdili ko okay\b',
+            '\bwala koy gana\b',
+        ];
+        foreach ($moderate as $p) {
+            if (preg_match('/' . $p . '/iu', $t)) return 'moderate';
+        }
+
+        return 'low';
+    }
+
+    /**
+     * Build Rasa message metadata (used by actions via tracker.latest_message.metadata).
+     */
+    private function buildRasaMetadata(int $sessionId, string $lang, string $risk): array
+    {
+        return [
+            'lumichat' => [
+                'session_id' => $sessionId,
+                'lang'       => $lang,   // 'en' | 'ceb'
+                'risk'       => $risk,   // 'low' | 'moderate' | 'high'
+                'app'        => 'lumichat-web',
+            ]
+        ];
+    }
+
+    /**
+     * PH-friendly crisis card with a placeholder {APPOINTMENT_LINK}.
+     */
+    private function crisisMessageWithLink(): string
+    {
+        $c   = config('services.crisis');
+        $emg = e($c['emergency_number'] ?? '911');
+        $hn  = e($c['hotline_name'] ?? 'Hopeline PH (24/7)');
+        $hp  = e($c['hotline_phone'] ?? '0917-558-4673 / (02) 804-4673');
+        $ht  = e($c['hotline_text'] ?? 'Text 0917-558-4673');
+        $url = e($c['hotline_url'] ?? 'https://www.facebook.com/HopelinePH/');
+
+        return <<<HTML
+<div class="space-y-2 leading-relaxed">
+  <p class="font-semibold">We’re here to help. / Ania mi para motabang.</p>
+  <ul class="list-disc pl-5 text-sm">
+    <li>If you’re in immediate danger, call <strong>{$emg}</strong>. / Kung emerhensya, tawag sa <strong>{$emg}</strong>.</li>
+    <li>24/7 support: <strong>{$hn}</strong> — call <strong>{$hp}</strong>, {$ht}, or visit
+      <a href="{$url}" target="_blank" rel="noopener" class="underline">{$url}</a>.
+    </li>
+  </ul>
+  <p class="text-sm">You can also book a time with a school counselor: / Pwede pud ka magpa-book sa counselor:</p>
+  <div class="pt-1">{APPOINTMENT_LINK}</div>
+</div>
+HTML;
+    }
+
+    /**
+     * Robust appointment intent detector (EN + Bisaya).
+     */
+    private function wantsAppointment(string $text): bool
+{
+    $t = mb_strtolower($text);
+
+    // Primary flexible patterns
+    $rx = [
+        // schedule/book/appointment ... counselor/therapy/advisor (any words between)
+        '/\b(appoint(?:ment)?|schedule|book|booking|reserve|set\s*an?\s*appointment)\b[\s\S]{0,80}\b(counsel(?:or|ling)|therap(?:ist|y)|advisor)\b/iu',
+        // counselor ... schedule/book/appointment (reverse order)
+        '/\b(counsel(?:or|ling)|therap(?:ist|y)|advisor)\b[\s\S]{0,80}\b(appoint(?:ment)?|schedule|book|booking|reserve|set\s*an?\s*appointment)\b/iu',
+        // common phrasings
+        '/\b(i\s+want|i\'?d\s+like|can\s+i|please)\b[\s\S]{0,40}\b(schedule|book|appointment)\b[\s\S]{0,40}\b(counsel(?:or|ling)|therap(?:ist|y)|advisor)\b/iu',
+        // "see a counselor"
+        '/\bsee\s+(?:a\s+)?counselor\b/iu',
+        // Bisaya
+        '/\b(pa-?schedule|magpa-?iskedyul|mo-?book)\b[\s\S]{0,80}\b(counsel(?:or|ing)?|konselor|tambag|makig[- ]?istorya)\b/iu',
+    ];
+
+    foreach ($rx as $r) {
+        if (preg_match($r, $t)) return true;
+    }
+
+    // Simple token co-occurrence fallback
+    $hasAction = preg_match('/\b(appoint(?:ment)?|schedule|book|booking|reserve)\b/iu', $t);
+    $hasPerson = preg_match('/\b(counsel(?:or|ling)|therap(?:ist|y)|advisor)\b/iu', $t);
+
+    return $hasAction && $hasPerson;
+}
+
+    /* =========================================================================
+     | UI pages
+     * =========================================================================*/
+
     public function index()
     {
-        $counselors = DB::table('tbl_counselors')
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get(['id','name']);
+        $userId = Auth::id();
+        $showGreeting = false;
 
-        return view('appointment.index', compact('counselors'));
+        // Validate currently active session id; clear if stale
+        $activeId = session('chat_session_id');
+        if ($activeId) {
+            $exists = ChatSession::where('id', $activeId)->where('user_id', $userId)->exists();
+            if (!$exists) {
+                session()->forget('chat_session_id');
+                $activeId = null;
+            }
+        }
+
+        // Reuse last session if none active
+        if (!$activeId) {
+            $latest = ChatSession::where('user_id', $userId)->latest('updated_at')->first();
+            if ($latest) {
+                session(['chat_session_id' => $latest->id]);
+                $activeId = $latest->id;
+            }
+        }
+
+        $chats = Chat::where('user_id', $userId)
+            ->when($activeId, fn($q) => $q->where('chat_session_id', $activeId))
+            ->orderBy('sent_at')
+            ->get()
+            ->map(function ($chat) {
+                try { $chat->message = \Illuminate\Support\Facades\Crypt::decryptString($chat->message); }
+                catch (\Throwable $e) { $chat->message = '[Encrypted]'; }
+                return $chat;
+            });
+
+        return view('chat', compact('chats', 'showGreeting'));
     }
 
-    /* Slots (AJAX) */
-    public function slots($counselorId, Request $request)
+    public function newChat(Request $request)
     {
-        $dateStr = (string) $request->query('date', '');
-        if (!$dateStr || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $dateStr)) {
-            return response()->json(['slots'=>[], 'reason'=>'bad_request', 'message'=>'Provide date=YYYY-MM-DD.'], 400);
-        }
-
-        $counselor = DB::table('tbl_counselors')
-            ->where('id', $counselorId)->where('is_active', true)->first();
-
-        if (!$counselor) {
-            return response()->json(['slots'=>[], 'reason'=>'not_found','message'=>'Counselor not found or inactive.'], 404);
-        }
-
-        $date  = Carbon::parse($dateStr)->startOfDay();
-        $today = Carbon::now();
-        $dow   = $date->dayOfWeek; // 0..6
-
-        if ($dow < self::WEEKDAY_MIN || $dow > self::WEEKDAY_MAX) {
-            return response()->json(['slots'=>[], 'reason'=>'weekend', 'message'=>'Counselors are available Monday to Friday only.']);
-        }
-
-        // One appointment per day (per student)
-        $studentId = Auth::id();
-        if ($studentId) {
-            $hasSameDay = DB::table('tbl_appointments')
-                ->where('student_id', $studentId)
-                ->whereDate('scheduled_at', $date->toDateString())
-                ->whereIn('status', self::BLOCKING_STATUSES)
-                ->exists();
-
-            if ($hasSameDay) {
-                return response()->json(['slots'=>[], 'reason'=>'limit_reached', 'message'=>'You already have an appointment on this date.']);
-            }
-        }
-
-        // Availability ranges
-        $ranges = DB::table('tbl_counselor_availabilities')
-            ->where('counselor_id', $counselorId)->where('weekday', $dow)
-            ->orderBy('start_time')->get(['start_time','end_time']);
-
-        if ($ranges->isEmpty()) {
-            return response()->json(['slots'=>[], 'reason'=>'no_availability','message'=>'No counselor availability on that day.']);
-        }
-
-        // Already booked times for counselor
-        $bookedTimes = DB::table('tbl_appointments')
-            ->where('counselor_id', $counselorId)
-            ->whereDate('scheduled_at', $date->toDateString())
-            ->whereIn('status', self::BLOCKING_STATUSES)
-            ->pluck(DB::raw("DATE_FORMAT(scheduled_at, '%H:%i')"))
-            ->all();
-        $booked = array_flip($bookedTimes);
-
-        $slots = [];
-        foreach ($ranges as $r) {
-            $start  = Carbon::parse($date->toDateString().' '.$r->start_time);
-            $end    = Carbon::parse($date->toDateString().' '.$r->end_time);
-            $cursor = $start->copy();
-
-            while ($cursor->lt($end)) {
-                $next = $cursor->copy()->addMinutes(self::STEP_MINUTES);
-                if ($next->gt($end)) break;
-
-                if ($date->isSameDay($today) && $cursor->lte($today)) {
-                    $cursor->addMinutes(self::STEP_MINUTES);
-                    continue;
-                }
-
-                $value = $cursor->format('H:i');
-                if (!isset($booked[$value])) {
-                    $slots[] = ['value'=>$value, 'label'=>$cursor->format('g:i A')];
-                }
-                $cursor->addMinutes(self::STEP_MINUTES);
-            }
-        }
-
-        if (empty($slots)) {
-            return response()->json([
-                'slots'   => [],
-                'reason'  => $bookedTimes ? 'fully_booked' : 'no_slots',
-                'message' => $bookedTimes ? 'All slots are booked for that date.' : 'No available slots within working hours.',
-            ]);
-        }
-
-        usort($slots, fn($a,$b)=>strcmp($a['value'],$b['value']));
-        return response()->json(['slots'=>$slots]);
+        session()->forget('chat_session_id'); // start fresh
+        return redirect()->route('chat.index');
     }
 
-    /* Store booking */
+    /* =========================================================================
+     | Store a user message, call Rasa, risk/booking/crisis logic
+     * =========================================================================*/
     public function store(Request $request)
     {
-        $request->validate([
-            'counselor_id' => 'required|integer|exists:tbl_counselors,id',
-            'date'         => 'required|date_format:Y-m-d',
-            'time'         => 'required|regex:/^\d{2}:\d{2}$/',
-            'consent'      => 'accepted',
-        ], [], ['counselor_id'=>'counselor', 'date'=>'date', 'time'=>'time']);
-
-        $studentId   = Auth::id();
-        $counselorId = (int) $request->counselor_id;
-        $scheduledAt = Carbon::parse($request->date.' '.$request->time);
-        $dow         = $scheduledAt->dayOfWeek;
-
-        if ($dow < self::WEEKDAY_MIN || $dow > self::WEEKDAY_MAX) {
-            return back()->withErrors(['date'=>'Counselors are available Monday to Friday only.'])->withInput();
-        }
-
-        $hasSameDay = DB::table('tbl_appointments')
-            ->where('student_id', $studentId)
-            ->whereDate('scheduled_at', $scheduledAt->toDateString())
-            ->whereIn('status', self::BLOCKING_STATUSES)
-            ->exists();
-        if ($hasSameDay) {
-            return back()->withErrors(['date'=>'You already have an appointment on this date.'])->withInput();
-        }
-
-        if (!$this->isSlotAvailable($counselorId, $scheduledAt)) {
-            return back()->withErrors(['time'=>'Sorry, that time is no longer available.'])->withInput();
-        }
-
-        $duplicate = DB::table('tbl_appointments')
-            ->where('student_id', $studentId)
-            ->where('counselor_id', $counselorId)
-            ->where('scheduled_at', $scheduledAt)
-            ->whereIn('status', self::BLOCKING_STATUSES)
-            ->exists();
-        if ($duplicate) {
-            return back()->withErrors(['time'=>'You already have a booking at that time.'])->withInput();
-        }
-
-        DB::table('tbl_appointments')->insert([
-            'student_id'   => $studentId,
-            'counselor_id' => $counselorId,
-            'scheduled_at' => $scheduledAt,
-            'status'       => 'pending',
-            'created_at'   => now(),
-            'updated_at'   => now(),
+        // --- 1) Strict validation (+ idempotency) ---
+        $validated = $request->validate([
+            'message' => ['required', 'string', 'max:2000', function ($attr, $val, $fail) {
+                // Normalize first
+                $s = is_string($val) ? preg_replace('/\s+/u', ' ', $val) : '';
+                $s = preg_replace('/[\p{Cf}\p{Cc}\x{200B}\x{200C}\x{200D}\x{2060}\x{FEFF}]/u', '', $s ?? ''); // invisible/control
+                if (trim($s) === '') {
+                    return $fail('Message cannot be empty.');
+                }
+                // Reject HTML tags
+                if ($s !== strip_tags($s)) {
+                    return $fail('HTML is not allowed in messages.');
+                }
+            }],
+            // Client sends this (we set it in the view). Ensures idempotency on create.
+            '_idem'  => ['required','uuid','unique:chats,idempotency_key'],
         ]);
 
-        return redirect()->route('appointment.history')->with('status','Appointment booked successfully!');
+        $rawInput = (string) $validated['message'];
+        // Server canonicalization (don’t trust client)
+        $text = preg_replace('/\s+/u', ' ', $rawInput);
+        $text = preg_replace('/[\p{Cf}\p{Cc}\x{200B}\x{200C}\x{200D}\x{2060}\x{FEFF}]/u', '', $text ?? '');
+        $text = trim($text);
+
+        $userId    = Auth::id();
+        $sessionId = session('chat_session_id');
+
+        // --- 2) Session ownership check ---
+        $session = null;
+        if ($sessionId) {
+            $session = ChatSession::where('id', $sessionId)
+                ->where('user_id', $userId)
+                ->first();
+        }
+        if (!$session) {
+            $session = ChatSession::create([
+                'user_id'       => $userId,
+                'topic_summary' => 'Starting conversation...',
+                'is_anonymous'  => 0,
+                'risk_level'    => 'low',
+            ]);
+            session(['chat_session_id' => $session->id]);
+            $this->logActivity('chat_session_created', 'New chat session auto-created', $session->id, [
+                'is_anonymous' => false,
+                'reused'       => false,
+            ]);
+        }
+        $sessionId = $session->id;
+
+        // --- 3) Language + risk detection ---
+        $lang    = $this->inferLanguage($text);
+        $msgRisk = $this->evaluateRiskLevel($text);
+
+        // --- 4) Persist USER message (encrypted) with idempotency ---
+        $userMsg = Chat::create([
+            'user_id'         => $userId,
+            'chat_session_id' => $sessionId,
+            'sender'          => 'user',
+            'message'         => Crypt::encryptString($text),
+            'sent_at'         => now(),
+            'idempotency_key' => $validated['_idem'],
+        ]);
+
+        // Update topic summary on first user message
+        $count = Chat::where('chat_session_id', $sessionId)->where('sender', 'user')->count();
+        if ($count === 1) {
+            preg_match('/\b(sad|depress|help|anxious|angry|lonely|stress|tired|happy|excited|not okay|nagool|kapoy|kulba|nalipay)\b/i', $text, $m);
+            $summary = $m[0] ?? Str::limit($text, 40, '…');
+            $session->update(['topic_summary' => ucfirst($summary)]);
+        }
+
+        // --- 5) Call Rasa ---
+        $rasaUrl   = config('services.rasa.url', env('RASA_URL', 'http://127.0.0.1:5005/webhooks/rest/webhook'));
+        $metadata  = $this->buildRasaMetadata($sessionId, $lang, $msgRisk);
+        $botReplies = [];
+
+        try {
+            $r = Http::timeout(8)
+                ->withHeaders(['Accept' => 'application/json'])
+                ->post($rasaUrl, [
+                    'sender'   => 'u_' . $userId . '_s_' . $sessionId,
+                    'message'  => $text,
+                    'metadata' => $metadata,
+                ]);
+
+            if ($r->ok()) {
+                $payload = $r->json() ?? [];
+                foreach ($payload as $piece) {
+                    if (!empty($piece['text'])) {
+                        $botReplies[] = $piece['text'];
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            $botReplies = [
+                "It’s okay to feel that way. I’m here to listen. Would you like to share more? / Sige ra na, ania ko maminaw. Gusto nimo isulti pa ug dugang?"
+            ];
+        }
+
+        if (empty($botReplies)) {
+            $botReplies = [
+                "I didn’t quite get that, but I’m here to listen. Could you say it another way? / Wala kaayo nako masabti, pero ania ko maminaw. Pwede nimo usbon pagpasabot?"
+            ];
+        }
+
+        // --- 6) Risk elevation + crisis prompt ---
+        $current = $session->risk_level ?: 'low';
+        $order   = ['low' => 0, 'moderate' => 1, 'high' => 2];
+        $new     = ($order[$msgRisk] > $order[$current]) ? $msgRisk : $current;
+        if ($new !== $current) {
+            $session->update(['risk_level' => $new]);
+        }
+        $this->logActivity('risk_detected', "Risk level: {$msgRisk}", $sessionId, [
+            'risk_level'      => $msgRisk,
+            'message_preview' => Str::limit($text, 120),
+        ]);
+
+        $crisisAlreadyShown = session('crisis_prompted_for_session_' . $sessionId, false);
+        if (!$crisisAlreadyShown && $msgRisk === 'high') {
+            session(['crisis_prompted_for_session_' . $sessionId => true]);
+            $this->logActivity('crisis_prompt', 'Crisis resources displayed', $sessionId, null);
+            array_unshift($botReplies, $this->crisisMessageWithLink());
+        }
+
+        // --- 6.5) Inject appointment CTA when user asked to book and Rasa didn't include one ---
+        $askedForAppt = $this->wantsAppointment($text);
+$hasApptLink = false;
+foreach ($botReplies as $rpl) {
+    if (is_string($rpl) && str_contains($rpl, '{APPOINTMENT_LINK}')) { $hasApptLink = true; break; }
+}
+
+if ($askedForAppt && !$hasApptLink) {
+    // bilingual; pickLanguageVariant() will choose later
+    $ctaReply = "You can book a time with a school counselor here: {APPOINTMENT_LINK} / Pwede ka magpa-book sa school counselor dinhi: {APPOINTMENT_LINK}";
+
+    // Put after crisis resources, otherwise at the top
+    if ($msgRisk === 'high') { $botReplies[] = $ctaReply; } else { array_unshift($botReplies, $ctaReply); }
+
+    // Evidence for debugging / audit
+    $this->logActivity('appointment_detected', 'User asked to schedule; CTA injected', $sessionId, [
+        'preview' => Str::limit($text, 120),
+    ]);
+}
+        // --- 7) {APPOINTMENT_LINK} handling + monolingual filter ---
+        // Safer link builder: prefers signed feature route, then appointments.create, then fallback URL.
+        $link = Route::has('features.enable_appointment')
+            ? URL::signedRoute('features.enable_appointment')
+            : (Route::has('appointments.create')
+                ? route('appointments.create')
+                : url('/appointments'));
+
+        $ctaHtml = '<a href="' . e($link) . '" class="mt-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition">Book an appointment</a>';
+
+$botPayload = [];
+foreach ($botReplies as $reply) {
+    // Choose language BEFORE adding the HTML
+    $reply = $this->pickLanguageVariant($reply, $lang);
+
+    if (is_string($reply) && str_contains($reply, '{APPOINTMENT_LINK}')) {
+        $reply = str_replace('{APPOINTMENT_LINK}', $ctaHtml, $reply);
     }
 
-        /* History list */
+    $bot = Chat::create([
+        'user_id'         => $userId,
+        'chat_session_id' => $sessionId,
+        'sender'          => 'bot',
+        'message'         => Crypt::encryptString($reply),
+        'sent_at'         => now(),
+    ]);
+
+    $botPayload[] = [
+        'text'       => $reply,
+        'time_human' => $bot->sent_at->timezone(config('app.timezone'))->format('H:i'),
+        'sent_at'    => $bot->sent_at->toIso8601String(),
+    ];
+}
+
+
+        return response()->json([
+            'user_message' => [
+                'text'       => $text,
+                'time_human' => $userMsg->sent_at->timezone(config('app.timezone'))->format('H:i'),
+                'sent_at'    => $userMsg->sent_at->toIso8601String(),
+            ],
+            'bot_reply' => $botPayload,
+        ]);
+    }
+
+    /* =========================================================================
+     | History utilities
+     * =========================================================================*/
+
     public function history(Request $request)
     {
-        $status = (string) $request->query('status', 'all');
-        $period = (string) ($request->query('period', $request->query('preoid', 'all')));
-        $q      = trim((string) $request->query('q', ''));
+        $q = trim($request->get('q', ''));
 
-        $now = now();
-
-        $query = DB::table('tbl_appointments as a')
-            ->join('tbl_counselors as c', 'c.id', '=', 'a.counselor_id')
-            ->select([
-                'a.id','a.student_id','a.counselor_id','a.scheduled_at','a.status',
-                'c.name as counselor_name','c.email as counselor_email','c.phone as counselor_phone',
-                'a.final_note','a.finalized_at',
-            ])
-            ->where('a.student_id', Auth::id());
-
-        if ($status !== 'all') $query->where('a.status', $status);
-
-        switch ($period) {
-            case 'today':
-                $query->whereDate('a.scheduled_at', $now->toDateString());
-                break;
-            case 'upcoming':
-                $query->where('a.scheduled_at', '>=', $now);
-                break;
-            case 'this_week':
-                $query->whereBetween('a.scheduled_at', [
-                    $now->copy()->startOfWeek(), $now->copy()->endOfWeek()
-                ]);
-                break;
-            case 'this_month':
-                $query->whereBetween('a.scheduled_at', [
-                    $now->copy()->startOfMonth(), $now->copy()->endOfMonth()
-                ]);
-                break;
-            case 'past':
-                $query->where('a.scheduled_at', '<', $now);
-                break;
-            case 'all':
-            default:
-                // no date filter
-                break;
-        }
-
-        if ($q !== '') {
-            $query->where('c.name', 'like', "%{$q}%");
-        }
-
-        $appointments = $query
-            ->orderByDesc('a.scheduled_at')
+        $sessions = ChatSession::with(['chats' => function ($query) {
+                $query->latest('sent_at')->limit(1);
+            }])
+            ->where('user_id', Auth::id())
+            ->when($q !== '', fn($query) => $query->where('topic_summary', 'like', "%{$q}%"))
+            ->orderByDesc('updated_at')
             ->paginate(10)
             ->withQueryString();
 
-        return view('appointment.history', [
-            'appointments' => $appointments,
-            'status'       => $status,
-            'period'       => $period,
-            'q'            => $q,
-        ]);
-    }
-
-    /* Single view */
-    public function show($id)
-    {
-        $userId = Auth::id();
-
-        $appointment = DB::table('tbl_appointments as a')
-            ->join('tbl_counselors as c', 'c.id', '=', 'a.counselor_id')
-            ->select(
-                'a.*',
-                'c.name  as counselor_name',
-                'c.email as counselor_email',
-                'c.phone as counselor_phone'
-            )
-            ->where('a.id', $id)
-            ->where('a.student_id', $userId) // only owner can view
-            ->first();
-
-        abort_unless($appointment, 404);
-
-        return view('appointment.show', compact('appointment'));
-    }
-
-    /* Helpers */
-    private function isSlotAvailable(int $counselorId, Carbon $scheduledAt): bool
-    {
-        $date = $scheduledAt->copy()->startOfDay();
-        $dow  = $date->dayOfWeek;
-
-        // Mon–Fri only
-        if ($dow < self::WEEKDAY_MIN || $dow > self::WEEKDAY_MAX) return false;
-
-        // Must fit in counselor availability
-        $ranges = DB::table('tbl_counselor_availabilities')
-            ->where('counselor_id', $counselorId)
-            ->where('weekday', $dow)
-            ->get(['start_time','end_time']);
-
-        $fitsRange = false;
-        foreach ($ranges as $r) {
-            $start = Carbon::parse($date->toDateString().' '.$r->start_time);
-            $end   = Carbon::parse($date->toDateString().' '.$r->end_time);
-            $endOfSlot = $scheduledAt->copy()->addMinutes(self::STEP_MINUTES);
-
-            if ($scheduledAt->gte($start) && $endOfSlot->lte($end)) {
-                $fitsRange = true;
-                break;
+        foreach ($sessions as $session) {
+            foreach ($session->chats as $chat) {
+                try {
+                    $chat->message = Crypt::decryptString($chat->message);
+                } catch (\Throwable $e) {
+                    $chat->message = '[Unreadable]';
+                }
             }
         }
-        if (!$fitsRange) return false;
 
-        // Not past
-        if ($scheduledAt->lte(now())) return false;
-
-        // Not already taken
-        $conflict = DB::table('tbl_appointments')
-            ->where('counselor_id', $counselorId)
-            ->where('scheduled_at', $scheduledAt)
-            ->whereIn('status', self::BLOCKING_STATUSES)
-            ->exists();
-
-        return !$conflict;
+        return view('chat-history', compact('sessions', 'q'));
     }
 
-    /* Cancel (student) */
-    public function cancel($id, Request $request)
+    public function viewSession($id)
     {
-        $userId = Auth::id();
+        $session = ChatSession::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
 
-        $ap = DB::table('tbl_appointments')
-            ->where('id', $id)
-            ->where('student_id', $userId)
-            ->first();
+        $messages = Chat::where('chat_session_id', $id)
+            ->where('user_id', Auth::id())
+            ->orderBy('sent_at')
+            ->get()
+            ->map(function ($c) {
+                try {
+                    $c->message = Crypt::decryptString($c->message);
+                } catch (\Throwable $e) {
+                    $c->message = '[Unreadable]';
+                }
+                return $c;
+            });
 
-        if (!$ap) {
-            return back()->withErrors(['error' => 'Appointment not found.']);
+        return view('chat-view', compact('session', 'messages'));
+    }
+
+    public function deleteSession($id)
+    {
+        ChatSession::where('id', $id)->where('user_id', Auth::id())->delete();
+
+        // Clear active browser session if it matches the deleted one
+        if ((int) session('chat_session_id') === (int) $id) {
+            session()->forget('chat_session_id');
         }
 
-        // Only pending + future can be canceled
-        if ($ap->status !== 'pending') {
-            return back()->withErrors(['error' => 'Only pending appointments can be canceled.']);
-        }
+        return redirect()->route('chat.history')->with('status', 'Session deleted');
+    }
 
-        $now   = now();
-        $start = \Carbon\Carbon::parse($ap->scheduled_at);
-        if ($start->lte($now)) {
-            return back()->withErrors(['error' => 'This appointment has already started/passed and cannot be canceled.']);
-        }
+    public function bulkDelete(Request $request)
+    {
+        $ids = array_filter(array_map('intval', explode(',', (string)$request->input('ids', ''))));
+        if (!empty($ids)) {
+            ChatSession::where('user_id', Auth::id())
+                ->whereIn('id', $ids)
+                ->delete();
 
-        DB::table('tbl_appointments')
-            ->where('id', $ap->id)
-            ->update([
-                'status'     => 'canceled',
-                'updated_at' => now(),
+            // Clear if the active one was among those deleted
+            if (in_array((int) session('chat_session_id'), $ids, true)) {
+                session()->forget('chat_session_id');
+            }
+        }
+        return redirect()->route('chat.history')->with('status', 'Selected sessions deleted');
+    }
+
+    public function activate($id)
+    {
+        $session = ChatSession::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+        session(['chat_session_id' => $session->id]);
+        $session->touch();
+        return redirect()->route('chat.index')->with('status', 'session-activated');
+    }
+
+    /* =========================================================================
+     | Activity logger
+     * =========================================================================*/
+    private function logActivity(string $event, string $description, int $sessionId, ?array $meta = null): void
+    {
+        try {
+            ActivityLog::create([
+                'event'        => $event,
+                'description'  => $description,
+                'actor_id'     => Auth::id(),
+                'subject_type' => ChatSession::class,
+                'subject_id'   => $sessionId,
+                'meta'         => $meta,
             ]);
-
-        return redirect()->route('appointment.history')->with('status', 'Appointment canceled.');
+        } catch (\Throwable $e) {
+            // best-effort only
+        }
     }
 }
