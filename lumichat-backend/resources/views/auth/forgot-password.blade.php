@@ -1,5 +1,6 @@
+{{-- resources/views/auth/forgot-password.blade.php --}}
 <x-guest-layout logo-path="images/icons/forget-password.png" logo-alt="Forgot Password">
-    {{-- Back to login (single location, predictable) --}}
+    {{-- Back to login --}}
     <div class="max-w-md mx-auto w-full mt-6">
         <a href="{{ route('login') }}"
            class="inline-flex items-center text-sm text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white"
@@ -12,7 +13,7 @@
     </div>
 
     <div class="max-w-md mx-auto w-full mt-3 bg-white dark:bg-gray-800 rounded-2xl shadow p-6">
-        {{-- Title + purpose (recognition over recall) --}}
+        {{-- Header --}}
         <div class="flex items-start gap-3 mb-4">
             <div class="p-2 rounded-lg bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300">
                 <svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -29,22 +30,35 @@
             </div>
         </div>
 
-        {{-- Clear feedback (status lives here) --}}
+        {{-- Neutral success banner --}}
         @if (session('status'))
             <div role="status" aria-live="polite"
                  class="mb-4 rounded-md border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700
                         dark:border-green-800 dark:bg-green-900/20 dark:text-green-300">
-                {{ __('If your email exists, we sent a reset link.') }}
+                {{ session('status') }}
             </div>
         @endif
 
         <form method="POST" action="{{ route('password.email') }}" novalidate>
             @csrf
 
-            {{-- Email field (minimal friction, strong affordance) --}}
+            {{-- HP-MARKER: Honeypot (keep single input, guaranteed in DOM, off-screen) --}}
+            <input
+              type="text"
+              name="website"
+              id="website"
+              autocomplete="off"
+              tabindex="-1"
+              aria-hidden="true"
+              style="position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden;"
+            />
+
+            {{-- Minimum dwell-time timestamp --}}
+            <input type="hidden" name="fp_ts" value="{{ now()->timestamp }}">
+
+            {{-- Email --}}
             <div>
                 <x-input-label for="email" :value="__('Email')" />
-                @php $emailError = $errors->first('email'); @endphp
                 <x-text-input
                     id="email"
                     class="block mt-1 w-full"
@@ -58,21 +72,17 @@
                     spellcheck="false"
                     inputmode="email"
                     maxlength="191"
-                    aria-describedby="{{ $emailError ? 'email-help email-error' : 'email-help' }}"
-                    aria-invalid="{{ $emailError ? 'true' : 'false' }}"
                 />
-                <p id="email-help" class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                    {{ __('We’ll never display whether an address exists this protects your account.') }}
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    {{ __('We’ll never display whether an address exists—this protects your account.') }}
                 </p>
-                <x-input-error :messages="$errors->get('email')" class="mt-2" id="email-error"/>
+                <x-input-error :messages="$errors->get('email')" class="mt-2" />
             </div>
 
-            {{-- Subtle guidance (visibility of system status) --}}
             <p class="mt-4 text-xs text-gray-500 dark:text-gray-400">
-                {{ __('Reset links expire in ~20 minutes. Check Spam/Promotions if you don’t see it.') }}
+                {{ __('Reset links expire in about 20 minutes. Please check Spam/Promotions.') }}
             </p>
 
-            {{-- Primary action (single, prominent) --}}
             <div class="mt-6">
                 <x-primary-button class="w-full justify-center">
                     {{ __('Email Password Reset Link') }}
@@ -80,4 +90,32 @@
             </div>
         </form>
     </div>
+
+    {{-- Safety net: re-add honeypot if missing; make Enter submit --}}
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form  = document.querySelector('form[action="{{ route('password.email') }}"]');
+      if (form && !form.querySelector('input[name="website"]')) {
+        const hp = document.createElement('input');
+        hp.type = 'text';
+        hp.name = 'website';
+        hp.id = 'website';
+        hp.autocomplete = 'off';
+        hp.tabIndex = -1;
+        hp.setAttribute('aria-hidden','true');
+        hp.style.cssText = 'position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden;';
+        form.prepend(hp);
+      }
+      const email = document.getElementById('email');
+      if (form && email) {
+        email.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            if (form.requestSubmit) form.requestSubmit();
+            else form.submit();
+          }
+        });
+      }
+    });
+    </script>
 </x-guest-layout>
