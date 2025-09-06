@@ -9,13 +9,16 @@ class Chat extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'user_id',
-        'chat_session_id',
-        'sender',
-        'message',
-        'sent_at',
-    ];
+   protected $fillable = [
+    'user_id',
+    'chat_session_id',
+    'sender',
+    'message',
+    'sent_at',
+    'idempotency_key', // ← add
+];
+
+
 
     public $timestamps = false;
 

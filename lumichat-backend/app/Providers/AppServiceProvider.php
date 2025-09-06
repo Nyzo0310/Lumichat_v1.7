@@ -8,6 +8,9 @@ use App\Models\User;
 use App\Models\ChatSession;
 use App\Models\Appointment;
 use Illuminate\Support\Str;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Http\Request;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -15,6 +18,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+         RateLimiter::for('chat-send', function (Request $request) {
+        $key = optional($request->user())->id ?? $request->ip();
+        return [ Limit::perMinute(20)->by($key) ];
+    });
         // when a user registers
         User::created(function (User $user) {
             ActivityLog::create([

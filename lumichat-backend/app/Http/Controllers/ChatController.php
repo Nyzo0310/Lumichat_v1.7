@@ -217,149 +217,168 @@ HTML;
     /* =========================================================================
      | Store a user message, call Rasa, risk/booking/crisis logic
      * =========================================================================*/
-    public function store(Request $request)
-    {
-        $request->validate(['message' => 'required|string']);
-
-        $userId    = Auth::id();
-        $sessionId = session('chat_session_id');
-
-        // Verify session exists & belongs to user; recreate if stale/missing
-        $session = null;
-        if ($sessionId) {
-            $session = ChatSession::where('id', $sessionId)
-                ->where('user_id', $userId)
-                ->first();
-        }
-        if (!$session) {
-            $session = ChatSession::create([
-                'user_id'       => $userId,
-                'topic_summary' => 'Starting conversation...',
-                'is_anonymous'  => 0,
-                'risk_level'    => 'low',
-            ]);
-            session(['chat_session_id' => $session->id]);
-            $this->logActivity('chat_session_created', 'New chat session auto-created', $session->id, [
-                'is_anonymous' => false,
-                'reused'       => false,
-            ]);
-        }
-        $sessionId = $session->id;
-
-        $text   = (string) $request->message;
-        $lang   = $this->inferLanguage($text);
-        $msgRisk = $this->evaluateRiskLevel($text);
-
-        // Save USER message (encrypted)
-        $userMsg = Chat::create([
-            'user_id'         => $userId,
-            'chat_session_id' => $sessionId,
-            'sender'          => 'user',
-            'message'         => Crypt::encryptString($text),
-            'sent_at'         => now(),
-        ]);
-
-        // Update topic summary on first user message
-        $count = Chat::where('chat_session_id', $sessionId)->where('sender', 'user')->count();
-        if ($count === 1) {
-            preg_match('/\b(sad|depress|help|anxious|angry|lonely|stress|tired|happy|excited|not okay|nagool|kapoy|kulba|nalipay)\b/i', $text, $m);
-            $summary = $m[0] ?? Str::limit($text, 40, '…');
-            $session->update(['topic_summary' => ucfirst($summary)]);
-        }
-
-        // Send to Rasa with metadata
-        $rasaUrl  = config('services.rasa.url', env('RASA_URL', 'http://127.0.0.1:5005/webhooks/rest/webhook'));
-        $metadata = $this->buildRasaMetadata($sessionId, $lang, $msgRisk);
-        $botReplies = [];
-
-        try {
-            $r = Http::timeout(8)
-                ->withHeaders(['Accept' => 'application/json'])
-                ->post($rasaUrl, [
-                    'sender'   => 'u_' . $userId . '_s_' . $sessionId,
-                    'message'  => $text,
-                    'metadata' => $metadata,
-                ]);
-
-            if ($r->ok()) {
-                $payload = $r->json() ?? [];
-                foreach ($payload as $piece) {
-                    if (!empty($piece['text'])) {
-                        $botReplies[] = $piece['text'];
-                    }
-                }
+public function store(Request $request)
+{
+    // --- 1) Strict validation (+ idempotency) ---
+    $validated = $request->validate([
+        'message' => ['required', 'string', 'max:2000', function ($attr, $val, $fail) {
+            // Normalize first
+            $s = is_string($val) ? preg_replace('/\s+/u', ' ', $val) : '';
+            $s = preg_replace('/[\p{Cf}\p{Cc}\x{200B}\x{200C}\x{200D}\x{2060}\x{FEFF}]/u', '', $s ?? ''); // invisible/control
+            if (trim($s) === '') {
+                return $fail('Message cannot be empty.');
             }
-        } catch (\Throwable $e) {
-            // Network/timeout fallback (bilingual; filtered later)
-            $botReplies = [
-                "It’s okay to feel that way. I’m here to listen. Would you like to share more? / Sige ra na, ania ko maminaw. Gusto nimo isulti pa ug dugang?"
-            ];
-        }
-
-        if (empty($botReplies)) {
-            $botReplies = [
-                "I didn’t quite get that, but I’m here to listen. Could you say it another way? / Wala kaayo nako masabti, pero ania ko maminaw. Pwede nimo usbon pagpasabot?"
-            ];
-        }
-
-        // Update session risk if needed
-        $current = $session->risk_level ?: 'low';
-        $order   = ['low' => 0, 'moderate' => 1, 'high' => 2];
-        $new     = ($order[$msgRisk] > $order[$current]) ? $msgRisk : $current;
-        if ($new !== $current) {
-            $session->update(['risk_level' => $new]);
-        }
-        $this->logActivity('risk_detected', "Risk level: {$msgRisk}", $sessionId, [
-            'risk_level'      => $msgRisk,
-            'message_preview' => Str::limit($text, 120),
-        ]);
-
-        // Crisis block (once per session)
-        $crisisAlreadyShown = session('crisis_prompted_for_session_' . $sessionId, false);
-        if (!$crisisAlreadyShown && $msgRisk === 'high') {
-            session(['crisis_prompted_for_session_' . $sessionId => true]);
-            $this->logActivity('crisis_prompt', 'Crisis resources displayed', $sessionId, null);
-            array_unshift($botReplies, $this->crisisMessageWithLink());
-        }
-
-        // Build signed link (feature gate) for {APPOINTMENT_LINK}
-        $signed  = URL::signedRoute('features.enable_appointment');
-        $ctaHtml = '<a href="' . $signed . '" class="mt-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition">Book an appointment</a>';
-
-        // Save BOT replies (encrypted) — enforce monolingual output
-        $botPayload = [];
-        foreach ($botReplies as $reply) {
-            if (is_string($reply) && str_contains($reply, '{APPOINTMENT_LINK}')) {
-                $reply = str_replace('{APPOINTMENT_LINK}', $ctaHtml, $reply);
+            // Reject HTML tags
+            if ($s !== strip_tags($s)) {
+                return $fail('HTML is not allowed in messages.');
             }
+        }],
+        // Client sends this (we set it in the view). Ensures idempotency on create.
+        '_idem'  => ['required','uuid','unique:chats,idempotency_key'],
+    ]);
 
-            // Monolingual filter
-            $reply = $this->pickLanguageVariant($reply, $lang);
+    $rawInput = (string) $validated['message'];
+    // Server canonicalization (don’t trust client)
+    $text = preg_replace('/\s+/u', ' ', $rawInput);
+    $text = preg_replace('/[\p{Cf}\p{Cc}\x{200B}\x{200C}\x{200D}\x{2060}\x{FEFF}]/u', '', $text ?? '');
+    $text = trim($text);
 
-            $bot = Chat::create([
-                'user_id'         => $userId,
-                'chat_session_id' => $sessionId,
-                'sender'          => 'bot',
-                'message'         => Crypt::encryptString($reply),
-                'sent_at'         => now(),
-            ]);
+    $userId    = Auth::id();
+    $sessionId = session('chat_session_id');
 
-            $botPayload[] = [
-                'text'       => $reply,
-                'time_human' => $bot->sent_at->timezone(config('app.timezone'))->format('H:i'),
-                'sent_at'    => $bot->sent_at->toIso8601String(),
-            ];
-        }
-
-        return response()->json([
-            'user_message' => [
-                'text'       => $text,
-                'time_human' => $userMsg->sent_at->timezone(config('app.timezone'))->format('H:i'),
-                'sent_at'    => $userMsg->sent_at->toIso8601String(),
-            ],
-            'bot_reply' => $botPayload,
+    // --- 2) Session ownership check (yours, kept) ---
+    $session = null;
+    if ($sessionId) {
+        $session = ChatSession::where('id', $sessionId)
+            ->where('user_id', $userId)
+            ->first();
+    }
+    if (!$session) {
+        $session = ChatSession::create([
+            'user_id'       => $userId,
+            'topic_summary' => 'Starting conversation...',
+            'is_anonymous'  => 0,
+            'risk_level'    => 'low',
+        ]);
+        session(['chat_session_id' => $session->id]);
+        $this->logActivity('chat_session_created', 'New chat session auto-created', $session->id, [
+            'is_anonymous' => false,
+            'reused'       => false,
         ]);
     }
+    $sessionId = $session->id;
+
+    // --- 3) Language + risk detection (yours, kept) ---
+    $lang    = $this->inferLanguage($text);
+    $msgRisk = $this->evaluateRiskLevel($text);
+
+    // --- 4) Persist USER message (encrypted) with idempotency ---
+    $userMsg = Chat::create([
+        'user_id'         => $userId,
+        'chat_session_id' => $sessionId,
+        'sender'          => 'user',
+        'message'         => Crypt::encryptString($text),
+        'sent_at'         => now(),
+        'idempotency_key' => $validated['_idem'], // <— NEW
+    ]);
+
+    // Update topic summary on first user message (yours, kept)
+    $count = Chat::where('chat_session_id', $sessionId)->where('sender', 'user')->count();
+    if ($count === 1) {
+        preg_match('/\b(sad|depress|help|anxious|angry|lonely|stress|tired|happy|excited|not okay|nagool|kapoy|kulba|nalipay)\b/i', $text, $m);
+        $summary = $m[0] ?? Str::limit($text, 40, '…');
+        $session->update(['topic_summary' => ucfirst($summary)]);
+    }
+
+    // --- 5) Call Rasa (yours, kept) ---
+    $rasaUrl   = config('services.rasa.url', env('RASA_URL', 'http://127.0.0.1:5005/webhooks/rest/webhook'));
+    $metadata  = $this->buildRasaMetadata($sessionId, $lang, $msgRisk);
+    $botReplies = [];
+
+    try {
+        $r = Http::timeout(8)
+            ->withHeaders(['Accept' => 'application/json'])
+            ->post($rasaUrl, [
+                'sender'   => 'u_' . $userId . '_s_' . $sessionId,
+                'message'  => $text,
+                'metadata' => $metadata,
+            ]);
+
+        if ($r->ok()) {
+            $payload = $r->json() ?? [];
+            foreach ($payload as $piece) {
+                if (!empty($piece['text'])) {
+                    $botReplies[] = $piece['text'];
+                }
+            }
+        }
+    } catch (\Throwable $e) {
+        $botReplies = [
+            "It’s okay to feel that way. I’m here to listen. Would you like to share more? / Sige ra na, ania ko maminaw. Gusto nimo isulti pa ug dugang?"
+        ];
+    }
+
+    if (empty($botReplies)) {
+        $botReplies = [
+            "I didn’t quite get that, but I’m here to listen. Could you say it another way? / Wala kaayo nako masabti, pero ania ko maminaw. Pwede nimo usbon pagpasabot?"
+        ];
+    }
+
+    // --- 6) Risk elevation + crisis prompt (yours, kept) ---
+    $current = $session->risk_level ?: 'low';
+    $order   = ['low' => 0, 'moderate' => 1, 'high' => 2];
+    $new     = ($order[$msgRisk] > $order[$current]) ? $msgRisk : $current;
+    if ($new !== $current) {
+        $session->update(['risk_level' => $new]);
+    }
+    $this->logActivity('risk_detected', "Risk level: {$msgRisk}", $sessionId, [
+        'risk_level'      => $msgRisk,
+        'message_preview' => Str::limit($text, 120),
+    ]);
+
+    $crisisAlreadyShown = session('crisis_prompted_for_session_' . $sessionId, false);
+    if (!$crisisAlreadyShown && $msgRisk === 'high') {
+        session(['crisis_prompted_for_session_' . $sessionId => true]);
+        $this->logActivity('crisis_prompt', 'Crisis resources displayed', $sessionId, null);
+        array_unshift($botReplies, $this->crisisMessageWithLink());
+    }
+
+    // --- 7) {APPOINTMENT_LINK} handling + monolingual filter (yours, kept) ---
+    $signed  = URL::signedRoute('features.enable_appointment');
+    $ctaHtml = '<a href="' . e($signed) . '" class="mt-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition">Book an appointment</a>';
+
+    $botPayload = [];
+    foreach ($botReplies as $reply) {
+        if (is_string($reply) && str_contains($reply, '{APPOINTMENT_LINK}')) {
+            $reply = str_replace('{APPOINTMENT_LINK}', $ctaHtml, $reply);
+        }
+        $reply = $this->pickLanguageVariant($reply, $lang);
+
+        $bot = Chat::create([
+            'user_id'         => $userId,
+            'chat_session_id' => $sessionId,
+            'sender'          => 'bot',
+            'message'         => Crypt::encryptString($reply),
+            'sent_at'         => now(),
+            // no idempotency for bot rows
+        ]);
+
+        $botPayload[] = [
+            'text'       => $reply,
+            'time_human' => $bot->sent_at->timezone(config('app.timezone'))->format('H:i'),
+            'sent_at'    => $bot->sent_at->toIso8601String(),
+        ];
+    }
+
+    return response()->json([
+        'user_message' => [
+            'text'       => $text,
+            'time_human' => $userMsg->sent_at->timezone(config('app.timezone'))->format('H:i'),
+            'sent_at'    => $userMsg->sent_at->toIso8601String(),
+        ],
+        'bot_reply' => $botPayload,
+    ]);
+}
 
     /* =========================================================================
      | History utilities

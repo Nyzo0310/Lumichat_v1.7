@@ -24,7 +24,8 @@
           <div class="inline-block max-w-xs px-4 py-2 rounded-2xl text-sm
                       {{ $mine ? 'bubble-user animate__animated animate__zoomIn'
                                : 'bubble-ai animate__animated animate__fadeIn' }}">
-            {!! $mine ? e($chat->message) : $chat->message !!}
+            {{-- Sanitize/escape on render for BOTH sides --}}
+            {{ $chat->message }}
           </div>
           <div class="text-[10px] text-gray-400 dark:text-gray-500 mt-1">
             {{ \Carbon\Carbon::parse($chat->sent_at)->format('H:i') }}
@@ -35,14 +36,20 @@
 
     <form id="chat-form" class="flex items-center gap-2 px-4 py-3 border-t bg-white dark:bg-gray-800 dark:border-gray-700">
       @csrf
+      <input type="hidden" id="idem" name="_idem" value="{{ (string) \Illuminate\Support\Str::uuid() }}">
       <div class="group flex-1 flex items-center rounded-full bg-white dark:bg-gray-800
                   ring-1 ring-indigo-200 dark:ring-gray-700 focus-within:ring-2 focus-within:ring-indigo-400
                   transition shadow-sm">
-        <input id="chat-message" name="message"
-               class="flex-1 px-4 py-2 rounded-l-full input-dynamic !bg-transparent !border-0
-                      placeholder:text-gray-400 dark:placeholder-gray-500"
-               placeholder="Type your message..." autocomplete="off" required>
-        <button type="submit" class="btn-primary m-1 rounded-full px-5 py-2">
+        {{-- Use a textarea for long messages; enforce 2,000 max --}}
+        <textarea id="chat-message" name="message" maxlength="2000" rows="1"
+  enterkeyhint="send"
+  class="flex-1 px-4 py-2 rounded-l-full input-dynamic !bg-transparent !border-0
+         placeholder:text-gray-400 dark:placeholder-gray-500 resize-none"
+  placeholder="Type your message..." autocomplete="off" required></textarea>
+
+        <div class="text-[11px] text-gray-400 mr-2" id="char-counter">0/2000</div>
+
+        <button type="submit" class="btn-primary m-1 rounded-full px-5 py-2" id="sendBtn" disabled>
           Send
         </button>
       </div>
@@ -61,11 +68,95 @@ document.addEventListener("DOMContentLoaded", () => {
   const messages = document.getElementById('chat-messages');
   const form     = document.getElementById('chat-form');
   const input    = document.getElementById('chat-message');
+  const counter  = document.getElementById('char-counter');
+  const sendBtn  = document.getElementById('sendBtn');
+  const idemEl   = document.getElementById('idem');
 
   const STORE_URL = @json(route('chat.store'));
 
+  const INVISIBLE_RE = /[\u200B\u200C\u200D\u2060\uFEFF]/g; // zero-width, word-joiner, no-break
+  const URL_RE = /(https?:\/\/[^\s<>"']+)/gi;
+
   function scrollToBottom() {
     messages.scrollTop = messages.scrollHeight;
+  }
+
+  function sanitizeClientSide(raw) {
+    // Trim, collapse whitespace, remove zero-width/invisible chars
+    let s = (raw || '').replace(INVISIBLE_RE, '');
+    s = s.replace(/\s+/g, ' ').trim();
+    return s;
+  }
+
+  function linkifyText(text) {
+    // Turn plain http(s) URLs into anchors
+    return String(text).replace(URL_RE, (m) => {
+      const href = m;
+      return `<a href="${href}" target="_blank" rel="noopener noreferrer">${href}</a>`;
+    });
+  }
+
+  function sanitizeBotHtml(html) {
+    // Allow only <a> (href|target|rel|class) and <br>; strip everything else to text
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+
+    const walk = (node) => {
+      for (const child of Array.from(node.childNodes)) {
+        if (child.nodeType === Node.ELEMENT_NODE) {
+          const tag = child.tagName.toLowerCase();
+          if (tag === 'a') {
+            // href must be http(s)
+            const href = child.getAttribute('href') || '';
+            if (!/^https?:\/\//i.test(href)) {
+              // replace the whole element with its text
+              child.replaceWith(document.createTextNode(child.textContent));
+              continue;
+            }
+            child.setAttribute('target', '_blank');
+            child.setAttribute('rel', 'noopener noreferrer');
+            // Keep only href/target/rel/class
+            for (const attr of Array.from(child.attributes)) {
+              const n = attr.name.toLowerCase();
+              if (!['href','target','rel','class'].includes(n)) {
+                child.removeAttribute(attr.name);
+              }
+            }
+            // Recurse into <a>
+            walk(child);
+          } else if (tag === 'br') {
+            // allow <br> as-is
+            continue;
+          } else {
+            // Replace disallowed tags with their text content
+            const textNode = document.createTextNode(child.textContent);
+            child.replaceWith(textNode);
+          }
+        } else if (child.nodeType === Node.DOCUMENT_TYPE_NODE) {
+          child.remove();
+        } else if (child.nodeType === Node.COMMENT_NODE) {
+          child.remove();
+        }
+      }
+    };
+
+    walk(tmp);
+    return tmp.innerHTML;
+  }
+
+  function renderBotContent(textOrHtml) {
+    // If it contains angle brackets, treat as HTML and sanitize; otherwise linkify plain text.
+    if (/[<>]/.test(textOrHtml)) {
+      return sanitizeBotHtml(textOrHtml);
+    }
+    return sanitizeBotHtml(linkifyText(textOrHtml));
+  }
+
+  function updateCounter() {
+    const val = input.value || '';
+    counter.textContent = `${val.length}/2000`;
+    // Disable when empty/whitespace-only after sanitize
+    sendBtn.disabled = sanitizeClientSide(val).length === 0;
   }
 
   function appendUserBubble(text, time = '') {
@@ -80,15 +171,24 @@ document.addEventListener("DOMContentLoaded", () => {
     return messages.lastElementChild.querySelector('.msg-time');
   }
 
-  function appendBotBubble(html, time = '') {
+  function appendBotBubble(textOrHtml, time = '') {
     messages.insertAdjacentHTML('beforeend', `
       <div class="self-start animate__animated animate__fadeIn">
         <div class="inline-block bubble-ai px-4 py-2 rounded-2xl max-w-xs"></div>
         <div class="text-[10px] text-gray-400 dark:text-gray-500 mt-1">${time}</div>
       </div>
     `);
-    messages.lastElementChild.querySelector('.bubble-ai').innerHTML = html;
+    const el = messages.lastElementChild.querySelector('.bubble-ai');
+    el.innerHTML = renderBotContent(textOrHtml);
     scrollToBottom();
+  }
+
+  function linkifyExistingBotBubbles() {
+    // For history rendered from Blade as plain text, make URLs clickable
+    document.querySelectorAll('#chat-messages .bubble-ai').forEach(el => {
+      const txt = el.textContent || '';
+      el.innerHTML = renderBotContent(txt);
+    });
   }
 
   function appendWarnBubble(text) {
@@ -104,12 +204,20 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function sendMessage(text) {
-    if (!text.trim()) return;
+    const cleaned = sanitizeClientSide(text);
+    if (!cleaned) return;
 
     // show user bubble immediately
-    const timeEl = appendUserBubble(text, '');
+    const timeEl = appendUserBubble(cleaned, '');
+
+    // optimistic disable (double-click protection); a fresh idempotency key per send
+    sendBtn.disabled = true;
 
     try {
+      // rotate idempotency key per request
+      const idem = crypto.randomUUID ? crypto.randomUUID() : (Date.now()+'-'+Math.random().toString(16).slice(2));
+      idemEl.value = idem;
+
       const res = await fetch(STORE_URL, {
         method: 'POST',
         headers: {
@@ -117,10 +225,9 @@ document.addEventListener("DOMContentLoaded", () => {
           'Accept': 'application/json',
           'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
         },
-        body: JSON.stringify({ message: text })
+        body: JSON.stringify({ message: cleaned, _idem: idem })
       });
 
-      // If Laravel returns an HTML error page, avoid JSON.parse crash
       const ct = res.headers.get('content-type') || '';
       if (!ct.includes('application/json')) {
         appendWarnBubble('No reply from LumiCHAT Assistant.');
@@ -136,9 +243,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (Array.isArray(data?.bot_reply) && data.bot_reply.length > 0) {
         for (const r of data.bot_reply) {
-          const botText = typeof r === 'string' ? r : (r?.text ?? '');
-          const botTime = typeof r === 'object' ? (r?.time_human ?? '') : '';
-          if (botText) appendBotBubble(botText, botTime);
+          const txt = typeof r === 'string' ? r : (r?.text ?? '');
+          const t = typeof r === 'object' ? (r?.time_human ?? '') : '';
+          if (txt) appendBotBubble(txt, t);
         }
       } else {
         appendWarnBubble('No reply from LumiCHAT Assistant.');
@@ -146,18 +253,67 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (err) {
       appendWarnBubble('No reply from LumiCHAT Assistant.');
       console.error('POST /chat failed', err);
+    } finally {
+      sendBtn.disabled = false;
+      input.focus();
+      updateCounter();
     }
   }
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const txt = input.value.trim();
-    if (!txt) return;
-    input.value = '';
-    await sendMessage(txt);
+  // --- Enter to send (Shift+Enter inserts newline; IME-safe) ---
+  input.addEventListener('keydown', (e) => {
+    if (e.isComposing) return; // respect IME composition
+    if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      e.preventDefault(); // don't insert newline
+      const raw = input.value;
+      const cleaned = sanitizeClientSide(raw);
+      if (!cleaned) return;
+      input.value = '';      // clear box immediately
+      updateCounter();
+      sendMessage(cleaned);  // fire
+    }
   });
 
-  // Keep scrolled to bottom on load (useful when there’s history)
+  // --- Robust paste (sanitize, enforce maxlength, insert at caret) ---
+  input.addEventListener('paste', (e) => {
+    const cd = e.clipboardData || window.clipboardData;
+    if (!cd) return; // fallback to default behavior
+    e.preventDefault();
+
+    const clip = cd.getData('text');
+    if (clip == null) return;
+
+    // Remove invisible chars, keep user newlines for editing
+    const sanitized = String(clip).replace(INVISIBLE_RE, '');
+
+    const start = input.selectionStart ?? input.value.length;
+    const end   = input.selectionEnd   ?? input.value.length;
+    const before = input.value.slice(0, start);
+    const after  = input.value.slice(end);
+
+    const max = parseInt(input.getAttribute('maxlength') || '0', 10) || Infinity;
+    const remaining = Math.max(0, max - (before.length + after.length));
+    const toInsert = sanitized.slice(0, remaining);
+
+    input.value = before + toInsert + after;
+
+    const caret = start + toInsert.length;
+    input.setSelectionRange?.(caret, caret);
+
+    updateCounter();
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const raw = input.value;
+    input.value = '';
+    updateCounter();
+    await sendMessage(raw);
+  });
+
+  input.addEventListener('input', updateCounter);
+  updateCounter();
+  linkifyExistingBotBubbles(); // make existing bot bubbles clickable
   scrollToBottom();
 });
 </script>

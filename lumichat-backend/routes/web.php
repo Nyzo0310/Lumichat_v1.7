@@ -42,11 +42,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/chat',                 [ChatController::class, 'index'])->name('chat.index');
     Route::get('/chat/new',             [ChatController::class, 'newChat'])->name('chat.new');
     Route::get('/chat/history',         [ChatController::class, 'history'])->name('chat.history');
-    Route::post('/chat',                [ChatController::class, 'store'])->name('chat.store');
+    Route::post('/chat',                [ChatController::class, 'store'])
+         ->middleware('throttle:chat-send')   // ← add this
+         ->name('chat.store');
     Route::get('/chat/view/{id}',       [ChatController::class, 'viewSession'])->name('chat.view');
     Route::delete('/chat/session/{id}', [ChatController::class, 'deleteSession'])->name('chat.deleteSession');
     Route::delete('/chat/bulk-delete',  [ChatController::class, 'bulkDelete'])->name('chat.bulkDelete');
     Route::post('/chat/activate/{id}',  [ChatController::class, 'activate'])->name('chat.activate');
+
+
 
     // Profile
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
