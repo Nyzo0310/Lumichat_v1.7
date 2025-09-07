@@ -55,7 +55,7 @@
       $mainLinks = [
         'Home'         => ['chat.index',    'home.png'],
         'Profile'      => ['profile.edit',  'user.png'],
-        'Appointment History'  => ['appointment.index', 'appointment.png'], // always visible now
+        'Appointment'  => ['appointment.index', 'appointment.png'], // always visible now
         'Chat History' => [Route::has('chat.history') ? 'chat.history' : null, 'chat-history.png'],
         'Settings'     => [Route::has('settings.index') ? 'settings.index' : null, 'settings.png'],
       ];

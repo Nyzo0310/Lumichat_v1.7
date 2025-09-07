@@ -6,7 +6,7 @@
 
   <div class="flex items-center justify-between mb-6">
     <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">Appointment History</h2>
-    <a href="{{ route('appointment.index') }}"
+    <a href="{{ route('appointment.create') }}"
        class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700">
       <span class="font-medium">Book New</span>
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -144,8 +144,8 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  // Success toast from redirects (booking/cancel)
-  const successMsg = @json(session('success')); // <-- changed from 'status' to 'success'
+  // Success toast only if 'success' is flashed
+  const successMsg = @json(session('success'));
   if (successMsg) {
     Swal.fire({
       icon: 'success',
@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Generic errors
+  // Validation errors
   const pageErrors = @json($errors->all());
   if (Array.isArray(pageErrors) && pageErrors.length) {
     const html = '<ul style="text-align:left;margin:0;padding-left:1rem">' +
