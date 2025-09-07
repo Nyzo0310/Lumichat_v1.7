@@ -7,6 +7,9 @@ use Illuminate\Validation\Rule;
 
 class ProfileUpdateRequest extends FormRequest
 {
+    public const COURSES = ['BSIT','EDUC','CAS','CRIM','BLIS','MIDWIFERY','BSHM','BSBA'];
+    public const YEARS   = ['1st year','2nd year','3rd year','4th year'];
+
     public function authorize(): bool
     {
         return $this->user() !== null;
@@ -14,45 +17,70 @@ class ProfileUpdateRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        $name  = trim(preg_replace('/\s+/', ' ', (string) $this->input('name', '')));
-        $email = strtolower(trim((string) $this->input('email', '')));
+        // Name: strip tags + collapse whitespace
+        $name = strip_tags((string) $this->input('name', ''));
+        $name = trim(preg_replace('/\s+/u', ' ', $name));
 
-        $courses = ['BSIT','EDUC','CAS','CRIM','BLIS','MIDWIFERY','BSHM','BSBA'];
-        $years   = ['1st year','2nd year','3rd year','4th year'];
+        // Email: strip tags, trim, lowercase
+        $email = strip_tags((string) $this->input('email', ''));
+        $email = strtolower(trim($email));
 
-        $course = in_array($this->input('course'), $courses, true) ? $this->input('course') : null;
-        $year   = in_array($this->input('year_level'), $years, true) ? $this->input('year_level') : null;
+        // Course: UPPER + whitelist
+        $course = strtoupper(trim((string) $this->input('course', '')));
+        $course = in_array($course, self::COURSES, true) ? $course : null;
 
-        // keep digits only for phone
-        $contact = preg_replace('/\D+/', '', (string) $this->input('contact_number', ''));
+        // Year: whitelist
+        $year = trim((string) $this->input('year_level', ''));
+        $year = in_array($year, self::YEARS, true) ? $year : null;
+
+        // Phone: digits only; normalize PH 09xxxxxxxxx -> 639xxxxxxxxx
+        $phone = preg_replace('/\D+/', '', (string) $this->input('contact_number', ''));
+        if ($phone && str_starts_with($phone, '09') && strlen($phone) === 11) {
+            $phone = '63' . substr($phone, 1);
+        }
+        $phone = $phone ?: null;
 
         $this->merge([
-            'name'            => $name,
-            'email'           => $email,
-            'course'          => $course,
-            'year_level'      => $year,
-            'contact_number'  => $contact,
+            'name'           => $name,
+            'email'          => $email,
+            'course'         => $course,
+            'year_level'     => $year,
+            'contact_number' => $phone,
         ]);
     }
 
     public function rules(): array
     {
+        $userId = $this->user()?->id;
+
         return [
-            'name' => ['required','string','max:100'],
-            'email' => [
-                'required','email:rfc,dns',
-                Rule::unique('tbl_users','email')->ignore($this->user()?->id),
+            'name' => [
+                'bail','required','string','min:2','max:100',
+                'regex:/^[\p{L}\p{M}][\p{L}\p{M}\s\.\'\-]*$/u',
             ],
-            'course' => ['nullable','in:BSIT,EDUC,CAS,CRIM,BLIS,MIDWIFERY,BSHM,BSBA'],
-            'year_level' => ['nullable','in:1st year,2nd year,3rd year,4th year'],
+            'email' => [
+                'bail','required','string','max:255','lowercase',
+                'email:rfc,dns',
+                Rule::unique('tbl_users','email')->ignore($userId, 'id'),
+            ],
+            'course'         => ['nullable','in:'.implode(',', self::COURSES)],
+            'year_level'     => ['nullable','in:'.implode(',', self::YEARS)],
             'contact_number' => ['nullable','digits_between:10,15'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.regex'   => 'The name may contain letters, spaces, dots, apostrophes, and hyphens only, and must start with a letter.',
+            'email.unique' => 'This email is already in use.',
         ];
     }
 
     public function attributes(): array
     {
         return [
-            'year_level' => 'year level',
+            'year_level'     => 'year level',
             'contact_number' => 'contact number',
         ];
     }

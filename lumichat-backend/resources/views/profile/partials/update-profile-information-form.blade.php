@@ -1,4 +1,3 @@
-{{-- resources/views/profile/partials/update-profile-information-form.blade.php --}}
 @php
     $reg = $registration ?? null;
 
@@ -22,17 +21,15 @@
 @endphp
 
 <div class="space-y-4">
-  {{-- READ-ONLY CARD --}}
-  <div class="rounded-xl bg-white dark:bg-gray-800 shadow-sm p-6 relative">
+  {{-- READ VIEW --}}
+  <div data-edit-profile-view class="rounded-xl bg-white dark:bg-gray-800 shadow-sm p-6 relative">
     <div class="flex items-start justify-between mb-4">
       <div>
         <h3 class="title-dynamic text-lg font-semibold">Profile Information</h3>
         <p class="muted-dynamic text-sm">Update your account’s profile information and email address.</p>
       </div>
 
-      <button type="button"
-              data-edit-profile-btn
-              class="btn-primary">
+      <button type="button" data-edit-profile-btn class="btn-primary">
         Edit profile
       </button>
     </div>
@@ -61,9 +58,9 @@
     </div>
   </div>
 
-  {{-- EDIT FORM (HIDDEN UNTIL CLICK) --}}
+  {{-- EDIT FORM --}}
   <div data-edit-profile-form class="rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm p-6 hidden">
-    <form method="POST" action="{{ route('profile.update') }}" class="space-y-5">
+    <form method="POST" action="{{ route('profile.update') }}" class="space-y-5" novalidate>
       @csrf
       @method('PUT')
 
@@ -73,7 +70,10 @@
           <label class="block text-sm font-medium title-dynamic" for="edit-name">Name</label>
           <input id="edit-name" name="name" type="text"
                  class="mt-1 w-full input-dynamic"
-                 value="{{ old('name', $user->name) }}" required>
+                 value="{{ old('name', $user->name) }}" required
+                 minlength="2" maxlength="100"
+                 autocomplete="name" autocapitalize="words"
+                 aria-invalid="{{ $errors->has('name') ? 'true' : 'false' }}">
           @error('name') <p class="text-sm text-rose-500 mt-1">{{ $message }}</p> @enderror
         </div>
 
@@ -82,14 +82,17 @@
           <label class="block text-sm font-medium title-dynamic" for="edit-email">Email</label>
           <input id="edit-email" name="email" type="email"
                  class="mt-1 w-full input-dynamic break-all"
-                 value="{{ old('email', $user->email) }}" required>
+                 value="{{ old('email', $user->email) }}" required
+                 maxlength="255" autocomplete="email" inputmode="email"
+                 aria-invalid="{{ $errors->has('email') ? 'true' : 'false' }}">
           @error('email') <p class="text-sm text-rose-500 mt-1">{{ $message }}</p> @enderror
         </div>
 
-        {{-- Course (select) --}}
+        {{-- Course --}}
         <div>
           <label class="block text-sm font-medium title-dynamic" for="edit-course">Course</label>
-          <select id="edit-course" name="course" class="mt-1 w-full input-dynamic">
+          <select id="edit-course" name="course" class="mt-1 w-full input-dynamic"
+                  aria-invalid="{{ $errors->has('course') ? 'true' : 'false' }}">
             <option value="" disabled {{ old('course', $reg->course ?? '') === '' ? 'selected' : '' }}>
               Select your course
             </option>
@@ -99,12 +102,14 @@
               </option>
             @endforeach
           </select>
+          @error('course') <p class="text-sm text-rose-500 mt-1">{{ $message }}</p> @enderror
         </div>
 
-        {{-- Year Level (select) --}}
+        {{-- Year --}}
         <div>
           <label class="block text-sm font-medium title-dynamic" for="edit-year">Year Level</label>
-          <select id="edit-year" name="year_level" class="mt-1 w-full input-dynamic">
+          <select id="edit-year" name="year_level" class="mt-1 w-full input-dynamic"
+                  aria-invalid="{{ $errors->has('year_level') ? 'true' : 'false' }}">
             <option value="" disabled {{ old('year_level', $reg->year_level ?? '') === '' ? 'selected' : '' }}>
               Select your year level
             </option>
@@ -114,14 +119,21 @@
               </option>
             @endforeach
           </select>
+          @error('year_level') <p class="text-sm text-rose-500 mt-1">{{ $message }}</p> @enderror
         </div>
 
-        {{-- Contact Number --}}
+        {{-- Phone --}}
         <div class="sm:col-span-2">
           <label class="block text-sm font-medium title-dynamic" for="edit-phone">Contact Number</label>
           <input id="edit-phone" name="contact_number" type="text"
                  class="mt-1 w-full input-dynamic"
-                 value="{{ old('contact_number', $reg->contact_number ?? '') }}">
+                 value="{{ old('contact_number', $reg->contact_number ?? '') }}"
+                 inputmode="numeric" pattern="\d*" minlength="10" maxlength="15"
+                 aria-describedby="phone-help"
+                 aria-invalid="{{ $errors->has('contact_number') ? 'true' : 'false' }}">
+          <p id="phone-help" class="muted-dynamic text-xs mt-1">
+            Digits only (10–15). PH 09… will be stored as 639…
+          </p>
           @error('contact_number') <p class="text-sm text-rose-500 mt-1">{{ $message }}</p> @enderror
         </div>
       </div>
@@ -133,3 +145,23 @@
     </form>
   </div>
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const view  = document.querySelector('[data-edit-profile-view]');
+  const form  = document.querySelector('[data-edit-profile-form]');
+  const open  = document.querySelector('[data-edit-profile-btn]');
+  const cancel= document.querySelector('[data-edit-cancel]');
+
+  const openEdit = () => { view?.classList.add('hidden'); form?.classList.remove('hidden'); document.getElementById('edit-name')?.focus(); };
+  const closeEdit= () => { form?.classList.add('hidden'); view?.classList.remove('hidden'); };
+
+  open?.addEventListener('click', openEdit);
+  cancel?.addEventListener('click', closeEdit);
+
+  // Auto-open when there are validation errors so users see them immediately.
+  if (@json($errors->any())) openEdit();
+});
+</script>
+@endpush

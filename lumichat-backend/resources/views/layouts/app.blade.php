@@ -244,6 +244,45 @@
     });
   </script>
 
+
+  {{-- SweetAlert toasts for success + validation errors --}}
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    @if (session('status') === 'profile-updated' || session('success'))
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: @json(session('success', 'Profile updated')),
+        showConfirmButton: false,
+        timer: 2500
+      });
+    @endif
+
+    @if ($errors->any())
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'error',
+        title: 'Please fix the highlighted fields.',
+        showConfirmButton: false,
+        timer: 3500
+      });
+    @endif
+
+    @if (session('error'))
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'error',
+        title: @json(session('error')),
+        showConfirmButton: false,
+        timer: 3500
+      });
+    @endif
+  });
+  </script>
+
   @stack('scripts')
 </body>
 </html>
