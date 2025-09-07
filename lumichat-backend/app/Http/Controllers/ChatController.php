@@ -172,21 +172,22 @@ HTML;
      | UI pages
      * =========================================================================*/
 
-    public function index()
+    public function index(Request $request)
     {
         $userId = Auth::id();
-        $showGreeting = false;
 
-        $activeId = session('chat_session_id');
-        if ($activeId) {
-            $exists = ChatSession::where('id', $activeId)->where('user_id', $userId)->exists();
-            if (!$exists) {
-                session()->forget('chat_session_id');
-                $activeId = null;
-            }
+        // If we were asked to start fresh (via New Chat), don't auto-attach latest.
+        $startFresh = (bool) session('start_fresh', false);
+        if ($startFresh) {
+            // Clear the flag so Home reloads normally next time (if you want Home to reuse latest).
+            session()->forget('start_fresh');
         }
 
-        if (!$activeId) {
+        $activeId = session('chat_session_id');
+
+        // If there's no active session AND we are NOT starting fresh, you may auto-attach latest.
+        // If you want Home to also always start fresh, just remove this whole block.
+        if (!$activeId && !$startFresh) {
             $latest = ChatSession::where('user_id', $userId)->latest('updated_at')->first();
             if ($latest) {
                 session(['chat_session_id' => $latest->id]);
@@ -194,24 +195,35 @@ HTML;
             }
         }
 
-        $chats = Chat::where('user_id', $userId)
-            ->when($activeId, fn($q) => $q->where('chat_session_id', $activeId))
-            ->orderBy('sent_at')
-            ->get()
-            ->map(function ($chat) {
-                try { $chat->message = \Illuminate\Support\Facades\Crypt::decryptString($chat->message); }
-                catch (\Throwable $e) { $chat->message = '[Encrypted]'; }
-                return $chat;
-            });
+        // If still no active session (fresh start), show empty chat list + greeting
+        $showGreeting = !$activeId;
+
+        $chats = collect();
+        if ($activeId) {
+            $chats = Chat::where('user_id', $userId)
+                ->where('chat_session_id', $activeId)
+                ->orderBy('sent_at')
+                ->get()
+                ->map(function ($chat) {
+                    try { $chat->message = \Illuminate\Support\Facades\Crypt::decryptString($chat->message); }
+                    catch (\Throwable $e) { $chat->message = '[Encrypted]'; }
+                    return $chat;
+                });
+        }
 
         return view('chat', compact('chats', 'showGreeting'));
     }
 
     public function newChat(Request $request)
     {
+        // Forget any active session and mark that we want a fresh blank screen.
         session()->forget('chat_session_id');
+        session(['start_fresh' => true]);
+
+        // Redirect to chat.index; store() will create a new ChatSession on the first send.
         return redirect()->route('chat.index');
     }
+
 
     /* =========================================================================
      | Store a user message, call Rasa, risk/booking/crisis logic
