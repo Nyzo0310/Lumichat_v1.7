@@ -51,20 +51,15 @@
           return file_exists($path) ? asset('images/icons/'.$filename) : asset('images/chatbot.png');
       }
 
-      // Build the MAIN section. "Appointment" is injected only when the signed
-      // enable link has been visited (FeaturesController sets the session flag).
+      // Build the MAIN section. Appointment is always visible and opens History.
       $mainLinks = [
         'Home'         => ['chat.index',    'home.png'],
         'Profile'      => ['profile.edit',  'user.png'],
-
-        // 👇 Conditionally show after Profile
-        ...(session('show_appointment_nav')
-            ? ['Appointment' => ['appointment.index', 'appointment.png']]
-            : []),
-
+        'Appointment History'  => ['appointment.index', 'appointment.png'], // always visible now
         'Chat History' => [Route::has('chat.history') ? 'chat.history' : null, 'chat-history.png'],
         'Settings'     => [Route::has('settings.index') ? 'settings.index' : null, 'settings.png'],
       ];
+
       @endphp
 
       <nav class="flex-1 px-3 pt-5 space-y-4 overflow-y-auto">
@@ -199,23 +194,6 @@
         toast: true,
         icon: 'success',
         title: 'Profile updated',
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 1800,
-        timerProgressBar: true,
-      });
-    });
-  </script>
-  @endif
-
-  {{-- Toast when appointment gets enabled via signed link --}}
-  @if (session('status') === 'appointment-enabled')
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      Swal.fire({
-        toast: true,
-        icon: 'success',
-        title: 'Appointment booking enabled',
         position: 'top-end',
         showConfirmButton: false,
         timer: 1800,

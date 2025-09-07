@@ -12,18 +12,11 @@ class FeaturesController extends Controller
      *  - enables the Appointment nav for this session
      *  - redirects the user straight to /appointment
      */
-    public function enableAppointment(Request $request): RedirectResponse
+    public function enableAppointment(Request $request)
     {
-        // The `signed` middleware in web.php already validates the signature.
-        // Show the Appointment item for the rest of this session:
-        session(['show_appointment_nav' => true]);
-
-        // Optional: keep it for the very next request too (useful if you flash messages)
-        // $request->session()->reflash();
-
-        // Go to the booking page
+        // Flash success once and redirect to booking form
         return redirect()
-            ->route('appointment.index')
-            ->with('status', 'appointment-enabled');
+            ->route('appointment.create')
+            ->with('success', 'Appointment booking enabled'); // <-- use 'success', not 'status'
     }
 }

@@ -58,12 +58,15 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile',   [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Appointments (student booking)
-    Route::get('/appointment',                   [AppointmentController::class, 'index'])->name('appointment.index');
+    Route::get('/appointment',                   [AppointmentController::class, 'history'])->name('appointment.index');   // <-- HISTORY is default
+    Route::get('/appointment/book',             [AppointmentController::class, 'index'])->name('appointment.create');    // <-- BOOK FORM
     Route::post('/appointment',                  [AppointmentController::class, 'store'])->name('appointment.store');
     Route::get('/appointment/slots/{counselor}', [AppointmentController::class, 'slots'])->name('appointment.slots');
-    Route::get('/appointment/history',           [AppointmentController::class, 'history'])->name('appointment.history');
+    // keep this if other code still links to the old explicit history route:
+    Route::get('/appointment/history',           [AppointmentController::class, 'history'])->name('appointment.history'); // optional legacy link
     Route::get('/appointment/view/{id}',         [AppointmentController::class, 'show'])->name('appointment.view');
     Route::patch('/appointment/{id}/cancel',     [AppointmentController::class, 'cancel'])->name('appointment.cancel');
+
 
     // Self-Assessment (first step)
     Route::middleware(['auth'])->group(function () {

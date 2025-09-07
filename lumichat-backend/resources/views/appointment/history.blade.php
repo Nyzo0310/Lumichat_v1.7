@@ -145,7 +145,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   // Success toast from redirects (booking/cancel)
-  const successMsg = @json(session('status'));
+  const successMsg = @json(session('success')); // <-- changed from 'status' to 'success'
   if (successMsg) {
     Swal.fire({
       icon: 'success',
