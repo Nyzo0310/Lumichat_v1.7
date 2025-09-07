@@ -128,97 +128,59 @@ class AppointmentController extends Controller
             'date'         => 'required|date_format:Y-m-d',
             'time'         => 'required|regex:/^\d{2}:\d{2}$/',
             'consent'      => 'accepted',
-        ], [], ['counselor_id' => 'counselor', 'date' => 'date', 'time' => 'time']);
+        ], [], ['counselor_id'=>'counselor', 'date'=>'date', 'time'=>'time']);
 
         $studentId   = Auth::id();
         $counselorId = (int) $request->counselor_id;
-        $scheduledAt = \Carbon\Carbon::parse($request->date . ' ' . $request->time);
+        $scheduledAt = \Carbon\Carbon::parse($request->date.' '.$request->time);
         $dow         = $scheduledAt->dayOfWeek;
 
-        // Mon–Fri only
         if ($dow < self::WEEKDAY_MIN || $dow > self::WEEKDAY_MAX) {
-            return back()->withErrors(['date' => 'Counselors are available Monday to Friday only.'])->withInput();
+            return back()->withErrors(['date'=>'Counselors are available Monday to Friday only.'])->withInput();
         }
 
-        // One appointment per day (per student) across blocking statuses
         $hasSameDay = DB::table('tbl_appointments')
             ->where('student_id', $studentId)
             ->whereDate('scheduled_at', $scheduledAt->toDateString())
             ->whereIn('status', self::BLOCKING_STATUSES)
             ->exists();
-
         if ($hasSameDay) {
-            return back()->withErrors(['date' => 'You already have an appointment on this date.'])->withInput();
+            return back()->withErrors(['date'=>'You already have an appointment on this date.'])->withInput();
         }
 
-        // Slot must be valid and not already taken by a blocking row
         if (!$this->isSlotAvailable($counselorId, $scheduledAt)) {
-            return back()->withErrors(['time' => 'Sorry, that time is no longer available.'])->withInput();
+            return back()->withErrors(['time'=>'Sorry, that time is no longer available.'])->withInput();
         }
 
-        // You already have a blocking booking at exactly this time?
         $duplicate = DB::table('tbl_appointments')
             ->where('student_id', $studentId)
             ->where('counselor_id', $counselorId)
             ->where('scheduled_at', $scheduledAt)
             ->whereIn('status', self::BLOCKING_STATUSES)
             ->exists();
-
         if ($duplicate) {
-            return back()->withErrors(['time' => 'You already have a booking at that time.'])->withInput();
+            return back()->withErrors(['time'=>'You already have a booking at that time.'])->withInput();
         }
 
-        // Either reuse a canceled row for the same slot, or insert a fresh one.
+        // Always INSERT a new row (keep canceled history intact)
         try {
-            DB::beginTransaction();
-
-            // Reuse previously canceled booking for the same slot (prevents unique-index collisions)
-            $canceled = DB::table('tbl_appointments')
-                ->where('student_id', $studentId)
-                ->where('counselor_id', $counselorId)
-                ->where('scheduled_at', $scheduledAt)
-                ->where('status', 'canceled')
-                ->lockForUpdate()
-                ->first();
-
-            if ($canceled) {
-                DB::table('tbl_appointments')
-                    ->where('id', $canceled->id)
-                    ->update([
-                        'status'     => 'pending',
-                        'updated_at' => now(),
-                    ]);
-            } else {
-                DB::table('tbl_appointments')->insert([
-                    'student_id'   => $studentId,
-                    'counselor_id' => $counselorId,
-                    'scheduled_at' => $scheduledAt,
-                    'status'       => 'pending',
-                    'created_at'   => now(),
-                    'updated_at'   => now(),
-                ]);
+            DB::table('tbl_appointments')->insert([
+                'student_id'   => $studentId,
+                'counselor_id' => $counselorId,
+                'scheduled_at' => $scheduledAt,
+                'status'       => 'pending',
+                'created_at'   => now(),
+                'updated_at'   => now(),
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            // In case of a last-millisecond collision on a blocking row
+            if ((int)($e->errorInfo[1] ?? 0) === 1062) {
+                return back()->withErrors(['time' => 'That time was just taken. Please choose another slot.'])->withInput();
             }
-
-            DB::commit();
-        } catch (QueryException $e) {
-            DB::rollBack();
-
-            // If another user booked the slot in the tiny window before our insert/update
-            if ((int) ($e->errorInfo[1] ?? 0) === 1062) { // MySQL duplicate key
-                return back()->withErrors([
-                    'time' => 'That time was just taken. Please pick another slot.',
-                ])->withInput();
-            }
-
-            // Unexpected DB error
-            return back()->withErrors([
-                'error' => 'Unable to book the appointment right now. Please try again.',
-            ])->withInput();
+            return back()->withErrors(['error' => 'Unable to book the appointment right now.'])->withInput();
         }
 
-        return redirect()
-            ->route('appointment.history')
-            ->with('status', 'Appointment booked successfully!');
+        return redirect()->route('appointment.history')->with('status','Appointment booked successfully!');
     }
 
         /* History list */
