@@ -1,3 +1,4 @@
+{{-- resources/views/profile/partials/update-password-form.blade.php --}}
 <section>
   <header>
     <h2 class="title-dynamic text-lg font-medium">
@@ -40,19 +41,3 @@
     </div>
   </form>
 </section>
-
-{{-- SweetAlert2 on success (Jetstream returns status=password-updated) --}}
-@if (session('status') === 'password-updated')
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script>
-    window.addEventListener('DOMContentLoaded', () => {
-      Swal.fire({
-        icon: 'success',
-        title: 'Password updated',
-        text: 'Your password has been changed successfully.',
-        confirmButtonText: 'OK',
-        confirmButtonColor: '#4F46E5'
-      });
-    });
-  </script>
-@endif

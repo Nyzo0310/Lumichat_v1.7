@@ -1,10 +1,11 @@
+{{-- resources/views/profile/partials/update-profile-information-form.blade.php --}}
 @php
     $reg = $registration ?? null;
 
     $courses = [
         'BSIT' => 'College of Information Technology',
         'EDUC' => 'College of Education',
-        'CAS' => 'College of Arts and Sciences',
+        'CAS'  => 'College of Arts and Sciences',
         'CRIM' => 'College of Criminal Justice and Public Safety',
         'BLIS' => 'College of Library Information Science',
         'MIDWIFERY' => 'College of Midwifery',
@@ -69,7 +70,7 @@
       <div class="grid gap-5 sm:grid-cols-2">
         {{-- Name --}}
         <div>
-          <label class="block text-sm font-medium title-dynamic">Name</label>
+          <label class="block text-sm font-medium title-dynamic" for="edit-name">Name</label>
           <input id="edit-name" name="name" type="text"
                  class="mt-1 w-full input-dynamic"
                  value="{{ old('name', $user->name) }}" required>
@@ -78,8 +79,8 @@
 
         {{-- Email --}}
         <div>
-          <label class="block text-sm font-medium title-dynamic">Email</label>
-          <input name="email" type="email"
+          <label class="block text-sm font-medium title-dynamic" for="edit-email">Email</label>
+          <input id="edit-email" name="email" type="email"
                  class="mt-1 w-full input-dynamic break-all"
                  value="{{ old('email', $user->email) }}" required>
           @error('email') <p class="text-sm text-rose-500 mt-1">{{ $message }}</p> @enderror
@@ -87,8 +88,8 @@
 
         {{-- Course (select) --}}
         <div>
-          <label class="block text-sm font-medium title-dynamic">Course</label>
-          <select name="course" class="mt-1 w-full input-dynamic">
+          <label class="block text-sm font-medium title-dynamic" for="edit-course">Course</label>
+          <select id="edit-course" name="course" class="mt-1 w-full input-dynamic">
             <option value="" disabled {{ old('course', $reg->course ?? '') === '' ? 'selected' : '' }}>
               Select your course
             </option>
@@ -102,8 +103,8 @@
 
         {{-- Year Level (select) --}}
         <div>
-          <label class="block text-sm font-medium title-dynamic">Year Level</label>
-          <select name="year_level" class="mt-1 w-full input-dynamic">
+          <label class="block text-sm font-medium title-dynamic" for="edit-year">Year Level</label>
+          <select id="edit-year" name="year_level" class="mt-1 w-full input-dynamic">
             <option value="" disabled {{ old('year_level', $reg->year_level ?? '') === '' ? 'selected' : '' }}>
               Select your year level
             </option>
@@ -117,21 +118,17 @@
 
         {{-- Contact Number --}}
         <div class="sm:col-span-2">
-          <label class="block text-sm font-medium title-dynamic">Contact Number</label>
-          <input name="contact_number" type="text"
+          <label class="block text-sm font-medium title-dynamic" for="edit-phone">Contact Number</label>
+          <input id="edit-phone" name="contact_number" type="text"
                  class="mt-1 w-full input-dynamic"
                  value="{{ old('contact_number', $reg->contact_number ?? '') }}">
+          @error('contact_number') <p class="text-sm text-rose-500 mt-1">{{ $message }}</p> @enderror
         </div>
       </div>
 
       <div class="flex items-center gap-3 pt-2">
-        <button type="submit" class="btn-primary">
-          Save changes
-        </button>
-
-        <button type="button" data-edit-cancel class="btn-secondary">
-          Cancel
-        </button>
+        <button type="submit" class="btn-primary">Save changes</button>
+        <button type="button" data-edit-cancel class="btn-secondary">Cancel</button>
       </div>
     </form>
   </div>

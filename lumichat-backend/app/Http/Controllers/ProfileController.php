@@ -7,19 +7,16 @@ use App\Models\Registration;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     */
     public function edit(Request $request): View
     {
         $user = $request->user();
 
-        // Find the registration row by email OR full name (covers mismatch)
         $registration = Registration::query()
             ->where('email', $user->email)
             ->orWhere('full_name', $user->name)
@@ -31,42 +28,45 @@ class ProfileController extends Controller
         ]);
     }
 
-    /**
-     * Update the user's profile information.
-     * - Updates users.name / users.email
-     * - Upserts tbl_registration (full_name/email + course/year_level/contact_number)
-     */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         $user = $request->user();
+        $data = $request->validated();
 
-        // Update Users table
-        $user->fill($request->validated());
+        DB::transaction(function () use ($user, $data) {
+            $originalEmail = $user->email;
 
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
-        }
-        $user->save();
+            $user->fill([
+                'name'  => $data['name'],
+                'email' => $data['email'],
+            ]);
 
-        // Sync to tbl_registration
-        Registration::updateOrCreate(
-            // Key: prefer email; also keep a fallback on full_name
-            ['email' => $user->email],
-            [
-                'full_name'      => $user->name,
-                'email'          => $user->email,
-                'course'         => $request->input('course'),
-                'year_level'     => $request->input('year_level'),
-                'contact_number' => $request->input('contact_number'),
-            ]
-        );
+            if ($user->isDirty('email')) {
+                $user->email_verified_at = null;
+            }
+            $user->save();
 
-        return Redirect::route('profile.edit')->with('profile_updated', true);
+            Registration::updateOrCreate(
+                ['email' => $user->email],
+                [
+                    'full_name'      => $user->name,
+                    'email'          => $user->email,
+                    'course'         => $data['course'] ?? null,
+                    'year_level'     => $data['year_level'] ?? null,
+                    'contact_number' => $data['contact_number'] ?? null,
+                ]
+            );
+
+            if ($originalEmail !== $user->email) {
+                Registration::where('email', $originalEmail)->delete();
+            }
+        });
+
+        return Redirect::route('profile.edit')
+            ->with('status', 'profile-updated')     // for global script map
+            ->with('success', 'Profile updated');   // generic fallback
     }
 
-    /**
-     * Delete the user's account.
-     */
     public function destroy(Request $request): RedirectResponse
     {
         $request->validateWithBag('userDeletion', [
@@ -76,10 +76,6 @@ class ProfileController extends Controller
         $user = $request->user();
 
         Auth::logout();
-
-        // Optionally also delete from tbl_registration:
-        // Registration::where('email', $user->email)->orWhere('full_name', $user->name)->delete();
-
         $user->delete();
 
         $request->session()->invalidate();
