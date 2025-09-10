@@ -103,6 +103,8 @@
               'completed' => ['chip'=>'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200','dot'=>'bg-emerald-500','pulse'=>false],
             ];
             $s = $styles[$row->status] ?? ['chip'=>'bg-gray-100 text-gray-700','dot'=>'bg-gray-400','pulse'=>false];
+
+            $canCancel = $row->status === 'pending' && $start->gt($now);
           @endphp
 
           <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-700/30">
@@ -121,7 +123,7 @@
             </td>
             <td class="px-4 py-3 text-right">
               <a href="{{ route('appointment.view', $row->id) }}"
-                 class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3 py-1.5 text-white hover:bg-indigo-700">
+                class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3 py-1.5 text-white hover:bg-indigo-700">
                 View
               </a>
             </td>
@@ -144,8 +146,8 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  // Success toast only if 'success' is flashed
-  const successMsg = @json(session('success'));
+  // Success toast: read 'success' or 'status'
+  const successMsg = @json(session('success') ?? session('status'));
   if (successMsg) {
     Swal.fire({
       icon: 'success',
@@ -163,6 +165,21 @@ document.addEventListener('DOMContentLoaded', () => {
                  pageErrors.map(i => `<li>• ${i}</li>`).join('') + '</ul>';
     Swal.fire({ icon: 'error', title: 'Unable to proceed', html });
   }
+
+  // Confirm before sending PATCH cancel
+  document.querySelectorAll('form.cancel-form').forEach(form => {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      Swal.fire({
+        icon: 'warning',
+        title: 'Cancel this appointment?',
+        text: 'This cannot be undone.',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, cancel it',
+        cancelButtonText: 'Keep it'
+      }).then(res => { if (res.isConfirmed) form.submit(); });
+    });
+  });
 });
 </script>
 @endpush

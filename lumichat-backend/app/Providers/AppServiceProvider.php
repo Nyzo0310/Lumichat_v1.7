@@ -12,6 +12,10 @@ use Illuminate\Support\Str;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Schema;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,12 +23,53 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // ✅ Force HTTPS in production so reset links are https://
+        // ✅ Force HTTPS in production
         if (app()->environment('production')) {
             URL::forceScheme('https');
         }
 
-        // --- your existing model events below ---
+        // ======================  GLOBAL VIEW FLAGS  ======================
+        // - $hasAppointments: does current user have ANY appointment rows?
+        // - $appointmentEnabled: feature is unlocked (via signed link/session),
+        //   OR persisted in users.appointment_enabled (if column exists),
+        //   OR implied by having any appointment rows already.
+        View::composer('*', function ($view) {
+            $user = Auth::user();
+
+            $hasAppointments = false;
+            $appointmentEnabled = false;
+
+            if ($user) {
+                $hasAppointments = DB::table('tbl_appointments')
+                    ->where('student_id', $user->id)
+                    ->exists();
+
+                // Session unlock (set by signed link)
+                $appointmentEnabled = (bool) session('appointment_enabled', false);
+
+                // Persisted column (optional): users.appointment_enabled
+                try {
+                    if (Schema::hasColumn('users', 'appointment_enabled')) {
+                        $appointmentEnabled = $appointmentEnabled || (bool) (
+                            DB::table('users')->where('id', $user->id)->value('appointment_enabled') ?? false
+                        );
+                    }
+                } catch (\Throwable $e) {
+                    // ignore schema errors silently
+                }
+
+                // Having any appointment implies feature should be visible thereafter
+                if ($hasAppointments) {
+                    $appointmentEnabled = true;
+                }
+            }
+
+            $view->with('hasAppointments', $hasAppointments);
+            $view->with('appointmentEnabled', $appointmentEnabled);
+        });
+        // =================================================================
+
+        // --- your existing model events below (kept intact) ---
 
         User::created(function (User $user) {
             ActivityLog::create([
@@ -36,15 +81,11 @@ class AppServiceProvider extends ServiceProvider
                 'meta'         => ['email' => $user->email, 'role' => $user->role ?? null],
             ]);
         });
-        
-        RateLimiter::for('chat-send', function (Request $request) {
-        $by = optional($request->user())->id ?? $request->ip();
 
-        // Allow normal use: 20 per minute per user
-        return [
-            Limit::perMinute(20)->by("chat:pm:{$by}"),
-        ];
-    });
+        RateLimiter::for('chat-send', function (Request $request) {
+            $by = optional($request->user())->id ?? $request->ip();
+            return [ Limit::perMinute(20)->by("chat:pm:{$by}") ];
+        });
 
         ChatSession::created(function (ChatSession $session) {
             ActivityLog::create([
@@ -56,7 +97,6 @@ class AppServiceProvider extends ServiceProvider
                 'meta'         => ['user_id' => $session->user_id],
             ]);
         });
-        
 
         Appointment::created(function (Appointment $appt) {
             ActivityLog::create([

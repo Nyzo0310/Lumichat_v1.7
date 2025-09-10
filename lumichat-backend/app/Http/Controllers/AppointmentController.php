@@ -15,7 +15,7 @@ class AppointmentController extends Controller
     /** statuses that block a time from being offered again */
     private const BLOCKING_STATUSES = ['pending', 'confirmed', 'completed'];
 
-    /** Mon–Fri only */
+    /** Mon–Fri only (1=Mon ... 5=Fri when using isoWeekday) */
     private const WEEKDAY_MIN = 1; // Monday
     private const WEEKDAY_MAX = 5; // Friday
 
@@ -47,7 +47,9 @@ class AppointmentController extends Controller
 
         $date  = Carbon::parse($dateStr)->startOfDay();
         $today = Carbon::now();
-        $dow   = $date->dayOfWeek; // 0..6
+
+        // IMPORTANT: use isoWeekday() => 1..7 (Mon=1 ... Sun=7)
+        $dow   = $date->isoWeekday();
 
         if ($dow < self::WEEKDAY_MIN || $dow > self::WEEKDAY_MAX) {
             return response()->json(['slots'=>[], 'reason'=>'weekend', 'message'=>'Counselors are available Monday to Friday only.']);
@@ -67,7 +69,7 @@ class AppointmentController extends Controller
             }
         }
 
-        // Availability ranges
+        // Availability ranges (weekday stored as 1..7; your data uses 1..5 for Mon..Fri)
         $ranges = DB::table('tbl_counselor_availabilities')
             ->where('counselor_id', $counselorId)->where('weekday', $dow)
             ->orderBy('start_time')->get(['start_time','end_time']);
@@ -95,6 +97,7 @@ class AppointmentController extends Controller
                 $next = $cursor->copy()->addMinutes(self::STEP_MINUTES);
                 if ($next->gt($end)) break;
 
+                // prevent past times on same day
                 if ($date->isSameDay($today) && $cursor->lte($today)) {
                     $cursor->addMinutes(self::STEP_MINUTES);
                     continue;
@@ -132,8 +135,10 @@ class AppointmentController extends Controller
 
         $studentId   = Auth::id();
         $counselorId = (int) $request->counselor_id;
-        $scheduledAt = \Carbon\Carbon::parse($request->date.' '.$request->time);
-        $dow         = $scheduledAt->dayOfWeek;
+        $scheduledAt = Carbon::parse($request->date.' '.$request->time);
+
+        // IMPORTANT: isoWeekday() here too
+        $dow         = $scheduledAt->isoWeekday();
 
         if ($dow < self::WEEKDAY_MIN || $dow > self::WEEKDAY_MAX) {
             return back()->withErrors(['date'=>'Counselors are available Monday to Friday only.'])->withInput();
@@ -180,10 +185,26 @@ class AppointmentController extends Controller
             return back()->withErrors(['error' => 'Unable to book the appointment right now.'])->withInput();
         }
 
-        return redirect()->route('appointment.history')->with('status','Appointment booked successfully!');
+        return redirect()
+        ->route('appointment.index')   // or ->route('appointment.history') if that's your target
+        ->with('success', 'Appointment booked successfully!');
     }
 
-        /* History list */
+   public function entrypoint(Request $request)
+    {
+        $userId = Auth::id();
+
+        $hasAppointments = DB::table('tbl_appointments')
+            ->where('student_id', $userId)
+            ->exists();
+
+        // No records yet → booking form; otherwise → history
+        return $hasAppointments
+            ? $this->history($request)
+            : $this->index();
+    }
+
+    /* History list */
     public function history(Request $request)
     {
         $status = (string) $request->query('status', 'all');
@@ -272,7 +293,9 @@ class AppointmentController extends Controller
     private function isSlotAvailable(int $counselorId, Carbon $scheduledAt): bool
     {
         $date = $scheduledAt->copy()->startOfDay();
-        $dow  = $date->dayOfWeek;
+
+        // IMPORTANT: use isoWeekday() => 1..7
+        $dow  = $date->isoWeekday();
 
         // Mon–Fri only
         if ($dow < self::WEEKDAY_MIN || $dow > self::WEEKDAY_MAX) return false;
@@ -341,6 +364,8 @@ class AppointmentController extends Controller
                 'updated_at' => now(),
             ]);
 
-        return redirect()->route('appointment.history')->with('status', 'Appointment canceled.');
+        return redirect()
+        ->route('appointment.index')   // same target page as above
+        ->with('success', 'Appointment canceled.');
     }
 }

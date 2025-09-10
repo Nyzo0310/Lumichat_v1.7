@@ -36,7 +36,6 @@
       .checkbox-wrapper-46 .inp-cbx:checked + .cbx span:first-child svg{stroke-dashoffset:0}
       .checkbox-wrapper-46 .inp-cbx:checked + .cbx span:first-child:before{transform:scale(3.5);opacity:0;transition:all .6s ease}
       @keyframes wave-46{50%{transform:scale(.9)}}
-      /* utility to hide server errors without shifting layout too much */
       .hidden-error{display:none !important}
     </style>
 
@@ -151,10 +150,9 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ===== inline error hide helpers ===== */
   const hideError = (field) => {
     document.querySelectorAll(`[data-error-for="${field}"]`).forEach(el => el.classList.add('hidden-error'));
-    if (Swal.isVisible()) Swal.close(); // also close the modal when user starts fixing
+    if (Swal.isVisible()) Swal.close();
   };
 
-  // Bind field listeners to clear their own errors
   counselorSel.addEventListener('change', () => hideError('counselor_id'));
   timeSel.addEventListener('change',     () => hideError('time'));
   dateInput.addEventListener('input',    () => hideError('date'));
@@ -181,7 +179,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const cid = counselorSel.value;
     const date = dateInput.value;
 
-    // As user is interacting, clear field-level errors proactively
     if (cid)  hideError('counselor_id');
     if (date) hideError('date');
 
@@ -220,7 +217,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if(oldVal){ [...timeSel.options].forEach(o => { if(o.value === oldVal) o.selected = true; }); }
         timeSel.disabled = false;
 
-        // user can now select a time; if they do, clear the time error
         timeSel.addEventListener('change', () => hideError('time'), { once: true });
       }else{
         const reason = data.reason || '';
@@ -248,5 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if(counselorSel.value && dateInput.value) loadSlots();
 });
 </script>
+
+@include('profile.partials.alerts')
 @endpush
 @endsection

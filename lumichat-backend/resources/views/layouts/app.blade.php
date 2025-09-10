@@ -52,22 +52,53 @@
           <p class="section-label">MAIN</p>
           <ul class="space-y-2">
             @foreach ($mainLinks as $item)
+
+              {{-- Intercept the static "Appointment" entry and render the smart version instead --}}
+              @if ($item['label'] === 'Appointment')
+                {{-- ===== Appointment (unified single page) ===== --}}
+                @php
+                  $showAppointment = $appointmentEnabled ?? false;
+
+                  if ($showAppointment) {
+                      // keep label dynamic if you like
+                      $apptLabel = ($hasAppointments ?? false) ? 'Appointment History' : 'Appointment';
+                      $apptRoute = route('appointment.index'); // ← always the unified page
+                  }
+                @endphp
+                @if ($showAppointment)
+                    <li>
+                      <a href="{{ $apptRoute }}"
+                        @class([
+                          'nav-item',
+                          'nav-item--active' => request()->routeIs('appointment.index'),
+                        ])>
+                        <img src="{{ asset('images/icons/appointment.png') }}" alt="" class="sidebar-icon icon-white">
+                        <span>{{ $apptLabel }}</span>
+                      </a>
+                    </li>
+                  @endif
+
+                  @continue  {{-- prevent the default rendering for this item --}}
+                @endif
+
+              {{-- Default rendering for all other items --}}
               @php
                 $href = $item['route'] && is_string($item['route']) ? route($item['route']) : '#';
                 $isActive = $item['route'] && is_string($item['route']) ? request()->routeIs($item['route']) : false;
               @endphp
               <li>
                 <a href="{{ $href }}"
-                   @class([
-                     'nav-item',
-                     'nav-item--active' => $isActive,
-                     'opacity-100' => $item['route'] && is_string($item['route']),
-                     'opacity-70 cursor-not-allowed' => !$item['route'] || !is_string($item['route']),
-                   ])>
+                  @class([
+                    'nav-item',
+                    'nav-item--active' => $isActive,
+                    'opacity-100' => $item['route'] && is_string($item['route']),
+                    'opacity-70 cursor-not-allowed' => !$item['route'] || !is_string($item['route']),
+                  ])>
                   <img src="{{ asset('images/icons/' . $item['icon']) }}" alt="" class="sidebar-icon icon-white">
                   <span>{{ $item['label'] }}</span>
                 </a>
               </li>
+
             @endforeach
           </ul>
         </div>
@@ -245,6 +276,9 @@
       document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
     })();
   </script>
+
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   @stack('scripts')
 </body>
