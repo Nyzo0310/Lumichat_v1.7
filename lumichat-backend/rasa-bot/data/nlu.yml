@@ -166,6 +166,52 @@ nlu:
     - can i schedule a session
     - set a meeting with counselor
     - book counselor now
+    - i need to see a counselor
+    - i need counseling
+    - gusto ko magpa-counseling
+    - gusto ko magpa-appointment sa counselor
+    - gusto ko magpa-iskedyul sa counselor
+    - gusto ko mo-book ug appointment
+    - gusto ko makigstorya sa counselor
+    - tabangi ko pagpa-appointment
+    - tabangi ko pagpa-iskedyul
+    - tabangi ko pag-book
+    - pwede ko magpa-iskedyul
+    - pwede ko magpa-counseling
+    - pwede ko magpa-appointment sa counselor
+    - pwede ko mo-book ug appointment
+    - pwede ko makigstorya sa counselor
+    - pwede ko makig-istorya sa counselor
+    - tabangi ko pag-schedule
+    - tabangi ko pag-set ug meeting
+    - tabangi ko pag-reserve ug slot
+    - tabangi ko pag-arrange ug meeting
+    - tabangi ko pag-himo ug appointment
+    - pwede ko magpa-schedule
+    - pwede ko magpa-set ug meeting
+    - pwede ko magpa-reserve ug slot
+    - pwede ko magpa-arrange ug meeting
+    - pwede ko magpa-himo ug appointment
+    - gusto ko magpa-schedule
+    - gusto ko magpa-set ug meeting
+    - gusto ko magpa-reserve ug slot
+    - gusto ko magpa-arrange ug meeting
+    - gusto ko magpa-himo ug appointment
+    - tabangi ko pag-schedule ug counseling
+    - tabangi ko pag-set ug meeting sa counselor
+    - tabangi ko pag-reserve ug slot sa counselor
+    - tabangi ko pag-arrange ug meeting sa counselor
+    - tabangi ko pag-himo ug appointment sa counselor
+    - pwede ko magpa-schedule ug counseling
+    - pwede ko magpa-set ug meeting sa counselor
+    - pwede ko magpa-reserve ug slot sa counselor
+    - pwede ko magpa-arrange ug meeting sa counselor
+    - pwede ko magpa-himo ug appointment sa counselor
+    - gusto ko magpa-schedule ug counseling
+    - gusto ko magpa-set ug meeting sa counselor
+    - gusto ko magpa-reserve ug slot sa counselor
+    - gusto ko magpa-arrange ug meeting sa counselor
+    - gusto ko magpa-himo ug appointment sa counselor
 
 # Helpful regex features to bias the classifier (RegexFeaturizer is in your pipeline)
 - regex: book_appt_pattern
