@@ -12,12 +12,60 @@ nlu:
     - hi there
     - hello there
     - yo
+    -henlo
+    - loww
+    - hi lumichat
     - hey lumichat
     - kumusta
     - musta
     - maayong buntag
     - maayong hapon
     - maayong gabii
+    - hi bai
+    - hi dong
+    - hi sis
+    - hi bro
+    - hi dude
+    - hi friend
+    - hi friendz
+    - hi friendie
+    - hi friendo
+    - hi frens
+    - hi fren
+    - hi frend
+    - hi frendz
+    - hi frendie
+    - hi frendo
+    - hello bai
+    - hello dong
+    - hello sis
+    - hello bro
+    - hello dude
+    - hello friend
+    - hello friendz
+    - hello friendie
+    - hello friendo
+    - hello frens
+    - hello fren
+    - hello frend
+    - hello frendz
+    - hello frendie
+    - hello frendo
+    - hey bai
+    - hey dong
+    - hey sis
+    - hey bro
+    - hey dude
+    - hey friend
+    - hey friendz
+    - hey friendie
+    - hey friendo
+    - hey frens
+    - hey fren
+    - hey frend
+    - hey frendz
+    - hey frendie
+    - hey frendo
 
 # EMOTIONAL STATES
 - intent: express_sadness
@@ -35,6 +83,11 @@ nlu:
     - dili ko okay
     - gusto ko mohilak
     - wala koy gana
+    - murag way paglaum akong gibati karon
+    - nagmasulob-on ko
+    - nagkaguol ko
+    - nagkabalaka ko
+    - nag-inusara ko
 
 - intent: express_anxiety
   examples: |
@@ -59,13 +112,10 @@ nlu:
     - overwhelmed with tasks
     - I'm burnt out
     - too many deadlines
-    - kapoy kaayo ko
-    - grabe ang pressure
-    - daghan kaayo kog buhaton
-    - na-overwhelm ko sa mga requirements
-    - burnout na ko
-    - bug-at tanan
-
+    - I can't handle this
+    - grabe akong stress
+    - daghan kaayog pressure
+    - daghan kaayog tasks
 - intent: express_happiness
   examples: |
     - I'm happy today
@@ -80,6 +130,8 @@ nlu:
     - ok ra kaayo ko
     - i'm good how are you?
     - i'm fine, how are you?
+    - maayo ra ko, kumusta ka?
+    - ok ra ko, kumusta ka
 
 # APPOINTMENT BOOKING
 - intent: book_appointment
@@ -240,3 +292,8 @@ nlu:
     - help me with illegal stuff
     - dili ni related
     - random ra ni akong pangutana
+
+
+
+
+
