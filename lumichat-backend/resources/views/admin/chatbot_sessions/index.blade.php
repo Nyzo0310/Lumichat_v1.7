@@ -9,7 +9,14 @@
       <p class="text-sm text-slate-500">View conversation histories and emotional trends from chatbot sessions.</p>
     </div>
 
-    <form method="GET" action="{{ route('admin.chatbot-sessions.index') }}" class="flex items-center gap-2">
+    {{-- Controls row --}}
+    <form method="GET" action="{{ route('admin.chatbot-sessions.index') }}" class="flex items-center gap-2 no-print">
+       {{-- PRINT (after All Dates) --}}
+      <button type="button"
+              class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white ring-1 ring-slate-200 text-slate-800 hover:bg-slate-50"
+              onclick="printNode('#listPrintable', 'Chatbot Sessions')">
+        Print
+      </button>
       <select name="date"
               class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500">
         <option value="all"  @selected(($dateKey ?? 'all') === 'all')>All Dates</option>
@@ -17,6 +24,8 @@
         <option value="30d"  @selected(($dateKey ?? 'all') === '30d')>Last 30 days</option>
         <option value="month"@selected(($dateKey ?? 'all') === 'month')>This month</option>
       </select>
+
+     
 
       <div class="relative">
         <input type="text" name="q" value="{{ $q }}" placeholder="Search student or session ID"
@@ -34,33 +43,32 @@
     </form>
   </div>
 
-  <div class="bg-white rounded-2xl shadow-sm border border-slate-200/70 overflow-hidden">
+  {{-- PRINTABLE AREA (give the table card an id) --}}
+  <div id="listPrintable" class="bg-white rounded-2xl shadow-sm border border-slate-200/70 overflow-hidden print-area">
     <div class="overflow-x-auto">
       <table class="min-w-full text-sm table-auto">
         <thead class="bg-slate-200 text-slate-800 shadow-sm">
           <tr class="align-middle">
             <th class="px-6 py-3 text-left font-semibold uppercase tracking-wide text-[11px] whitespace-nowrap">Session ID</th>
             <th class="px-6 py-3 text-left font-semibold uppercase tracking-wide text-[11px] whitespace-nowrap">Student Name</th>
-            <th class="px-6 py-3 text-left font-semibold uppercase tracking-wide text-[11px] whitespace-nowrap">Assessment Result</th>
-            <th class="px-6 py-3 text-left font-semibold uppercase tracking-wide text-[11px] whitespace-nowrap">Assessment Date</th>
-            <th class="px-6 py-3 text-right font-semibold uppercase tracking-wide text-[11px] whitespace-nowrap">Action</th>
+            <th class="px-6 py-3 text-left font-semibold uppercase tracking-wide text-[11px] whitespace-nowrap">Initial Result</th>
+            <th class="px-6 py-3 text-left font-semibold uppercase tracking-wide text-[11px] whitespace-nowrap">Initial Date</th>
+            <th class="px-6 py-3 text-right font-semibold uppercase tracking-wide text-[11px] whitespace-nowrap no-print">Action</th>
           </tr>
         </thead>
 
         <tbody class="divide-y divide-slate-100">
           @forelse ($sessions as $s)
             <tr class="hover:bg-slate-50/70 align-middle">
-              {{-- Session code like LMC-2025-0042; fallback to #ID --}}
               @php
                 $code = 'LMC-' . now()->format('Y') . '-' . str_pad($s->id, 4, '0', STR_PAD_LEFT);
               @endphp
               <td class="px-6 py-4 whitespace-nowrap font-medium text-slate-900">{{ $code }}</td>
-
               <td class="px-6 py-4 whitespace-nowrap text-slate-800">{{ $s->user->name ?? '—' }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-slate-800">{{ $s->topic_summary ?? '—' }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-slate-800">{{ $s->created_at?->format('F d, Y') }}</td>
 
-              <td class="px-6 py-4">
+              <td class="px-6 py-4 no-print">
                 <div class="flex items-center justify-end gap-2">
                   <a href="{{ route('admin.chatbot-sessions.show', $s) }}"
                      class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-blue-600 text-white hover:bg-blue-700 active:scale-[.97] transition"
@@ -86,10 +94,66 @@
     </div>
 
     @if($sessions->hasPages())
-      <div class="px-6 py-4 bg-slate-50 border-top border-slate-200/70">
+      <div class="px-6 py-4 bg-slate-50 border-top border-slate-200/70 no-print">
         {{ $sessions->links() }}
       </div>
     @endif
   </div>
 </div>
 @endsection
+@push('scripts')
+<script>
+/**
+ * Print a specific DOM node by cloning it into a hidden iframe.
+ * Works well with popup blockers.
+ */
+window.printNode = function(selector, title = document.title) {
+  const node = document.querySelector(selector) || document.body;
+
+  // Build a hidden iframe
+  const iframe = document.createElement('iframe');
+  iframe.style.position = 'fixed';
+  iframe.style.right = '0';
+  iframe.style.bottom = '0';
+  iframe.style.width = '0';
+  iframe.style.height = '0';
+  iframe.style.border = '0';
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentWindow.document;
+
+  // Reuse page styles so the printout looks the same
+  const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+    .map(n => n.outerHTML).join('\n');
+
+  doc.open();
+  doc.write(`
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <title>${title}</title>
+        ${styles}
+        <style>
+          @page { margin: 1.2cm; }
+          @media print {
+            .no-print { display: none !important; }
+            body { background: #fff !important; }
+            .print-area { box-shadow: none !important; border: 0 !important; }
+          }
+        </style>
+      </head>
+      <body>${node.outerHTML}</body>
+    </html>
+  `);
+  doc.close();
+
+  iframe.onload = () => {
+    // Print and clean up
+    iframe.contentWindow.focus();
+    iframe.contentWindow.print();
+    setTimeout(() => document.body.removeChild(iframe), 200);
+  };
+};
+</script>
+@endpush
+

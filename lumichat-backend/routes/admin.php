@@ -50,15 +50,23 @@ Route::prefix('admin')
             ->parameters(['students' => 'student']);
 
         /* ========== CHATBOT SESSIONS (read-only) ========== */
-        Route::resource('chatbot-sessions', ChatbotSessionController::class)
-            ->only(['index', 'show'])
-            ->parameters(['chatbot-sessions' => 'session']);
+       Route::resource('chatbot-sessions', ChatbotSessionController::class)
+    ->only(['index', 'show'])
+    ->parameters(['chatbot-sessions' => 'session']);
 
-        /* ========== APPOINTMENTS (Admin) ========== */
-        Route::get('/appointments', [AdminAppointmentController::class, 'index'])->name('appointments.index');
-        Route::get('/appointments/{appointment}', [AdminAppointmentController::class, 'show'])->name('appointments.show');
-        Route::patch('/appointments/{appointment}/status', [AdminAppointmentController::class, 'updateStatus'])->name('appointments.status');
-        Route::patch('/appointments/{appointment}/final-note', [AdminAppointmentController::class, 'saveNote'])->name('appointments.saveNote');
+Route::get('chatbot-sessions/{session}/calendar',  // <-- no leading /admin
+    [ChatbotSessionController::class, 'calendarCounts']
+)->name('chatbot-sessions.calendar');              // <-- no 'admin.' here
+
+       /* ========== APPOINTMENTS (Admin) ========== */
+    Route::get('/appointments', [AdminAppointmentController::class, 'index'])->name('appointments.index');
+    Route::get('/appointments/{appointment}', [AdminAppointmentController::class, 'show'])->name('appointments.show');
+    Route::patch('/appointments/{appointment}/status', [AdminAppointmentController::class, 'updateStatus'])->name('appointments.status');
+    Route::patch('/appointments/{appointment}/final-note', [AdminAppointmentController::class, 'saveNote'])->name('appointments.saveNote');
+
+    /* NEW: save diagnosis report to tbl_diagnosis_reports */
+    Route::patch('/appointments/{appointment}/report', [AdminAppointmentController::class, 'saveReport'])
+        ->name('appointments.saveReport');
 
         /* ========== SELF-ASSESSMENTS (Controller-driven) ========== */
         Route::get('/self-assessments', [SelfAssessmentController::class, 'index'])->name('self-assessments.index');
