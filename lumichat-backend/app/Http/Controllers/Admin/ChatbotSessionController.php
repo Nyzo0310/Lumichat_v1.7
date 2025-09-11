@@ -46,4 +46,26 @@ class ChatbotSessionController extends Controller
 
         return view('admin.chatbot_sessions.show', compact('session'));
     }
+public function calendarCounts(ChatSession $session, Request $request)
+{
+    $from = $request->query('from'); // 'YYYY-MM-DD'
+    $to   = $request->query('to');   // 'YYYY-MM-DD'
+
+    if (!$from || !$to) {
+        return response()->json(['error' => 'from/to required'], 422);
+    }
+
+    // Date-only comparisons avoid timezone edge-cases
+    $counts = ChatSession::query()
+        ->where('user_id', $session->user_id)
+        ->whereDate('created_at', '>=', $from)
+        ->whereDate('created_at', '<=', $to)
+        ->selectRaw('DATE(created_at) as d, COUNT(*) as c')
+        ->groupBy('d')
+        ->pluck('c', 'd')           // ['2025-09-07' => 1, ...]
+        ->map(fn($v) => (int) $v);  // cast to int for the UI
+
+    return response()->json(['counts' => $counts]);
 }
+}
+

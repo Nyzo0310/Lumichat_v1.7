@@ -12,7 +12,71 @@
        class="text-sm text-indigo-600 hover:underline">← Back to list</a>
   </div>
 
-  {{-- Card --}}
+{{-- Chart: Appointments by Month (selectable year) --}}
+<div class="rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+    <div class="flex items-center gap-3">
+      <h3 class="text-lg font-semibold text-gray-900">
+        Appointments — <span class="font-normal text-gray-600">Monthly totals</span>
+      </h3>
+      @if(isset($total))
+        <span class="inline-flex items-center rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-medium text-indigo-700">
+          Total: {{ $total }}
+        </span>
+      @endif
+      @isset($peakLabel)
+        <span class="hidden sm:inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
+          Peak: {{ $peakLabel }}
+        </span>
+      @endisset
+    </div>
+
+   {{-- Year selector with Prev / Next --}}
+<form method="GET" action="{{ route('admin.students.show', $student->id) }}" class="flex items-center gap-2">
+  <input type="hidden" name="year" id="yearInput" value="{{ $year }}">
+
+  @php
+    $minYear = min($yearsAvailable);
+    $maxYear = max($yearsAvailable);
+  @endphp
+
+  <button type="button"
+          class="rounded-lg border px-2.5 py-1 text-sm disabled:opacity-40"
+          onclick="bumpYear(-1)"
+          {{ $year <= $minYear ? 'disabled' : '' }}
+          aria-label="Previous year">‹</button>
+
+  <label for="yearSelect" class="text-sm text-gray-600">Year</label>
+  <select id="yearSelect"
+          class="rounded-lg border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"
+          onchange="document.getElementById('yearInput').value=this.value; this.form.submit()">
+    @foreach ($yearsAvailable as $y)
+      <option value="{{ $y }}" @selected($year === (int)$y)>{{ $y }}</option>
+    @endforeach
+  </select>
+
+  <button type="button"
+          class="rounded-lg border px-2.5 py-1 text-sm disabled:opacity-40"
+          onclick="bumpYear(1)"
+          {{ $year >= $maxYear ? 'disabled' : '' }}
+          aria-label="Next year">›</button>
+</form>
+  </div>
+
+  <div class="relative h-72 md:h-80">
+    <canvas id="studentApptsChart" role="img" aria-label="Bar chart of monthly appointments for year {{ $year }}"></canvas>
+
+    {{-- Empty state --}}
+    @if (($total ?? 0) === 0)
+      <div class="absolute inset-0 grid place-items-center">
+        <div class="text-center text-sm text-gray-500">
+          No appointments recorded for {{ $year }}.
+        </div>
+      </div>
+    @endif
+  </div>
+</div>
+    {{-- Card --}}
   <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8 space-y-6 border">
     
     {{-- Info Grid --}}
@@ -40,8 +104,7 @@
         <p class="text-lg font-medium">{{ $student->year_level }}</p>
       </div>
     </div>
-
-    {{-- Dates --}}
+  {{-- Dates --}}
     <div class="border-t pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
         <p class="text-sm text-gray-500">CREATED</p>
@@ -66,4 +129,86 @@
     </div>
   </div>
 </div>
+</div>
+
+    
 @endsection
+@push('scripts')
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    (function () {
+      
+      function bumpYear(delta) {
+    const sel = document.getElementById('yearSelect');
+    const values = Array.from(sel.options).map(o => parseInt(o.value, 10)); // DESC
+    const current = parseInt(sel.value, 10);
+    const pos = values.indexOf(current);
+    const target = values[pos + (delta > 0 ? -1 : +1)]; // because values are DESC
+    if (typeof target !== 'undefined') {
+      sel.value = String(target);
+      document.getElementById('yearInput').value = String(target);
+      sel.form.submit();
+    }
+  }
+      const el = document.getElementById('studentApptsChart');
+      if (!el) return;
+
+      const data = @json($series ?? []);
+      const labels = @json($labels ?? []);
+      const total = @json($total ?? 0);
+
+      if (!total) { return; } // skip drawing when empty state
+
+      new Chart(el, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            data,
+            borderColor: '#4f46e5',
+            backgroundColor: 'rgba(99,102,241,0.35)',
+            hoverBackgroundColor: 'rgba(99,102,241,0.55)',
+            borderWidth: 1.5,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: { duration: 350 },
+          elements: { bar: { borderRadius: 6 } },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { color: '#334155' }
+            },
+            y: {
+              beginAtZero: true,
+              ticks: { precision: 0, color: '#334155' },
+              grid: { color: 'rgba(148,163,184,0.25)' }
+            }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#111827',
+              padding: 10,
+              displayColors: false,
+              callbacks: {
+                title: items => `Month: ${items[0].label}`,
+                label: ctx => `${ctx.parsed.y} appointment${ctx.parsed.y === 1 ? '' : 's'}`
+              }
+            },
+            title: {
+              display: true,
+              text: 'Appointments in ' + @json($year),
+              color: '#0f172a',
+              font: { size: 14, weight: '600' },
+              padding: { top: 4, bottom: 10 }
+            }
+          }
+        }
+      });
+    })();
+  </script>
+@endpush
