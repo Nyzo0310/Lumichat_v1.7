@@ -240,3 +240,25 @@ body.sidebar-hidden .header-newchat{
 #chat-messages::-webkit-scrollbar{ height:8px; width:8px; }
 #chat-messages::-webkit-scrollbar-thumb{ background:rgba(99,102,241,.35); border-radius:9999px; }
 #chat-messages::-webkit-scrollbar-track{ background:transparent; }
+
+/* ===== Student-only global helpers (scoped by [data-app="student"]) ===== */
+
+/* Reduce Motion */
+html[data-app="student"].reduce-motion *,
+html[data-app="student"].reduce-motion *::before,
+html[data-app="student"].reduce-motion *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+/* Text Size */
+html[data-app="student"].font-sm body { font-size: 15px; }   /* slightly smaller */
+html[data-app="student"].font-md body { font-size: 16px; }   /* default */
+html[data-app="student"].font-lg body { font-size: 17.5px; } /* slightly larger */
+
+/* Compact Layout (gentle tightening) */
+html[data-app="student"].compact .p-6 { padding: 1rem !important; }
+html[data-app="student"].compact .px-6 { padding-left: 1rem !important; padding-right: 1rem !important; }
+html[data-app="student"].compact .py-6 { padding-top: 1rem !important;  padding-bottom: 1rem !important; }
+html[data-app="student"].compact .h-11 { height: 2.5rem !important; }
