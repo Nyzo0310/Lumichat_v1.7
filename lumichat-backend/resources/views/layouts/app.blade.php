@@ -5,7 +5,42 @@
   <title>LumiCHAT</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Dark mode boot (respects localStorage('lumichat_dark')) -->
+ @php
+  // Decide if current user should get student-scoped global prefs
+  $isStudent = Auth::check() && (strtolower((string)(Auth::user()->role ?? 'student')) === 'student');
+@endphp
+
+@if($isStudent)
+  <!-- Student global prefs boot (runs before CSS to avoid flicker) -->
+  <script>
+    (() => {
+      try {
+        const root = document.documentElement;
+
+        // Mark this HTML as "student app" so CSS is scoped
+        root.setAttribute('data-app', 'student');
+
+        const get = k => localStorage.getItem(k);
+
+        // Dark mode
+        const dark = get('lumichat_dark');
+        const wantsDark = dark === '1' || (!dark && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        root.classList.toggle('dark', !!wantsDark);
+
+        // Reduce Motion
+        root.classList.toggle('reduce-motion', get('lumichat_reduce_motion') === '1');
+
+        // Text Size
+        const fs = get('lumichat_font_size') || 'md';
+        root.classList.add('font-' + (['sm','md','lg'].includes(fs) ? fs : 'md'));
+
+        // Compact
+        root.classList.toggle('compact', get('lumichat_compact') === '1');
+      } catch (e) {}
+    })();
+  </script>
+@else
+  <!-- Non-students keep simple dark boot -->
   <script>
     try {
       const pref = localStorage.getItem('lumichat_dark');
@@ -13,6 +48,8 @@
       if (wantsDark) document.documentElement.classList.add('dark');
     } catch (e) {}
   </script>
+@endif
+
 
   {{-- Fonts & Tailwind/Vite --}}
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
@@ -280,6 +317,33 @@
   <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  @stack('scripts')
+  @isset($isStudent)
+  @if($isStudent)
+    <script>
+      // Keep other open student tabs in sync when settings change
+      window.addEventListener('storage', (e) => {
+        const root = document.documentElement;
+        switch (e.key) {
+          case 'lumichat_dark': {
+            const wantsDark = e.newValue === '1' || (!e.newValue && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            root.classList.toggle('dark', !!wantsDark);
+            break;
+          }
+          case 'lumichat_reduce_motion':
+            root.classList.toggle('reduce-motion', e.newValue === '1');
+            break;
+          case 'lumichat_font_size':
+            ['font-sm','font-md','font-lg'].forEach(c => root.classList.remove(c));
+            root.classList.add('font-' + (['sm','md','lg'].includes(e.newValue) ? e.newValue : 'md'));
+            break;
+          case 'lumichat_compact':
+            root.classList.toggle('compact', e.newValue === '1');
+            break;
+        }
+      });
+    </script>
+  @endif
+@endisset
+@stack('scripts')
 </body>
 </html>
