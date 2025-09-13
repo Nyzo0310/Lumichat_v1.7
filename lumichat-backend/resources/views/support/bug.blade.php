@@ -2,7 +2,7 @@
 @section('title', 'Report a Bug')
 
 @section('content')
-<div class="max-w-4xl mx-auto p-4 sm:p-6 space-y-6">
+<div class="max-w-5xl mx-auto p-4 sm:p-6 space-y-6">
 
   {{-- Header --}}
   <div class="flex items-start justify-between gap-3">
