@@ -12,14 +12,14 @@
       ? 'Starts in '.$dt->diffForHumans($now, ['parts'=>2,'short'=>true,'syntax'=>Carbon::DIFF_RELATIVE_TO_NOW])
       : 'Started '.$dt->diffForHumans($now, ['parts'=>2,'short'=>true,'syntax'=>Carbon::DIFF_RELATIVE_TO_NOW]);
 
+  $hasStarted = $now->gte($dt);                        // has the start time passed?
 
-$hasStarted = $now->gte($dt);                                // has start time passed?
-$canConfirm = $appointment->status === 'pending';
-$canDone    = ($appointment->status === 'confirmed') && $hasStarted;
+  $canConfirm = ($appointment->status === 'pending');
+  $canDone    = ($appointment->status === 'confirmed') && $hasStarted;
 
-$doneTitle = $appointment->status !== 'confirmed'
-    ? 'You can only mark confirmed appointments as done'
-    : ($hasStarted ? 'Mark as completed' : 'You can only mark as done after the scheduled start time');
+  $doneTitle = $appointment->status !== 'confirmed'
+      ? 'You can only mark confirmed appointments as done'
+      : ($hasStarted ? 'Mark as completed' : 'You can only mark as done after the scheduled start time');
 
   $badgeMap = [
     'pending'   => 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200',
@@ -36,12 +36,7 @@ $doneTitle = $appointment->status !== 'confirmed'
   $cls = $badgeMap[$appointment->status] ?? 'bg-gray-100 text-gray-700';
   $dot = $dotMap[$appointment->status] ?? 'bg-gray-400';
 
-  $canConfirm = $appointment->status === 'pending';
-  $canDone    = $appointment->status === 'confirmed';
-
-  
-          $bookedAt = $appointment->created_at ? Carbon::parse($appointment->created_at) : null;
-      
+  $bookedAt = $appointment->created_at ? Carbon::parse($appointment->created_at) : null;
 @endphp
 
 
@@ -72,42 +67,45 @@ $doneTitle = $appointment->status !== 'confirmed'
         </div>
       </div>
 
-      {{-- Actions up top --}}
-     <div class="flex items-center gap-2 no-print">
- 
+<div class="flex items-center gap-2 no-print">
 
 
-        {{-- Confirm --}}
-        <form method="POST" action="{{ route('admin.appointments.status', $appointment->id) }}"
-              onsubmit="return askAction(event, this, 'confirm')">
-          @csrf @method('PATCH')
-           <button type="button"
+
+  {{-- Confirm (its own form) --}}
+  <form method="POST"
+        action="{{ route('admin.appointments.status', $appointment->id) }}"
+        onsubmit="return askAction(event, this, 'confirm')">
+    @csrf @method('PATCH')
+      {{-- Print --}}
+  <button type="button"
           class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white ring-1 ring-slate-200 text-slate-800 hover:bg-slate-50"
           onclick="printNode('#appointmentPrintable', 'Appointment #{{ $appointment->id }}')">
     Print
   </button>
-          <input type="hidden" name="action" value="confirm">
-          <button type="submit"
-                  title="{{ $canConfirm ? 'Confirm this appointment' : 'Only pending appointments can be confirmed' }}"
-                  class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                  {{ $canConfirm ? '' : 'disabled' }}>
-            Confirm
-          </button>
-      <form method="POST" action="{{ route('admin.appointments.status', $appointment->id) }}"
-      onsubmit="return askAction(event, this, 'done')">
-  @csrf @method('PATCH')
-  <input type="hidden" name="action" value="done">
-  <button type="submit"
-          title="{{ $doneTitle }}"
-          class="px-4 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          {{ $canDone ? '' : 'disabled' }}>
-    Done
-  </button>
-</form>
+    <input type="hidden" name="action" value="confirm">
+    <button type="submit"
+            title="{{ $canConfirm ? 'Confirm this appointment' : 'Only pending appointments can be confirmed' }}"
+            class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            {{ $canConfirm ? '' : 'disabled' }}>
+      Confirm
+    </button>
+  </form>
 
-</form>
+  {{-- Done (its own form) --}}
+  <form method="POST"
+        action="{{ route('admin.appointments.status', $appointment->id) }}"
+        onsubmit="return askAction(event, this, 'done')">
+    @csrf @method('PATCH')
+    <input type="hidden" name="action" value="done">
+    <button type="submit"
+            title="{{ $doneTitle }}"
+            class="px-4 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+      Done
+    </button>
+  </form>
 
-      </div>
+</div>
     </div>
 
 {{-- Meta --}}

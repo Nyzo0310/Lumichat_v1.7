@@ -122,10 +122,7 @@ public function show(int $id)
 
     public function updateStatus(Request $r, int $id)
 {
-    $r->validate([
-        'action' => 'required|in:confirm,done',
-    ]);
-
+    
     $map = ['confirm' => 'confirmed', 'done' => 'completed'];
     $newStatus = $map[$r->input('action')];
 
