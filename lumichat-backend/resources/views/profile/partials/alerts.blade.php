@@ -2,15 +2,27 @@
 document.addEventListener('DOMContentLoaded', () => {
   const hasSwal = typeof Swal !== 'undefined';
 
-  const status = @json(session('status'));
+  let status = @json(session('status'));
   const error  = @json(session('error'));
   const warn   = @json(session('warning'));
   const infos  = @json(session('info'));
   const errors = @json($errors->all());
 
-  const toast = (title, icon='info', timer=2200) => {
+  // ✅ Map statuses to friendly text
+  if (status === 'profile-updated')  status = 'Profile updated successfully';
+  if (status === 'password-updated') status = 'Password updated successfully';
+  if (status === 'account-deleted')  status = 'Account deleted permanently';
+
+  const toast = (title, icon='info', timer=2500) => {
     if (!hasSwal || !title) return;
-    Swal.fire({ toast:true, position:'top-end', showConfirmButton:false, timer, icon, title });
+    Swal.fire({
+      toast: true,
+      position: 'top-end',  // ✅ right side
+      showConfirmButton: false,
+      timer,
+      icon,
+      title
+    });
   };
 
   if (status) toast(status, 'success');
@@ -25,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     Swal.fire({ icon:'error', title:'Please fix the following', html });
   }
 
-  // Expose a simple global helper if you want to use it elsewhere
+  // Global helper
   window.toast = toast;
 });
 </script>

@@ -297,4 +297,8 @@
   @endif
 })();
 </script>
+  {{-- SweetAlert + global alerts --}}
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  @include('profile.partials.alerts')
+  @stack('scripts')
 @endsection

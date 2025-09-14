@@ -316,6 +316,7 @@
 
   <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  @include('profile.partials.alerts') 
 
   @isset($isStudent)
   @if($isStudent)
