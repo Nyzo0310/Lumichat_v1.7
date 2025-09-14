@@ -7,7 +7,6 @@
     </p>
   </header>
 
-  {{-- Trigger (SweetAlert confirm first) --}}
   <button
     type="button"
     id="btn-delete-account"
@@ -16,9 +15,9 @@
     {{ __('Delete Account') }}
   </button>
 
-  {{-- === Pure-Alpine centered modal with animations === --}}
+  {{-- Default hidden; x-cloak on wrapper, overlay, and panel --}}
   <div
-    x-data="{ show: @js($errors->userDeletion->isNotEmpty()) }"
+    x-data="{ show: false }"
     x-cloak
     x-on:open-delete-modal.window="
       show = true;
@@ -29,6 +28,7 @@
   >
     <!-- Overlay -->
     <div
+      x-cloak
       x-show="show"
       x-transition.opacity.duration.200ms
       class="fixed inset-0 bg-black/40 backdrop-blur-[2px]"
@@ -40,6 +40,7 @@
       method="post"
       action="{{ route('profile.destroy') }}"
 
+      x-cloak
       x-show="show"
       x-transition:enter="ease-out duration-200"
       x-transition:enter-start="opacity-0 scale-95 translate-y-1"
@@ -52,7 +53,6 @@
       x-ref="form"
       @keydown.escape.window="show=false"
       @submit.prevent="
-        // disable button & play exit animation before submit
         $refs.submitBtn.disabled = true;
         $refs.submitBtn.classList.add('opacity-70','cursor-not-allowed');
         $refs.submitBtn.textContent = 'Deleting…';
@@ -63,11 +63,7 @@
       @csrf
       @method('delete')
 
-      {{-- Animated title --}}
-      <h2
-        class="title-dynamic text-lg font-medium"
-        :class="show ? 'animate-modal-title' : ''"
-      >
+      <h2 class="title-dynamic text-lg font-medium" :class="show ? 'animate-modal-title' : ''">
         {{ __('Are you sure you want to delete your account?') }}
       </h2>
 
@@ -110,15 +106,12 @@
 
 @push('styles')
 <style>
-/* Small pop-in animation for the modal title */
 @keyframes modalTitlePop {
   0%   { opacity: 0; transform: translateY(6px) scale(.98); }
   60%  { opacity: 1; transform: translateY(-1px) scale(1.01); }
   100% { opacity: 1; transform: translateY(0) scale(1); }
 }
-.animate-modal-title {
-  animation: modalTitlePop .28s cubic-bezier(.2,.8,.2,1) 1;
-}
+.animate-modal-title { animation: modalTitlePop .28s cubic-bezier(.2,.8,.2,1) 1; }
 </style>
 @endpush
 
@@ -145,6 +138,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (res.isConfirmed) openModal();
   });
+
+  // Auto-open only if server-side password errors exist (no initial flash)
+  if (@json($errors->userDeletion->isNotEmpty())) {
+    openModal();
+  }
 });
 </script>
 @endpush
