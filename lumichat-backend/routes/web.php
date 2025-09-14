@@ -90,7 +90,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/settings',  [SettingsController::class, 'index'])->name('settings.index');
     Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
 });
-
+Route::view('/support/contact', 'support.contact')->name('support.contact');
+Route::view('/support/bug', 'support.bug')->name('support.bug');
 /*
 |--------------------------------------------------------------------------
 | Auth scaffolding (login, logout, password reset, etc.)

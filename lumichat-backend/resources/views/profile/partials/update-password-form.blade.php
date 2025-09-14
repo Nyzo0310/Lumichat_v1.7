@@ -1,12 +1,8 @@
 {{-- resources/views/profile/partials/update-password-form.blade.php --}}
-<section>
+<section id="update-password-section">
   <header>
-    <h2 class="title-dynamic text-lg font-medium">
-      {{ __('Update Password') }}
-    </h2>
-    <p class="mt-1 muted-dynamic text-sm">
-      {{ __('Ensure your account is using a long, random password to stay secure.') }}
-    </p>
+    <h2 class="title-dynamic text-lg font-medium">{{ __('Update Password') }}</h2>
+    <p class="mt-1 muted-dynamic text-sm">{{ __('Ensure your account is using a long, random password to stay secure.') }}</p>
   </header>
 
   <form method="post" action="{{ route('password.update') }}" class="mt-6 space-y-6">

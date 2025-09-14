@@ -1,199 +1,256 @@
 @extends('layouts.app')
-
 @section('title', 'Settings')
 
 @section('content')
-<div class="max-w-5xl mx-auto p-6 space-y-8">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 
+<div class="max-w-5xl mx-auto p-4 sm:p-6 space-y-6">
   {{-- Page header --}}
-  <div>
+  <div class="space-y-1">
     <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Settings</h2>
-    <p class="text-sm text-gray-500 dark:text-gray-400">Manage notifications, chat session controls, and interface preferences.</p>
+    <p class="text-sm text-gray-500 dark:text-gray-400">Quick preferences for your LumiCHAT experience.</p>
   </div>
 
-  @if(session('success'))
-    <div class="rounded-xl bg-green-50 border border-green-200 text-green-700 px-4 py-3">
-      {{ session('success') }}
+  {{-- ================= Card: Display & Accessibility ================= --}}
+  <section class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm overflow-hidden">
+    {{-- Section header bar --}}
+    <div class="flex items-center gap-3 px-4 sm:px-6 py-3.5 bg-gray-50/80 dark:bg-white/5 border-b border-gray-100 dark:border-gray-800">
+      <img src="{{ asset('images/icons/display.png') }}" alt="Display Icon"
+           class="w-6 h-6 dark:invert select-none" draggable="false">
+      <div class="min-w-0">
+        <h3 class="text-[15px] font-semibold tracking-tight text-gray-900 dark:text-gray-100">
+          Display &amp; Accessibility
+        </h3>
+        <p class="text-xs text-gray-500 dark:text-gray-400">Theme, text size, and motion comfort.</p>
+      </div>
     </div>
-  @endif
 
-  <form method="POST" action="{{ route('settings.update') }}" class="space-y-6">
-    @csrf
-
-    {{-- ================= Notification Preferences ================= --}}
-    <section class="card-shell p-6">
-      <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Notification Preferences</h3>
-      <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Choose how you want to be notified about appointments and updates.</p>
-
-      <div class="grid sm:grid-cols-2 gap-4">
-        <label class="group flex items-center justify-between rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-900/70 transition px-4 py-3">
-          <div>
-            <div class="font-medium text-gray-900 dark:text-gray-100">Email Reminders</div>
-            <div class="text-xs text-gray-500 dark:text-gray-400">Receive appointment & session reminders via email.</div>
-          </div>
-          <input type="checkbox" name="email_reminders" @checked($settings->email_reminders) class="pretty-toggle">
-        </label>
-
-        <label class="group flex items-center justify-between rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-900/70 transition px-4 py-3">
-          <div>
-            <div class="font-medium text-gray-900 dark:text-gray-100">SMS Alerts</div>
-            <div class="text-xs text-gray-500 dark:text-gray-400">Get urgent updates via text message.</div>
-          </div>
-          <input type="checkbox" name="sms_alerts" @checked($settings->sms_alerts) class="pretty-toggle">
+    {{-- Section body --}}
+    <div class="divide-y divide-gray-100 dark:divide-gray-800">
+      {{-- Dark Mode --}}
+      <div class="compact-row flex items-center justify-between gap-4 px-4 sm:px-6 py-3.5">
+        <div class="min-w-0">
+          <div class="text-sm font-medium text-gray-900 dark:text-gray-100">Dark Mode</div>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Applies instantly and auto-saves.</p>
+        </div>
+        <label for="darkModeToggle" class="relative inline-flex items-center cursor-pointer select-none">
+          <input id="darkModeToggle" type="checkbox" name="dark_mode"
+                 @checked($settings->dark_mode) class="sr-only peer" aria-label="Toggle dark mode">
+          <span class="block w-14 h-8 rounded-full border transition-all duration-300
+                       bg-gray-300 dark:bg-gray-700 border-gray-300 dark:border-gray-600
+                       peer-checked:bg-indigo-600"></span>
+          <span class="absolute left-1 top-1 w-6 h-6 rounded-full bg-white shadow
+                       transition-transform duration-300 peer-checked:translate-x-6"></span>
         </label>
       </div>
-    </section>
 
-    {{-- ================= Chat Session Controls ================= --}}
-    <section class="card-shell p-6">
-      <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Chat Session Controls</h3>
-      <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Control saving and cleanup of your chat conversations.</p>
-
-      <div class="grid sm:grid-cols-2 gap-4">
-        <label class="group flex items-center justify-between rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-900/70 transition px-4 py-3">
-          <div>
-            <div class="font-medium text-gray-900 dark:text-gray-100">Auto-save Chat Sessions</div>
-            <div class="text-xs text-gray-500 dark:text-gray-400">Automatically save your conversations.</div>
-          </div>
-          <input type="checkbox" name="autosave_chats" @checked($settings->autosave_chats) class="pretty-toggle">
-        </label>
-
-        <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-900/70 transition px-4 py-3">
-          <div class="flex items-center justify-between gap-4">
-            <div>
-              <div class="font-medium text-gray-900 dark:text-gray-100">Auto-delete Old Chats</div>
-              <div class="text-xs text-gray-500 dark:text-gray-400">Delete chats older than X days (leave blank to disable).</div>
-            </div>
-            <input
-              type="number"
-              name="autodelete_days"
-              value="{{ old('autodelete_days', $settings->autodelete_days) }}"
-              placeholder="e.g., 30"
-              min="0" max="365"
-              class="w-28 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:border-indigo-500 focus:ring-indigo-500 text-sm px-3 py-2"
-            />
-          </div>
+      {{-- Text Size --}}
+      <div class="compact-row flex items-center justify-between gap-4 px-4 sm:px-6 py-3.5">
+        <div class="min-w-0">
+          <label for="fontSizeSelect" class="text-sm font-medium text-gray-900 dark:text-gray-100">Text Size</label>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Adjust overall reading size.</p>
         </div>
+        <select id="fontSizeSelect"
+                class="h-10 w-36 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+          <option value="sm">Small</option>
+          <option value="md" selected>Normal</option>
+          <option value="lg">Large</option>
+        </select>
       </div>
-    </section>
 
-    {{-- ================= Interface Customization ================= --}}
-    <section class="card-shell p-6">
-      <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Interface Customization</h3>
-      <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Switch between light and dark themes.</p>
-
-      <label class="group flex items-center justify-between rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-900/70 transition px-4 py-3">
-        <div>
-          <div class="font-medium text-gray-900 dark:text-gray-100">Dark Mode</div>
-          <div class="text-xs text-gray-500 dark:text-gray-400">Use a darker theme that’s easier on the eyes.</div>
+      {{-- Reduce Motion --}}
+      <div class="compact-row flex items-center justify-between gap-4 px-4 sm:px-6 py-3.5">
+        <div class="min-w-0">
+          <div class="text-sm font-medium text-gray-900 dark:text-gray-100">Reduce Motion</div>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Turn off animations &amp; transitions.</p>
         </div>
-        {{-- Tailwind-only Uiverse-style switch (fixed) --}}
-        <label class="relative inline-flex items-center cursor-pointer select-none">
-          <input
-            id="darkModeToggle"
-            type="checkbox"
-            name="dark_mode"
-            @checked($settings->dark_mode)
-            class="sr-only peer"
-            aria-label="Toggle dark mode"
-          >
-          <span
-            class="block w-[3.5em] h-[2em] rounded-full border border-[#414141]
-                  bg-black dark:bg-transparent   {{-- 🔥 Black track in light mode, normal in dark --}}
-                  transition-[box-shadow,border-color,background-color] duration-300 ease-[cubic-bezier(0.175,0.885,0.32,1.275)]
-                  relative
-                  peer-checked:border-[#0974f1]
-                  peer-checked:shadow-[0_0_20px_rgba(9,117,241,0.8)]
-                  peer-checked:bg-transparent    {{-- track clears when ON --}}
-                  peer-checked:[&>span]:translate-x-[1.5em]"
-          >
-            <span
-              aria-hidden="true"
-              class="absolute left-[0.2em] top-[0.2em] w-[1.4em] h-[1.4em] rounded-full bg-white
-                    transition-transform duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]"
-            ></span>
-          </span>
+        <label for="reduceMotionToggle" class="relative inline-flex items-center cursor-pointer select-none">
+          <input id="reduceMotionToggle" type="checkbox" class="sr-only peer" aria-label="Toggle reduced motion">
+          <span class="block w-14 h-8 rounded-full bg-gray-300 dark:bg-gray-700 peer-checked:bg-indigo-600 transition"></span>
+          <span class="absolute left-1 top-1 w-6 h-6 rounded-full bg-white shadow transition-transform duration-200 peer-checked:translate-x-6"></span>
         </label>
-    </section>
+      </div>
 
-    {{-- ================= Support & Feedback ================= --}}
-    <section class="card-shell p-6">
-    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">
-        Support &amp; Feedback
-    </h3>
-
-    <div class="grid sm:grid-cols-2 gap-4">
-        <a href="mailto:help@lumichat.local" class="sf-btn sf-blue">
-        Contact Support
-        </a>
-
-        <a href="#" class="sf-btn sf-purple">
-        Suggest a Feature
-        </a>
-
-        <a href="#" class="sf-btn sf-red">
-        Report a Bug
-        </a>
-
-        <a href="#" class="sf-btn sf-gray">
-        System Announcements
-        </a>
+      {{-- Compact Layout --}}
+      <div class="compact-row flex items-center justify-between gap-4 px-4 sm:px-6 py-3.5">
+        <div class="min-w-0">
+          <div class="text-sm font-medium text-gray-900 dark:text-gray-100">Compact Layout</div>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Tighter paddings for smaller screens.</p>
+        </div>
+        <label for="compactToggle" class="relative inline-flex items-center cursor-pointer select-none">
+          <input id="compactToggle" type="checkbox" class="sr-only peer" aria-label="Toggle compact layout">
+          <span class="block w-14 h-8 rounded-full bg-gray-300 dark:bg-gray-700 peer-checked:bg-indigo-600 transition"></span>
+          <span class="absolute left-1 top-1 w-6 h-6 rounded-full bg-white shadow transition-transform duration-200 peer-checked:translate-x-6"></span>
+        </label>
+      </div>
     </div>
-    </section>
+  </section>
 
-    <div class="flex justify-end">
-      <button type="submit" class="px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-medium shadow-sm hover:bg-indigo-700">
-        Save Changes
-      </button>
+  {{-- ================= Card: Chat Cleanup ================= --}}
+  <section class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm overflow-hidden">
+    {{-- Section header bar --}}
+    <div class="flex items-center gap-3 px-4 sm:px-6 py-3.5 bg-gray-50/80 dark:bg-white/5 border-b border-gray-100 dark:border-gray-800">
+      <img src="{{ asset('images/icons/trash.png') }}" alt="Chat Cleanup Icon"
+           class="w-6 h-6 dark:invert select-none" draggable="false">
+      <div class="min-w-0">
+        <h3 class="text-[15px] font-semibold tracking-tight text-gray-900 dark:text-gray-100">
+          Chat Cleanup
+        </h3>
+        <p class="text-xs text-gray-500 dark:text-gray-400">Auto-delete old conversations.</p>
+      </div>
     </div>
-  </form>
+
+    {{-- Section body --}}
+    <div class="px-4 sm:px-6 py-3.5">
+      <div class="flex items-center justify-between gap-4">
+        <div class="min-w-0">
+          <label for="autodelete_days" class="text-sm font-medium text-gray-900 dark:text-gray-100">Auto-delete Old Chats</label>
+          <p id="autodelHelp" class="text-xs text-gray-500 dark:text-gray-400">0–365 days • leave blank to disable.</p>
+        </div>
+        <input type="number" id="autodelete_days" name="autodelete_days"
+               value="{{ old('autodelete_days', $settings->autodelete_days) }}"
+               placeholder="e.g., 30" min="0" max="365" aria-describedby="autodelHelp"
+               class="w-28 h-10 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"/>
+      </div>
+    </div>
+  </section>
+
+  {{-- ================= Card: Support ================= --}}
+  <section class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm overflow-hidden">
+    {{-- Section header bar --}}
+    <div class="flex items-center gap-3 px-4 sm:px-6 py-3.5 bg-gray-50/80 dark:bg-white/5 border-b border-gray-100 dark:border-gray-800">
+      <img src="{{ asset('images/icons/support.png') }}" alt="Support Icon"
+           class="w-6 h-6 dark:invert select-none" draggable="false">
+      <div class="min-w-0">
+        <h3 class="text-[15px] font-semibold tracking-tight text-gray-900 dark:text-gray-100">
+          Support
+        </h3>
+        <p class="text-xs text-gray-500 dark:text-gray-400">Contact the team or report an issue.</p>
+      </div>
+    </div>
+
+    {{-- Section body --}}
+    <div class="p-4 sm:p-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <a href="{{ route('support.contact') }}"
+           class="inline-flex items-center justify-center h-11 rounded-xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-sm font-medium hover:bg-indigo-100 dark:hover:bg-indigo-900/50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          Contact Support
+        </a>
+        <a href="{{ route('support.bug') }}"
+           class="inline-flex items-center justify-center h-11 rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300 text-sm font-medium hover:bg-rose-100 dark:hover:bg-rose-900/50 focus:outline-none focus:ring-2 focus:ring-rose-500">
+          Report a Bug
+        </a>
+      </div>
+    </div>
+  </section>
 </div>
 
-{{-- ===== Toggles (pretty) ===== --}}
+{{-- Toast --}}
+<div id="toast" class="hidden fixed bottom-4 right-4 z-50 px-4 py-2 rounded-lg bg-gray-900 text-white text-sm shadow-lg" role="status" aria-live="polite"></div>
+
+{{-- Small CSS helpers (same behavior as before) --}}
 <style>
-.pretty-toggle{
-  -webkit-appearance:none; appearance:none;
-  width:3rem; height:1.6rem; border-radius:9999px;
-  background:#d4d4d8; position:relative; outline:none; cursor:pointer;
-  transition:background .2s ease, box-shadow .2s ease;
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,.05);
-}
-.pretty-toggle::after{
-  content:""; position:absolute; top:2px; left:2px;
-  width:1.2rem; height:1.2rem; border-radius:9999px; background:#fff;
-  transition:left .2s ease;
-  box-shadow: 0 1px 2px rgba(0,0,0,.15);
-}
-.pretty-toggle:checked{ background:#4f46e5; } /* indigo-600 */
-.pretty-toggle:checked::after{ left:calc(100% - 1.2rem - 2px); }
-.pretty-toggle:focus-visible{ box-shadow: 0 0 0 3px rgba(79,70,229,.25); }
+  /* Reduce Motion */
+  html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after {
+    animation: none !important; transition: none !important; scroll-behavior: auto !important;
+  }
+  /* Text Size */
+  html.font-sm body { font-size: 15px; }
+  html.font-md body { font-size: 16px; }
+  html.font-lg body { font-size: 17.5px; }
+  /* Compact layout tweaks */
+  html.compact .compact-row { padding-top: .5rem !important; padding-bottom: .5rem !important; }
+  html.compact .h-11 { height: 2.5rem !important; }
 </style>
 
-{{-- ===== Live Dark Mode Toggle ===== --}}
+{{-- Full logic (autosave + localStorage) --}}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const darkToggle = document.getElementById('darkModeToggle');
-  const htmlEl = document.documentElement;
+  const htmlEl          = document.documentElement;
+  const csrf            = document.querySelector('meta[name="csrf-token"]')?.content;
+  const saveUrl         = "{{ route('settings.update') }}";
+  const toastEl         = document.getElementById('toast');
 
-  // 1) Load saved preference (client-side)
-  if (localStorage.getItem('lumichat_dark') === '1') {
-    htmlEl.classList.add('dark');
-    if (darkToggle) darkToggle.checked = true;
-  } else if (localStorage.getItem('lumichat_dark') === '0') {
-    htmlEl.classList.remove('dark');
-    if (darkToggle) darkToggle.checked = false;
+  const darkToggle      = document.getElementById('darkModeToggle');
+  const autoDeleteInput = document.getElementById('autodelete_days');
+  const reduceToggle    = document.getElementById('reduceMotionToggle');
+  const fontSel         = document.getElementById('fontSizeSelect');
+  const compactToggle   = document.getElementById('compactToggle');
+
+  function toast(msg){
+    if(!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.classList.remove('hidden');
+    setTimeout(()=>toastEl.classList.add('hidden'), 1400);
   }
-  // 2) Immediate apply + persist
+
+  function autoSave(payload){
+    const fd = new FormData();
+    Object.entries(payload).forEach(([k,v]) => fd.append(k, v));
+    fetch(saveUrl, { method: 'POST', headers: { 'X-CSRF-TOKEN': csrf }, body: fd })
+      .then(() => toast('Saved'))
+      .catch(() => toast('Save failed'));
+  }
+
+  /* ---------- DARK MODE ---------- */
+  const savedDark = localStorage.getItem('lumichat_dark');
+  if (savedDark === '1') { htmlEl.classList.add('dark'); if (darkToggle) darkToggle.checked = true; }
+  if (savedDark === '0') { htmlEl.classList.remove('dark'); if (darkToggle) darkToggle.checked = false; }
   darkToggle?.addEventListener('change', () => {
-    if (darkToggle.checked) {
-      htmlEl.classList.add('dark');
-      localStorage.setItem('lumichat_dark', '1');
-    } else {
-      htmlEl.classList.remove('dark');
-      localStorage.setItem('lumichat_dark', '0');
-    }
+    const on = !!darkToggle.checked;
+    htmlEl.classList.toggle('dark', on);
+    localStorage.setItem('lumichat_dark', on ? '1' : '0');
+    autoSave({ dark_mode: on ? 1 : 0 });
+  });
+
+  /* ---------- AUTO DELETE ---------- */
+  function clampDays(val){
+    if (val === '' || val === null) return '';
+    const n = Number(val);
+    if (!Number.isFinite(n)) return '';
+    return Math.min(365, Math.max(0, n));
+  }
+  autoDeleteInput?.addEventListener('blur', () => {
+    let v = clampDays(autoDeleteInput.value.trim());
+    autoDeleteInput.value = v;
+    autoSave({ autodelete_days: v === '' ? '' : v });
+  });
+  autoDeleteInput?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); autoDeleteInput.blur(); }
+  });
+
+  /* ---------- REDUCE MOTION ---------- */
+  const rmSaved = localStorage.getItem('lumichat_reduce_motion');
+  if (rmSaved === '1') { htmlEl.classList.add('reduce-motion'); if (reduceToggle) reduceToggle.checked = true; }
+  reduceToggle?.addEventListener('change', () => {
+    const on = reduceToggle.checked;
+    htmlEl.classList.toggle('reduce-motion', on);
+    localStorage.setItem('lumichat_reduce_motion', on ? '1' : '0');
+    toast('Saved');
+  });
+
+  /* ---------- TEXT SIZE ---------- */
+  const fsSaved = localStorage.getItem('lumichat_font_size') || 'md';
+  ['font-sm','font-md','font-lg'].forEach(c => htmlEl.classList.remove(c));
+  htmlEl.classList.add('font-' + fsSaved);
+  if (fontSel) fontSel.value = fsSaved;
+
+  fontSel?.addEventListener('change', () => {
+    ['font-sm','font-md','font-lg'].forEach(c => htmlEl.classList.remove(c));
+    htmlEl.classList.add('font-' + fontSel.value);
+    localStorage.setItem('lumichat_font_size', fontSel.value);
+    toast('Saved');
+  });
+
+  /* ---------- COMPACT LAYOUT ---------- */
+  const cSaved = localStorage.getItem('lumichat_compact');
+  if (cSaved === '1') { htmlEl.classList.add('compact'); if (compactToggle) compactToggle.checked = true; }
+  compactToggle?.addEventListener('change', () => {
+    const on = compactToggle.checked;
+    htmlEl.classList.toggle('compact', on);
+    localStorage.setItem('lumichat_compact', on ? '1' : '0');
+    toast('Saved');
   });
 });
 </script>
-
 @endsection

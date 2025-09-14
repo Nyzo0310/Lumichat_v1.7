@@ -37,46 +37,50 @@ class StudentController extends Controller
 
         return view('admin.students.index', compact('students', 'q', 'year', 'yearLevels'));
     }
-    
 
 public function show(Request $request, Registration $student)
 {
-    // 1) Which year does the user want?
     $year = (int) ($request->query('year') ?: now()->year);
 
-    // 2) Find the earliest relevant year (from data OR student created_at)
+    $fkCol = 'student_id'; // column in tbl_appointments
+    // Prefer registrations.id; if no rows and user_id exists, fallback to users.id
+    $id = $student->id;
+    $hasRegRows = DB::table('tbl_appointments')->where($fkCol, $id)->exists();
+    if (!$hasRegRows && !empty($student->user_id)) {
+        $id = $student->user_id;
+    }
+
+    // earliest year for this student
     $firstYearFromData = DB::table('tbl_appointments')
-        ->where('student_id', $student->id)      // adjust FK if different
-        ->selectRaw('MIN(YEAR(scheduled_at)) as y')
+        ->where($fkCol, $id)
+        ->whereNotNull('scheduled_at')
+        ->selectRaw('MIN(YEAR(scheduled_at)) AS y')
         ->value('y');
 
-    $minYear = (int) ($firstYearFromData ?: $student->created_at->year ?: now()->year);
+    $minYear = (int) ($firstYearFromData ?: ($student->created_at?->year ?? now()->year));
     $maxYear = (int) now()->year;
+    $floor   = min($minYear, $maxYear - 4);
+    $yearsAvailable = range($maxYear, $floor); // DESC
+    $year = max(min($year, $maxYear), $floor);
 
-    // Optional: show at least the last 5 years even if there’s not much data
-    $floor = min($minYear, $maxYear - 4);
+    // monthly counts in selected year
+    $start = \Carbon\Carbon::create($year, 1, 1)->startOfDay();
+    $end   = \Carbon\Carbon::create($year, 12, 31)->endOfDay();
 
-    // 3) Years for the dropdown (DESC so newest first)
-    $yearsAvailable = range($maxYear, $floor);
-
-    // Clamp requested year into the allowed range
-    if ($year < $floor) $year = $floor;
-    if ($year > $maxYear) $year = $maxYear;
-
-    // 4) Build Jan–Dec series for the selected year
-    $rows = DB::table('tbl_appointments')
-        ->where('student_id', $student->id)
-        ->whereYear('scheduled_at', $year)
-        ->selectRaw('MONTH(scheduled_at) as m, COUNT(*) as c')
-        ->groupBy('m')
-        ->get()
-        ->keyBy('m');
+    $monthCounts = DB::table('tbl_appointments')
+        ->where($fkCol, $id)
+        ->whereBetween('scheduled_at', [$start, $end])
+        ->whereNotNull('scheduled_at')
+        ->selectRaw('MONTH(scheduled_at) AS m, COUNT(*) AS c')
+        ->groupByRaw('MONTH(scheduled_at)')
+        ->orderByRaw('m')
+        ->pluck('c', 'm'); // [9 => 3, 10 => 1, ...]
 
     $labels = [];
     $series = [];
     for ($m = 1; $m <= 12; $m++) {
-        $labels[] = Carbon::createFromDate($year, $m, 1)->format('M');
-        $series[] = (int) optional($rows->get($m))->c ?? 0;
+        $labels[] = \Carbon\Carbon::create($year, $m, 1)->format('M');
+        $series[] = (int) ($monthCounts[$m] ?? 0);
     }
 
     $total = array_sum($series);
@@ -88,4 +92,3 @@ public function show(Request $request, Registration $student)
     ));
 }
 }
-
