@@ -10,19 +10,31 @@ use Illuminate\Http\RedirectResponse;
 
 class VerifyEmailController extends Controller
 {
+    // ==== Constants (dedupe magic strings) ====
+    private const QS_VERIFIED = '?verified=1';
+
     /**
      * Mark the authenticated user's email address as verified.
      */
     public function __invoke(EmailVerificationRequest $request): RedirectResponse
     {
-        if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->intended(RouteServiceProvider::HOME.'?verified=1');
+        $user = $request->user();
+
+        if ($user->hasVerifiedEmail()) {
+            return redirect()->intended($this->verifiedHome());
         }
 
-        if ($request->user()->markEmailAsVerified()) {
-            event(new Verified($request->user()));
+        if ($user->markEmailAsVerified()) {
+            event(new Verified($user));
         }
 
-        return redirect()->intended(RouteServiceProvider::HOME.'?verified=1');
+        return redirect()->intended($this->verifiedHome());
+    }
+
+    // ==== Private helpers (no logic change) ====
+
+    private function verifiedHome(): string
+    {
+        return RouteServiceProvider::HOME . self::QS_VERIFIED;
     }
 }

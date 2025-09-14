@@ -4,18 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Registration;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProfileController extends Controller
 {
+    // ==== Constants (dedupe magic strings) ====
+    private const VIEW_EDIT        = 'profile.edit';
+    private const ROUTE_EDIT       = 'profile.edit';
+    private const FLASH_STATUS     = 'status';
+    private const FLASH_SUCCESS    = 'success';
+    private const MSG_UPDATED_KEY  = 'profile-updated';
+    private const MSG_UPDATED      = 'Profile updated';
+    private const MSG_SAVE_ERROR   = 'Something went wrong while saving. Please try again.';
+    private const MSG_DELETE_OK    = 'account-deleted';
+
     /**
      * Show the Profile page.
      */
@@ -29,7 +39,7 @@ class ProfileController extends Controller
             ->orWhere('full_name', $user->name)
             ->first();
 
-        return view('profile.edit', [
+        return view(self::VIEW_EDIT, [
             'user'         => $user,
             'registration' => $registration,
         ]);
@@ -53,9 +63,11 @@ class ProfileController extends Controller
                     'name'  => $data['name'],
                     'email' => $data['email'],
                 ]);
+
                 if ($user->isDirty('email')) {
                     $user->email_verified_at = null;
                 }
+
                 $user->save();
 
                 // Upsert Registration by email (schema without user_id)
@@ -76,15 +88,15 @@ class ProfileController extends Controller
                 }
             });
 
-            return Redirect::route('profile.edit')
-                ->with('status',  'profile-updated')
-                ->with('success', 'Profile updated');
+            return Redirect::route(self::ROUTE_EDIT)
+                ->with(self::FLASH_STATUS, self::MSG_UPDATED_KEY)
+                ->with(self::FLASH_SUCCESS, self::MSG_UPDATED);
         } catch (\Throwable $e) {
             Log::error('Profile update failed', ['user_id' => $user->id, 'err' => $e]);
 
             return back()
                 ->withInput()
-                ->with('error', 'Something went wrong while saving. Please try again.');
+                ->with('error', self::MSG_SAVE_ERROR);
         }
     }
 
@@ -106,35 +118,21 @@ class ProfileController extends Controller
         $user   = $request->user();
         $userId = $user->id;
         $email  = $user->email;
-        $type   = get_class($user);
+        $type   = \get_class($user);
 
         try {
             DB::transaction(function () use ($user, $userId, $email, $type) {
-
-                // Helper: delete from a table if it (and the columns) exist
-                $deleteIfExists = function (string $table, array $conds) {
-                    if (!Schema::hasTable($table)) return;
-                    foreach ($conds as $col => $val) {
-                        if (!Schema::hasColumn($table, $col)) return;
-                    }
-                    DB::table($table)->where($conds)->delete();
-                };
-
                 // ---- Delete dependents FIRST (adjust to your schema) ----
-                // Appointments
-                $deleteIfExists('tbl_appointments', ['student_id' => $userId]);
-                $deleteIfExists('tbl_appointments', ['email'      => $email]);
+                $this->deleteIfExists('tbl_appointments', ['student_id' => $userId]);
+                $this->deleteIfExists('tbl_appointments', ['email' => $email]);
 
                 // Chat sessions / messages
-                $deleteIfExists('tbl_chatbot_sessions', ['user_id' => $userId]);
-                $deleteIfExists('tbl_chat_messages',    ['user_id' => $userId]);
+                $this->deleteIfExists('tbl_chatbot_sessions', ['user_id' => $userId]);
+                $this->deleteIfExists('tbl_chat_messages', ['user_id' => $userId]);
 
                 // Self assessments / diagnosis
-                $deleteIfExists('tbl_self_assessment', ['user_id' => $userId]);
-                $deleteIfExists('tbl_diagnosis',       ['user_id' => $userId]);
-
-                // (Add more tables as needed)
-                // $deleteIfExists('tbl_notes', ['user_id' => $userId]);
+                $this->deleteIfExists('tbl_self_assessment', ['user_id' => $userId]);
+                $this->deleteIfExists('tbl_diagnosis', ['user_id' => $userId]);
 
                 // ---- tbl_registration rows (by user_id if present, and by email) ----
                 if (Schema::hasTable('tbl_registration')) {
@@ -148,14 +146,20 @@ class ProfileController extends Controller
 
                 // ---- Auth artifacts (if present) ----
                 // Sanctum tokens
-                if (class_exists(\Laravel\Sanctum\PersonalAccessToken::class) && Schema::hasTable('personal_access_tokens')) {
+                if (
+                    class_exists(\Laravel\Sanctum\PersonalAccessToken::class)
+                    && Schema::hasTable('personal_access_tokens')
+                ) {
                     \Laravel\Sanctum\PersonalAccessToken::where('tokenable_id', $userId)
                         ->where('tokenable_type', $type)
                         ->delete();
                 }
 
                 // Password reset tokens
-                if (Schema::hasTable('password_reset_tokens') && Schema::hasColumn('password_reset_tokens', 'email')) {
+                if (
+                    Schema::hasTable('password_reset_tokens')
+                    && Schema::hasColumn('password_reset_tokens', 'email')
+                ) {
                     DB::table('password_reset_tokens')->where('email', $email)->delete();
                 }
 
@@ -165,9 +169,10 @@ class ProfileController extends Controller
                 }
 
                 // ---- Delete the user row (force if soft-deleting model) ----
-                $usesSoftDeletes = in_array(
+                $usesSoftDeletes = \in_array(
                     SoftDeletes::class,
-                    class_uses_recursive($user)
+                    class_uses_recursive($user),
+                    true
                 );
 
                 if ($usesSoftDeletes) {
@@ -184,10 +189,8 @@ class ProfileController extends Controller
 
             return redirect()
                 ->route('login')
-                ->with('status', 'account-deleted'); // your alerts show this as a toast
+                ->with(self::FLASH_STATUS, self::MSG_DELETE_OK); // your alerts show this as a toast
         } catch (\Throwable $e) {
-            DB::rollBack();
-
             Log::error('Account deletion error', [
                 'user_id' => $userId,
                 'email'   => $email,
@@ -196,13 +199,36 @@ class ProfileController extends Controller
 
             if (config('app.debug')) {
                 return back()->withErrors([
-                    'password' => 'Could not delete account: '.$e->getMessage()
+                    'password' => 'Could not delete account: ' . $e->getMessage(),
                 ], 'userDeletion');
             }
 
             return back()->withErrors([
-                'password' => 'Could not delete account. Please try again.'
+                'password' => 'Could not delete account. Please try again.',
             ], 'userDeletion');
         }
+    }
+
+    // ==== Private helpers (no logic change) ====
+
+    /**
+     * Delete rows from a table if it (and required columns) exists.
+     *
+     * @param  string $table
+     * @param  array<string, mixed> $conds
+     */
+    private function deleteIfExists(string $table, array $conds): void
+    {
+        if (!Schema::hasTable($table)) {
+            return;
+        }
+
+        foreach ($conds as $col => $_) {
+            if (!Schema::hasColumn($table, $col)) {
+                return;
+            }
+        }
+
+        DB::table($table)->where($conds)->delete();
     }
 }

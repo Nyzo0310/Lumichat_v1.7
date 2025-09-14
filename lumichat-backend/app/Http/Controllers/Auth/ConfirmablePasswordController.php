@@ -12,12 +12,17 @@ use Illuminate\View\View;
 
 class ConfirmablePasswordController extends Controller
 {
+    // ==== Constants ====
+    private const VIEW_CONFIRM   = 'auth.confirm-password';
+    private const GUARD          = 'web';
+    private const SESSION_KEY    = 'auth.password_confirmed_at';
+
     /**
      * Show the confirm password view.
      */
     public function show(): View
     {
-        return view('auth.confirm-password');
+        return view(self::VIEW_CONFIRM);
     }
 
     /**
@@ -25,8 +30,9 @@ class ConfirmablePasswordController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        if (! Auth::guard('web')->validate([
-            'email' => $request->user()->email,
+        // Same credential validation as your original code
+        if (! Auth::guard(self::GUARD)->validate([
+            'email'    => $request->user()->email,
             'password' => $request->password,
         ])) {
             throw ValidationException::withMessages([
@@ -34,8 +40,10 @@ class ConfirmablePasswordController extends Controller
             ]);
         }
 
-        $request->session()->put('auth.password_confirmed_at', time());
+        // Same session flag
+        $request->session()->put(self::SESSION_KEY, \time());
 
+        // Same redirect behavior
         return redirect()->intended(RouteServiceProvider::HOME);
     }
 }
