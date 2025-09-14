@@ -327,4 +327,27 @@ html[data-app="student"].compact .h-11 { height: 2.5rem !important; }
     @apply border-indigo-600 bg-indigo-600 text-white shadow-md
            hover:bg-indigo-600 hover:border-indigo-600;
   }
+
+
+  /* =========================================
+   11.) PROFILE CARDS (equal header height & smooth press)
+   ========================================= */
+  .form-head{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:.75rem; margin-bottom:.75rem; min-height:44px; /* matches 40–44px buttons */
+  }
+
+  /* Footprint for the real "Edit profile" button AND the invisible spacer */
+  .btn-size{
+    display:inline-flex; align-items:center; justify-content:center;
+    height:40px;                 /* same visual height as your .btn-primary */
+    padding:0 1rem;              /* similar horizontal padding */
+    min-width:116px;             /* matches "Edit profile" width; tweak if needed */
+    border-radius:.75rem;
+  }
+
+  /* optional: micro press feedback (you already use btn-press elsewhere) */
+  .btn-press{ transition:transform .12s ease, box-shadow .12s ease; }
+  .btn-press:active{ transform:translateY(1px) scale(.985); }
+
 }

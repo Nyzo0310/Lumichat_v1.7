@@ -1,3 +1,4 @@
+{{-- resources/views/profile/edit.blade.php --}}
 @extends('layouts.app')
 @section('title', 'Profile')
 
@@ -8,18 +9,15 @@
 @endphp
 
 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-3">
-
-  {{-- Hero / Greeting --}}
-  <header class="ui-appear rounded-2xl border border-gray-200/70 dark:border-gray-700
+  {{-- Greeting / hero --}}
+  <header class="rounded-2xl border border-gray-200/70 dark:border-gray-700
                  bg-gradient-to-r from-indigo-50/80 via-violet-50/70 to-fuchsia-50/60
                  dark:from-gray-800 dark:via-gray-800 dark:to-gray-800/70
-                 shadow-sm p-6 md:p-8 text-center"
-          style="animation-delay:.02s">
+                 shadow-sm p-6 md:p-8 text-center animate-card">
     <div class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold
                 bg-white/80 dark:bg-gray-900/60 text-indigo-600 dark:text-indigo-300
                 border border-indigo-100/60 dark:border-gray-700">
-      <span>👋</span>
-      <span>Welcome</span>
+      <span>👋</span><span>Welcome</span>
     </div>
 
     <h1 class="mt-3 text-2xl md:text-3xl font-semibold tracking-tight title-dynamic">
@@ -31,61 +29,104 @@
     </p>
   </header>
 
-  {{-- Content grid --}}
-  <div class="mt-6 md:mt-8 grid gap-6 md:gap-8 lg:grid-cols-12">
+  {{-- Cards --}}
+  <div class="mt-6 md:mt-8 grid gap-6 md:gap-8 lg:grid-cols-12 items-stretch" data-sync-group="profile-password">
 
-    {{-- Profile Information (wider) --}}
-    <section class="ui-appear lg:col-span-7 card-shell p-5 sm:p-6 lg:p-7 h-full flex flex-col"
-             style="animation-delay:.06s">
+    {{-- Profile Information (read view + slide-over editor inside the partial) --}}
+    <section class="lg:col-span-7 card-shell p-5 sm:p-6 lg:p-7 animate-card" data-sync-root>
       @include('profile.partials.update-profile-information-form', [
         'user'         => $user,
         'registration' => $registration ?? null,
       ])
     </section>
 
-    {{-- Update Password (narrower) --}}
-    <section class="ui-appear lg:col-span-5 card-shell p-5 sm:p-6 lg:p-7 h-full flex flex-col"
-             style="animation-delay:.09s">
+    {{-- Update Password --}}
+    <section class="lg:col-span-5 card-shell p-5 sm:p-6 lg:p-7 animate-card" data-sync-root>
       @include('profile.partials.update-password-form')
     </section>
 
-    {{-- Delete Account (full width) --}}
-    <section class="ui-appear lg:col-span-12 card-shell p-5 sm:p-6 lg:p-7"
-             style="animation-delay:.12s">
+    {{-- Delete Account --}}
+    <section class="lg:col-span-12 card-shell p-5 sm:p-6 lg:p-7 animate-card">
       @include('profile.partials.delete-user-form')
     </section>
   </div>
 </div>
+@endsection
 
-{{-- Styles for animation + aligned headers (see B/C below) --}}
 @push('styles')
 <style>
-/* ============ Smooth enter animation ============ */
-@keyframes uiEnter {
-  0%   { opacity:0; transform: translateY(10px) scale(.985); }
-  60%  { opacity:1; transform: translateY(-2px) scale(1.005); }
-  100% { opacity:1; transform: translateY(0)   scale(1); }
-}
-.ui-appear { animation: uiEnter .42s cubic-bezier(.2,.8,.2,1) both; }
+  /* Entrance animation for hero + cards */
+  .animate-card { animation: fadeSlideUp .35s cubic-bezier(.21,.8,.26,1) both; }
+  @keyframes fadeSlideUp {
+    0%   { opacity:0; transform: translateY(10px) scale(.98); }
+    100% { opacity:1; transform: translateY(0) scale(1); }
+  }
 
-/* ============ Uniform form header rows ============ */
-.form-head{
-  display:flex; align-items:center; justify-content:space-between; gap:.75rem;
-  min-height: 44px;            /* same height for both cards’ header line */
-  margin-bottom:.75rem;
-}
-@media (min-width: 640px){ .form-head{ min-height: 46px; } }
+  /* Shared header row; keeps titles + right-side actions aligned across cards */
+  .form-head{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:.75rem; margin-bottom:.75rem; min-height:44px;
+  }
+  @media (min-width:640px){ .form-head{ min-height:46px; } }
 
-/* Button “size reference” so the other side can have an invisible spacer */
-.btn-size{
-  display:inline-flex; align-items:center; justify-content:center;
-  height: 38px; padding: .5rem 1rem; border-radius:.75rem;
-  font-weight:600;
-}
-/* Tiny press effect for call-to-actions */
-.btn-press { transition: transform .1s ease, box-shadow .12s ease; }
-.btn-press:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(99,102,241,.18); }
-.btn-press:active{ transform: translateY(0);   box-shadow: 0 4px 10px rgba(99,102,241,.16); }
+  /* A fixed-size “button footprint” so headers can align even if one side is empty */
+  .btn-size{ height:40px; padding:0 1rem; border-radius:.75rem; display:inline-flex; align-items:center; }
+
+  /* Subtle press effect for CTAs */
+  .btn-press{ transition: transform .12s ease, box-shadow .12s ease; }
+  .btn-press:active{ transform: translateY(1px) scale(.985); }
 </style>
 @endpush
-@endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  /* ===== Equalize the card header heights (title + right action) ===== */
+  function equalizeHeads() {
+    document.querySelectorAll('[data-sync-group]').forEach(group => {
+      const heads = group.querySelectorAll('.form-head');
+      let max = 0;
+      heads.forEach(h => { h.style.minHeight = 'auto'; max = Math.max(max, h.getBoundingClientRect().height); });
+      heads.forEach(h => h.style.minHeight = Math.ceil(max) + 'px');
+    });
+  }
+  equalizeHeads();
+  window.addEventListener('resize', equalizeHeads);
+  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(equalizeHeads); }
+
+  /* ===== Smooth “Saving…” UX on Update Password ===== */
+  const pwForm = document.querySelector('#update-password-section form');
+  if (pwForm) {
+    const btn = pwForm.querySelector('button[type="submit"]');
+    pwForm.addEventListener('submit', () => {
+      if (!btn) return;
+      btn.disabled = true;
+      btn.classList.add('opacity-80','cursor-not-allowed');
+      btn.dataset._label = btn.textContent;
+      btn.textContent = 'Saving…';
+    }, { once: true });
+  }
+
+  /* ===== Delete Account: SweetAlert confirm → open Alpine modal ===== */
+  const primaryDeleteBtn = document.getElementById('btn-delete-account');
+  const openModal = () => window.dispatchEvent(new CustomEvent('open-delete-modal'));
+  if (primaryDeleteBtn) {
+    primaryDeleteBtn.addEventListener('click', async () => {
+      if (typeof Swal === 'undefined') return openModal();
+      const res = await Swal.fire({
+        icon: 'warning',
+        title: 'Delete account permanently?',
+        html: 'This action <b>cannot be undone</b>. Your account and related data will be deleted forever.',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete permanently',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#dc2626',
+        focusCancel: true,
+        reverseButtons: true
+      });
+      if (res.isConfirmed) openModal();
+    });
+  }
+});
+</script>
+@endpush

@@ -1,36 +1,47 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
+@stack('styles')
   <meta charset="utf-8" />
   <title>LumiCHAT</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
  @php
+  // Decide if current user should get student-scoped global prefs
   $isStudent = Auth::check() && (strtolower((string)(Auth::user()->role ?? 'student')) === 'student');
 @endphp
 
 @if($isStudent)
+  <!-- Student global prefs boot (runs before CSS to avoid flicker) -->
   <script>
     (() => {
       try {
         const root = document.documentElement;
+
+        // Mark this HTML as "student app" so CSS is scoped
         root.setAttribute('data-app', 'student');
+
         const get = k => localStorage.getItem(k);
 
+        // Dark mode
         const dark = get('lumichat_dark');
         const wantsDark = dark === '1' || (!dark && window.matchMedia('(prefers-color-scheme: dark)').matches);
         root.classList.toggle('dark', !!wantsDark);
 
+        // Reduce Motion
         root.classList.toggle('reduce-motion', get('lumichat_reduce_motion') === '1');
 
+        // Text Size
         const fs = get('lumichat_font_size') || 'md';
         root.classList.add('font-' + (['sm','md','lg'].includes(fs) ? fs : 'md'));
 
+        // Compact
         root.classList.toggle('compact', get('lumichat_compact') === '1');
       } catch (e) {}
     })();
   </script>
 @else
+  <!-- Non-students keep simple dark boot -->
   <script>
     try {
       const pref = localStorage.getItem('lumichat_dark');
@@ -54,6 +65,12 @@
   @stack('styles')
 
   @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+  <!-- Global z-index helpers so teleported modals always sit above the blur -->
+  <style id="lumi-modal-zfix">
+    .modal-z  { z-index: 2147483646 !important; } /* backdrop */
+    .modal-zp { z-index: 2147483647 !important; } /* dialog */
+  </style>
 </head>
 
 <body class="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
@@ -320,7 +337,6 @@
       </script>
     @endif
   @endisset
-
   @stack('scripts')
 </body>
 </html>
