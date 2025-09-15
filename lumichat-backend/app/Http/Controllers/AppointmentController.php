@@ -333,7 +333,7 @@ class AppointmentController extends Controller
     }
 
     /* Cancel (student) */
-    public function cancel($id, Request $request)
+    public function cancel($id, Request $request)   
     {
         $userId = Auth::id();
 

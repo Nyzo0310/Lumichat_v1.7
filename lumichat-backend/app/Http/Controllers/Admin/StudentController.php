@@ -42,8 +42,7 @@ public function show(Request $request, Registration $student)
 {
     $year = (int) ($request->query('year') ?: now()->year);
 
-    $fkCol = 'student_id'; // column in tbl_appointments
-    // Prefer registrations.id; if no rows and user_id exists, fallback to users.id
+    $fkCol = 'student_id';
     $id = $student->id;
     $hasRegRows = DB::table('tbl_appointments')->where($fkCol, $id)->exists();
     if (!$hasRegRows && !empty($student->user_id)) {

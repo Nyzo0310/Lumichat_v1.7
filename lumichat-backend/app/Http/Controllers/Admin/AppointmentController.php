@@ -122,7 +122,6 @@ public function show(int $id)
 
     public function updateStatus(Request $r, int $id)
 {
-    
     $map = ['confirm' => 'confirmed', 'done' => 'completed'];
     $newStatus = $map[$r->input('action')];
 
