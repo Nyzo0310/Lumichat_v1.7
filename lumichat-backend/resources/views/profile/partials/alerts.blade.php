@@ -1,43 +1,61 @@
+{{-- resources/views/profile/partials/alerts.blade.php --}}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const hasSwal = typeof Swal !== 'undefined';
+  if (typeof Swal === 'undefined') return;
 
+  // ---------- helpers ----------
+  const toast = (title, icon='info', timer=2400) => {
+    if (!title) return;
+    Swal.fire({ toast:true, position:'top-end', showConfirmButton:false, timer, icon, title });
+  };
+  const bulletList = arr =>
+    '<ul style="text-align:left;margin:0;padding-left:1.1rem;">'
+    + arr.map(m => `<li>• ${m}</li>`).join('') + '</ul>';
+
+  // ---------- success toasts ----------
   let status = @json(session('status'));
-  const error  = @json(session('error'));
-  const warn   = @json(session('warning'));
-  const infos  = @json(session('info'));
-  const errors = @json($errors->all());
+  if (status === 'profile-updated')  toast('Profile updated', 'success');
+  if (status === 'password-updated') toast('Password updated', 'success');
+  if (status === 'account-deleted')  toast('Your account was deleted', 'success');
 
-  // ✅ Map statuses to friendly text
-  if (status === 'profile-updated')  status = 'Profile updated successfully';
-  if (status === 'password-updated') status = 'Password updated successfully';
-  if (status === 'account-deleted')  status = 'Account deleted permanently';
+  const warn  = @json(session('warning'));
+  const info  = @json(session('info'));
+  const error = @json(session('error'));
+  if (warn)  toast(warn, 'warning');
+  if (info)  toast(info, 'info');
+  if (error) toast(error, 'error', 3000);
 
-  const toast = (title, icon='info', timer=2500) => {
-    if (!hasSwal || !title) return;
+  // ---------- error dialogs (bags) ----------
+  const pwdErrors   = @json(optional($errors->getBag('updatePassword'))->all() ?? []);
+  const delErrors   = @json(optional($errors->getBag('userDeletion'))->all() ?? []);
+  const baseErrors  = @json(optional($errors->getBag('default'))->all() ?? []);
+
+  const showErrors = (arr, afterClose) => {
+    if (!arr || !arr.length) return;
     Swal.fire({
-      toast: true,
-      position: 'top-end',  // ✅ right side
-      showConfirmButton: false,
-      timer,
-      icon,
-      title
-    });
+      icon: 'error',
+      title: 'Please fix the following',
+      html: bulletList(arr),
+      confirmButtonText: 'OK'
+    }).then(() => afterClose && afterClose());
   };
 
-  if (status) toast(status, 'success');
-  if (warn)   toast(warn, 'warning');
-  if (infos)  toast(infos, 'info');
-  if (error)  toast(error, 'error', 2600);
-
-  if (Array.isArray(errors) && errors.length && hasSwal) {
-    const html = '<ul style="text-align:left;margin:0;padding-left:1rem">'
-               + errors.map(e => `<li>• ${e}</li>`).join('')
-               + '</ul>';
-    Swal.fire({ icon:'error', title:'Please fix the following', html });
+  if (pwdErrors.length) {
+    // Show password update errors and guide the user to the form
+    showErrors(pwdErrors, () => {
+      const sec = document.getElementById('update-password-section');
+      sec?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      document.getElementById('update_password_current_password')?.focus();
+    });
+  } else if (delErrors.length) {
+    // Wrong password in delete-account modal, etc.
+    showErrors(delErrors);
+  } else if (baseErrors.length) {
+    // Any other default-bag errors
+    showErrors(baseErrors);
   }
 
-  // Global helper
+  // Optional: expose toast globally if you need it elsewhere
   window.toast = toast;
 });
 </script>

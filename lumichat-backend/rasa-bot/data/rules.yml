@@ -1,7 +1,5 @@
 version: "3.1"
-
 rules:
-
 # ------------------------------
 # SIMPLE INTENTS
 # ------------------------------
@@ -13,22 +11,22 @@ rules:
 - rule: respond to sadness
   steps:
     - intent: express_sadness
-    - action: action_reflective_support
+    - action: utter_reflective_support
 
 - rule: respond to anxiety
   steps:
     - intent: express_anxiety
-    - action: action_reflective_support
+    - action: utter_reflective_support
 
 - rule: respond to stress
   steps:
     - intent: express_stress
-    - action: action_reflective_support
+    - action: utter_reflective_support
 
 - rule: respond to happiness
   steps:
     - intent: express_happiness
-    - action: action_reflective_support
+    - action: utter_reflective_support
 
 - rule: respond to smalltalk
   steps:
@@ -55,14 +53,13 @@ rules:
     - intent: crisis_help
     - action: utter_crisis_intro
     - action: utter_crisis_hotlines
-    - action: utter_crisis_next_steps   # <-- this asks "proceed to appointment?"
+    - action: utter_crisis_next_steps   # asks "proceed to appointment?"
 
-# NEW: After crisis next-steps prompt, user says yes → send link
 - rule: after crisis next steps, affirm → submit appointment
   steps:
     - action: utter_crisis_next_steps
     - intent: affirm
-    - action: action_submit_appointment
+    - action: utter_submit_appointment
 
 # ------------------------------
 # APPOINTMENT FORM LIFECYCLE
@@ -70,19 +67,17 @@ rules:
 - rule: start appointment form with empathy
   steps:
     - intent: book_appointment
-    - action: action_reflective_support
+    - action: utter_reflective_support
     - action: appointment_form
     - active_loop: appointment_form
 
-# FIXED: outside any form, a plain affirm can submit appointment (e.g. generic offer flows)
 - rule: outside form, affirm → submit appointment
   condition:
     - active_loop: null
   steps:
     - intent: affirm
-    - action: action_submit_appointment
+    - action: utter_submit_appointment
 
-# accept date while the form runs
 - rule: accept inform_date during appointment form
   condition:
     - active_loop: appointment_form
@@ -90,7 +85,6 @@ rules:
     - intent: inform_date
     - action: appointment_form
 
-# accept time while the form runs
 - rule: accept inform_time during appointment form
   condition:
     - active_loop: appointment_form
@@ -98,7 +92,6 @@ rules:
     - intent: inform_time
     - action: appointment_form
 
-# NEW: accept affirm (consent) while the form runs
 - rule: accept affirm during appointment form (consent)
   condition:
     - active_loop: appointment_form
@@ -106,7 +99,6 @@ rules:
     - intent: affirm
     - action: appointment_form
 
-# cancel form on deny
 - rule: cancel appointment form on deny
   condition:
     - active_loop: appointment_form
@@ -116,14 +108,13 @@ rules:
     - active_loop: null
     - action: utter_goodbye
 
-# submit after all required slots filled
 - rule: submit appointment form
   condition:
     - active_loop: appointment_form
   steps:
     - action: appointment_form
     - active_loop: null
-    - action: action_submit_appointment
+    - action: utter_submit_appointment
 
 # ------------------------------
 # OUT OF SCOPE / FALLBACK
@@ -139,6 +130,7 @@ rules:
     - action: utter_fallback
 
 
+  
 - rule: respond to addiction_p0001
   steps:
     - intent: addiction_p0001
@@ -819,3 +811,1606 @@ rules:
   steps:
     - intent: addiction_p0170
     - action: utter_addiction_p0170
+
+
+- rule: respond to anxiety_p0001
+  steps:
+    - intent: anxiety_p0001
+    - action: utter_anxiety_p0001
+- rule: respond to anxiety_p0002
+  steps:
+    - intent: anxiety_p0002
+    - action: utter_anxiety_p0002
+- rule: respond to anxiety_p0003
+  steps:
+    - intent: anxiety_p0003
+    - action: utter_anxiety_p0003
+- rule: respond to anxiety_p0004
+  steps:
+    - intent: anxiety_p0004
+    - action: utter_anxiety_p0004
+- rule: respond to anxiety_p0005
+  steps:
+    - intent: anxiety_p0005
+    - action: utter_anxiety_p0005
+- rule: respond to anxiety_p0006
+  steps:
+    - intent: anxiety_p0006
+    - action: utter_anxiety_p0006
+- rule: respond to anxiety_p0007
+  steps:
+    - intent: anxiety_p0007
+    - action: utter_anxiety_p0007
+- rule: respond to anxiety_p0008
+  steps:
+    - intent: anxiety_p0008
+    - action: utter_anxiety_p0008
+- rule: respond to anxiety_p0009
+  steps:
+    - intent: anxiety_p0009
+    - action: utter_anxiety_p0009
+- rule: respond to anxiety_p0010
+  steps:
+    - intent: anxiety_p0010
+    - action: utter_anxiety_p0010
+- rule: respond to anxiety_p0011
+  steps:
+    - intent: anxiety_p0011
+    - action: utter_anxiety_p0011
+- rule: respond to anxiety_p0012
+  steps:
+    - intent: anxiety_p0012
+    - action: utter_anxiety_p0012
+- rule: respond to anxiety_p0013
+  steps:
+    - intent: anxiety_p0013
+    - action: utter_anxiety_p0013
+- rule: respond to anxiety_p0014
+  steps:
+    - intent: anxiety_p0014
+    - action: utter_anxiety_p0014
+- rule: respond to anxiety_p0015
+  steps:
+    - intent: anxiety_p0015
+    - action: utter_anxiety_p0015
+- rule: respond to anxiety_p0016
+  steps:
+    - intent: anxiety_p0016
+    - action: utter_anxiety_p0016
+- rule: respond to anxiety_p0017
+  steps:
+    - intent: anxiety_p0017
+    - action: utter_anxiety_p0017
+- rule: respond to anxiety_p0018
+  steps:
+    - intent: anxiety_p0018
+    - action: utter_anxiety_p0018
+- rule: respond to anxiety_p0019
+  steps:
+    - intent: anxiety_p0019
+    - action: utter_anxiety_p0019
+- rule: respond to anxiety_p0020
+  steps:
+    - intent: anxiety_p0020
+    - action: utter_anxiety_p0020
+- rule: respond to anxiety_p0021
+  steps:
+    - intent: anxiety_p0021
+    - action: utter_anxiety_p0021
+- rule: respond to anxiety_p0022
+  steps:
+    - intent: anxiety_p0022
+    - action: utter_anxiety_p0022
+- rule: respond to anxiety_p0023
+  steps:
+    - intent: anxiety_p0023
+    - action: utter_anxiety_p0023
+- rule: respond to anxiety_p0024
+  steps:
+    - intent: anxiety_p0024
+    - action: utter_anxiety_p0024
+- rule: respond to anxiety_p0025
+  steps:
+    - intent: anxiety_p0025
+    - action: utter_anxiety_p0025
+- rule: respond to anxiety_p0026
+  steps:
+    - intent: anxiety_p0026
+    - action: utter_anxiety_p0026
+- rule: respond to anxiety_p0027
+  steps:
+    - intent: anxiety_p0027
+    - action: utter_anxiety_p0027
+- rule: respond to anxiety_p0028
+  steps:
+    - intent: anxiety_p0028
+    - action: utter_anxiety_p0028
+- rule: respond to anxiety_p0029
+  steps:
+    - intent: anxiety_p0029
+    - action: utter_anxiety_p0029
+- rule: respond to anxiety_p0030
+  steps:
+    - intent: anxiety_p0030
+    - action: utter_anxiety_p0030
+- rule: respond to anxiety_p0031
+  steps:
+    - intent: anxiety_p0031
+    - action: utter_anxiety_p0031
+- rule: respond to anxiety_p0032
+  steps:
+    - intent: anxiety_p0032
+    - action: utter_anxiety_p0032
+- rule: respond to anxiety_p0033
+  steps:
+    - intent: anxiety_p0033
+    - action: utter_anxiety_p0033
+- rule: respond to anxiety_p0034
+  steps:
+    - intent: anxiety_p0034
+    - action: utter_anxiety_p0034
+- rule: respond to anxiety_p0035
+  steps:
+    - intent: anxiety_p0035
+    - action: utter_anxiety_p0035
+- rule: respond to anxiety_p0036
+  steps:
+    - intent: anxiety_p0036
+    - action: utter_anxiety_p0036
+- rule: respond to anxiety_p0037
+  steps:
+    - intent: anxiety_p0037
+    - action: utter_anxiety_p0037
+- rule: respond to anxiety_p0038
+  steps:
+    - intent: anxiety_p0038
+    - action: utter_anxiety_p0038
+- rule: respond to anxiety_p0039
+  steps:
+    - intent: anxiety_p0039
+    - action: utter_anxiety_p0039
+- rule: respond to anxiety_p0040
+  steps:
+    - intent: anxiety_p0040
+    - action: utter_anxiety_p0040
+- rule: respond to anxiety_p0041
+  steps:
+    - intent: anxiety_p0041
+    - action: utter_anxiety_p0041
+- rule: respond to anxiety_p0042
+  steps:
+    - intent: anxiety_p0042
+    - action: utter_anxiety_p0042
+- rule: respond to anxiety_p0043
+  steps:
+    - intent: anxiety_p0043
+    - action: utter_anxiety_p0043
+- rule: respond to anxiety_p0044
+  steps:
+    - intent: anxiety_p0044
+    - action: utter_anxiety_p0044
+- rule: respond to anxiety_p0045
+  steps:
+    - intent: anxiety_p0045
+    - action: utter_anxiety_p0045
+- rule: respond to anxiety_p0046
+  steps:
+    - intent: anxiety_p0046
+    - action: utter_anxiety_p0046
+- rule: respond to anxiety_p0047
+  steps:
+    - intent: anxiety_p0047
+    - action: utter_anxiety_p0047
+- rule: respond to anxiety_p0048
+  steps:
+    - intent: anxiety_p0048
+    - action: utter_anxiety_p0048
+- rule: respond to anxiety_p0049
+  steps:
+    - intent: anxiety_p0049
+    - action: utter_anxiety_p0049
+- rule: respond to anxiety_p0050
+  steps:
+    - intent: anxiety_p0050
+    - action: utter_anxiety_p0050
+- rule: respond to anxiety_p0051
+  steps:
+    - intent: anxiety_p0051
+    - action: utter_anxiety_p0051
+- rule: respond to anxiety_p0052
+  steps:
+    - intent: anxiety_p0052
+    - action: utter_anxiety_p0052
+- rule: respond to anxiety_p0053
+  steps:
+    - intent: anxiety_p0053
+    - action: utter_anxiety_p0053
+- rule: respond to anxiety_p0054
+  steps:
+    - intent: anxiety_p0054
+    - action: utter_anxiety_p0054
+- rule: respond to anxiety_p0055
+  steps:
+    - intent: anxiety_p0055
+    - action: utter_anxiety_p0055
+- rule: respond to anxiety_p0056
+  steps:
+    - intent: anxiety_p0056
+    - action: utter_anxiety_p0056
+- rule: respond to anxiety_p0057
+  steps:
+    - intent: anxiety_p0057
+    - action: utter_anxiety_p0057
+- rule: respond to anxiety_p0058
+  steps:
+    - intent: anxiety_p0058
+    - action: utter_anxiety_p0058
+- rule: respond to anxiety_p0059
+  steps:
+    - intent: anxiety_p0059
+    - action: utter_anxiety_p0059
+- rule: respond to anxiety_p0060
+  steps:
+    - intent: anxiety_p0060
+    - action: utter_anxiety_p0060
+- rule: respond to anxiety_p0061
+  steps:
+    - intent: anxiety_p0061
+    - action: utter_anxiety_p0061
+- rule: respond to anxiety_p0062
+  steps:
+    - intent: anxiety_p0062
+    - action: utter_anxiety_p0062
+- rule: respond to anxiety_p0063
+  steps:
+    - intent: anxiety_p0063
+    - action: utter_anxiety_p0063
+- rule: respond to anxiety_p0064
+  steps:
+    - intent: anxiety_p0064
+    - action: utter_anxiety_p0064
+- rule: respond to anxiety_p0065
+  steps:
+    - intent: anxiety_p0065
+    - action: utter_anxiety_p0065
+- rule: respond to anxiety_p0066
+  steps:
+    - intent: anxiety_p0066
+    - action: utter_anxiety_p0066
+- rule: respond to anxiety_p0067
+  steps:
+    - intent: anxiety_p0067
+    - action: utter_anxiety_p0067
+- rule: respond to anxiety_p0068
+  steps:
+    - intent: anxiety_p0068
+    - action: utter_anxiety_p0068
+- rule: respond to anxiety_p0069
+  steps:
+    - intent: anxiety_p0069
+    - action: utter_anxiety_p0069
+- rule: respond to anxiety_p0070
+  steps:
+    - intent: anxiety_p0070
+    - action: utter_anxiety_p0070
+- rule: respond to anxiety_p0071
+  steps:
+    - intent: anxiety_p0071
+    - action: utter_anxiety_p0071
+- rule: respond to anxiety_p0072
+  steps:
+    - intent: anxiety_p0072
+    - action: utter_anxiety_p0072
+- rule: respond to anxiety_p0073
+  steps:
+    - intent: anxiety_p0073
+    - action: utter_anxiety_p0073
+- rule: respond to anxiety_p0074
+  steps:
+    - intent: anxiety_p0074
+    - action: utter_anxiety_p0074
+- rule: respond to anxiety_p0075
+  steps:
+    - intent: anxiety_p0075
+    - action: utter_anxiety_p0075
+- rule: respond to anxiety_p0076
+  steps:
+    - intent: anxiety_p0076
+    - action: utter_anxiety_p0076
+- rule: respond to anxiety_p0077
+  steps:
+    - intent: anxiety_p0077
+    - action: utter_anxiety_p0077
+- rule: respond to anxiety_p0078
+  steps:
+    - intent: anxiety_p0078
+    - action: utter_anxiety_p0078
+- rule: respond to anxiety_p0079
+  steps:
+    - intent: anxiety_p0079
+    - action: utter_anxiety_p0079
+- rule: respond to anxiety_p0080
+  steps:
+    - intent: anxiety_p0080
+    - action: utter_anxiety_p0080
+- rule: respond to anxiety_p0081
+  steps:
+    - intent: anxiety_p0081
+    - action: utter_anxiety_p0081
+- rule: respond to anxiety_p0082
+  steps:
+    - intent: anxiety_p0082
+    - action: utter_anxiety_p0082
+- rule: respond to anxiety_p0083
+  steps:
+    - intent: anxiety_p0083
+    - action: utter_anxiety_p0083
+- rule: respond to anxiety_p0084
+  steps:
+    - intent: anxiety_p0084
+    - action: utter_anxiety_p0084
+- rule: respond to anxiety_p0085
+  steps:
+    - intent: anxiety_p0085
+    - action: utter_anxiety_p0085
+- rule: respond to anxiety_p0086
+  steps:
+    - intent: anxiety_p0086
+    - action: utter_anxiety_p0086
+- rule: respond to anxiety_p0087
+  steps:
+    - intent: anxiety_p0087
+    - action: utter_anxiety_p0087
+- rule: respond to anxiety_p0088
+  steps:
+    - intent: anxiety_p0088
+    - action: utter_anxiety_p0088
+- rule: respond to anxiety_p0089
+  steps:
+    - intent: anxiety_p0089
+    - action: utter_anxiety_p0089
+- rule: respond to anxiety_p0090
+  steps:
+    - intent: anxiety_p0090
+    - action: utter_anxiety_p0090
+- rule: respond to anxiety_p0091
+  steps:
+    - intent: anxiety_p0091
+    - action: utter_anxiety_p0091
+- rule: respond to anxiety_p0092
+  steps:
+    - intent: anxiety_p0092
+    - action: utter_anxiety_p0092
+- rule: respond to anxiety_p0093
+  steps:
+    - intent: anxiety_p0093
+    - action: utter_anxiety_p0093
+- rule: respond to anxiety_p0094
+  steps:
+    - intent: anxiety_p0094
+    - action: utter_anxiety_p0094
+- rule: respond to anxiety_p0095
+  steps:
+    - intent: anxiety_p0095
+    - action: utter_anxiety_p0095
+- rule: respond to anxiety_p0096
+  steps:
+    - intent: anxiety_p0096
+    - action: utter_anxiety_p0096
+- rule: respond to anxiety_p0097
+  steps:
+    - intent: anxiety_p0097
+    - action: utter_anxiety_p0097
+- rule: respond to anxiety_p0098
+  steps:
+    - intent: anxiety_p0098
+    - action: utter_anxiety_p0098
+- rule: respond to anxiety_p0099
+  steps:
+    - intent: anxiety_p0099
+    - action: utter_anxiety_p0099
+- rule: respond to anxiety_p0100
+  steps:
+    - intent: anxiety_p0100
+    - action: utter_anxiety_p0100
+- rule: respond to anxiety_p0101
+  steps:
+    - intent: anxiety_p0101
+    - action: utter_anxiety_p0101
+- rule: respond to anxiety_p0102
+  steps:
+    - intent: anxiety_p0102
+    - action: utter_anxiety_p0102
+- rule: respond to anxiety_p0103
+  steps:
+    - intent: anxiety_p0103
+    - action: utter_anxiety_p0103
+- rule: respond to anxiety_p0104
+  steps:
+    - intent: anxiety_p0104
+    - action: utter_anxiety_p0104
+- rule: respond to anxiety_p0105
+  steps:
+    - intent: anxiety_p0105
+    - action: utter_anxiety_p0105
+- rule: respond to anxiety_p0106
+  steps:
+    - intent: anxiety_p0106
+    - action: utter_anxiety_p0106
+- rule: respond to anxiety_p0107
+  steps:
+    - intent: anxiety_p0107
+    - action: utter_anxiety_p0107
+- rule: respond to anxiety_p0108
+  steps:
+    - intent: anxiety_p0108
+    - action: utter_anxiety_p0108
+- rule: respond to anxiety_p0109
+  steps:
+    - intent: anxiety_p0109
+    - action: utter_anxiety_p0109
+- rule: respond to anxiety_p0110
+  steps:
+    - intent: anxiety_p0110
+    - action: utter_anxiety_p0110
+- rule: respond to anxiety_p0111
+  steps:
+    - intent: anxiety_p0111
+    - action: utter_anxiety_p0111
+- rule: respond to anxiety_p0112
+  steps:
+    - intent: anxiety_p0112
+    - action: utter_anxiety_p0112
+- rule: respond to anxiety_p0113
+  steps:
+    - intent: anxiety_p0113
+    - action: utter_anxiety_p0113
+- rule: respond to anxiety_p0114
+  steps:
+    - intent: anxiety_p0114
+    - action: utter_anxiety_p0114
+- rule: respond to anxiety_p0115
+  steps:
+    - intent: anxiety_p0115
+    - action: utter_anxiety_p0115
+- rule: respond to anxiety_p0116
+  steps:
+    - intent: anxiety_p0116
+    - action: utter_anxiety_p0116
+- rule: respond to anxiety_p0117
+  steps:
+    - intent: anxiety_p0117
+    - action: utter_anxiety_p0117
+- rule: respond to anxiety_p0118
+  steps:
+    - intent: anxiety_p0118
+    - action: utter_anxiety_p0118
+- rule: respond to anxiety_p0119
+  steps:
+    - intent: anxiety_p0119
+    - action: utter_anxiety_p0119
+- rule: respond to anxiety_p0120
+  steps:
+    - intent: anxiety_p0120
+    - action: utter_anxiety_p0120
+- rule: respond to anxiety_p0121
+  steps:
+    - intent: anxiety_p0121
+    - action: utter_anxiety_p0121
+- rule: respond to anxiety_p0122
+  steps:
+    - intent: anxiety_p0122
+    - action: utter_anxiety_p0122
+- rule: respond to anxiety_p0123
+  steps:
+    - intent: anxiety_p0123
+    - action: utter_anxiety_p0123
+- rule: respond to anxiety_p0124
+  steps:
+    - intent: anxiety_p0124
+    - action: utter_anxiety_p0124
+- rule: respond to anxiety_p0125
+  steps:
+    - intent: anxiety_p0125
+    - action: utter_anxiety_p0125
+- rule: respond to anxiety_p0126
+  steps:
+    - intent: anxiety_p0126
+    - action: utter_anxiety_p0126
+- rule: respond to anxiety_p0127
+  steps:
+    - intent: anxiety_p0127
+    - action: utter_anxiety_p0127
+- rule: respond to anxiety_p0128
+  steps:
+    - intent: anxiety_p0128
+    - action: utter_anxiety_p0128
+- rule: respond to anxiety_p0129
+  steps:
+    - intent: anxiety_p0129
+    - action: utter_anxiety_p0129
+- rule: respond to anxiety_p0130
+  steps:
+    - intent: anxiety_p0130
+    - action: utter_anxiety_p0130
+- rule: respond to anxiety_p0131
+  steps:
+    - intent: anxiety_p0131
+    - action: utter_anxiety_p0131
+- rule: respond to anxiety_p0132
+  steps:
+    - intent: anxiety_p0132
+    - action: utter_anxiety_p0132
+- rule: respond to anxiety_p0133
+  steps:
+    - intent: anxiety_p0133
+    - action: utter_anxiety_p0133
+- rule: respond to anxiety_p0134
+  steps:
+    - intent: anxiety_p0134
+    - action: utter_anxiety_p0134
+- rule: respond to anxiety_p0135
+  steps:
+    - intent: anxiety_p0135
+    - action: utter_anxiety_p0135
+- rule: respond to anxiety_p0136
+  steps:
+    - intent: anxiety_p0136
+    - action: utter_anxiety_p0136
+- rule: respond to anxiety_p0137
+  steps:
+    - intent: anxiety_p0137
+    - action: utter_anxiety_p0137
+- rule: respond to anxiety_p0138
+  steps:
+    - intent: anxiety_p0138
+    - action: utter_anxiety_p0138
+- rule: respond to anxiety_p0139
+  steps:
+    - intent: anxiety_p0139
+    - action: utter_anxiety_p0139
+- rule: respond to anxiety_p0140
+  steps:
+    - intent: anxiety_p0140
+    - action: utter_anxiety_p0140
+- rule: respond to anxiety_p0141
+  steps:
+    - intent: anxiety_p0141
+    - action: utter_anxiety_p0141
+- rule: respond to anxiety_p0142
+  steps:
+    - intent: anxiety_p0142
+    - action: utter_anxiety_p0142
+- rule: respond to anxiety_p0143
+  steps:
+    - intent: anxiety_p0143
+    - action: utter_anxiety_p0143
+- rule: respond to anxiety_p0144
+  steps:
+    - intent: anxiety_p0144
+    - action: utter_anxiety_p0144
+- rule: respond to anxiety_p0145
+  steps:
+    - intent: anxiety_p0145
+    - action: utter_anxiety_p0145
+- rule: respond to anxiety_p0146
+  steps:
+    - intent: anxiety_p0146
+    - action: utter_anxiety_p0146
+- rule: respond to anxiety_p0147
+  steps:
+    - intent: anxiety_p0147
+    - action: utter_anxiety_p0147
+- rule: respond to anxiety_p0148
+  steps:
+    - intent: anxiety_p0148
+    - action: utter_anxiety_p0148
+- rule: respond to anxiety_p0149
+  steps:
+    - intent: anxiety_p0149
+    - action: utter_anxiety_p0149
+- rule: respond to anxiety_p0150
+  steps:
+    - intent: anxiety_p0150
+    - action: utter_anxiety_p0150
+- rule: respond to anxiety_p0151
+  steps:
+    - intent: anxiety_p0151
+    - action: utter_anxiety_p0151
+- rule: respond to anxiety_p0152
+  steps:
+    - intent: anxiety_p0152
+    - action: utter_anxiety_p0152
+- rule: respond to anxiety_p0153
+  steps:
+    - intent: anxiety_p0153
+    - action: utter_anxiety_p0153
+- rule: respond to anxiety_p0154
+  steps:
+    - intent: anxiety_p0154
+    - action: utter_anxiety_p0154
+- rule: respond to anxiety_p0155
+  steps:
+    - intent: anxiety_p0155
+    - action: utter_anxiety_p0155
+- rule: respond to anxiety_p0156
+  steps:
+    - intent: anxiety_p0156
+    - action: utter_anxiety_p0156
+- rule: respond to anxiety_p0157
+  steps:
+    - intent: anxiety_p0157
+    - action: utter_anxiety_p0157
+- rule: respond to anxiety_p0158
+  steps:
+    - intent: anxiety_p0158
+    - action: utter_anxiety_p0158
+- rule: respond to anxiety_p0159
+  steps:
+    - intent: anxiety_p0159
+    - action: utter_anxiety_p0159
+- rule: respond to anxiety_p0160
+  steps:
+    - intent: anxiety_p0160
+    - action: utter_anxiety_p0160
+- rule: respond to anxiety_p0161
+  steps:
+    - intent: anxiety_p0161
+    - action: utter_anxiety_p0161
+- rule: respond to anxiety_p0162
+  steps:
+    - intent: anxiety_p0162
+    - action: utter_anxiety_p0162
+- rule: respond to anxiety_p0163
+  steps:
+    - intent: anxiety_p0163
+    - action: utter_anxiety_p0163
+- rule: respond to anxiety_p0164
+  steps:
+    - intent: anxiety_p0164
+    - action: utter_anxiety_p0164
+- rule: respond to anxiety_p0165
+  steps:
+    - intent: anxiety_p0165
+    - action: utter_anxiety_p0165
+- rule: respond to anxiety_p0166
+  steps:
+    - intent: anxiety_p0166
+    - action: utter_anxiety_p0166
+- rule: respond to anxiety_p0167
+  steps:
+    - intent: anxiety_p0167
+    - action: utter_anxiety_p0167
+- rule: respond to anxiety_p0168
+  steps:
+    - intent: anxiety_p0168
+    - action: utter_anxiety_p0168
+- rule: respond to anxiety_p0169
+  steps:
+    - intent: anxiety_p0169
+    - action: utter_anxiety_p0169
+- rule: respond to anxiety_p0170
+  steps:
+    - intent: anxiety_p0170
+    - action: utter_anxiety_p0170
+- rule: respond to anxiety_p0171
+  steps:
+    - intent: anxiety_p0171
+    - action: utter_anxiety_p0171
+- rule: respond to anxiety_p0172
+  steps:
+    - intent: anxiety_p0172
+    - action: utter_anxiety_p0172
+- rule: respond to anxiety_p0173
+  steps:
+    - intent: anxiety_p0173
+    - action: utter_anxiety_p0173
+- rule: respond to anxiety_p0174
+  steps:
+    - intent: anxiety_p0174
+    - action: utter_anxiety_p0174
+- rule: respond to anxiety_p0175
+  steps:
+    - intent: anxiety_p0175
+    - action: utter_anxiety_p0175
+- rule: respond to anxiety_p0176
+  steps:
+    - intent: anxiety_p0176
+    - action: utter_anxiety_p0176
+- rule: respond to anxiety_p0177
+  steps:
+    - intent: anxiety_p0177
+    - action: utter_anxiety_p0177
+- rule: respond to anxiety_p0178
+  steps:
+    - intent: anxiety_p0178
+    - action: utter_anxiety_p0178
+- rule: respond to anxiety_p0179
+  steps:
+    - intent: anxiety_p0179
+    - action: utter_anxiety_p0179
+- rule: respond to anxiety_p0180
+  steps:
+    - intent: anxiety_p0180
+    - action: utter_anxiety_p0180
+- rule: respond to anxiety_p0181
+  steps:
+    - intent: anxiety_p0181
+    - action: utter_anxiety_p0181
+- rule: respond to anxiety_p0182
+  steps:
+    - intent: anxiety_p0182
+    - action: utter_anxiety_p0182
+- rule: respond to anxiety_p0183
+  steps:
+    - intent: anxiety_p0183
+    - action: utter_anxiety_p0183
+- rule: respond to anxiety_p0184
+  steps:
+    - intent: anxiety_p0184
+    - action: utter_anxiety_p0184
+- rule: respond to anxiety_p0185
+  steps:
+    - intent: anxiety_p0185
+    - action: utter_anxiety_p0185
+- rule: respond to anxiety_p0186
+  steps:
+    - intent: anxiety_p0186
+    - action: utter_anxiety_p0186
+- rule: respond to anxiety_p0187
+  steps:
+    - intent: anxiety_p0187
+    - action: utter_anxiety_p0187
+- rule: respond to anxiety_p0188
+  steps:
+    - intent: anxiety_p0188
+    - action: utter_anxiety_p0188
+- rule: respond to anxiety_p0189
+  steps:
+    - intent: anxiety_p0189
+    - action: utter_anxiety_p0189
+- rule: respond to anxiety_p0190
+  steps:
+    - intent: anxiety_p0190
+    - action: utter_anxiety_p0190
+- rule: respond to anxiety_p0191
+  steps:
+    - intent: anxiety_p0191
+    - action: utter_anxiety_p0191
+- rule: respond to anxiety_p0192
+  steps:
+    - intent: anxiety_p0192
+    - action: utter_anxiety_p0192
+- rule: respond to anxiety_p0193
+  steps:
+    - intent: anxiety_p0193
+    - action: utter_anxiety_p0193
+- rule: respond to anxiety_p0194
+  steps:
+    - intent: anxiety_p0194
+    - action: utter_anxiety_p0194
+- rule: respond to anxiety_p0195
+  steps:
+    - intent: anxiety_p0195
+    - action: utter_anxiety_p0195
+- rule: respond to anxiety_p0196
+  steps:
+    - intent: anxiety_p0196
+    - action: utter_anxiety_p0196
+- rule: respond to anxiety_p0197
+  steps:
+    - intent: anxiety_p0197
+    - action: utter_anxiety_p0197
+- rule: respond to anxiety_p0198
+  steps:
+    - intent: anxiety_p0198
+    - action: utter_anxiety_p0198
+- rule: respond to anxiety_p0199
+  steps:
+    - intent: anxiety_p0199
+    - action: utter_anxiety_p0199
+- rule: respond to anxiety_p0200
+  steps:
+    - intent: anxiety_p0200 
+    - action: utter_anxiety_p0200
+
+- rule: respond to stress_burnout_p0001
+  steps:
+    - intent: stress_burnout_p0001
+    - action: utter_stress_burnout_p0001
+- rule: respond to stress_burnout_p0002
+  steps:
+    - intent: stress_burnout_p0002
+    - action: utter_stress_burnout_p0002
+- rule: respond to stress_burnout_p0003
+  steps:
+    - intent: stress_burnout_p0003
+    - action: utter_stress_burnout_p0003
+- rule: respond to stress_burnout_p0004
+  steps:
+    - intent: stress_burnout_p0004
+    - action: utter_stress_burnout_p0004
+- rule: respond to stress_burnout_p0005
+  steps:
+    - intent: stress_burnout_p0005
+    - action: utter_stress_burnout_p0005
+- rule: respond to stress_burnout_p0006
+  steps:
+    - intent: stress_burnout_p0006
+    - action: utter_stress_burnout_p0006
+- rule: respond to stress_burnout_p0007
+  steps:
+    - intent: stress_burnout_p0007
+    - action: utter_stress_burnout_p0007
+- rule: respond to stress_burnout_p0008
+  steps:
+    - intent: stress_burnout_p0008
+    - action: utter_stress_burnout_p0008
+- rule: respond to stress_burnout_p0009
+  steps:
+    - intent: stress_burnout_p0009
+    - action: utter_stress_burnout_p0009
+- rule: respond to stress_burnout_p0010
+  steps:
+    - intent: stress_burnout_p0010
+    - action: utter_stress_burnout_p0010
+- rule: respond to stress_burnout_p0011
+  steps:
+    - intent: stress_burnout_p0011
+    - action: utter_stress_burnout_p0011
+- rule: respond to stress_burnout_p0012
+  steps:
+    - intent: stress_burnout_p0012
+    - action: utter_stress_burnout_p0012
+- rule: respond to stress_burnout_p0013
+  steps:
+    - intent: stress_burnout_p0013
+    - action: utter_stress_burnout_p0013
+- rule: respond to stress_burnout_p0014
+  steps:
+    - intent: stress_burnout_p0014
+    - action: utter_stress_burnout_p0014
+- rule: respond to stress_burnout_p0015
+  steps:
+    - intent: stress_burnout_p0015
+    - action: utter_stress_burnout_p0015
+- rule: respond to stress_burnout_p0016
+  steps:
+    - intent: stress_burnout_p0016
+    - action: utter_stress_burnout_p0016
+- rule: respond to stress_burnout_p0017
+  steps:
+    - intent: stress_burnout_p0017
+    - action: utter_stress_burnout_p0017
+- rule: respond to stress_burnout_p0018
+  steps:
+    - intent: stress_burnout_p0018
+    - action: utter_stress_burnout_p0018
+- rule: respond to stress_burnout_p0019
+  steps:
+    - intent: stress_burnout_p0019
+    - action: utter_stress_burnout_p0019
+- rule: respond to stress_burnout_p0020
+  steps:
+    - intent: stress_burnout_p0020
+    - action: utter_stress_burnout_p0020
+- rule: respond to stress_burnout_p0021
+  steps:
+    - intent: stress_burnout_p0021
+    - action: utter_stress_burnout_p0021
+- rule: respond to stress_burnout_p0022
+  steps:
+    - intent: stress_burnout_p0022
+    - action: utter_stress_burnout_p0022
+- rule: respond to stress_burnout_p0023
+  steps:
+    - intent: stress_burnout_p0023
+    - action: utter_stress_burnout_p0023
+- rule: respond to stress_burnout_p0024
+  steps:
+    - intent: stress_burnout_p0024
+    - action: utter_stress_burnout_p0024
+- rule: respond to stress_burnout_p0025
+  steps:
+    - intent: stress_burnout_p0025
+    - action: utter_stress_burnout_p0025
+- rule: respond to stress_burnout_p0026
+  steps:
+    - intent: stress_burnout_p0026
+    - action: utter_stress_burnout_p0026
+- rule: respond to stress_burnout_p0027
+  steps:
+    - intent: stress_burnout_p0027
+    - action: utter_stress_burnout_p0027
+- rule: respond to stress_burnout_p0028
+  steps:
+    - intent: stress_burnout_p0028
+    - action: utter_stress_burnout_p0028
+- rule: respond to stress_burnout_p0029
+  steps:
+    - intent: stress_burnout_p0029
+    - action: utter_stress_burnout_p0029
+- rule: respond to stress_burnout_p0030
+  steps:
+    - intent: stress_burnout_p0030
+    - action: utter_stress_burnout_p0030
+- rule: respond to stress_burnout_p0031
+  steps:
+    - intent: stress_burnout_p0031
+    - action: utter_stress_burnout_p0031
+- rule: respond to stress_burnout_p0032
+  steps:
+    - intent: stress_burnout_p0032
+    - action: utter_stress_burnout_p0032
+- rule: respond to stress_burnout_p0033
+  steps:
+    - intent: stress_burnout_p0033
+    - action: utter_stress_burnout_p0033
+- rule: respond to stress_burnout_p0034
+  steps:
+    - intent: stress_burnout_p0034
+    - action: utter_stress_burnout_p0034
+- rule: respond to stress_burnout_p0035
+  steps:
+    - intent: stress_burnout_p0035
+    - action: utter_stress_burnout_p0035
+- rule: respond to stress_burnout_p0036
+  steps:
+    - intent: stress_burnout_p0036
+    - action: utter_stress_burnout_p0036
+- rule: respond to stress_burnout_p0037
+  steps:
+    - intent: stress_burnout_p0037
+    - action: utter_stress_burnout_p0037
+- rule: respond to stress_burnout_p0038
+  steps:
+    - intent: stress_burnout_p0038
+    - action: utter_stress_burnout_p0038
+- rule: respond to stress_burnout_p0039
+  steps:
+    - intent: stress_burnout_p0039
+    - action: utter_stress_burnout_p0039
+- rule: respond to stress_burnout_p0040
+  steps:
+    - intent: stress_burnout_p0040
+    - action: utter_stress_burnout_p0040
+- rule: respond to stress_burnout_p0041
+  steps:
+    - intent: stress_burnout_p0041
+    - action: utter_stress_burnout_p0041
+- rule: respond to stress_burnout_p0042
+  steps:
+    - intent: stress_burnout_p0042
+    - action: utter_stress_burnout_p0042
+- rule: respond to stress_burnout_p0043
+  steps:
+    - intent: stress_burnout_p0043
+    - action: utter_stress_burnout_p0043
+- rule: respond to stress_burnout_p0044
+  steps:
+    - intent: stress_burnout_p0044
+    - action: utter_stress_burnout_p0044
+- rule: respond to stress_burnout_p0045
+  steps:
+    - intent: stress_burnout_p0045
+    - action: utter_stress_burnout_p0045
+- rule: respond to stress_burnout_p0046
+  steps:
+    - intent: stress_burnout_p0046
+    - action: utter_stress_burnout_p0046
+- rule: respond to stress_burnout_p0047
+  steps:
+    - intent: stress_burnout_p0047
+    - action: utter_stress_burnout_p0047
+- rule: respond to stress_burnout_p0048
+  steps:
+    - intent: stress_burnout_p0048
+    - action: utter_stress_burnout_p0048
+- rule: respond to stress_burnout_p0049
+  steps:
+    - intent: stress_burnout_p0049
+    - action: utter_stress_burnout_p0049
+- rule: respond to stress_burnout_p0050
+  steps:
+    - intent: stress_burnout_p0050
+    - action: utter_stress_burnout_p0050
+- rule: respond to stress_burnout_p0051
+  steps:
+    - intent: stress_burnout_p0051
+    - action: utter_stress_burnout_p0051
+- rule: respond to stress_burnout_p0052
+  steps:
+    - intent: stress_burnout_p0052
+    - action: utter_stress_burnout_p0052
+- rule: respond to stress_burnout_p0053
+  steps:
+    - intent: stress_burnout_p0053
+    - action: utter_stress_burnout_p0053
+- rule: respond to stress_burnout_p0054
+  steps:
+    - intent: stress_burnout_p0054
+    - action: utter_stress_burnout_p0054
+- rule: respond to stress_burnout_p0055
+  steps:
+    - intent: stress_burnout_p0055
+    - action: utter_stress_burnout_p0055
+- rule: respond to stress_burnout_p0056
+  steps:
+    - intent: stress_burnout_p0056
+    - action: utter_stress_burnout_p0056
+- rule: respond to stress_burnout_p0057
+  steps:
+    - intent: stress_burnout_p0057
+    - action: utter_stress_burnout_p0057
+- rule: respond to stress_burnout_p0058
+  steps:
+    - intent: stress_burnout_p0058
+    - action: utter_stress_burnout_p0058
+- rule: respond to stress_burnout_p0059
+  steps:
+    - intent: stress_burnout_p0059
+    - action: utter_stress_burnout_p0059
+- rule: respond to stress_burnout_p0060
+  steps:
+    - intent: stress_burnout_p0060
+    - action: utter_stress_burnout_p0060
+- rule: respond to stress_burnout_p0061
+  steps:
+    - intent: stress_burnout_p0061
+    - action: utter_stress_burnout_p0061
+- rule: respond to stress_burnout_p0062
+  steps:
+    - intent: stress_burnout_p0062
+    - action: utter_stress_burnout_p0062
+- rule: respond to stress_burnout_p0063
+  steps:
+    - intent: stress_burnout_p0063
+    - action: utter_stress_burnout_p0063
+- rule: respond to stress_burnout_p0064
+  steps:
+    - intent: stress_burnout_p0064
+    - action: utter_stress_burnout_p0064
+- rule: respond to stress_burnout_p0065
+  steps:
+    - intent: stress_burnout_p0065
+    - action: utter_stress_burnout_p0065
+- rule: respond to stress_burnout_p0066
+  steps:
+    - intent: stress_burnout_p0066
+    - action: utter_stress_burnout_p0066
+- rule: respond to stress_burnout_p0067
+  steps:
+    - intent: stress_burnout_p0067
+    - action: utter_stress_burnout_p0067
+- rule: respond to stress_burnout_p0068
+  steps:
+    - intent: stress_burnout_p0068
+    - action: utter_stress_burnout_p0068
+- rule: respond to stress_burnout_p0069
+  steps:
+    - intent: stress_burnout_p0069
+    - action: utter_stress_burnout_p0069
+- rule: respond to stress_burnout_p0070
+  steps:
+    - intent: stress_burnout_p0070
+    - action: utter_stress_burnout_p0070
+- rule: respond to stress_burnout_p0071
+  steps:
+    - intent: stress_burnout_p0071
+    - action: utter_stress_burnout_p0071
+- rule: respond to stress_burnout_p0072
+  steps:
+    - intent: stress_burnout_p0072
+    - action: utter_stress_burnout_p0072
+- rule: respond to stress_burnout_p0073
+  steps:
+    - intent: stress_burnout_p0073
+    - action: utter_stress_burnout_p0073
+- rule: respond to stress_burnout_p0074
+  steps:
+    - intent: stress_burnout_p0074
+    - action: utter_stress_burnout_p0074
+- rule: respond to stress_burnout_p0075
+  steps:
+    - intent: stress_burnout_p0075
+    - action: utter_stress_burnout_p0075
+- rule: respond to stress_burnout_p0076
+  steps:
+    - intent: stress_burnout_p0076
+    - action: utter_stress_burnout_p0076
+- rule: respond to stress_burnout_p0077
+  steps:
+    - intent: stress_burnout_p0077
+    - action: utter_stress_burnout_p0077
+- rule: respond to stress_burnout_p0078
+  steps:
+    - intent: stress_burnout_p0078
+    - action: utter_stress_burnout_p0078
+- rule: respond to stress_burnout_p0079
+  steps:
+    - intent: stress_burnout_p0079
+    - action: utter_stress_burnout_p0079
+- rule: respond to stress_burnout_p0080
+  steps:
+    - intent: stress_burnout_p0080
+    - action: utter_stress_burnout_p0080
+- rule: respond to stress_burnout_p0081
+  steps:
+    - intent: stress_burnout_p0081
+    - action: utter_stress_burnout_p0081
+- rule: respond to stress_burnout_p0082
+  steps:
+    - intent: stress_burnout_p0082
+    - action: utter_stress_burnout_p0082
+- rule: respond to stress_burnout_p0083
+  steps:
+    - intent: stress_burnout_p0083
+    - action: utter_stress_burnout_p0083
+- rule: respond to stress_burnout_p0084
+  steps:
+    - intent: stress_burnout_p0084
+    - action: utter_stress_burnout_p0084
+- rule: respond to stress_burnout_p0085
+  steps:
+    - intent: stress_burnout_p0085
+    - action: utter_stress_burnout_p0085
+- rule: respond to stress_burnout_p0086
+  steps:
+    - intent: stress_burnout_p0086
+    - action: utter_stress_burnout_p0086
+- rule: respond to stress_burnout_p0087
+  steps:
+    - intent: stress_burnout_p0087
+    - action: utter_stress_burnout_p0087
+- rule: respond to stress_burnout_p0088
+  steps:
+    - intent: stress_burnout_p0088
+    - action: utter_stress_burnout_p0088
+- rule: respond to stress_burnout_p0089
+  steps:
+    - intent: stress_burnout_p0089
+    - action: utter_stress_burnout_p0089
+- rule: respond to stress_burnout_p0090
+  steps:
+    - intent: stress_burnout_p0090
+    - action: utter_stress_burnout_p0090
+- rule: respond to stress_burnout_p0091
+  steps:
+    - intent: stress_burnout_p0091
+    - action: utter_stress_burnout_p0091
+- rule: respond to stress_burnout_p0092
+  steps:
+    - intent: stress_burnout_p0092
+    - action: utter_stress_burnout_p0092
+- rule: respond to stress_burnout_p0093
+  steps:
+    - intent: stress_burnout_p0093
+    - action: utter_stress_burnout_p0093
+- rule: respond to stress_burnout_p0094
+  steps:
+    - intent: stress_burnout_p0094
+    - action: utter_stress_burnout_p0094
+- rule: respond to stress_burnout_p0095
+  steps:
+    - intent: stress_burnout_p0095
+    - action: utter_stress_burnout_p0095
+- rule: respond to stress_burnout_p0096
+  steps:
+    - intent: stress_burnout_p0096
+    - action: utter_stress_burnout_p0096
+- rule: respond to stress_burnout_p0097
+  steps:
+    - intent: stress_burnout_p0097
+    - action: utter_stress_burnout_p0097
+- rule: respond to stress_burnout_p0098
+  steps:
+    - intent: stress_burnout_p0098
+    - action: utter_stress_burnout_p0098
+- rule: respond to stress_burnout_p0099
+  steps:
+    - intent: stress_burnout_p0099
+    - action: utter_stress_burnout_p0099
+- rule: respond to stress_burnout_p0100
+  steps:
+    - intent: stress_burnout_p0100
+    - action: utter_stress_burnout_p0100
+- rule: respond to stress_burnout_p0101
+  steps:
+    - intent: stress_burnout_p0101
+    - action: utter_stress_burnout_p0101
+- rule: respond to stress_burnout_p0102
+  steps:
+    - intent: stress_burnout_p0102
+    - action: utter_stress_burnout_p0102
+- rule: respond to stress_burnout_p0103
+  steps:
+    - intent: stress_burnout_p0103
+    - action: utter_stress_burnout_p0103
+- rule: respond to stress_burnout_p0104
+  steps:
+    - intent: stress_burnout_p0104
+    - action: utter_stress_burnout_p0104
+- rule: respond to stress_burnout_p0105
+  steps:
+    - intent: stress_burnout_p0105
+    - action: utter_stress_burnout_p0105
+- rule: respond to stress_burnout_p0106
+  steps:
+    - intent: stress_burnout_p0106
+    - action: utter_stress_burnout_p0106
+- rule: respond to stress_burnout_p0107
+  steps:
+    - intent: stress_burnout_p0107
+    - action: utter_stress_burnout_p0107
+- rule: respond to stress_burnout_p0108
+  steps:
+    - intent: stress_burnout_p0108
+    - action: utter_stress_burnout_p0108
+- rule: respond to stress_burnout_p0109
+  steps:
+    - intent: stress_burnout_p0109
+    - action: utter_stress_burnout_p0109
+- rule: respond to stress_burnout_p0110
+  steps:
+    - intent: stress_burnout_p0110
+    - action: utter_stress_burnout_p0110
+- rule: respond to stress_burnout_p0111
+  steps:
+    - intent: stress_burnout_p0111
+    - action: utter_stress_burnout_p0111
+- rule: respond to stress_burnout_p0112
+  steps:
+    - intent: stress_burnout_p0112
+    - action: utter_stress_burnout_p0112
+- rule: respond to stress_burnout_p0113
+  steps:
+    - intent: stress_burnout_p0113
+    - action: utter_stress_burnout_p0113
+- rule: respond to stress_burnout_p0114
+  steps:
+    - intent: stress_burnout_p0114
+    - action: utter_stress_burnout_p0114
+- rule: respond to stress_burnout_p0115
+  steps:
+    - intent: stress_burnout_p0115
+    - action: utter_stress_burnout_p0115
+- rule: respond to stress_burnout_p0116
+  steps:
+    - intent: stress_burnout_p0116
+    - action: utter_stress_burnout_p0116
+- rule: respond to stress_burnout_p0117
+  steps:
+    - intent: stress_burnout_p0117
+    - action: utter_stress_burnout_p0117
+- rule: respond to stress_burnout_p0118
+  steps:
+    - intent: stress_burnout_p0118
+    - action: utter_stress_burnout_p0118
+- rule: respond to stress_burnout_p0119
+  steps:
+    - intent: stress_burnout_p0119
+    - action: utter_stress_burnout_p0119
+- rule: respond to stress_burnout_p0120
+  steps:
+    - intent: stress_burnout_p0120
+    - action: utter_stress_burnout_p0120
+- rule: respond to stress_burnout_p0121
+  steps:
+    - intent: stress_burnout_p0121
+    - action: utter_stress_burnout_p0121
+- rule: respond to stress_burnout_p0122
+  steps:
+    - intent: stress_burnout_p0122
+    - action: utter_stress_burnout_p0122
+- rule: respond to stress_burnout_p0123
+  steps:
+    - intent: stress_burnout_p0123
+    - action: utter_stress_burnout_p0123
+- rule: respond to stress_burnout_p0124
+  steps:
+    - intent: stress_burnout_p0124
+    - action: utter_stress_burnout_p0124
+- rule: respond to stress_burnout_p0125
+  steps:
+    - intent: stress_burnout_p0125
+    - action: utter_stress_burnout_p0125
+- rule: respond to stress_burnout_p0126
+  steps:
+    - intent: stress_burnout_p0126
+    - action: utter_stress_burnout_p0126
+- rule: respond to stress_burnout_p0127
+  steps:
+    - intent: stress_burnout_p0127
+    - action: utter_stress_burnout_p0127
+- rule: respond to stress_burnout_p0128
+  steps:
+    - intent: stress_burnout_p0128
+    - action: utter_stress_burnout_p0128
+- rule: respond to stress_burnout_p0129
+  steps:
+    - intent: stress_burnout_p0129
+    - action: utter_stress_burnout_p0129
+- rule: respond to stress_burnout_p0130
+  steps:
+    - intent: stress_burnout_p0130
+    - action: utter_stress_burnout_p0130
+- rule: respond to stress_burnout_p0131
+  steps:
+    - intent: stress_burnout_p0131
+    - action: utter_stress_burnout_p0131
+- rule: respond to stress_burnout_p0132
+  steps:
+    - intent: stress_burnout_p0132
+    - action: utter_stress_burnout_p0132
+- rule: respond to stress_burnout_p0133
+  steps:
+    - intent: stress_burnout_p0133
+    - action: utter_stress_burnout_p0133
+- rule: respond to stress_burnout_p0134
+  steps:
+    - intent: stress_burnout_p0134
+    - action: utter_stress_burnout_p0134
+- rule: respond to stress_burnout_p0135
+  steps:
+    - intent: stress_burnout_p0135
+    - action: utter_stress_burnout_p0135
+- rule: respond to stress_burnout_p0136
+  steps:
+    - intent: stress_burnout_p0136
+    - action: utter_stress_burnout_p0136
+- rule: respond to stress_burnout_p0137
+  steps:
+    - intent: stress_burnout_p0137
+    - action: utter_stress_burnout_p0137
+- rule: respond to stress_burnout_p0138
+  steps:
+    - intent: stress_burnout_p0138
+    - action: utter_stress_burnout_p0138
+- rule: respond to stress_burnout_p0139
+  steps:
+    - intent: stress_burnout_p0139
+    - action: utter_stress_burnout_p0139
+- rule: respond to stress_burnout_p0140
+  steps:
+    - intent: stress_burnout_p0140
+    - action: utter_stress_burnout_p0140
+- rule: respond to stress_burnout_p0141
+  steps:
+    - intent: stress_burnout_p0141
+    - action: utter_stress_burnout_p0141
+- rule: respond to stress_burnout_p0142
+  steps:
+    - intent: stress_burnout_p0142
+    - action: utter_stress_burnout_p0142
+- rule: respond to stress_burnout_p0143
+  steps:
+    - intent: stress_burnout_p0143
+    - action: utter_stress_burnout_p0143
+- rule: respond to stress_burnout_p0144
+  steps:
+    - intent: stress_burnout_p0144
+    - action: utter_stress_burnout_p0144
+- rule: respond to stress_burnout_p0145
+  steps:
+    - intent: stress_burnout_p0145
+    - action: utter_stress_burnout_p0145
+- rule: respond to stress_burnout_p0146
+  steps:
+    - intent: stress_burnout_p0146
+    - action: utter_stress_burnout_p0146
+- rule: respond to stress_burnout_p0147
+  steps:
+    - intent: stress_burnout_p0147
+    - action: utter_stress_burnout_p0147
+- rule: respond to stress_burnout_p0148
+  steps:
+    - intent: stress_burnout_p0148
+    - action: utter_stress_burnout_p0148
+- rule: respond to stress_burnout_p0149
+  steps:
+    - intent: stress_burnout_p0149
+    - action: utter_stress_burnout_p0149
+- rule: respond to stress_burnout_p0150
+  steps:
+    - intent: stress_burnout_p0150
+    - action: utter_stress_burnout_p0150
+- rule: respond to stress_burnout_p0151
+  steps:
+    - intent: stress_burnout_p0151
+    - action: utter_stress_burnout_p0151
+- rule: respond to stress_burnout_p0152
+  steps:
+    - intent: stress_burnout_p0152
+    - action: utter_stress_burnout_p0152
+- rule: respond to stress_burnout_p0153
+  steps:
+    - intent: stress_burnout_p0153
+    - action: utter_stress_burnout_p0153
+- rule: respond to stress_burnout_p0154
+  steps:
+    - intent: stress_burnout_p0154
+    - action: utter_stress_burnout_p0154
+- rule: respond to stress_burnout_p0155
+  steps:
+    - intent: stress_burnout_p0155
+    - action: utter_stress_burnout_p0155
+- rule: respond to stress_burnout_p0156
+  steps:
+    - intent: stress_burnout_p0156
+    - action: utter_stress_burnout_p0156
+- rule: respond to stress_burnout_p0157
+  steps:
+    - intent: stress_burnout_p0157
+    - action: utter_stress_burnout_p0157
+- rule: respond to stress_burnout_p0158
+  steps:
+    - intent: stress_burnout_p0158
+    - action: utter_stress_burnout_p0158
+- rule: respond to stress_burnout_p0159
+  steps:
+    - intent: stress_burnout_p0159
+    - action: utter_stress_burnout_p0159
+- rule: respond to stress_burnout_p0160
+  steps:
+    - intent: stress_burnout_p0160
+    - action: utter_stress_burnout_p0160
+- rule: respond to stress_burnout_p0161
+  steps:
+    - intent: stress_burnout_p0161
+    - action: utter_stress_burnout_p0161
+- rule: respond to stress_burnout_p0162
+  steps:
+    - intent: stress_burnout_p0162
+    - action: utter_stress_burnout_p0162
+- rule: respond to stress_burnout_p0163
+  steps:
+    - intent: stress_burnout_p0163
+    - action: utter_stress_burnout_p0163
+- rule: respond to stress_burnout_p0164
+  steps:
+    - intent: stress_burnout_p0164
+    - action: utter_stress_burnout_p0164
+- rule: respond to stress_burnout_p0165
+  steps:
+    - intent: stress_burnout_p0165
+    - action: utter_stress_burnout_p0165
+- rule: respond to stress_burnout_p0166
+  steps:
+    - intent: stress_burnout_p0166
+    - action: utter_stress_burnout_p0166
+- rule: respond to stress_burnout_p0167
+  steps:
+    - intent: stress_burnout_p0167
+    - action: utter_stress_burnout_p0167
+- rule: respond to stress_burnout_p0168
+  steps:
+    - intent: stress_burnout_p0168
+    - action: utter_stress_burnout_p0168
+- rule: respond to stress_burnout_p0169
+  steps:
+    - intent: stress_burnout_p0169
+    - action: utter_stress_burnout_p0169
+- rule: respond to stress_burnout_p0170
+  steps:
+    - intent: stress_burnout_p0170
+    - action: utter_stress_burnout_p0170
+- rule: respond to stress_burnout_p0171
+  steps:
+    - intent: stress_burnout_p0171
+    - action: utter_stress_burnout_p0171
+- rule: respond to stress_burnout_p0172
+  steps:
+    - intent: stress_burnout_p0172
+    - action: utter_stress_burnout_p0172
+- rule: respond to stress_burnout_p0173
+  steps:
+    - intent: stress_burnout_p0173
+    - action: utter_stress_burnout_p0173
+- rule: respond to stress_burnout_p0174
+  steps:
+    - intent: stress_burnout_p0174
+    - action: utter_stress_burnout_p0174
+- rule: respond to stress_burnout_p0175
+  steps:
+    - intent: stress_burnout_p0175
+    - action: utter_stress_burnout_p0175
+- rule: respond to stress_burnout_p0176
+  steps:
+    - intent: stress_burnout_p0176
+    - action: utter_stress_burnout_p0176
+- rule: respond to stress_burnout_p0177
+  steps:
+    - intent: stress_burnout_p0177
+    - action: utter_stress_burnout_p0177
+- rule: respond to stress_burnout_p0178
+  steps:
+    - intent: stress_burnout_p0178
+    - action: utter_stress_burnout_p0178
+- rule: respond to stress_burnout_p0179
+  steps:
+    - intent: stress_burnout_p0179
+    - action: utter_stress_burnout_p0179
+- rule: respond to stress_burnout_p0180
+  steps:
+    - intent: stress_burnout_p0180
+    - action: utter_stress_burnout_p0180
+- rule: respond to stress_burnout_p0181
+  steps:
+    - intent: stress_burnout_p0181
+    - action: utter_stress_burnout_p0181
+- rule: respond to stress_burnout_p0182
+  steps:
+    - intent: stress_burnout_p0182
+    - action: utter_stress_burnout_p0182
+- rule: respond to stress_burnout_p0183
+  steps:
+    - intent: stress_burnout_p0183
+    - action: utter_stress_burnout_p0183
+- rule: respond to stress_burnout_p0184
+  steps:
+    - intent: stress_burnout_p0184
+    - action: utter_stress_burnout_p0184
+- rule: respond to stress_burnout_p0185
+  steps:
+    - intent: stress_burnout_p0185
+    - action: utter_stress_burnout_p0185
+- rule: respond to stress_burnout_p0186
+  steps:
+    - intent: stress_burnout_p0186
+    - action: utter_stress_burnout_p0186
+- rule: respond to stress_burnout_p0187
+  steps:
+    - intent: stress_burnout_p0187
+    - action: utter_stress_burnout_p0187
+- rule: respond to stress_burnout_p0188
+  steps:
+    - intent: stress_burnout_p0188
+    - action: utter_stress_burnout_p0188
+- rule: respond to stress_burnout_p0189
+  steps:
+    - intent: stress_burnout_p0189
+    - action: utter_stress_burnout_p0189
+- rule: respond to stress_burnout_p0190
+  steps:
+    - intent: stress_burnout_p0190
+    - action: utter_stress_burnout_p0190
+- rule: respond to stress_burnout_p0191
+  steps:
+    - intent: stress_burnout_p0191
+    - action: utter_stress_burnout_p0191
+- rule: respond to stress_burnout_p0192
+  steps:
+    - intent: stress_burnout_p0192
+    - action: utter_stress_burnout_p0192
+- rule: respond to stress_burnout_p0193
+  steps:
+    - intent: stress_burnout_p0193
+    - action: utter_stress_burnout_p0193
+- rule: respond to stress_burnout_p0194
+  steps:
+    - intent: stress_burnout_p0194
+    - action: utter_stress_burnout_p0194
+- rule: respond to stress_burnout_p0195
+  steps:
+    - intent: stress_burnout_p0195
+    - action: utter_stress_burnout_p0195
+- rule: respond to stress_burnout_p0196
+  steps:
+    - intent: stress_burnout_p0196
+    - action: utter_stress_burnout_p0196
+- rule: respond to stress_burnout_p0197
+  steps:
+    - intent: stress_burnout_p0197
+    - action: utter_stress_burnout_p0197
+- rule: respond to stress_burnout_p0198
+  steps:
+    - intent: stress_burnout_p0198
+    - action: utter_stress_burnout_p0198
+- rule: respond to stress_burnout_p0199
+  steps:
+    - intent: stress_burnout_p0199
+    - action: utter_stress_burnout_p0199
+- rule: respond to stress_burnout_p0200
+  steps:
+    - intent: stress_burnout_p0200
+    - action: utter_stress_burnout_p0200    

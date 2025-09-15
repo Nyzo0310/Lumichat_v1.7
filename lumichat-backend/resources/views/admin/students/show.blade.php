@@ -148,7 +148,7 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script>
   // expose year bump globally (your buttons use onclick)
   window.bumpYear = function bumpYear(delta) {
@@ -168,22 +168,19 @@
     const canvas = document.getElementById('studentApptsChart');
     if (!canvas) return;
 
-    // Use the server-injected series/labels, but coerce to numbers
     const series = (@json($series ?? [])).map(v => parseInt(v, 10) || 0);
     const labels = @json($labels ?? []);
     const total  = series.reduce((a, b) => a + b, 0);
 
-    // Kill any previous chart bound to this canvas (bfCache/Livewire/PJAX/etc.)
+    // Destroy any previous chart instance bound to this canvas
     if (window.Chart && Chart.getChart) {
       const prev = Chart.getChart(canvas);
       if (prev) prev.destroy();
     }
 
-    // If no data -> don't draw a chart; show the empty state only
     if (total === 0) {
-      // make sure canvas stays clear
       const ctx = canvas.getContext('2d');
-      ctx && ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
       return;
     }
 
@@ -228,11 +225,10 @@
       }
     });
 
-    // Keep a reference for print sizing
     window.__studentApptsChart = chart;
   })();
 
-  // Simple print handler (also resizes the chart so canvas is painted)
+  // Print helpers keep the canvas painted
   window.printStudentDetails = function(){
     try { window.__studentApptsChart && window.__studentApptsChart.resize(); } catch(e){}
     window.print();

@@ -13,36 +13,51 @@ use Illuminate\View\View;
 
 class PasswordResetLinkController extends Controller
 {
-    // Tunables (stay false for this activity: no email sending)
+    // ==== Tunables (mail sending stays disabled per your note) ====
     private const ENABLE_SENDING      = false;
     private const MIN_SECONDS_ON_FORM = 3;
     private const DAILY_CAP_PER_EMAIL = 10;
     private const HOURLY_CAP_PER_IP   = 30;
     private const DISALLOW_DOMAINS    = [
-        'mailinator.com','guerrillamail.com','10minutemail.com','tempmail.com',
-        'trashmail.com','yopmail.com',
+        'mailinator.com', 'guerrillamail.com', '10minutemail.com', 'tempmail.com',
+        'trashmail.com', 'yopmail.com',
     ];
 
+    // ==== UI/Flash constants ====
+    private const VIEW_FORGOT     = 'auth.forgot-password';
+    private const FLASH_STATUS    = 'status';
+    private const MSG_GENERIC_OK  = 'If your email exists, we sent a reset link.';
+
+    // ==== Cache key prefixes ====
+    private const CAP_KEY_EMAIL_PREFIX = 'fp_cap:';   // per-email daily cap
+    private const CAP_KEY_IP_PREFIX    = 'fp_ipcap:'; // per-IP hourly cap
+
+    /**
+     * Show the "forgot password" form.
+     */
     public function create(): View
     {
-        return view('auth.forgot-password');
+        return view(self::VIEW_FORGOT);
     }
 
+    /**
+     * Handle reset-link requests with basic anti-abuse checks.
+     */
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'email'   => ['required','string','email:rfc,strict','max:191'],
-            'fp_ts'   => ['nullable','integer'],
-            'website' => ['nullable','string','max:50'],
+            'email'   => ['required', 'string', 'email:rfc,strict', 'max:191'],
+            'fp_ts'   => ['nullable', 'integer'],
+            'website' => ['nullable', 'string', 'max:50'], // honeypot
         ]);
 
-        $rawEmail   = strtolower(trim((string)$request->input('email')));
+        $rawEmail   = \strtolower(\trim((string) $request->input('email')));
         $canonEmail = $this->canonicalizeForRateLimit($rawEmail);
-        $domain     = substr(strrchr($rawEmail, '@') ?: '', 1);
+        $domain     = \substr(\strrchr($rawEmail, '@') ?: '', 1);
 
-        // Honeypot + min dwell time
-        $isBot   = (string)$request->input('website') !== '';
-        $start   = (int)$request->input('fp_ts', 0);
+        // Honeypot + minimum dwell time
+        $isBot   = (string) $request->input('website') !== '';
+        $start   = (int) $request->input('fp_ts', 0);
         $elapsed = $start > 0
             ? Carbon::now()->diffInSeconds(Carbon::createFromTimestamp($start))
             : 0;
@@ -58,8 +73,8 @@ class PasswordResetLinkController extends Controller
             return $this->genericResponse();
         }
 
-        // Disposable domain?
-        if ($domain && in_array($domain, self::DISALLOW_DOMAINS, true)) {
+        // Disposable domain block
+        if ($domain && \in_array($domain, self::DISALLOW_DOMAINS, true)) {
             $this->log('auth.password.reset_link_blocked_domain', [
                 'email_hash' => hash('sha256', $canonEmail),
                 'domain'     => $domain,
@@ -70,7 +85,7 @@ class PasswordResetLinkController extends Controller
         }
 
         // Per-IP hourly cap
-        $ipKey   = 'fp_ipcap:' . $request->ip() . ':' . date('Y-m-d-H');
+        $ipKey   = self::CAP_KEY_IP_PREFIX . $request->ip() . ':' . date('Y-m-d-H');
         $ipCount = (int) Cache::increment($ipKey);
         Cache::put($ipKey, $ipCount, now()->addHour());
         if ($ipCount > self::HOURLY_CAP_PER_IP) {
@@ -83,7 +98,7 @@ class PasswordResetLinkController extends Controller
         }
 
         // Per-email daily cap (canonicalized)
-        $capKey = 'fp_cap:' . hash('sha256', $canonEmail) . ':' . date('Y-m-d');
+        $capKey = self::CAP_KEY_EMAIL_PREFIX . hash('sha256', $canonEmail) . ':' . date('Y-m-d');
         $count  = (int) Cache::increment($capKey);
         Cache::put($capKey, $count, now()->endOfDay());
         if ($count > self::DAILY_CAP_PER_EMAIL) {
@@ -97,9 +112,13 @@ class PasswordResetLinkController extends Controller
         }
 
         // Small timing jitter
-        try { usleep(random_int(200_000, 500_000)); } catch (\Throwable $e) {}
+        try {
+            \usleep(\random_int(200_000, 500_000));
+        } catch (\Throwable $e) {
+            // ignore jitter errors
+        }
 
-        // Delivery (disabled for activity)
+        // Delivery (disabled by design)
         if (self::ENABLE_SENDING) {
             Password::sendResetLink(['email' => $rawEmail]);
         }
@@ -114,25 +133,30 @@ class PasswordResetLinkController extends Controller
         return $this->genericResponse();
     }
 
-    // Helpers
+    // ==== Helpers (no logic change) ====
+
     private function canonicalizeForRateLimit(string $email): string
     {
-        if ($email === '' || !str_contains($email, '@')) return $email;
-        [$local, $domain] = explode('@', $email, 2);
-        $domain = strtolower($domain);
-        $local  = strtolower($local);
-
-        if (in_array($domain, ['gmail.com','googlemail.com'], true)) {
-            $local = str_replace('.', '', $local);
+        if ($email === '' || !\str_contains($email, '@')) {
+            return $email;
         }
-        $local = explode('+', $local, 2)[0];
+
+        [$local, $domain] = \explode('@', $email, 2);
+        $domain = \strtolower($domain);
+        $local  = \strtolower($local);
+
+        // Gmail-style canonicalization
+        if (\in_array($domain, ['gmail.com', 'googlemail.com'], true)) {
+            $local = \str_replace('.', '', $local);
+        }
+        $local = \explode('+', $local, 2)[0];
 
         return $local . '@' . $domain;
     }
 
     private function genericResponse(): RedirectResponse
     {
-        return back()->with('status', 'If your email exists, we sent a reset link.');
+        return back()->with(self::FLASH_STATUS, self::MSG_GENERIC_OK);
     }
 
     private function log(string $event, array $meta): void

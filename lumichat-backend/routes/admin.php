@@ -50,28 +50,48 @@ Route::prefix('admin')
             ->parameters(['students' => 'student']);
 
         /* ========== CHATBOT SESSIONS (read-only) ========== */
-       Route::resource('chatbot-sessions', ChatbotSessionController::class)
-    ->only(['index', 'show'])
-    ->parameters(['chatbot-sessions' => 'session']);
+        Route::resource('chatbot-sessions', ChatbotSessionController::class)
+            ->only(['index', 'show'])
+            ->parameters(['chatbot-sessions' => 'session']);
 
-Route::get('chatbot-sessions/{session}/calendar',  // <-- no leading /admin
-    [ChatbotSessionController::class, 'calendarCounts']
-)->name('chatbot-sessions.calendar');              // <-- no 'admin.' here
+        // Actual name (because it's inside the admin group): admin.chatbot-sessions.calendar
+        Route::get('chatbot-sessions/{session}/calendar',
+            [ChatbotSessionController::class, 'calendarCounts']
+        )->name('chatbot-sessions.calendar')
+         ->whereNumber('session');
 
-       /* ========== APPOINTMENTS (Admin) ========== */
-    Route::get('/appointments', [AdminAppointmentController::class, 'index'])->name('appointments.index');
-    Route::get('/appointments/{appointment}', [AdminAppointmentController::class, 'show'])->name('appointments.show');
-    Route::patch('/appointments/{appointment}/status', [AdminAppointmentController::class, 'updateStatus'])->name('appointments.status');
-    Route::patch('/appointments/{appointment}/final-note', [AdminAppointmentController::class, 'saveNote'])->name('appointments.saveNote');
+        /* ========== APPOINTMENTS (Admin) ========== */
+        Route::get('/appointments', [AdminAppointmentController::class, 'index'])
+            ->name('appointments.index');
 
-    /* NEW: save diagnosis report to tbl_diagnosis_reports */
-    Route::patch('/appointments/{appointment}/report', [AdminAppointmentController::class, 'saveReport'])
-        ->name('appointments.saveReport');
+        Route::get('/appointments/{appointment}', [AdminAppointmentController::class, 'show'])
+            ->name('appointments.show')
+            ->whereNumber('appointment');
+
+        Route::patch('/appointments/{appointment}/status', [AdminAppointmentController::class, 'updateStatus'])
+            ->name('appointments.status')
+            ->whereNumber('appointment');
+
+        Route::patch('/appointments/{appointment}/final-note', [AdminAppointmentController::class, 'saveNote'])
+            ->name('appointments.saveNote')
+            ->whereNumber('appointment');
+
+        /* NEW: save diagnosis report to tbl_diagnosis_reports */
+        Route::patch('/appointments/{appointment}/report', [AdminAppointmentController::class, 'saveReport'])
+            ->name('appointments.saveReport')
+            ->whereNumber('appointment');
 
         /* ========== SELF-ASSESSMENTS (Controller-driven) ========== */
-        Route::get('/self-assessments', [SelfAssessmentController::class, 'index'])->name('self-assessments.index');
-        Route::get('/self-assessments/{assessment}', [SelfAssessmentController::class, 'show'])->name('self-assessments.show');
-        Route::post('/self-assessments/{assessment}/feedback', [SelfAssessmentController::class, 'feedback'])->name('self-assessments.feedback');
+        Route::get('/self-assessments', [SelfAssessmentController::class, 'index'])
+            ->name('self-assessments.index');
+
+        Route::get('/self-assessments/{assessment}', [SelfAssessmentController::class, 'show'])
+            ->name('self-assessments.show')
+            ->whereNumber('assessment');
+
+        Route::post('/self-assessments/{assessment}/feedback', [SelfAssessmentController::class, 'feedback'])
+            ->name('self-assessments.feedback')
+            ->whereNumber('assessment');
 
         /* ========== OTHER STATIC REPORT VIEWS (PLACEHOLDERS) ========== */
         Route::view('diagnosis-reports',      'admin.diagnosis-reports.index')->name('diagnosis-reports.index');
@@ -79,5 +99,4 @@ Route::get('chatbot-sessions/{session}/calendar',  // <-- no leading /admin
 
         Route::view('course-analytics',       'admin.course-analytics.index')->name('course-analytics.index');
         Route::view('course-analytics/{id}',  'admin.course-analytics.show')->name('course-analytics.show');
-
     });

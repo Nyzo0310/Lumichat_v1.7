@@ -10,13 +10,18 @@ use Illuminate\View\View;
 
 class EmailVerificationPromptController extends Controller
 {
+    // ==== Constants ====
+    private const VIEW_VERIFY = 'auth.verify-email';
+
     /**
      * Display the email verification prompt.
      */
     public function __invoke(Request $request): RedirectResponse|View
     {
-        return $request->user()->hasVerifiedEmail()
-                    ? redirect()->intended(RouteServiceProvider::HOME)
-                    : view('auth.verify-email');
+        $user = $request->user(); // ensured by 'auth' middleware
+
+        return $user->hasVerifiedEmail()
+            ? redirect()->intended(RouteServiceProvider::HOME)
+            : view(self::VIEW_VERIFY);
     }
 }
