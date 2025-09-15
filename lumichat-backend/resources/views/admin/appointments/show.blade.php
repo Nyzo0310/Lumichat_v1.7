@@ -87,7 +87,7 @@
             title="{{ $canConfirm ? 'Confirm this appointment' : 'Only pending appointments can be confirmed' }}"
             class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
             {{ $canConfirm ? '' : 'disabled' }}>
-      Confirm
+      Confirm 
     </button>
   </form>
 

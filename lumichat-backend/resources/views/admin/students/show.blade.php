@@ -5,7 +5,7 @@
 <div class="max-w-5xl mx-auto p-6 space-y-6">
 
   {{-- Header --}}
-  <div class="flex items-center justify-between">
+  <div class="flex items-center justify-between screen-only">
     <h2 class="text-2xl font-semibold">Student Details</h2>
     <div class="flex items-center gap-2 screen-only">
       <button type="button"
@@ -23,7 +23,7 @@
 
     {{-- print-only title --}}
     <h1 class="print-title hidden">
-      Student Details — {{ $student->full_name }}
+      Student Details — {{ $student->name }}
     </h1>
 
     {{-- Chart: Appointments by Month (selectable year) --}}
@@ -33,6 +33,16 @@
           <h3 class="text-lg font-semibold text-gray-900">
             Appointments — <span class="font-normal text-gray-600">Monthly totals</span>
           </h3>
+          @if(config('app.debug') && isset($idDebug))
+    <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
+      IDs: {{ implode(',', $idDebug['candidates'] ?? []) }}
+      @if(!empty($idDebug['matched']))
+        • matched: {{ implode(',', $idDebug['matched']) }}
+      @else
+        • matched: none
+      @endif
+    </span>
+  @endif
           @if(isset($total))
             <span class="inline-flex items-center rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-medium text-indigo-700">
               Total: {{ $total }}
@@ -96,7 +106,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <p class="text-sm text-gray-500">FULL NAME</p>
-          <p class="text-lg font-medium">{{ $student->full_name }}</p>
+          <p class="text-lg font-medium">{{ $student->name }}</p>
         </div>
         <div>
           <p class="text-sm text-gray-500">EMAIL</p>
@@ -237,4 +247,27 @@
     try { window.__studentApptsChart && window.__studentApptsChart.resize(); } catch(e){}
   });
 </script>
+<style media="print">
+  
+
+  /* Hide everything by default */
+  body * { visibility: hidden !important; }
+
+  /* Show only the printable scope */
+  #print-details-root, #print-details-root * { visibility: visible !important; }
+
+  
+  /* Remove borders/shadows inside the printable scope */
+  #print-details-root .rounded-2xl,
+  #print-details-root .shadow-sm,
+  #print-details-root .border {
+    border: 0 !important; box-shadow: none !important;
+  }
+
+  /* Never print screen-only controls just in case */
+  .screen-only { display: none !important; }
+
+  
+</style>
+
 @endpush

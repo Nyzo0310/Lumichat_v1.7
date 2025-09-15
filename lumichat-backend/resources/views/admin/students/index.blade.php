@@ -19,14 +19,13 @@
 
     <div class="flex gap-3">
       <button type="button" onclick="printStudentTable()" class="px-3 py-1.5 rounded-lg bg-green-600 text-white text-sm hover:bg-green-700">
-  Print
-</button>
-
+        Print
+      </button>
 
       {{-- Search (minimal, submits on Enter) --}}
       <form method="GET" action="{{ route('admin.students.index') }}" class="flex items-center gap-2">
         <div class="relative">
-          <input type="text" name="q" value="{{ $q }}" placeholder="Search student"
+          <input type="text" name="q" value="{{ old('q', $q ?? '') }}" placeholder="Search student"
                  class="w-72 bg-white border border-slate-200 rounded-lg pl-3 pr-10 py-2 text-sm focus:ring-2 focus:ring-indigo-500"
                  autocomplete="off" />
           <svg class="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -34,7 +33,7 @@
             <path d="M21 21l-4.3-4.3" stroke-width="2" stroke-linecap="round"></path>
           </svg>
         </div>
-        @if($q)
+        @if(!empty($q))
           <a href="{{ route('admin.students.index') }}" class="text-sm text-slate-600 hover:underline">Reset</a>
         @endif
       </form>
@@ -50,12 +49,12 @@
       <div class="overflow-x-auto">
         <table class="min-w-full text-sm table-auto">
           <colgroup>
-          <col style="width:24%">
-          <col style="width:25%">
-          <col style="width:18%">
-          <col style="width:15%">
-          <col style="width:15%">
-          <col class="col-action" style="width:0"> {{-- hidden in print --}}
+            <col style="width:24%">
+            <col style="width:25%">
+            <col style="width:18%">
+            <col style="width:15%">
+            <col style="width:15%">
+            <col class="col-action" style="width:0"> {{-- hidden in print --}}
           </colgroup>
           <thead class="bg-slate-200 text-slate-800 shadow-sm">
             <tr class="align-middle">
@@ -64,24 +63,25 @@
               <th class="px-6 py-3 text-left font-semibold uppercase tracking-wide text-[11px] whitespace-nowrap">Contact No.</th>
               <th class="px-6 py-3 text-left font-semibold uppercase tracking-wide text-[11px] whitespace-nowrap">Course</th>
               <th class="px-6 py-3 text-left font-semibold uppercase tracking-wide text-[11px] whitespace-nowrap">Year Level</th>
-              <th class="px-6 py-3 text-right font-semibold uppercase tracking-wide text-[11px] whitespace-nowrap col-action">
-                Action
-              </th>
-
+              <th class="px-6 py-3 text-right font-semibold uppercase tracking-wide text-[11px] whitespace-nowrap col-action">Action</th>
             </tr>
           </thead>
 
           <tbody class="divide-y divide-slate-100">
             @forelse ($students as $s)
               <tr class="hover:bg-slate-50/70 align-middle">
-                <td class="px-6 py-4 whitespace-nowrap font-semibold text-slate-900">{{ $s->full_name }}</td>
-                <td class="px-6 py-4 text-slate-700 whitespace-nowrap">{{ $s->email }}</td>
-                <td class="px-6 py-4 text-slate-700 whitespace-nowrap">{{ $s->contact_number }}</td>
-                <td class="px-6 py-4 text-slate-800">{{ $s->course ?? '—' }}</td>
-                <td class="px-6 py-4 text-slate-800">{{ $s->year_level ?? '—' }}</td>
+                {{-- switched to users.name --}}
+                <td class="px-6 py-4 whitespace-nowrap font-semibold text-slate-900">{{ $s->name }}</td>
+
+                <td class="px-6 py-4 whitespace-nowrap font-semibold text-slate-900">{{ $s->email }}</td>
+                <td class="px-6 py-4 whitespace-nowrap font-semibold text-slate-900">{{ $s->contact_number ?? '—' }}</td>
+                <td class="px-6 py-4 whitespace-nowrap font-semibold text-slate-900">{{ $s->course ?? '—' }}</td>
+                <td class="px-6 py-4 whitespace-nowrap font-semibold text-slate-900">{{ $s->year_level ?? '—' }}</td>
+
                 <td class="px-6 py-4 text-right">
                   <div class="flex items-center justify-end gap-2 whitespace-nowrap">
-                    <a href="{{ route('admin.students.show', $s) }}"
+                    {{-- be explicit: pass id to show route (now bound to User) --}}
+                    <a href="{{ route('admin.students.show', $s->id) }}"
                        class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-blue-600 text-white" title="View">
                       <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -89,6 +89,7 @@
                         <circle cx="12" cy="12" r="3" stroke-width="2" />
                       </svg>
                     </a>
+
                     <a href="mailto:{{ $s->email }}"
                        class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-white text-slate-700 ring-1 ring-slate-200"
                        title="Send Email">
@@ -97,6 +98,7 @@
                               d="M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                       </svg>
                     </a>
+
                     <button type="button" onclick="copyToClipboard('{{ $s->email }}')"
                             class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-white text-slate-700 ring-1 ring-slate-200"
                             title="Copy Email">
@@ -158,12 +160,6 @@
   /* Title */
   .print-title { display:block !important; margin:0 0 8mm !important; font-size:20pt !important; font-weight:700 !important; color:#000 !important; }
 
- 
-
-
-  /* Emails can be long, allow them a bit more space via colgroup; keep single-line */
-  #print-root td:nth-child(2), #print-root th:nth-child(2) { }
-
   /* Hide the Action column entirely on print */
   #print-root th.col-action,
   #print-root td.col-action,
@@ -175,7 +171,6 @@
   #print-root tr { page-break-inside: avoid !important; }
 </style>
 <script>
-  // Keep the button simple
   function printStudentTable(){ window.print(); }
 </script>
 

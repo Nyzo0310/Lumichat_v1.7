@@ -12,6 +12,8 @@ use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\ChatbotSessionController;
 use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
 use App\Http\Controllers\Admin\SelfAssessmentController;
+use App\Http\Controllers\Admin\DiagnosisReportController;
+use App\Http\Controllers\Admin\CourseAnalyticsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -93,10 +95,16 @@ Route::prefix('admin')
             ->name('self-assessments.feedback')
             ->whereNumber('assessment');
 
-        /* ========== OTHER STATIC REPORT VIEWS (PLACEHOLDERS) ========== */
-        Route::view('diagnosis-reports',      'admin.diagnosis-reports.index')->name('diagnosis-reports.index');
-        Route::view('diagnosis-reports/{id}', 'admin.diagnosis-reports.show')->name('diagnosis-reports.show');
+             /* ========== Diagnosis Reports ========== */
+           Route::resource('diagnosis-reports', DiagnosisReportController::class)
+            ->only(['index','show'])
+            ->parameters(['diagnosis-reports' => 'report']);
 
-        Route::view('course-analytics',       'admin.course-analytics.index')->name('course-analytics.index');
-        Route::view('course-analytics/{id}',  'admin.course-analytics.show')->name('course-analytics.show');
+      
+
+      /* ========== COURSE ANALYTICS (Controller-driven) ========== */
+    Route::resource('course-analytics', CourseAnalyticsController::class)
+    ->only(['index', 'show'])
+    ->parameters(['course-analytics' => 'course'])      // {course} is the ID
+    ->whereNumber('course');                             // numeric id
     });

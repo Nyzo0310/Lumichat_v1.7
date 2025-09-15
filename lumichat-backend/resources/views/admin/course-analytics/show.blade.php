@@ -2,48 +2,7 @@
 @section('title','Course Analytics • Details')
 
 @section('content')
-@php
-  // ---- DEMO FALLBACK (used only if $course is not provided) ----
-  if (!isset($course)) {
-    $demo = [
-      1 => [
-        'id' => 1, 'course' => 'BSIT', 'year_level' => '2nd Year',
-        'student_count' => 300,
-        'breakdown' => [
-          ['label' => 'Anxiety Disorders',  'count' => 84],
-          ['label' => 'Academic Stress',    'count' => 120],
-          ['label' => 'Social Anxiety',     'count' => 55],
-          ['label' => 'Depression',         'count' => 24],
-          ['label' => 'Adjustment Disorders','count' => 11],
-          ['label' => 'Sleep Disorders',    'count' => 39],
-        ],
-        'notes' => 'Peak stress observed during midterms and finals. Recommend time‑management workshops and sleep hygiene campaigns.',
-      ],
-      2 => [
-        'id' => 2, 'course' => 'BSBA', 'year_level' => '1st Year',
-        'student_count' => 220,
-        'breakdown' => [
-          ['label' => 'Academic Stress', 'count' => 96],
-          ['label' => 'Sleep Disorders', 'count' => 42],
-        ],
-        'notes' => null,
-      ],
-      3 => [
-        'id' => 3, 'course' => 'BSED', 'year_level' => '3rd Year',
-        'student_count' => 180,
-        'breakdown' => [
-          ['label' => 'Anxiety Disorders', 'count' => 48],
-          ['label' => 'Burnout Risk',      'count' => 28],
-        ],
-        'notes' => 'Field‑work period correlates with increased anxiety; consider pre‑deployment briefing support.',
-      ],
-    ];
-    $routeId = request()->route('id');
-    $course = (object) ($demo[$routeId] ?? $demo[1]);
-  }
 
-  $title = ($course->course ?? '—') . ' • ' . ($course->year_level ?? '—');
-@endphp
 
 <div class="max-w-5xl mx-auto space-y-6">
 

@@ -66,27 +66,26 @@ class AppointmentController extends Controller
     /**
      * Persist final diagnosis report for a completed appointment.
      */
-    public function saveReport(Request $r, int $id): RedirectResponse
-    {
-        $data = $r->validate([
-            'diagnosis'  => ['required', 'string', 'max:20000'],
-            'final_note' => ['nullable', 'string', 'max:20000'],
+  public function saveReport(Request $r, int $id): RedirectResponse
+{
+    $data = $r->validate([
+        'diagnosis'  => ['required', 'string', 'max:20000'],
+        'final_note' => ['nullable', 'string', 'max:20000'],
+    ]);
+
+    $ap = DB::table('tbl_appointments')->where('id', $id)->first();
+    abort_unless($ap, 404);
+
+    if ($ap->status !== 'completed') {
+        return back()->with(self::FLASH_SWAL, [
+            'icon'  => 'warning',
+            'title' => 'Not allowed',
+            'text'  => 'You can save the diagnosis only for completed appointments.',
         ]);
+    }
 
-        // fetch appointment (for student/counselor ids)
-        $ap = DB::table('tbl_appointments')->where('id', $id)->first();
-        abort_unless($ap, 404);
-
-        // only allow when completed (same logic)
-        if ($ap->status !== 'completed') {
-            return back()->with(self::FLASH_SWAL, [
-                'icon'  => 'warning',
-                'title' => 'Not allowed',
-                'text'  => 'You can save the diagnosis only for completed appointments.',
-            ]);
-        }
-
-        // keep original persistence flow (unchanged)
+    DB::transaction(function () use ($id, $ap, $r, $data) {
+        // keep original updates
         DB::table('tbl_appointments')
             ->where('id', $id)
             ->update([
@@ -105,12 +104,16 @@ class AppointmentController extends Controller
             'updated_at'       => now(),
         ]);
 
-        return back()->with(self::FLASH_SWAL, [
-            'icon'  => 'success',
-            'title' => 'Saved',
-            'text'  => 'Diagnosis report has been saved.',
-        ]);
-    }
+        // NEW: refresh course analytics for this student
+        $this->refreshCourseAnalyticsForStudent((int) $ap->student_id);
+    });
+
+    return back()->with(self::FLASH_SWAL, [
+        'icon'  => 'success',
+        'title' => 'Saved',
+        'text'  => 'Diagnosis report has been saved.',
+    ]);
+}
 
     /**
      * Show appointment details + latest report for that student/counselor pair.
@@ -212,4 +215,57 @@ class AppointmentController extends Controller
 
         return $qb;
     }
+    /**
+ * Ensure tbl_course_analytics has a fresh row for the student's course/year:
+ * - course & year_level are taken from tbl_users
+ * - total_students is the live count of users in that course/year
+ * - common_diagnosis is the top 8 diagnosis results (JSON array of labels)
+ */
+private function refreshCourseAnalyticsForStudent(int $studentId): void
+{
+    $student = DB::table('tbl_users')
+        ->select('course', 'year_level')
+        ->where('id', $studentId)
+        ->first();
+
+    if (!$student || empty($student->course) || empty($student->year_level)) {
+        return; // nothing to aggregate
+    }
+
+    $course    = (string) $student->course;
+    $yearLevel = (string) $student->year_level;
+
+    // live count of students in this course/year
+    $totalStudents = (int) DB::table('tbl_users')
+        ->where('course', $course)
+        ->where('year_level', $yearLevel)
+        ->count();
+
+    // top diagnoses for this course/year (after the insert we just did)
+    $topDiag = DB::table('tbl_diagnosis_reports as dr')
+        ->join('tbl_users as u', 'u.id', '=', 'dr.student_id')
+        ->where('u.course', $course)
+        ->where('u.year_level', $yearLevel)
+        ->selectRaw('dr.diagnosis_result as label, COUNT(*) as c')
+        ->groupBy('dr.diagnosis_result')
+        ->orderByDesc('c')
+        ->limit(8)
+        ->pluck('label')
+        ->map(fn($v) => (string) $v)
+        ->all();
+
+    $jsonList = json_encode(array_values($topDiag), JSON_UNESCAPED_UNICODE);
+
+    // upsert row in tbl_course_analytics (unique: course+year_level)
+    DB::table('tbl_course_analytics')->updateOrInsert(
+        ['course' => $course, 'year_level' => $yearLevel],
+        [
+            'total_students'   => $totalStudents,
+            'common_diagnosis' => $jsonList,   // model accessor parses JSON/CSV
+            'generated_at'     => now(),
+            'updated_at'       => now(),
+            'created_at'       => now(),       // affects insert only
+        ]
+    );
+}
 }

@@ -2,42 +2,7 @@
 @section('title','Course Analytics')
 
 @section('content')
-@php
-  // ---- DEMO FALLBACK (used only if $courses not provided) ----
-  $HAS_DATA = isset($courses) && count($courses ?? []) > 0;
 
-  if (!$HAS_DATA) {
-    $courses = [
-      [
-        'id' => 1,
-        'course' => 'BSIT',
-        'year_level' => '2nd Year',
-        'student_count' => 300,
-        'common_diagnoses' => [
-          'Anxiety Disorders', 'Academic Stress', 'Social Anxiety',
-          'Depression', 'Adjustment Disorders', 'Sleep Disorders'
-        ],
-      ],
-      [
-        'id' => 2,
-        'course' => 'BSBA',
-        'year_level' => '1st Year',
-        'student_count' => 220,
-        'common_diagnoses' => ['Academic Stress', 'Time Management', 'Sleep Disorders'],
-      ],
-      [
-        'id' => 3,
-        'course' => 'BSED',
-        'year_level' => '3rd Year',
-        'student_count' => 180,
-        'common_diagnoses' => ['Anxiety Disorders', 'Burnout Risk'],
-      ],
-    ];
-  }
-
-  $yearKey = request('year','all');
-  $q = request('q');
-@endphp
 
 <div class="max-w-7xl mx-auto space-y-6">
 
