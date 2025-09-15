@@ -3948,3 +3948,517 @@ rules:
   steps:
     - intent: depression_p0200
     - action: utter_depression_p0200
+
+
+- rule: respond to grief_loss_p0001
+  steps:
+    - intent: grief_loss_p0001
+    - action: utter_grief_loss_p0001
+- rule: respond to grief_loss_p0002
+  steps:
+    - intent: grief_loss_p0002
+    - action: utter_grief_loss_p0002
+- rule: respond to grief_loss_p0003
+  steps:
+    - intent: grief_loss_p0003
+    - action: utter_grief_loss_p0003
+- rule: respond to grief_loss_p0004
+  steps:
+    - intent: grief_loss_p0004
+    - action: utter_grief_loss_p0004
+- rule: respond to grief_loss_p0005
+  steps:
+    - intent: grief_loss_p0005
+    - action: utter_grief_loss_p0005
+- rule: respond to grief_loss_p0006
+  steps:
+    - intent: grief_loss_p0006
+    - action: utter_grief_loss_p0006
+- rule: respond to grief_loss_p0007
+  steps:
+    - intent: grief_loss_p0007
+    - action: utter_grief_loss_p0007
+- rule: respond to grief_loss_p0008
+  steps:
+    - intent: grief_loss_p0008
+    - action: utter_grief_loss_p0008
+- rule: respond to grief_loss_p0009
+  steps:
+    - intent: grief_loss_p0009
+    - action: utter_grief_loss_p0009
+- rule: respond to grief_loss_p0010
+  steps:
+    - intent: grief_loss_p0010
+    - action: utter_grief_loss_p0010
+- rule: respond to grief_loss_p0011
+  steps:
+    - intent: grief_loss_p0011
+    - action: utter_grief_loss_p0011
+- rule: respond to grief_loss_p0012
+  steps:
+    - intent: grief_loss_p0012
+    - action: utter_grief_loss_p0012
+- rule: respond to grief_loss_p0013
+  steps:
+    - intent: grief_loss_p0013
+    - action: utter_grief_loss_p0013
+- rule: respond to grief_loss_p0014
+  steps:
+    - intent: grief_loss_p0014
+    - action: utter_grief_loss_p0014
+- rule: respond to grief_loss_p0015
+  steps:
+    - intent: grief_loss_p0015
+    - action: utter_grief_loss_p0015
+- rule: respond to grief_loss_p0016
+  steps:
+    - intent: grief_loss_p0016
+    - action: utter_grief_loss_p0016
+- rule: respond to grief_loss_p0017
+  steps:
+    - intent: grief_loss_p0017
+    - action: utter_grief_loss_p0017
+- rule: respond to grief_loss_p0018
+  steps:
+    - intent: grief_loss_p0018
+    - action: utter_grief_loss_p0018
+- rule: respond to grief_loss_p0019
+  steps:
+    - intent: grief_loss_p0019
+    - action: utter_grief_loss_p0019
+- rule: respond to grief_loss_p0020
+  steps:
+    - intent: grief_loss_p0020
+    - action: utter_grief_loss_p0020
+- rule: respond to grief_loss_p0021
+  steps:
+    - intent: grief_loss_p0021
+    - action: utter_grief_loss_p0021
+- rule: respond to grief_loss_p0022
+  steps:
+    - intent: grief_loss_p0022
+    - action: utter_grief_loss_p0022
+- rule: respond to grief_loss_p0023
+  steps:
+    - intent: grief_loss_p0023
+    - action: utter_grief_loss_p0023
+- rule: respond to grief_loss_p0024
+  steps:
+    - intent: grief_loss_p0024
+    - action: utter_grief_loss_p0024
+- rule: respond to grief_loss_p0025
+  steps:
+    - intent: grief_loss_p0025
+    - action: utter_grief_loss_p0025
+- rule: respond to grief_loss_p0026
+  steps:
+    - intent: grief_loss_p0026
+    - action: utter_grief_loss_p0026
+- rule: respond to grief_loss_p0027
+  steps:
+    - intent: grief_loss_p0027
+    - action: utter_grief_loss_p0027
+- rule: respond to grief_loss_p0028
+  steps:
+    - intent: grief_loss_p0028
+    - action: utter_grief_loss_p0028
+- rule: respond to grief_loss_p0029
+  steps:
+    - intent: grief_loss_p0029
+    - action: utter_grief_loss_p0029
+- rule: respond to grief_loss_p0030
+  steps:
+    - intent: grief_loss_p0030
+    - action: utter_grief_loss_p0030
+- rule: respond to grief_loss_p0031
+  steps:
+    - intent: grief_loss_p0031
+    - action: utter_grief_loss_p0031
+- rule: respond to grief_loss_p0032
+  steps:
+    - intent: grief_loss_p0032
+    - action: utter_grief_loss_p0032
+- rule: respond to grief_loss_p0033
+  steps:
+    - intent: grief_loss_p0033
+    - action: utter_grief_loss_p0033
+- rule: respond to grief_loss_p0034
+  steps:
+    - intent: grief_loss_p0034
+    - action: utter_grief_loss_p0034
+- rule: respond to grief_loss_p0035
+  steps:
+    - intent: grief_loss_p0035
+    - action: utter_grief_loss_p0035
+- rule: respond to grief_loss_p0036
+  steps:
+    - intent: grief_loss_p0036
+    - action: utter_grief_loss_p0036
+- rule: respond to grief_loss_p0037
+  steps:
+    - intent: grief_loss_p0037
+    - action: utter_grief_loss_p0037
+- rule: respond to grief_loss_p0038
+  steps:
+    - intent: grief_loss_p0038
+    - action: utter_grief_loss_p0038
+- rule: respond to grief_loss_p0039
+  steps:
+    - intent: grief_loss_p0039
+    - action: utter_grief_loss_p0039
+- rule: respond to grief_loss_p0040
+  steps:
+    - intent: grief_loss_p0040
+    - action: utter_grief_loss_p0040
+- rule: respond to grief_loss_p0041
+  steps:
+    - intent: grief_loss_p0041
+    - action: utter_grief_loss_p0041
+- rule: respond to grief_loss_p0042
+  steps:
+    - intent: grief_loss_p0042
+    - action: utter_grief_loss_p0042
+- rule: respond to grief_loss_p0043
+  steps:
+    - intent: grief_loss_p0043
+    - action: utter_grief_loss_p0043
+- rule: respond to grief_loss_p0044
+  steps:
+    - intent: grief_loss_p0044
+    - action: utter_grief_loss_p0044
+- rule: respond to grief_loss_p0045
+  steps:
+    - intent: grief_loss_p0045
+    - action: utter_grief_loss_p0045
+- rule: respond to grief_loss_p0046
+  steps:
+    - intent: grief_loss_p0046
+    - action: utter_grief_loss_p0046
+- rule: respond to grief_loss_p0047
+  steps:
+    - intent: grief_loss_p0047
+    - action: utter_grief_loss_p0047
+- rule: respond to grief_loss_p0048
+  steps:
+    - intent: grief_loss_p0048
+    - action: utter_grief_loss_p0048
+- rule: respond to grief_loss_p0049
+  steps:
+    - intent: grief_loss_p0049
+    - action: utter_grief_loss_p0049
+- rule: respond to grief_loss_p0050
+  steps:
+    - intent: grief_loss_p0050
+    - action: utter_grief_loss_p0050
+- rule: respond to grief_loss_p0051
+  steps:
+    - intent: grief_loss_p0051
+    - action: utter_grief_loss_p0051
+- rule: respond to grief_loss_p0052
+  steps:
+    - intent: grief_loss_p0052
+    - action: utter_grief_loss_p0052
+- rule: respond to grief_loss_p0053
+  steps:
+    - intent: grief_loss_p0053
+    - action: utter_grief_loss_p0053
+- rule: respond to grief_loss_p0054
+  steps:
+    - intent: grief_loss_p0054
+    - action: utter_grief_loss_p0054
+- rule: respond to grief_loss_p0055
+  steps:
+    - intent: grief_loss_p0055
+    - action: utter_grief_loss_p0055
+- rule: respond to grief_loss_p0056
+  steps:
+    - intent: grief_loss_p0056
+    - action: utter_grief_loss_p0056
+- rule: respond to grief_loss_p0057
+  steps:
+    - intent: grief_loss_p0057
+    - action: utter_grief_loss_p0057
+- rule: respond to grief_loss_p0058
+  steps:
+    - intent: grief_loss_p0058
+    - action: utter_grief_loss_p0058
+- rule: respond to grief_loss_p0059
+  steps:
+    - intent: grief_loss_p0059
+    - action: utter_grief_loss_p0059
+- rule: respond to grief_loss_p0060
+  steps:
+    - intent: grief_loss_p0060
+    - action: utter_grief_loss_p0060
+- rule: respond to grief_loss_p0061
+  steps:
+    - intent: grief_loss_p0061
+    - action: utter_grief_loss_p0061
+- rule: respond to grief_loss_p0062
+  steps:
+    - intent: grief_loss_p0062
+    - action: utter_grief_loss_p0062
+- rule: respond to grief_loss_p0063
+  steps:
+    - intent: grief_loss_p0063
+    - action: utter_grief_loss_p0063
+- rule: respond to grief_loss_p0064
+  steps:
+    - intent: grief_loss_p0064
+    - action: utter_grief_loss_p0064
+- rule: respond to grief_loss_p0065
+  steps:
+    - intent: grief_loss_p0065
+    - action: utter_grief_loss_p0065
+- rule: respond to grief_loss_p0066
+  steps:
+    - intent: grief_loss_p0066
+    - action: utter_grief_loss_p0066
+- rule: respond to grief_loss_p0067
+  steps:
+    - intent: grief_loss_p0067
+    - action: utter_grief_loss_p0067
+- rule: respond to grief_loss_p0068
+  steps:
+    - intent: grief_loss_p0068
+    - action: utter_grief_loss_p0068
+- rule: respond to grief_loss_p0069
+  steps:
+    - intent: grief_loss_p0069
+    - action: utter_grief_loss_p0069
+- rule: respond to grief_loss_p0070
+  steps:
+    - intent: grief_loss_p0070
+    - action: utter_grief_loss_p0070
+- rule: respond to grief_loss_p0071
+  steps:
+    - intent: grief_loss_p0071
+    - action: utter_grief_loss_p0071
+- rule: respond to grief_loss_p0072
+  steps:
+    - intent: grief_loss_p0072
+    - action: utter_grief_loss_p0072
+- rule: respond to grief_loss_p0073
+  steps:
+    - intent: grief_loss_p0073
+    - action: utter_grief_loss_p0073
+- rule: respond to grief_loss_p0074
+  steps:
+    - intent: grief_loss_p0074
+    - action: utter_grief_loss_p0074
+- rule: respond to grief_loss_p0075
+  steps:
+    - intent: grief_loss_p0075
+    - action: utter_grief_loss_p0075
+- rule: respond to grief_loss_p0076
+  steps:
+    - intent: grief_loss_p0076
+    - action: utter_grief_loss_p0076
+- rule: respond to grief_loss_p0077
+  steps:
+    - intent: grief_loss_p0077
+    - action: utter_grief_loss_p0077
+- rule: respond to grief_loss_p0078
+  steps:
+    - intent: grief_loss_p0078
+    - action: utter_grief_loss_p0078
+- rule: respond to grief_loss_p0079
+  steps:
+    - intent: grief_loss_p0079
+    - action: utter_grief_loss_p0079
+- rule: respond to grief_loss_p0080
+  steps:
+    - intent: grief_loss_p0080
+    - action: utter_grief_loss_p0080
+- rule: respond to grief_loss_p0081
+  steps:
+    - intent: grief_loss_p0081
+    - action: utter_grief_loss_p0081
+- rule: respond to grief_loss_p0082
+  steps:
+    - intent: grief_loss_p0082
+    - action: utter_grief_loss_p0082
+- rule: respond to grief_loss_p0083
+  steps:
+    - intent: grief_loss_p0083
+    - action: utter_grief_loss_p0083
+- rule: respond to grief_loss_p0084
+  steps:
+    - intent: grief_loss_p0084
+    - action: utter_grief_loss_p0084
+- rule: respond to grief_loss_p0085
+  steps:
+    - intent: grief_loss_p0085
+    - action: utter_grief_loss_p0085
+- rule: respond to grief_loss_p0086
+  steps:
+    - intent: grief_loss_p0086
+    - action: utter_grief_loss_p0086
+- rule: respond to grief_loss_p0087
+  steps:
+    - intent: grief_loss_p0087
+    - action: utter_grief_loss_p0087
+- rule: respond to grief_loss_p0088
+  steps:
+    - intent: grief_loss_p0088
+    - action: utter_grief_loss_p0088
+- rule: respond to grief_loss_p0089
+  steps:
+    - intent: grief_loss_p0089
+    - action: utter_grief_loss_p0089
+- rule: respond to grief_loss_p0090
+  steps:
+    - intent: grief_loss_p0090
+    - action: utter_grief_loss_p0090
+- rule: respond to grief_loss_p0091
+  steps:
+    - intent: grief_loss_p0091
+    - action: utter_grief_loss_p0091
+- rule: respond to grief_loss_p0092
+  steps:
+    - intent: grief_loss_p0092
+    - action: utter_grief_loss_p0092
+- rule: respond to grief_loss_p0093
+  steps:
+    - intent: grief_loss_p0093
+    - action: utter_grief_loss_p0093
+- rule: respond to grief_loss_p0094
+  steps:
+    - intent: grief_loss_p0094
+    - action: utter_grief_loss_p0094
+- rule: respond to grief_loss_p0095
+  steps:
+    - intent: grief_loss_p0095
+    - action: utter_grief_loss_p0095
+- rule: respond to grief_loss_p0096
+  steps:
+    - intent: grief_loss_p0096
+    - action: utter_grief_loss_p0096
+- rule: respond to grief_loss_p0097
+  steps:
+    - intent: grief_loss_p0097
+    - action: utter_grief_loss_p0097
+- rule: respond to grief_loss_p0098
+  steps:
+    - intent: grief_loss_p0098
+    - action: utter_grief_loss_p0098
+- rule: respond to grief_loss_p0099
+  steps:
+    - intent: grief_loss_p0099
+    - action: utter_grief_loss_p0099
+- rule: respond to grief_loss_p0100
+  steps:
+    - intent: grief_loss_p0100
+    - action: utter_grief_loss_p0100
+- rule: respond to grief_loss_p0101
+  steps:
+    - intent: grief_loss_p0101
+    - action: utter_grief_loss_p0101
+- rule: respond to grief_loss_p0102
+  steps:
+    - intent: grief_loss_p0102
+    - action: utter_grief_loss_p0102
+- rule: respond to grief_loss_p0103
+  steps:
+    - intent: grief_loss_p0103
+    - action: utter_grief_loss_p0103
+- rule: respond to grief_loss_p0104
+  steps:
+    - intent: grief_loss_p0104
+    - action: utter_grief_loss_p0104
+- rule: respond to grief_loss_p0105
+  steps:
+    - intent: grief_loss_p0105
+    - action: utter_grief_loss_p0105
+- rule: respond to grief_loss_p0106
+  steps:
+    - intent: grief_loss_p0106
+    - action: utter_grief_loss_p0106
+- rule: respond to grief_loss_p0107
+  steps:
+    - intent: grief_loss_p0107
+    - action: utter_grief_loss_p0107
+- rule: respond to grief_loss_p0108
+  steps:
+    - intent: grief_loss_p0108
+    - action: utter_grief_loss_p0108
+- rule: respond to grief_loss_p0109
+  steps:
+    - intent: grief_loss_p0109
+    - action: utter_grief_loss_p0109
+- rule: respond to grief_loss_p0110
+  steps:
+    - intent: grief_loss_p0110
+    - action: utter_grief_loss_p0110
+- rule: respond to grief_loss_p0111
+  steps:
+    - intent: grief_loss_p0111
+    - action: utter_grief_loss_p0111
+- rule: respond to grief_loss_p0112
+  steps:
+    - intent: grief_loss_p0112
+    - action: utter_grief_loss_p0112
+- rule: respond to grief_loss_p0113
+  steps:
+    - intent: grief_loss_p0113
+    - action: utter_grief_loss_p0113
+- rule: respond to grief_loss_p0114
+  steps:
+    - intent: grief_loss_p0114
+    - action: utter_grief_loss_p0114
+- rule: respond to grief_loss_p0115
+  steps:
+    - intent: grief_loss_p0115
+    - action: utter_grief_loss_p0115
+- rule: respond to grief_loss_p0116
+  steps:
+    - intent: grief_loss_p0116
+    - action: utter_grief_loss_p0116
+- rule: respond to grief_loss_p0117
+  steps:
+    - intent: grief_loss_p0117
+    - action: utter_grief_loss_p0117
+- rule: respond to grief_loss_p0118
+  steps:
+    - intent: grief_loss_p0118
+    - action: utter_grief_loss_p0118
+- rule: respond to grief_loss_p0119
+  steps:
+    - intent: grief_loss_p0119
+    - action: utter_grief_loss_p0119
+- rule: respond to grief_loss_p0120
+  steps:
+    - intent: grief_loss_p0120
+    - action: utter_grief_loss_p0120
+- rule: respond to grief_loss_p0121
+  steps:
+    - intent: grief_loss_p0121
+    - action: utter_grief_loss_p0121
+- rule: respond to grief_loss_p0122
+  steps:
+    - intent: grief_loss_p0122
+    - action: utter_grief_loss_p0122
+- rule: respond to grief_loss_p0123
+  steps:
+    - intent: grief_loss_p0123
+    - action: utter_grief_loss_p0123
+- rule: respond to grief_loss_p0124
+  steps:
+    - intent: grief_loss_p0124
+    - action: utter_grief_loss_p0124
+- rule: respond to grief_loss_p0125
+  steps:
+    - intent: grief_loss_p0125
+    - action: utter_grief_loss_p0125
+- rule: respond to grief_loss_p0126
+  steps:
+    - intent: grief_loss_p0126
+    - action: utter_grief_loss_p0126
+- rule: respond to grief_loss_p0127
+  steps:
+    - intent: grief_loss_p0127
+    - action: utter_grief_loss_p0127
+- rule: respond to grief_loss_p0128
+  steps:
+    - intent: grief_loss_p0128
+    - action: utter_grief_loss_p0128
