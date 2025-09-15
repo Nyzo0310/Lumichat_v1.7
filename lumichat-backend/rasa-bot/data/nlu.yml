@@ -4728,7 +4728,7 @@ nlu:
 - intent: anxiety_p0100
   examples: |
     - I'm considering counseling because I think it could provide me with valuable tools to manage my anxiety and improve my overall well-being.
-    
+    - 
 - intent: anxiety_p0101
   examples: |
     - I'm constantly worried about what others think of me.
@@ -11848,3 +11848,1440 @@ nlu:
   examples: |
     - Depression has affected my concentration and memory, making it difficult to focus on tasks or retain information.
     - I'm seeking strategies to improve cognitive function and enhance my productivity.    
+
+    
+- intent: grief_loss_p0001
+  examples: |
+    - I recently went through a breakup, and it has left me feeling lost and heartbroken.
+    - I hope counseling can provide me with support and guidance as I navigate this difficult period." Going through a heartbreaking breakup has turned my world upside down.
+    - It feels like everything I envisioned for my future has crumbled before my eyes.
+    - Right now, all I want is to find healing and move forward.
+    - The breakup was triggered by a series of conflicts and growing apart over time.
+    - We both had different goals, and it became apparent that our visions for the future no longer aligned.
+    - Despite knowing that breaking up was the right choice, it still hurts deeply.
+    - A specific event that triggered my feelings of heartbreak recently was when I came across an old photo album filled with memories from our time together.
+    - Seeing the happy moments we shared brought back bittersweet memories and intensified the pain of losing what once felt so special.
+    - These symptoms of heartbreak are present almost every day.
+    - The intensity varies, but there's a constant ache in my chest, and at times, it feels like I can't breathe.
+    - My mind is fixated on thoughts about the past and what could have been different.
+    - It's difficult to focus on anything else or imagine myself building a new life without them.
+    - To cope with this breakup, I've tried leaning on friends and family for support.
+    - However, the pain remains overwhelming, and I'm struggling to let go of the attachment I had to my ex-partner.
+    - During counseling, I would appreciate guidance on how to navigate through the stages of grief and heal from this breakup.
+    - How do you typically help individuals process their emotions after a significant relationship ends?
+    - Are there any strategies or techniques that can assist me in finding closure and ultimately moving forward?
+    
+- intent: grief_loss_p0002
+  examples: |
+    - I'm really struggling with the recent loss of my mother.
+    - She passed away unexpectedly last month, and it feels like a huge part of me is missing.
+    - My goal for counseling is to find healthy ways to cope with this grief and eventually accept her absence." Description: The patient describes their emotions and thoughts regarding the loss of their mother.
+    - They express feeling devastated and experiencing a deep void in their life.
+    - Examples of triggering events: The sudden passing of the patient's mother without any prior illness or warning.
+    - Symptoms: The patient mentions feeling overwhelming sadness, difficulty sleeping, loss of appetite, and moments of intense longing for their mother.
+    - These symptoms occur daily and have persisted for one month since the loss.
+    - Relevant life events/family dynamics: The patient had a close relationship with their mother and relied heavily on her emotional support.
+    - They were the primary caretaker during her final years due to chronic health issues.
+    - Coping strategies: The patient has been seeking solace through journaling, talking to friends who have experienced similar losses, and attending online grief support groups.
+    - Questions: How can counseling help me process my grief?
+    - Are there any specific techniques or exercises we can work on together to manage these intense feelings?
+    
+- intent: grief_loss_p0003
+  examples: |
+    - Grief and Loss" I recently experienced a significant loss, and navigating through grief has been incredibly challenging.
+    - Through counseling, I hope to find solace, learn coping strategies, and eventually reach a place of healing and acceptance.
+    - The emotions surrounding my grief consist of profound sadness, emptiness, despair, and a constant ache deep within my heart.
+    - It feels like a part of me is missing, and an overwhelming sense of loneliness engulfs me.
+    - Life now appears dull and lacks its usual luster.
+    - The recent loss occurred when my loving grandmother passed away after a long battle with illness.
+    - Her absence has left an irreplaceable void in my life, filled with cherished memories and unfulfilled moments.
+    - The pain of her departure feels unbearable at times.
+    - Symptoms of grief include frequent crying spells
+    - difficulty sleeping or experiencing vivid dreams
+    - loss of appetite because i lost something so dear to me
+    - and a profound yearning for the presence of the loved one.
+    - These symptoms fluctuate in intensity, often triggered by reminders of past experiences shared with the deceased.
+    - Recalling my childhood, I've previously experienced loss when our family dog passed away unexpectedly.
+    - While it may seem trivial compared to losing a human loved one
+    - that event impacted me deeply
+    - emphasizing the finite nature of life and the impending sorrow attached to it.
+    - To cope with this grief, I turn to creative outlets like writing and painting as forms of expression.
+    - Journaling my thoughts and emotions helps process the pain, whereas creating art offers temporary solace from overwhelming sadness.
+    - In counseling
+    - I aspire to understand the grieving process better
+    - gain tools to manage its different stages
+    - and find healthy ways to honor the memory of my grandmother while slowly adapting to life without her physical presence.
+    - My ultimate goal is to reach acceptance, finding joy in shared memories rather than being overwhelmed by the pain of loss.
+    
+- intent: grief_loss_p0004
+  examples: |
+    - I recently ended a long-term relationship
+    - and I'm struggling with feelings of loss and loneliness." The patient seeks support in dealing with the emotional aftermath of a breakup and finding ways to heal and move forward positively.
+    - Emotions and thoughts: The patient feels heartbroken, abandoned, and uncertain about their future without their former partner.
+    - They question whether they will ever find love again and if they made the right decision.
+    - Triggering situations: Following the breakup, the patient notices reminders of their ex-partner everywhere, which triggers waves of sadness and longing.
+    - Loneliness intensifies during social events or when being surrounded by happy couples.
+    - Symptoms: The patient experiences mood swings, changes in appetite, disruptions in sleep patterns, and decreased interest in activities they once enjoyed.
+    - Grief weighs heavily on them.
+    - Life events/family dynamics_past trauma: The patient has previous experiences of loss and abandonment that contribute to heightened sensitivity surrounding rejection and separation.
+    - Their past traumas make it challenging to trust new people easily.
+    - Coping strategies: The patient participates in therapy as a means to process their emotions and seeks solace in mindful activities such as journaling or engaging with hobbies.
+    - They desire guidance on how to navigate the grieving process effectively.
+    - Questions: How can I heal from this breakup and move forward without carrying emotional baggage into future relationships?
+    - Are there any strategies for building resilience and finding self-worth after experiencing loss?
+    
+- intent: grief_loss_p0005
+  examples: |
+    - I'm struggling to cope with grief and loss after losing my best friend in a car accident." The patient wishes to process their grief
+    - learn healthy coping mechanisms for mourning
+    - and eventually find acceptance while honoring their departed friend's memory.
+    - Losing my best friend has left a void in my heart that seems impossible to fill.
+    - There are moments when intense sadness overwhelms me, and other times where guilt creeps in for still being alive.
+    - Examples of triggering situations or events: Seeing pictures of us together or hearing songs that remind me of them instantly transport me back to happier times.
+    - Recently, I found an old birthday card they wrote for me, and I couldn't help but break down in tears.
+    - Symptoms: Frequent bouts of uncontrollable sobbing, difficulty concentrating on daily tasks, and a general sense of emptiness envelop me since the loss.
+    - It feels like this pain will never fully dissipate.
+    - Significant life events and family dynamics: The patient's departed friend had been their support system through numerous challenging life events.
+    - Their absence magnifies the impact of this loss on the patient's well-being.
+    - Coping strategies: I've sought solace in writing about my memories with them and attending grief support groups.
+    - While these activities provide temporary relief, the deep sorrow remains.
+    - Questions for the mental health professional: Will this pain ever go away?
+    - How can I navigate the guilt I feel for still being alive and finding happiness despite losing someone so dear to me?
+    
+- intent: grief_loss_p0006
+  examples: |
+    - Relationships" I'm currently going through a divorce, and it has been an emotionally exhausting process.
+    - Through counseling, I hope to gain support and guidance to navigate this difficult time and heal from the pain of ending a long-term relationship.
+    - The end of my marriage has left me feeling devastated and lost.
+    - There are moments when I question my self-worth and wonder if I'll ever find happiness again.
+    - I want to find strength within myself and move forward towards a brighter future.
+    - Specific examples of triggering situations/events: Recently, we had to divide our belongings, and it felt like tearing apart a lifetime of memories.
+    - Going through sentimental items sparked intense feelings of grief and regret.
+    - It's a painful reminder of what used to be and what will never be again.
+    - Description of symptoms: These emotions often flood over me unexpectedly.
+    - The frequency of tearful episodes has increased since the divorce process started.
+    - Grief, sadness, and anger intermingle, creating a complex emotional landscape that I struggle to navigate.
+    - Significant life events
+    - or past trauma: Growing up
+    - I witnessed my parents' toxic relationship
+    - marked with constant fights and disregard for each other's well-being.
+    - This upbringing influenced my understanding of love and relationships, making it challenging to envision a healthy future after divorce.
+    - Coping strategies: To cope with the pain of divorce, I've sought solace in therapy groups and journaling.
+    - While they offer some comfort, they're not sufficient.
+    - I need professional guidance to heal from this loss and learn how to rebuild my life after separation.
+    - Question: How can I process the grief and pain associated with divorce?
+    - Are there specific techniques or exercises that can help me find closure and move forward?
+    - Additionally, how do I rebuild my confidence and trust in love after such a devastating experience?
+    
+- intent: grief_loss_p0007
+  examples: |
+    - The dissolution of my marriage has left me feeling shattered and overwhelmed.
+    - I have so many unanswered questions and doubts about myself and my future.
+    - I hope therapy can help me navigate through this difficult time, cope with the grief, and gain clarity on how to rebuild my life.
+    
+- intent: grief_loss_p0008
+  examples: |
+    - I recently lost my mother in a car accident, and it has been really tough for me to cope with her sudden death.
+    - My goal in this counseling session is to find ways to deal with my grief and eventually move forward.
+    - During the accident, I witnessed everything.
+    - The sound of the collision and the sight of my mother's lifeless body have haunted me since that day.
+    - Whenever I close my eyes, those images flash before me.
+    - It feels like a heavy weight pressing down on my chest all the time.
+    - I often find myself overwhelmed by sadness and find it hard to concentrate on anything else.
+    - At times, I feel guilty.
+    - Guilty for surviving the accident while she didn't.
+    - I constantly replay scenarios in my head, thinking about what I could have done differently to prevent the tragedy.
+    - Whenever I visit the spot where the accident occurred, a flood of emotions rushes over me.
+    - The pain feels unbearable, as if it happened just yesterday.
+    - These intense feelings make it difficult for me to go about my daily routine or even enjoy simple pleasures in life.
+    - My symptoms include frequent crying spells, loss of appetite, and difficulty sleeping.
+    - I wake up in the middle of the night with vivid nightmares of the accident.
+    - The intensity of these symptoms varies, but they occur almost every day since the incident.
+    - In addition to my grief, there are also unresolved disagreements within our family regarding medical decisions during my mother's treatment.
+    - This conflict adds an additional layer of stress to my grieving process.
+    - To cope, I've tried journaling my thoughts and emotions, but it only provides temporary relief.
+    - I've spoken to close friends about my feelings, but sometimes it feels like their sympathy makes me more emotional.
+    - It would be helpful to learn healthier coping strategies to navigate through this complicated grief.
+    - Could you guide me through this counseling process and help me understand how I can honor my mother's memory while finding a way to heal myself?
+    
+- intent: grief_loss_p0009
+  examples: |
+    - I recently lost my spouse, and the grief feels overwhelming.
+    - It's hard to navigate daily life without them, and I often find myself consumed by sadness and loneliness.
+    - I want to find healthy ways of coping with my grief and gradually moving forward.
+    - Explanation: The patient shares their experience of losing a spouse, emphasizing the overwhelming nature of their grief.
+    - They express challenges in adapting to life without their partner and describe feelings of profound sadness and isolation.
+    - Their goal is to discover effective coping mechanisms for processing grief while finding ways to progress towards healing.
+    
+- intent: grief_loss_p0010
+  examples: |
+    - My partner and I recently experienced a tragic loss together, and it's testing the strength of our marriage.
+    - Goal: We hope to navigate this grief together without letting it tear us apart.
+    - Emotions/Thoughts: We feel an overwhelming sense of sorrow and emptiness since this tragedy occurred.
+    - At times, we wonder if our marriage can survive the pain and grief we are going through.
+    - Triggers: Everyday routines, places, and objects associated with our loss act as constant reminders, intensifying our emotions and causing distress.
+    - Symptoms: We both struggle with sleep disturbances, decreased appetite, and mood swings since the incident.
+    - The intensity varies but these symptoms continue daily.
+    - Significant Life Events/Family Dynamics: This is the first time we have faced such profound loss together, creating uncharted territory for us.
+    - Our different coping styles and communication patterns also impact our ability to support each other during this difficult time.
+    - Coping Strategies: We have sought solace in attending bereavement support groups and participating in activities that honor the memory of our loved one.
+    - Inquiries: Can we learn healthy ways to grieve together?
+    - Are there specific strategies or resources available to help us navigate this grieving process within our marriage?
+    
+- intent: grief_loss_p0011
+  examples: |
+    - The patient is experiencing grief and loss after the sudden death of a loved one and hopes to find ways to navigate through their grief and begin the healing process.
+    - My primary goal is to find healthy coping mechanisms that allow me to honor my grief
+    - adapt to life without my loved one
+    - and eventually find peace within myself.
+    - An overwhelming sadness permeates every aspect of my being since losing my loved one.
+    - It feels as if a part of me has been torn away irreparably.
+    - Thoughts of profound emptiness, longing, and confusion frequently occupy my mind, leaving me feeling lost and emotionally fragile.
+    - Specific examples of situations/events triggering feelings or concerns: Daily reminders of my loved one persistently trigger waves of sorrow.
+    - Even simple experiences like passing by places we used to visit together evoke intense melancholy.
+    - For example, last week, while cleaning the attic, I stumbled upon old photographs of us, immediately catapulting me into a state of deep grieving.
+    - Grieving has become an all-encompassing experience for me.
+    - I struggle with sleep disturbances, appetite changes, difficulty concentrating, and intrusive memories of our life together.
+    - These symptoms have profoundly affected my ability to function in everyday life.
+    - or past trauma relevant to current challenges: The close bond I shared with the deceased was instrumental to my sense of identity and emotional wellbeing.
+    - Losing them has not only created a void but also brought up unresolved issues from the past, making the grieving process even more challenging.
+    - Coping strategies: To cope with my grief, I have attempted journaling, joining grief support groups, and creating rituals to commemorate my loved one's memory.
+    - While these efforts provide some solace, I find myself overwhelmed by the intensity and unpredictable nature of grief.
+    - Questions for the mental health professional: How can counseling assist me in navigating through the stages of grief?
+    - What techniques or approaches can I learn to manage the overwhelming feelings of loss?
+    - Are there any resources or additional support systems available that could facilitate my healing?
+    
+- intent: grief_loss_p0012
+  examples: |
+    - After nearly two decades of marriage, my spouse recently asked for a divorce.
+    - I'm devastated and trying to navigate through the grief and confusion.
+    - I want guidance on how to cope with this profound loss and find a way to rebuild my life.
+    
+- intent: grief_loss_p0013
+  examples: |
+    - Grief and Loss" My goal for this counseling session is to find ways to cope with the overwhelming grief I've been experiencing since my mother passed away last year.
+    - I have been feeling an intense sadness and a deep sense of emptiness ever since she died.
+    - It's like a piece of me is missing and I can't seem to shake off this heaviness in my heart.
+    - I constantly replay her final moments in my mind and it haunts me.
+    - One specific event that triggered these feelings was when I visited her grave on her birthday.
+    - Seeing her name etched onto the tombstone made everything feel so real, and I just broke down right then and there.
+    - It felt like I was saying goodbye all over again.
+    - The frequency of these symptoms has not lessened, if anything, they have become more intense as time goes on.
+    - Every day feels like a battle to keep going without her.
+    - The duration varies but some days are worse than others, especially during holidays or special occasions.
+    - In terms of coping strategies, I try talking about my feelings with close friends and family members who also knew my mom.
+    - We share stories and memories, which helps me feel connected to her in some way.
+    - But I still struggle to accept that she's really gone.
+    - I want to ask you how long does the grieving process typically last?
+    - And what techniques or therapies could help me deal with this pain?
+    - I'm open to any suggestions because I don't want to be stuck in this state forever.
+    
+- intent: grief_loss_p0014
+  examples: |
+    - I lost my father recently, and the grief is becoming unbearable.
+    - I hope to find ways to cope with this loss and move forward in a healthy manner. My father meant the world to me
+    - and losing him has left a huge void in my life.
+    - I'm struggling with intense sadness
+    - loneliness
+    - and feelings of guilt." Examples: "Last night
+    - I found myself unable to sleep because all I could think about were memories with my father.
+    - I kept replaying moments we shared and regretting not spending enough time with him before his illness took him away." Symptoms: Since my father's passing
+    - I experience persistent feelings of emptiness
+    - tearfulness
+    - and low motivation.
+    - These emotions have been present every day for the past two months.
+    - Significant life events: Growing up, my father was always there for me, providing love, support, and guidance.
+    - I am an only child, and losing him has intensified my feelings of loneliness.
+    - Coping strategies: Talking to friends and writing in a journal have helped me express my emotions, but the grief is still overwhelming.
+    - I'm open to exploring additional coping mechanisms that might aid in my healing process.
+    - Questions: How do I navigate through this grieving process?
+    - Are there any specific therapy techniques or tools that can help me cope with the loss of a loved one?
+    
+- intent: grief_loss_p0015
+  examples: |
+    - I recently experienced a significant loss with the passing of my best friend.
+    - The grief has been overwhelming, leading to intense sadness and feelings of emptiness.
+    - I'm struggling to find meaning in life without their presence and support.
+    
+- intent: grief_loss_p0016
+  examples: |
+    - I recently experienced a significant loss
+    - and I'm looking for help processing my grief and finding ways to cope." The passing of my close family member has left me overwhelmed by grief.
+    - Each day seems like an uphill battle as I navigate through immense sadness, anger, and numbness.
+    - I am searching for strategies to honor their memory, find closure, and rebuild my life amidst this tremendous loss.
+    - I hope to discuss various coping mechanisms and explore how grief affects different aspects of my life.
+    
+- intent: grief_loss_p0017
+  examples: |
+    - I recently experienced the loss of a loved one and it has been incredibly difficult for me to process and cope with the grief.
+    - I'm seeking support in navigating this painful journey and finding healthy ways to honor my loved one's memory.
+    
+- intent: grief_loss_p0018
+  examples: |
+    - I recently lost my father, and the grief feels unbearable.
+    - It's like a heavy weight on my chest that never goes away.
+    - I cry inconsolably, often questioning why this happened.
+    - Memories of him flood my mind, making it difficult to focus on anything else.
+    - Every little thing reminds me of him, and I feel overwhelmed by sadness.
+    - I hope to find ways to honor his memory and eventually move towards acceptance and healing.
+    
+- intent: grief_loss_p0019
+  examples: |
+    - I recently lost my spouse, and dealing with the grief has been incredibly tough.
+    - There are days when I feel completely numb and unable to process my emotions.
+    - Other times, I find myself crying uncontrollably at the smallest triggers.
+    - It's a rollercoaster ride of emotions that I struggle to navigate on my own.
+    
+- intent: grief_loss_p0020
+  examples: |
+    - I recently lost someone close to me, and it's been hard to cope with the grief.
+    - It feels like a heavy weight on my chest, and I often find myself crying uncontrollably.
+    - I hope counseling can guide me through the grieving process and help me find some peace.
+    
+- intent: grief_loss_p0021
+  examples: |
+    - I'm currently going through a difficult breakup that has left me feeling lost and heartbroken.
+    - I hope to discuss my feelings of grief, learn healthy coping mechanisms to heal, and gain insights on how to rebuild my life.
+    
+- intent: grief_loss_p0022
+  examples: |
+    - I'm really struggling with grief and loss right now.
+    - My goal in this counseling session is to find ways to cope with the pain and learn how to move forward.
+    
+- intent: grief_loss_p0023
+  examples: |
+    - I've been experiencing profound sadness and loss of interest in activities that used to bring me joy.
+    - It's difficult for me to get out of bed most days, and sometimes I find myself crying uncontrollably for no apparent reason.
+    - I think the trigger for these symptoms might be the recent death of my close friend.
+    
+- intent: grief_loss_p0024
+  examples: |
+    - Losing my loved one has left an immense void in my life.
+    - It's difficult to navigate through grief, and sometimes I feel stuck in the painful emotions.
+    - My goal is to find support in counseling, process my grief, and eventually find meaning and healing from this loss.
+    
+- intent: grief_loss_p0025
+  examples: |
+    - My partner and I have decided to end our long-term relationship and it's one of the most painful things I've ever experienced.
+    - I'm struggling with feelings of grief, guilt, and uncertainty about the future.
+    - Through counseling, I want support in navigating through this difficult transition and finding ways to heal and move forward in a healthy manner.
+    
+- intent: grief_loss_p0026
+  examples: |
+    - My spouse and I have been trying for years to conceive a child, but we've encountered nothing but disappointment and heartache.
+    - Each failed attempt feels like a new loss, intensifying our grief.
+    - We question our worthiness as parents and deal with constant self-doubt.
+    - This journey has brought immense strain on our marriage, and we need help navigating the emotional rollercoaster while finding ways to cope with infertility.
+    
+- intent: grief_loss_p0027
+  examples: |
+    - Since the passing of my brother, I've been plagued by grief and a deep sadness.
+    - It feels like a heavy cloud is always following me, and I can't escape it.
+    - I want to talk about his death and my feelings surrounding it during this session.
+    
+- intent: grief_loss_p0028
+  examples: |
+    - A recent breakup triggered a major depressive episode for me.
+    - I thought everything was going well in the relationship, but then they suddenly ended things without any explanation.
+    - I'm left feeling heartbroken and betrayed.
+    - I cry every day, struggle to concentrate, and have lost my appetite.
+    - I just want to heal from this pain and find a way to move forward.
+    
+- intent: grief_loss_p0029
+  examples: |
+    - A recent event that contributed to my stress was the sudden loss of a loved one.
+    - Dealing with grief while managing daily responsibilities has become extremely challenging, leaving me emotionally exhausted and unable to cope effectively.
+    
+- intent: grief_loss_p0030
+  examples: |
+    - Another romantic relationship has recently ended, and I'm struggling to cope with the separation.
+    - My goal for this counseling session is to gain a deeper understanding of the patterns in my relationships
+    - process the grief associated with the dissolution
+    - and work towards establishing healthier partnerships in the future.
+    - Emotionally, I feel immense sadness, frustration, and disappointment.
+    - This breakup triggers past traumas and insecurities related to rejection and abandonment.
+    - I have a tendency to blame myself entirely for the failed relationship, which further amplifies these negative emotions.
+    - An example situation that intensifies these concerns is seeing my ex-partner moving on quickly while I still dwell on our shared memories and unresolved feelings.
+    - It fuels a sense of inadequacy and self-doubt about my ability to maintain successful long-term relationships.
+    - Symptoms accompanying this relationship dissolution include difficulty sleeping
+    - loss of appetite
+    - pervasive thoughts about getting back together
+    - recurring dreams involving my ex-partner
+    - and fluctuations between suppressed anger and overwhelming sadness.
+    - To cope with the post-breakup pain, I've tried journaling my emotions and seeking support from trusted friends.
+    - However, it's evident that additional guidance is necessary to heal fully and prevent similar situations from repeating in the future.
+    - Throughout our sessions, I would appreciate exploring healthy attachment styles and addressing any underlying issues that may contribute to the repeated pattern of unhealthy relationships.
+    - How can I develop resilience in the face of rejection?
+    - Are there specific strategies you recommend to help me grow from this experience and build stronger emotional boundaries?
+    
+- intent: grief_loss_p0031
+  examples: |
+    - Doctor, I recently went through a painful breakup, and I'm struggling to process my emotions surrounding the dissolution of this relationship.
+    - My goal is to heal from this heartbreak and move forward in a healthy way.
+    - The end of this relationship has brought about intense feelings of sadness, grief, and rejection.
+    - It's challenging for me to accept that the person I loved no longer wants to be a part of my life.
+    - This loss has shattered my sense of security and triggered self-doubt about being lovable.
+    - An example situation that has been particularly triggering is when I see my ex-partner with someone else or come across reminders of our time together.
+    - These instances bring back memories of happier times and intensify my pain, making it hard to let go.
+    - Symptoms I've experienced include sleep disturbances, changes in appetite, frequent crying spells, and persistent thoughts about the past relationship.
+    - The frequency and intensity of these symptoms vary, but they have been present almost daily since the breakup occurred.
+    - During our sessions, it may be relevant to discuss my previous experiences with attachment and bonding patterns.
+    - In the past, I have faced difficulties in forming secure attachments due to early childhood abandonment.
+    - This history of insecure attachments may contribute to my struggles in navigating relationship dissolutions.
+    - To cope with the heartbreak, I have been relying on my support system and engaging in self-care activities such as exercise and journaling.
+    - While these strategies provide some relief, the pain still lingers, and I hope therapy can help me process this loss more effectively.
+    - How can we work together to navigate the grieving process of a relationship dissolution?
+    - What techniques or approaches might be helpful in moving forward?
+    
+- intent: grief_loss_p0032
+  examples: |
+    - Doctor, I've been under an immense amount of stress that seems never-ending.
+    - It's starting to impact both my physical and mental health.
+    - My goal today is to explore effective stress management techniques that will help me regain balance in my life.
+    - Stress has wrapped its tight grip around me, making it challenging to find peace or relaxation.
+    - The constant pressure to perform at work and meet personal obligations leaves me feeling mentally drained and overwhelmed.
+    - Even during moments of respite, thoughts of all the pending tasks consume my mind.
+    - A significant situation that triggered heightened stress was moving homes.
+    - The logistics, packing, and unpacking were incredibly demanding, leaving me physically exhausted and emotionally frazzled.
+    - This event served as a reminder of how even routine life changes can induce substantial stress.
+    - Symptoms of stress have become an everyday occurrence for me.
+    - Difficulty sleeping, frequent headaches, and irritability are some of the ways stress manifests itself in my life.
+    - It feels like there's no escape from this relentless cycle.
+    - When considering significant life events, one that stands out is the sudden loss of a family member.
+    - Grief shattered my emotional well-being, adding another layer of stress to my already burdened existence.
+    - These compounded experiences may be contributing to my current struggle with stress.
+    - To cope with stress, I engage in regular physical exercise, finding solace in the endorphins released.
+    - However, more often than not, these techniques provide only temporary relief.
+    - I'm open to exploring additional strategies that can support long-term stress reduction.
+    - As we embark on this therapeutic journey, could you explain the various techniques and approaches used in stress management?
+    - Furthermore, what role does counseling play in managing chronic stress?
+    
+- intent: grief_loss_p0033
+  examples: |
+    - Ever since the loss of my loved one a year ago, I've been overwhelmed with grief.
+    - Their absence left a void in my life that feels impossible to fill.
+    - I frequently experience feelings of loneliness, hopelessness, and a lack of purpose.
+    - Coping with this deep sorrow has been incredibly challenging, and I'm seeking guidance to navigate through this dark period.
+    
+- intent: grief_loss_p0034
+  examples: |
+    - For the past few months, I've been struggling with feelings of guilt and worthlessness.
+    - It started after I lost my job and I can't help but blame myself for it.
+    - I hope to gain some insight into how to overcome these negative thoughts.
+    
+- intent: grief_loss_p0035
+  examples: |
+    - Going through a divorce has been emotionally draining.
+    - I'm dealing with grief, anger, and a sense of failure.
+    - It's hard to imagine life without my partner, and I need support in navigating this painful process and finding hope for the future.
+    
+- intent: grief_loss_p0036
+  examples: |
+    - Good day!
+    - Recently, I went through a significant relationship dissolution and it has left me feeling devastated and lost.
+    - I find it hard to fully comprehend why the breakup occurred and how to move forward.
+    - In this session, I hope we can discuss coping with grief, rebuilding self-esteem, and finding closure.
+    
+- intent: grief_loss_p0037
+  examples: |
+    - I have been feeling incredibly down for an extended period now, and it's affecting various aspects of my life.
+    - Simple tasks such as showering or getting dressed feel like monumental challenges.
+    - There is a constant feeling of emptiness inside me, and no matter what I do, I cannot seem to escape it.
+    - This depressive episode began after the passing of a close family member, leading me into a spiral of grief and sorrow.
+    - My goal in counseling sessions is to find ways to heal from this loss and rediscover joy in life.
+    
+- intent: grief_loss_p0038
+  examples: |
+    - Greetings, doctor!
+    - I've recently gone through a significant loss in my life, and it feels like I can't escape this constant feeling of sorrow.
+    - Thinking about my loved one who passed away brings tears to my eyes daily.
+    - My goal for this counseling session is to cope with my grief and find ways to heal.
+    
+- intent: grief_loss_p0039
+  examples: |
+    - Greetings, therapist.
+    - The stressors in my life have reached an unbearable level, making it almost impossible for me to relax or find any peace.
+    - The constant pressure at work, combined with difficulties in personal relationships, has taken a toll on both my physical and mental well-being.
+    - A recent life event that significantly contributed to this stress was the death of a dear friend, which amplified existing challenges.
+    - My goal is to develop effective coping strategies to manage these overwhelming stressors better.
+    
+- intent: grief_loss_p0040
+  examples: |
+    - Grief and Loss I want to find healthy ways to navigate through my grief after experiencing a significant loss.
+    - Description of emotions and thoughts: The pain of losing someone dear to me has been overwhelming.
+    - I feel lost, numb, and at times, consumed by sadness.
+    - I would like to learn how to cope and honor their memory while still finding joy in life.
+    - Examples of triggering situations: Anniversaries, holidays, or even everyday reminders of the person I've lost often intensify my feelings of grief.
+    - The absence becomes more pronounced, leading to lengthy periods of sorrow.
+    - Symptoms: My grief manifests in various ways, including disrupted sleep patterns, loss of appetite, and a persistent feeling of emptiness.
+    - These symptoms have persisted for an extended period, making it challenging to move forward.
+    - Significant life events and family dynamics: The loss of my loved one has had a profound effect on me due to our close bond.
+    - Additionally, the way grief was handled within my family during previous losses impacts how I navigate through this experience.
+    - Coping strategies: To manage my grief, I have tried techniques like journaling and seeking support from friends.
+    - However, I believe that therapy can provide me with more comprehensive tools to process my emotions effectively.
+    - Questions: How can I find healthy outlets for my grief and honor the memory of my loved one?
+    - Are there specific techniques or resources available to help me cope with the complex emotions associated with loss?
+    
+- intent: grief_loss_p0041
+  examples: |
+    - Hello, I've always had a strong spiritual belief system, but lately, I've been struggling to find meaning in life.
+    - My goal through counseling is to reconnect with my spirituality and bring back that sense of purpose.
+    - I used to feel grounded and guided by my beliefs
+    - but as time went on
+    - I started questioning them
+    - which led to feelings of confusion and emptiness.
+    - One specific event that triggered this concern was the passing of my grandmother, who was very dear to me.
+    - Her death made me question the fairness of life and caused me to lose touch with my faith.
+    - These doubts and feelings of emptiness have been consuming me for the past few months.
+    - I often wake up feeling lost and unmotivated, as if there's no point to anything.
+    - My symptoms are persistent and occur daily.
+    - They vary in intensity, with some days being harder than others.
+    - However, they tend to last throughout the day.
+    - I come from a religious family where spirituality is highly valued, so this struggle has caused tension between us.
+    - When it comes to coping, I've tried meditation and attending spiritual workshops, but nothing seems to fully restore my sense of purpose.
+    - How can counseling help me rediscover my spirituality and regain inner peace?
+    
+- intent: grief_loss_p0042
+  examples: |
+    - Hello, thank you for meeting with me today.
+    - I've been feeling increasingly stressed lately, which is taking a toll on my emotional and physical health.
+    - My main goal for this counseling session is to learn healthy coping mechanisms to effectively handle stress and prevent it from impacting my daily life adversely.
+    - I constantly feel overwhelmed by various responsibilities and obligations.
+    - It seems like there is never enough time to accomplish everything on my to-do list.
+    - As a result, I often experience racing thoughts and an inability to fully relax even during supposed downtime.
+    - One situation that triggers my stress is conflict within my family.
+    - Tensions tend to run high, leading to arguments and strained relationships.
+    - The constant need to mediate conflicts leaves little room for personal peace and tranquility.
+    - Symptoms of stress have become almost chronic for me.
+    - I frequently experience sleep disturbances, finding it hard to fall asleep or stay asleep throughout the night.
+    - Additionally, I notice increased irritability and difficulty concentrating on tasks that once came easily to me.
+    - In terms of significant life events, I recently experienced a loss of someone close to me.
+    - Dealing with grief made it difficult to manage stress levels effectively.
+    - Furthermore, growing up in a high-achieving environment has instilled within me a constant sense of pressure and expectation.
+    - To cope with stress, I engage in physical exercise and practice mindfulness techniques.
+    - However, these practices have provided only temporary relief lately.
+    - I am looking for more efficient ways to manage my stress and maintain emotional well-being.
+    - As we commence our counseling journey together, I would appreciate your insight into how you approach stress-related issues specifically.
+    - Could you share information on potential treatment options that might be helpful for someone dealing with prolonged stress?
+    
+- intent: grief_loss_p0043
+  examples: |
+    - Hey counselor, I'm grieving the loss of a loved one, and it feels overwhelming at times.
+    - My goal is to work through the stages of grief and find healthy ways to remember and honor their memory.
+    - The death of my best friend has left a void in my life that seems impossible to fill.
+    - We shared so many memories and dreams together, making her absence even more unbearable.
+    - The cause of her passing was sudden and unexpected, which made processing emotions like shock and denial extremely challenging.
+    - Symptom-wise, I experience periods of sadness, crying spells, and difficulty sleeping.
+    - Sometimes, vivid dreams of my friend can both comfort and disturb me, bringing back cherished moments while reminding me she's no longer here.
+    - These symptoms fluctuate in intensity but persist on most days.
+    - To cope with the grief
+    - I've been writing letters to my friend
+    - pouring out my emotions and sharing updates on how life has been since her departure.
+    - Additionally, I surround myself with photographs and mementos that remind me of her presence and the joy we shared together.
+    - During our counseling sessions, I seek your support and expertise in navigating this profound loss.
+    - Besides traditional therapy, are there any resources or creative activities you recommend for memorializing my friend and facilitating the healing process?
+    - Furthermore, how can I manage the guilt I sometimes feel when experiencing moments of happiness without her?
+    
+- intent: grief_loss_p0044
+  examples: |
+    - Hi, I have been feeling a sense of emptiness and searching for meaning in my life lately.
+    - My goal through this counseling session is to explore my spirituality and find a deeper connection with something greater than myself.
+    - I've always had a belief system, but recently it feels like there's a disconnect.
+    - I think the possible reason behind these feelings might be the recent loss of a loved one.
+    - It has made me question the purpose of life and what happens after death.
+    - For example, during meditation or quiet moments alone, I often feel overwhelmed by existential questions and a lack of fulfillment.
+    - These thoughts tend to become more intense when I attend social gatherings where topics of life and purpose are discussed.
+    - These symptoms occur almost daily and vary in intensity.
+    - Some days, the emptiness and search for meaning consume my thoughts completely, while other days it's more of a subtle longing in the background.
+    - I come from a culturally diverse family, and although we have different beliefs, we respect each other's spiritualities.
+    - However, growing up, religion was not a significant part of my upbringing, so I am trying to navigate my own path now.
+    - In terms of coping strategies, I have started reading books on various religious and philosophical traditions to gain a broader perspective.
+    - I have also tried attending group meditation sessions in hopes of finding answers within myself.
+    - One question I have about the therapeutic process is how can exploring spirituality help in improving overall mental well-being?
+    - Are there any specific techniques you recommend to connect with my own spirituality?
+    
+- intent: grief_loss_p0045
+  examples: |
+    - I am going through a difficult breakup and feeling an overwhelming mix of emotions – sadness, anger, and confusion.
+    - I'm seeking support to navigate this period of grief and loss effectively, and ultimately move towards healing and acceptance.
+    
+- intent: grief_loss_p0046
+  examples: |
+    - I have been feeling really down lately and it's affecting my everyday life.
+    - My goal for this counseling session is to find ways to manage my depressive symptoms and improve my overall well-being.
+    - I feel overwhelmed by sadness, hopelessness, and emptiness.
+    - Sometimes I even question the point of living.
+    - The triggers for my symptoms are often stressful situations at work or conflicts in my personal relationships.
+    - For example, recently I lost my job due to downsizing which has made me believe that I am a failure and not worthy of success.
+    - These negative thoughts seem to spiral out of control and make it difficult for me to focus on anything positive.
+    - Additionally, there have been instances where I isolate myself from friends and family because I just don't feel like being around anyone.
+    - It feels like an ongoing battle within myself.
+    
+- intent: grief_loss_p0047
+  examples: |
+    - I have experienced a lot of loss recently, including the death of a loved one.
+    - It has triggered a deep sadness that lingers no matter what I do.
+    - Grief feels overwhelming, and I'm struggling to find any sense of normalcy.
+    - I hope counseling can provide me with tools to navigate through this difficult time.
+    
+- intent: grief_loss_p0048
+  examples: |
+    - I hope to overcome this persistent cloud of sadness and lack of motivation caused by a recent loss in my life.
+    - Since the loss of my loved one, I've been enveloped in sorrow and struggle to find meaning in everyday activities.
+    - There is an overwhelming sense of emptiness that seems impossible to shake off.
+    - The death of my family member triggered this depressive episode.
+    - The pain of losing someone so dear has disrupted my normal functioning and plunged me into a state of profound grief.
+    - Depressive symptoms persist daily, causing frequent tears, feelings of helplessness, and difficulty finding pleasure in things I used to enjoy.
+    - On some days, even getting out of bed feels like an insurmountable task.
+    - My relationship with the person who passed away was exceptionally strong, and their absence has shattered my support system.
+    - Growing up, our family never addressed emotions openly, making it difficult to navigate grief.
+    - I have joined a bereavement support group and tried journaling my feelings, but the sadness remains overwhelming.
+    - Engaging in hobbies or distracting activities offers only temporary relief from the emptiness.
+    - How can therapy help me process and cope with my grief effectively?
+    - Are there specific strategies or techniques that can assist me in finding hope and rebuilding my life after such a loss?
+    
+- intent: grief_loss_p0049
+  examples: |
+    - I lost a close family member recently, and it has plunged me into a deep state of despair.
+    - Their absence feels unbearable, and grief engulfs me every moment of the day.
+    - I find myself crying uncontrollably at unexpected times and struggling to focus on anything other than my loss.
+    - It's hard to see a future without them and I need assistance in navigating this grief and finding solace in their memory.
+    
+- intent: grief_loss_p0050
+  examples: |
+    - I lost my best friend unexpectedly a few months ago, and I'm finding it extremely challenging to cope with the grief.
+    - I feel deeply saddened and often cry uncontrollably, especially when memories of our time together resurface.
+    - I want to learn healthy ways to process my grief and find closure.
+    
+- intent: grief_loss_p0051
+  examples: |
+    - I recently experienced a miscarriage, and it's been incredibly difficult for me to process all the emotions that have surfaced.
+    - My goal for this counseling session is to find ways to heal from the loss and come to terms with my feelings.
+    - Ever since the miscarriage, I've been feeling an overwhelming sense of sadness, guilt, and emptiness.
+    - It's like I failed as a mother, even though I know deep down it wasn't my fault.
+    - Thoughts of what could have been, the dreams shattered, keep replaying in my mind, which triggers these intense emotions.
+    - One specific event that stands out was the moment I received the news from my doctor that there was no heartbeat.
+    - The shock and devastation hit me like a tidal wave, leaving me speechless and broken.
+    - That memory continues to haunt me.
+    - My symptoms include frequent crying spells, difficulty sleeping, and feelings of isolation.
+    - These emotions have been present every day since the miscarriage.
+    - Some days, they intensify, making it hard for me to even get out of bed.
+    - In terms of significant life events, the miscarriage has been a pivotal event.
+    - It has impacted not only myself but also my partner and our plans for starting a family.
+    - We're both struggling to make sense of the loss and support each other through this challenging time.
+    - To cope with the grief, I've been seeking solace in writing letters to my unborn child as a way to express my love and sorrow.
+    - Attending support group sessions specifically tailored for individuals who experienced pregnancy loss has helped connect with others who understand firsthand what I'm going through.
+    - How long does the grieving process typically last after a miscarriage?
+    - Are there any specific coping mechanisms or techniques that can help me navigate through this grief?
+    - How can I communicate with my partner about our shared loss more effectively?
+    - I'm also curious if there are any resources available to support us in planning for future pregnancies.
+    
+- intent: grief_loss_p0052
+  examples: |
+    - I recently experienced a significant loss when my father passed away unexpectedly.
+    - The grief and sadness have become overwhelming, making it hard for me to cope with everyday life.
+    - I find myself constantly thinking about him, experiencing waves of intense emotions ranging from sadness to anger.
+    - I would like to receive counseling to help me process my grief, understand the stages of mourning, and develop healthy coping mechanisms.
+    
+- intent: grief_loss_p0053
+  examples: |
+    - I recently experienced the death of a loved one, and I'm finding it incredibly difficult to cope with the grief.
+    - It feels like there's a heavy weight on my chest, and every day is a struggle.
+    - My goal for this counseling session is to find healthy ways of mourning, honoring the memory of my loved one, and eventually finding peace.
+    - The loss occurred unexpectedly, leaving me in a state of shock and disbelief.
+    - I still have so many unanswered questions, which adds another layer of pain to the grieving process.
+    - It feels like there's a constant ache in my heart that won't go away.
+    - The symptoms I'm experiencing include feelings of sadness, anger, guilt, and emptiness.
+    - There are times where it even becomes difficult to breathe due to overwhelming emotions.
+    - The intensity of these emotions varies day by day, and they can take hold of me at unexpected moments.
+    - To cope with my grief, I've tried attending support groups, engaging in creative outlets such as writing, and seeking solace in nature.
+    - However, I feel stuck in this deep sorrow, unable to fully process the loss or move forward.
+    - I would greatly appreciate any strategies or techniques you can provide to help me navigate through this challenging time.
+    
+- intent: grief_loss_p0054
+  examples: |
+    - I recently lost a loved one, and the grief has been overwhelming me.
+    - My objective for this counseling session is to learn effective coping strategies to deal with my stress and sadness.
+    - The loss of my family member was unexpected and sudden, leaving me with feelings of shock, sadness, and emptiness.
+    - Even after months, I find it hard to accept their absence, which frequently leads to bouts of crying and feeling numb.
+    - Additionally, I face additional stressors in my personal life, such as financial problems and strained relationships within my family.
+    - These multiple stressors contribute to my heightened emotional state.
+    - Please offer guidance on how to navigate through these difficult emotions and reduce the impact of stress on my daily functioning.
+    
+- intent: grief_loss_p0055
+  examples: |
+    - I recently lost my grandmother, who was very dear to me.
+    - It has been really difficult for me to cope with the grief and loss.
+    - I find myself crying often and feeling overwhelmed with sadness.
+    - I also struggle with guilt because I wish I had spent more time with her before she passed away.
+    - I hope through therapy, I can process my feelings and find ways to honor her memory while moving forward.
+    
+- intent: grief_loss_p0056
+  examples: |
+    - I recently lost my job and it has been causing me a lot of stress.
+    - I am feeling overwhelmed and unsure about the future.
+    - Through this counseling session, my goal is to learn coping mechanisms to manage my stress better and regain a sense of stability in my life.
+    
+- intent: grief_loss_p0057
+  examples: |
+    - I recently lost my job, and ever since then, I've been feeling really down and unmotivated.
+    - It's becoming harder to get out of bed and do anything productive.
+    - I want to use counseling to understand why I'm feeling this way and develop strategies to regain my motivation.
+    
+- intent: grief_loss_p0058
+  examples: |
+    - I recently lost my mother, and the grief has been overwhelming.
+    - My goal for this counseling session is to process my emotions and find healthy ways to cope with the loss.
+    - Ever since my mother passed away, I've been feeling an immense sadness and emptiness.
+    - It's like a part of me is missing.
+    - I find it hard to concentrate, have trouble sleeping, and often burst into tears without any warning.
+    - The trigger for these feelings is the deep bond I had with my mother and the suddenness of her passing.
+    - One particular situation that highlights the intensity of my grief was attending her funeral.
+    - Seeing her lifeless body lying in the casket was heart-wrenching, and it made the reality of her absence hit me even harder.
+    - My symptoms include frequent crying spells, difficulty finding joy in activities I used to love, and a constant longing for my mother's presence.
+    - These emotions have been present every day since her passing.
+    - The intensity varies, but some days it feels unbearable.
+    - In terms of significant life events, losing my mother has been the most significant recent event.
+    - We had a close relationship, and her death has left a void in my life.
+    - Additionally, my family dynamics have changed as we all navigate through this grief together.
+    - To cope with my grief, I've been seeking support from friends and family who understand what I'm going through.
+    - I've also started journaling as a way to express my emotions and memories related to my mother.
+    - Taking long walks in nature helps calm my mind and brings a sense of solace.
+    - How long does the grieving process typically last?
+    - Are there different stages of grief that I should be aware of?
+    - Can you provide me with guidance on how to navigate through the ups and downs of grief?
+    - I'm also curious if there are any support groups or bereavement workshops available in my area.
+    
+- intent: grief_loss_p0059
+  examples: |
+    - I recently lost someone very close to me and I'm grappling with intense grief.
+    - I find myself crying almost every day and feeling a profound sense of loss.
+    - It's hard to imagine moving forward without them and this grief is affecting my ability to function.
+    - I hope counseling can provide support during this mourning process and help me find healthy coping mechanisms.
+    
+- intent: grief_loss_p0060
+  examples: |
+    - I recently went through a breakup, and the emotional pain is consuming me.
+    - It's challenging to move forward and accept the dissolution of the relationship.
+    - My goal for counseling is to understand my emotions better, heal, and rebuild my life.
+    - The end of this significant relationship has triggered intense feelings of grief, rejection, and abandonment.
+    - This person was my confidant and partner, so losing them feels like an enormous loss.
+    - Memories of shared experiences constantly resurface, making it difficult to let go and find closure.
+    - One particular situation that still haunts me is witnessing my ex-partner with a new love interest shortly after our breakup.
+    - It made me doubt the authenticity of our past connection and caused immense jealousy and self-doubt.
+    - The frequency and duration of these symptoms depend on the day; some moments are easier to cope with while others feel overwhelmingly painful.
+    - The pain can be all-consuming, affecting my ability to focus on daily tasks or engage in previously enjoyable activities.
+    - In terms of coping strategies, I've tried journaling my thoughts and seeking support from friends, but often these measures only provide temporary relief.
+    - That's why I believe therapeutic intervention could help guide me towards healing and creating a fulfilling life post-breakup.
+    - What approach do you typically take when working with individuals dealing with relationship dissolution?
+    - Are there specific techniques or resources you recommend for navigating the grieving process and moving forward?
+    
+- intent: grief_loss_p0061
+  examples: |
+    - I want to break free from the cycle of negative thoughts and low mood that has been hindering my daily functioning.
+    - My mind feels like a never-ending loop of negativity.
+    - Constant self-criticism, hopelessness, and thoughts of worthlessness invade my thoughts.
+    - No matter how hard I try to think positively or challenge these beliefs, they persistently drag me down.
+    - after receiving feedback at work
+    - instead of focusing on the constructive criticism
+    - my mind immediately jumped to thoughts like "I'm such a failure" and "I'll end up getting fired." These thoughts overwhelmed me
+    - making it difficult to concentrate and complete my tasks effectively.
+    - This chronic negative thinking has been ongoing for the past year.
+    - It affects me almost every day, usually worsening during stressful situations.
+    - The intensity varies from mild to severe, occupying most of my mental space and significantly impacting my motivation.
+    - Throughout my childhood, several significant losses occurred, including the death of a parent and subsequent relocations.
+    - These experiences might have contributed to my negative thinking patterns.
+    - I try journaling or talking to friends about what's going on in my mind, hoping it will provide some relief.
+    - While these strategies can offer temporary support, they haven't led to long-lasting changes.
+    - How can therapy help me challenge these negative thoughts and develop more positive thinking patterns?
+    - Are there any evidence-based treatments you recommend for someone with persistent negative thinking?
+    
+- intent: grief_loss_p0062
+  examples: |
+    - I'm grieving the loss of a loved one, and it's been incredibly challenging to cope with the pain and emptiness.
+    - I would like support in navigating through the stages of grief and finding ways to honor their memory.
+    
+- intent: grief_loss_p0063
+  examples: |
+    - I've been struggling with persistent feelings of emptiness and lack of interest in anything.
+    - Some days, it feels like a heavy weight is on my chest, making it hard to breathe.
+    - Even the simplest tasks like showering or eating take monumental effort.
+    - These depressive episodes started after a close friend passed away suddenly.
+    - I constantly question my own worth and wonder if there's any point to life.
+    - Through counseling, I want to address these depressive symptoms and find ways to heal.
+    
+- intent: grief_loss_p0064
+  examples: |
+    - I've lost my appetite and have experienced significant weight loss.
+    - Food no longer brings me pleasure and eating feels like a chore.
+    - It's concerning because I know it's important to take care of my physical health.
+    
+- intent: grief_loss_p0065
+  examples: |
+    - I've recently ended a long-term relationship, and I'm finding it difficult to move on and let go emotionally.
+    - My goal is to heal from the pain and start rebuilding my life as an individual.
+    - The emotions I'm experiencing are a mix of grief, sadness, and even anger.
+    - The breakup blindsided me, and I'm struggling to make sense of what went wrong.
+    - I keep replaying happy memories in my head, wondering if there was anything I could have done differently to prevent the end of the relationship.
+    - One particular situation that intensifies these emotions is when I see my ex-partner moving on quickly while I'm still stuck in this emotional limbo.
+    - Seeing them happy with someone else brings up feelings of rejection and makes me question my own worth.
+    - Alongside these emotions, I also feel a sense of loss in terms of my identity as part of a couple.
+    - It's challenging to redefine myself as an individual and find joy outside of the relationship bubble.
+    - I'm ready to start the healing process, but I don't know where to begin.
+    - Can counseling provide support and guidance in navigating this breakup and help me rediscover my true self?
+    
+- intent: grief_loss_p0066
+  examples: |
+    - I've recently experienced a significant loss in my life, and the grief has been overwhelming.
+    - My goal in seeking counseling is to navigate through this grieving process, understand my emotions, and find healthy coping mechanisms to move forward.
+    - Emotionally, I'm filled with sadness, despair, and confusion about how to deal with the void created by the loss.
+    - This emotional turmoil was triggered when I unexpectedly lost a loved one due to a tragic accident.
+    - The pain feels unbearable at times, affecting every aspect of my daily life.
+    - The duration of intense grief varies but can last for hours or even days before momentarily subsiding.
+    - Engaging in activities that used to bring joy and fulfillment no longer hold the same appeal.
+    - I want to find ways to honor the memory of my loved one while also allowing myself to heal and eventually find peace amidst the grief and loss.
+    
+- intent: grief_loss_p0067
+  examples: |
+    - In today's counseling session, I would like to discuss the ongoing conflicts and strained dynamics within my family.
+    - My goal is to find ways to improve communication, resolve deep-rooted issues, and ultimately cultivate a healthier and more supportive familial environment.
+    - Family gatherings often turn into arguments, with old wounds resurfacing and unresolved emotions taking center stage.
+    - It feels impossible to have calm conversations or reach mutual understanding, resulting in prolonged tension between family members.
+    - One significant life event that perpetuates the family conflict is the death of our patriarch.
+    - Since his passing, there has been an undeniable power struggle among siblings, each vying for control and authority within the family unit.
+    - Symptoms of this family conflict include constant bickering, raised voices, and feelings of resentment toward one another.
+    - These conflicts occur frequently, lasting hours at a time and causing emotional distress for all involved.
+    - Currently, I am trying my best to maintain open lines of communication while establishing personal boundaries to protect my well-being.
+    - However, these efforts alone are not enough to resolve the deep-seated issues we face as a family.
+    - How can we navigate these complex dynamics and foster healthier relationships within our family?
+    - Are there specific techniques you suggest for improving communication and fostering empathy between family members?
+    
+- intent: grief_loss_p0068
+  examples: |
+    - I’m going through a major life transition right now, which has triggered a lot of depressive symptoms.
+    - My father passed away recently, and dealing with his loss has become incredibly overwhelming for me.
+    - other significant changes in my life
+    - such as moving to a new city and starting a new job
+    - have contributed to this persistent state of sadness and emotional heaviness.
+    - My ultimate goal is to work through these challenges and find ways to embrace the changes while maintaining my mental well-being.
+    
+- intent: grief_loss_p0069
+  examples: |
+    - Lately, I have been experiencing intense sadness and guilt that consume me.
+    - Negative thoughts constantly race through my mind, and it feels impossible to escape them.
+    - It all started after the loss of a close family member, which triggered these symptoms.
+    - I want to learn how to cope with this overwhelming grief and move forward.
+    
+- intent: grief_loss_p0070
+  examples: |
+    - Lately, I have been struggling with feelings of deep sadness and loss of interest in activities I used to enjoy.
+    - It's as if all the colors in life have faded away.
+    - My thoughts often turn negative, and sometimes I even contemplate giving up altogether.
+    - The death of a loved one triggered this depressive episode, and it's been tough coping with the void they left behind.
+    - How can counseling help me process this grief and regain a sense of purpose and joy?
+    
+- intent: grief_loss_p0071
+  examples: |
+    - Lately, I've been feeling constantly stressed and overwhelmed, and I hope counseling can help me find healthier ways to manage this stress.
+    - My goal is to regain a sense of balance and inner peace in my life.
+    - One particular situation that triggers my stress is my job.
+    - The workload is excessive, deadlines are tight, and there is constant pressure to meet high expectations.
+    - It feels like I'm always running behind, juggling multiple tasks at once, and sacrificing quality for quantity just to keep up.
+    - This work-induced stress has started spilling into other areas of my life as well.
+    - The emotions I experience when overwhelmed by stress include frustration, irritability, and sadness.
+    - I often feel defeated and incapable of handling even minor setbacks.
+    - On some days, it seems impossible to find joy or motivation in anything because my mind is preoccupied with work-related worries.
+    - My symptoms of stress are both physical and emotional.
+    - Physically, I have frequent tension headaches, muscle tension in my neck and shoulders, difficulty falling asleep, and digestive issues.
+    - Emotionally, I struggle with mood swings and have noticed a decrease in my overall enjoyment of life.
+    - I find it challenging to relax or engage in activities that used to bring me happiness.
+    - In addition to work stress, there have been significant life events that contribute to my current state.
+    - A few months ago, I lost a close family member unexpectedly, and the grief has been overwhelming.
+    - The loss triggered an avalanche of emotions, including sadness, guilt, anger, and profound loneliness.
+    - Coping with this loss while managing work-related stress feels like an impossible task at times.
+    - To cope with stress, I've tried various methods such as exercise, listening to music, and engaging in hobbies that provide temporary distraction.
+    - While these strategies offer brief relief
+    - they don't address the root causes of my stress and often feel insufficient given the demands of my daily life.
+    - I'm curious to learn more about stress management techniques that can be applied even during busy days when time is limited.
+    - Are there specific relaxation exercises or mindfulness practices you would recommend?
+    - How can we explore potential changes to better manage my workload and establish healthier boundaries?
+    
+- intent: grief_loss_p0072
+  examples: |
+    - Lately, I've been isolating myself from others and feel an overwhelming sense of sadness that doesn't seem to go away.
+    - The death of my loved one has deeply impacted me, making it hard to function in my daily life.
+    - During this session, I would like to address my grief and learn how to navigate through the grieving process more effectively.
+    
+- intent: grief_loss_p0073
+  examples: |
+    - Lately, I've been under a tremendous amount of stress.
+    - Every day feels overwhelming, and I find it difficult to focus or relax.
+    - The trigger for this level of stress was the sudden loss of a loved one.
+    - Dealing with grief while trying to juggle work responsibilities has taken a toll on me mentally and emotionally.
+    - I hope through counseling, I can find healthy ways to cope with my stress and eventually find peace in my daily life.
+    
+- intent: grief_loss_p0074
+  examples: |
+    - Lately, I've noticed that I am constantly on edge and easily irritable.
+    - Small things that wouldn't bother me before suddenly become overwhelming sources of stress.
+    - For instance, last week when I couldn't find my car keys, I completely lost my temper and ended up sobbing uncontrollably.
+    - I can sense that my stress levels are affecting my relationships and overall well-being.
+    - I seek counseling to explore healthier ways to manage my stress.
+    
+- intent: grief_loss_p0075
+  examples: |
+    - Message 3: I've recently experienced a devastating loss, and I'm hoping that through this counseling session, I can find support in navigating my grief.
+    - My goal is to better understand the grieving process, accept my emotions, and eventually find closure.
+    - About six months ago, I unexpectedly lost my younger sister in a tragic accident.
+    - Her death shattered our whole family.
+    - Since then, I've been feeling a whirlwind of emotions such as sadness, anger, guilt, and confusion.
+    - I constantly replay the moments leading up to her death in my mind, blaming myself for not being there or trying harder to prevent it.
+    - One particular event triggered intense grief was attending her funeral.
+    - It was incredibly difficult for me to see her lifeless body lying there
+    - knowing that I would never get to hear her voice again or share precious moments together.
+    - This experience exacerbated my feelings of loss and made me question the unfairness of it all.
+    - The symptoms of my grief have been consuming my daily life.
+    - I find it hard to concentrate or engage in activities I used to enjoy.
+    - Simple tasks seem overwhelming and I often isolate myself from others because I don't want them to see me struggling.
+    - In terms of coping strategies, I've found solace in journaling my thoughts and memories of my sister.
+    - It provides a temporary release of emotions but doesn't offer long-lasting relief.
+    - I would really appreciate guidance on healthier coping mechanisms to help me process this profound loss.
+    - I'd like to understand the stages of grieving
+    - explore ways to honor my sister's memory
+    - and learn how to gradually heal from this heartbreaking loss.
+    
+- intent: grief_loss_p0076
+  examples: |
+    - My life has become unbearably stressful lately, and I'm looking for guidance to navigate through these challenges.
+    - The aim of this counseling session is to identify healthy ways to manage stress and prevent it from negatively impacting my physical and mental health.
+    - I feel like I'm always juggling multiple responsibilities, both at work and home.
+    - The constant pressure to excel in all areas of my life often leaves me overwhelmed and exhausted.
+    - Situations such as tight deadlines, demanding bosses, and conflicts with colleagues trigger immense stress for me.
+    - For example, last week I had a major project due at work, but the workload was completely unmanageable.
+    - As a result, I experienced heightened levels of stress, leading to irritability, difficulty concentrating, and sleep disturbances.
+    - On an average day, my stress levels are high, and it feels like there's no escape from the constant demands.
+    - Often, these symptoms last throughout the day, impacting both my personal and professional life.
+    - In terms of significant life events, losing a close family member recently has added another layer of emotional strain to my already stressful existence.
+    - It's been challenging to process that grief while managing other responsibilities simultaneously.
+    - To cope with stress, I've tried engaging in physical activities like running and practicing relaxation techniques such as deep breathing exercises.
+    - While they provide temporary relief, I'm hopeful that counseling can provide more sustainable strategies to manage stress in healthier ways.
+    - What is your recommended approach for coping with chronic stress?
+    - Are there specific stress management tools or techniques you find most effective?
+    
+- intent: grief_loss_p0077
+  examples: |
+    - My life has been really challenging lately and the constant feelings of sadness are too much for me to handle alone.
+    - Last month, I lost my mother whom I was very close to.
+    - Her sudden death has left a huge void in my life.
+    - Every day since then, I wake up with a heavy heart and it feels like a weight that won't go away.
+    - Even simple things remind me of her and trigger intense grief.
+    - I find myself crying unexpectedly throughout the day.
+    - It's hard to believe in happiness again after such a loss.
+    - Can you please tell me how long it might take to heal from this grief and suggestions for managing my emotions in the meantime?
+    
+- intent: grief_loss_p0078
+  examples: |
+    - My long-term relationship recently ended, and it's left me feeling devastated.
+    - We were planning our future together, but now everything feels uncertain and overwhelming.
+    - My goal for this counseling session is to navigate through the grief, heal from this heartbreak, and learn to find happiness within myself again.
+    - The breakup happened abruptly, without any clear explanation.
+    - I've been struggling to accept the loss and process all the emotions associated with it.
+    - There are constant reminders of our time spent together, making it difficult to move forward.
+    - The symptoms I'm experiencing include feelings of sadness, emptiness, and frequent crying.
+    - It feels as though a significant part of my life has been taken away, leaving an immense void.
+    - The intensity of these feelings varies throughout the day, but they have persisted for several weeks now.
+    - I find it challenging to focus on anything else or engage in activities that once brought me joy.
+    - To cope with this relationship dissolution, I've tried spending time with friends and family, seeking support through therapy, and engaging in self-care practices.
+    - While these strategies provide temporary relief, the pain lingers, and I'm unsure of how to truly heal from this loss.
+    - I would appreciate any guidance you can provide regarding grief processing and rebuilding my life after a significant breakup.
+    
+- intent: grief_loss_p0079
+  examples: |
+    - My main goal today is finding ways to cope with stress effectively.
+    - Lately, I've been feeling overwhelmed and exhausted due to various life circumstances.
+    - My emotions range from irritability, restlessness, and even episodes of rage at times.
+    - It's hard to calm down because everything feels like it's happening all at once.
+    - For instance, last week I had a major project deadline at work while also dealing with personal relationship issues.
+    - The pressure from both sides became too much
+    - and I ended up having a heated argument with a colleague that shouldn't have escalated to that extent.
+    - The smallest inconveniences trigger this stress response within me, causing me to overreact.
+    - The frequency and intensity of my stress symptoms have significantly increased recently, lasting for days or weeks at a time.
+    - Physically, I notice tension in my neck and shoulders, difficulty falling asleep, and frequent headaches.
+    - It may be helpful to understand that a significant life event contributing to my stress is the recent loss of a close family member.
+    - Dealing with grief on top of other daily stressors has been extremely challenging for me.
+    - When it comes to coping strategies, exercise and engaging in hobbies have helped me in the past, but lately, they haven't seemed effective.
+    - I'm interested in exploring other techniques to manage my stress levels and also curious about your expertise in stress management therapy.
+    
+- intent: grief_loss_p0080
+  examples: |
+    - My partner and I have decided to end our relationship, and it has been extremely tough for me.
+    - I'm experiencing feelings of grief, sadness, and loneliness.
+    - My goal for this counseling session is to navigate through the pain of this breakup and find ways to heal and move forward.
+    
+- intent: grief_loss_p0081
+  examples: |
+    - My purpose in this counseling session is to navigate the overwhelming grief and loss I've experienced lately.
+    - Emotionally, it feels like a rollercoaster ride between intense sadness, guilt, and confusion.
+    - My goal is to find healthy ways to cope with these emotions and move forward positively.
+    - The recent significant event that triggered my grief was the sudden passing of a close family member.
+    - The shock and emptiness consumed me, leaving me feeling lost and disoriented.
+    - It's difficult to find meaning or joy in life during this grieving process.
+    - Symptoms related to grief occur daily, often fluctuating in intensity.
+    - Some moments I feel numb and disconnected, while others bring uncontrollable waves of tears and sorrow.
+    - The duration varies; some days are more manageable, while others seem unbearable.
+    - In terms of background experiences, I have faced multiple losses throughout my life, including previous deaths of loved ones and significant disappointments.
+    - These prior losses may influence how I currently process and respond to grief.
+    - To cope with this recent loss, I've sought support from friends and engaged in self-care activities such as journaling and nature walks.
+    - Though they provide temporary relief
+    - I would appreciate guidance on how to navigate the stages of grief successfully and integrate this experience into my life perspective.
+    - Question: What therapeutic approach will assist me in effectively navigating the grieving process?
+    - Are there specific techniques or exercises that can provide solace during this challenging time?
+    
+- intent: grief_loss_p0082
+  examples: |
+    - My relationship recently ended, and it has been incredibly painful for me.
+    - I invested so much emotionally, and now I'm feeling a deep sense of loss and grief.
+    - It's difficult to navigate through this breakup, especially when reminders of our time together are everywhere.
+    - For instance, even simple things like visiting our favorite restaurant trigger intense emotions and memories.
+    
+- intent: grief_loss_p0083
+  examples: |
+    - One event that triggered my depressive feelings was the loss of a loved one.
+    - Their passing has left a void in my life, and I'm struggling to come to terms with the grief and emptiness I feel.
+    - Even simple tasks seem daunting, and I often lack energy or interest in things I used to enjoy.
+    
+- intent: grief_loss_p0084
+  examples: |
+    - Patient's message related to "Grief and Loss" I am currently dealing with a profound loss in my life
+    - and it has left me feeling overwhelmed with grief.
+    - Through counseling, my goal is to navigate this grieving process and find healthy ways to cope with the emotions associated with loss.
+    - One significant event triggering my feelings of grief occurred when my closest friend passed away unexpectedly.
+    - We had shared countless memories and supported each other through various stages of life.
+    - The void created by their absence feels insurmountable, leading to intense sadness and emptiness.
+    - My symptoms of grief include constant waves of sadness, difficulty sleeping, changes in appetite, and decreased motivation for everyday activities.
+    - These feelings impact multiple aspects of my life including work performance, relationships, and personal well-being.
+    - Understanding the duration and intensity of these symptoms would provide clarity regarding what is considered within the realm of normal grieving.
+    - Upon reflection, I realize that my family dynamic played a role in shaping my understanding of loss and grief.
+    - Growing up, discussions surrounding death were typically avoided due to cultural norms.
+    - Consequently, this lack of open dialogue about mourning has made it challenging for me to comprehend and appropriately grieve losses throughout my adult life.
+    - To cope with grief, I often turn to creative outlets such as writing and painting as a form of self-expression.
+    - However, despite these coping mechanisms, I feel a sense of isolation and yearn for additional support to guide me through the grieving process.
+    - In terms of the therapeutic process, I wonder how counseling can assist me in navigating the complexities of grief.
+    - Will we primarily focus on processing emotions, or will there also be discussions around practical steps to rebuilding life after loss?
+    - Are there support groups or community resources that you recommend in addition to individual counseling sessions?
+    
+- intent: grief_loss_p0085
+  examples: |
+    - Patient's situation - Counseling Fundamentals Therapist, I've never been to counseling before, and I'm not sure what to expect from this process.
+    - My goal here is to gain a better understanding of myself and find ways to improve my overall well-being.
+    - I often find myself feeling lost and disconnected.
+    - It seems like I'm stuck in a cycle of negative thoughts that are affecting my daily life.
+    - I want to break free from these patterns and develop a more positive mindset.
+    - One particular event that made me consider counseling was when I experienced the loss of a close friend.
+    - It left me feeling emotionally drained, and I struggled to cope with the grief.
+    - The sadness and emptiness were overwhelming, and it became clear to me that I needed professional guidance.
+    - In terms of symptoms, I frequently experience low moods and lack of motivation.
+    - These feelings can linger for days or even weeks at a time.
+    - Sometimes, I have trouble sleeping and lose interest in activities that used to bring me joy.
+    - Looking back at my family dynamics, I grew up in an environment where expressing emotions was discouraged.
+    - This led me to suppress my feelings and put on a façade of strength throughout my life.
+    - Now, I realize the importance of acknowledging and processing emotions instead of bottling them up.
+    - As a coping mechanism, I tend to isolate myself from others when I feel overwhelmed.
+    - While solitude provides temporary relief, it also hinders my ability to connect with loved ones and seek support.
+    - I hope counseling can empower me to develop healthier coping strategies.
+    - Since this is my first counseling experience, I would appreciate if you could explain how the therapeutic process typically works.
+    - How do we begin exploring my concerns?
+    - Additionally, I'd like to know about the different treatment options available and how we will measure progress throughout our sessions.
+    
+- intent: grief_loss_p0086
+  examples: |
+    - Recently, I experienced a major loss in my life - the sudden death of a loved one - and it has left me devastated.
+    - The feelings of sadness are overwhelming, making it difficult to find motivation or pleasure in anything.
+    - Even simple tasks like getting dressed or preparing meals have become arduous chores.
+    - My goal for counseling is to navigate through this period of grief, process my emotions, and eventually find meaning and happiness again.
+    
+- intent: grief_loss_p0087
+  examples: |
+    - Recently, I experienced a major loss in my life.
+    - The death of a loved one shook me to my core.
+    - Ever since then, stress levels have skyrocketed.
+    - Grieving while trying to handle daily life has proven incredibly challenging.
+    - My main objective through counseling is to navigate this grief and develop healthy coping mechanisms.
+    
+- intent: grief_loss_p0088
+  examples: |
+    - Recently, I experienced a significant loss in my life which triggered feelings of intense sadness and hopelessness.
+    - The passing of my loved one has left a void that seems impossible to fill.
+    - I find myself crying uncontrollably at times and withdrawing from activities I once enjoyed.
+    - Through counseling, I hope to find healthy ways to cope with grief and regain some sense of joy in life.
+    
+- intent: grief_loss_p0089
+  examples: |
+    - Recently, I experienced a significant loss in my life.
+    - My beloved pet passed away unexpectedly, and it devastated me.
+    - Their absence has left a void that seems impossible to fill.
+    - Coping with this grief has been incredibly challenging.
+    
+- intent: grief_loss_p0090
+  examples: |
+    - Recently, I lost a loved one and I've been overwhelmed by feelings of grief and loss.
+    - It feels like there's a constant heaviness in my chest and I often find myself crying uncontrollably.
+    - Even simple tasks are becoming difficult.
+    - I want to navigate through this grieving process and find ways to honor their memory while also moving forward with my own life.
+    
+- intent: grief_loss_p0091
+  examples: |
+    - Recently, I lost a loved one unexpectedly which has left me devastated.
+    - The grief and stress associated with this loss have become unbearable.
+    - I need support in processing my emotions and finding healing.
+    
+- intent: grief_loss_p0092
+  examples: |
+    - Recently, I lost my job and ended a long-term relationship.
+    - These significant life events have deeply affected my mood, leading to sadness and self-doubt.
+    - I would like assistance in processing these events and finding strategies to rebuild my life and regain a sense of purpose.
+    
+- intent: grief_loss_p0093
+  examples: |
+    - Recently, I lost my job due to company downsizing.
+    - The sudden change in routine and financial uncertainty triggered a deep sense of worthlessness and despair within me.
+    - Outside of feeling down most days, I also struggle with appetite changes and disrupted sleep patterns.
+    - I would like to address these symptoms during therapy and find ways to bounce back from this challenging phase.
+    
+- intent: grief_loss_p0094
+  examples: |
+    - Recently, I lost my job unexpectedly, and ever since then, I’ve been struggling with depressive symptoms.
+    - The constant rejections from job applications and the financial strain have intensified my feelings of worthlessness and despair.
+    - I want to address these depressive episodes and develop strategies to bounce back from setbacks more easily.
+    
+- intent: grief_loss_p0095
+  examples: |
+    - Recently, I went through a painful breakup that has left me feeling devastated.
+    - The dissolution of this relationship has triggered intense emotions of grief, sadness, and loneliness.
+    - I find myself constantly replaying past memories and wondering what went wrong.
+    - Through counseling, I hope to heal from this heartbreak and learn how to move forward in a healthy way.
+    
+- intent: grief_loss_p0096
+  examples: |
+    - Recently, I've experienced a loss in my life that has triggered a deep sense of sadness and hopelessness.
+    - The absence of my loved one is unbearable at times, and it feels as if a part of me is missing.
+    - I struggle to find motivation for even the smallest tasks and often question the meaning of life.
+    - Exploring this grief through counseling and finding healthy coping mechanisms are essential steps towards healing and rebuilding my life.
+    
+- intent: grief_loss_p0097
+  examples: |
+    - Recently, my long-term relationship ended and it feels like my whole world has been shattered.
+    - The pain is unbearable and I can't imagine moving forward without my partner.
+    - Through counseling, I hope to navigate the grief and learn how to rebuild my life after such a significant relationship dissolution.
+    
+- intent: grief_loss_p0098
+  examples: |
+    - Since I lost my job, I've been consumed by feelings of worthlessness and failure.
+    - The constant rejection from job applications has only worsened these thoughts.
+    - It feels like I'm stuck in a never-ending cycle, unable to escape this dark cloud hanging over me.
+    - Through counseling, I hope to rebuild my self-esteem and find the motivation to keep pushing forward.
+    
+- intent: grief_loss_p0099
+  examples: |
+    - Since I lost my parent last year, I've been overwhelmed by grief.
+    - It feels like such a heavy burden that I can't seem to shake off.
+    - Every day is a struggle, and even the smallest reminders trigger intense sadness and longing.
+    - I find myself withdrawing from others and isolating myself because it's hard to be around people who don't truly understand what I am going through.
+    - I would like guidance on how to navigate the grieving process and learn healthy coping mechanisms.
+    
+- intent: grief_loss_p0100
+  examples: |
+    - Spiritual Inquiry Dear counselor, I hope that through our counseling sessions, I can find a way to reconnect with my spirituality.
+    - Over the past few months, I have been feeling disconnected from the world and it has left me questioning the meaning and purpose of life.
+    - This feeling of emptiness and lack of connection is troubling me deeply.
+    - I believe this disconnection may have been triggered by recent life events, particularly the loss of a loved one.
+    - Since their passing
+    - I have been grappling with feelings of grief and sadness
+    - which has made it difficult for me to find solace in my faith.
+    - I used to find comfort in prayer and community gatherings, but now even attending religious services feels emotionally overwhelming for me.
+    - There was a specific incident when I attended a memorial service at our local church
+    - and instead of finding peace
+    - I felt an intense sense of anger towards my higher power.
+    - It was as if I blamed God for taking away someone so dear to me.
+    - Since then, I have avoided all spiritual practices, afraid that they will only amplify these negative emotions.
+    - The symptoms of this disconnection include a persistent feeling of loneliness and aimlessness.
+    - I wake up every day with a heavy heart, feeling like there is something missing in my life.
+    - These thoughts and emotions are constantly present, making it hard for me to focus on any other aspect of my life.
+    - The duration and intensity of these symptoms have been gradually increasing over time.
+    - In terms of coping strategies, I have tried journaling about my feelings and seeking solace in nature.
+    - Although momentarily soothing, these activities do not provide a long-lasting solution to my spiritual crisis.
+    - I am hoping that through counseling, we can explore different avenues to help me reconnect with my spirituality and regain a sense of purpose.
+    - One question I have for you is how often should I expect to see progress in this area?
+    - Is there anything specific I should be doing outside of our sessions to enhance this process?
+    
+- intent: grief_loss_p0101
+  examples: |
+    - Stress has become a recurring theme in my life, and it's starting to take a toll on my mental health.
+    - My goal for this counseling session is to learn practical ways to better manage stress and achieve a healthier work-life balance.
+    - I work in a high-pressure job where deadlines are tight and expectations are constantly rising.
+    - This leaves me feeling immense pressure and stress.
+    - Additionally, I struggle with saying no to extra responsibilities, often resulting in overloaded schedules and limited time for self-care.
+    - As a result of chronic stress, I experience frequent mood swings, difficulty focusing, muscle tension, and disturbed sleep patterns.
+    - These symptoms occur almost daily and affect both my personal and professional life.
+    - A major life event that contributed to my current stress levels is the recent loss of a loved one.
+    - This grief has compounded my overall stress and made it challenging to find solace or emotional stability.
+    - To cope with stress, I have tried engaging in hobbies, practicing mindfulness meditation, and setting boundaries at work.
+    - While these strategies provide temporary relief, I still struggle with managing stress effectively in the long run.
+    - During our sessions, I hope to explore different techniques for stress management that align with my lifestyle.
+    - Are there any specific time-management strategies or boundary-setting exercises you recommend?
+    - How can I create a balance between my personal and professional life while reducing stress?
+    
+- intent: grief_loss_p0102
+  examples: |
+    - Stress has become a significant burden in my life and I am seeking guidance on managing it better.
+    - Through this counseling session, I hope to identify healthy coping strategies that alleviate the impact of stress.
+    - My demanding job, constant work deadlines, and responsibilities at home have left me feeling overwhelmed and exhausted.
+    - I'm always on edge, irritable, and struggle with concentration.
+    - For instance, when faced with multiple tasks, my mind becomes foggy and I end up making mistakes.
+    - These symptoms occur on a daily basis and persist for hours or even days.
+    - the recent loss of a family member has added to my stress levels
+    - grief seems to be complicating other aspects of my life as well.
+    - How can therapy help me develop effective stress management techniques?
+    - What are some strategies I can use to prevent burnout?
+    
+- intent: grief_loss_p0103
+  examples: |
+    - Stress has been building up in me due to financial difficulties.
+    - I recently lost my job, and the mounting bills and uncertainty of the future are causing significant distress.
+    - This stress is affecting my sleep and overall mood, making it difficult for me to focus on finding new employment opportunities.
+    - During counseling, I want to explore healthy coping mechanisms to manage this stress and regain a sense of stability in my life.
+    
+- intent: grief_loss_p0104
+  examples: |
+    - Stress has been taking a toll on my physical and mental well-being
+    - so I'm seeking support in this counseling session to learn techniques for stress reduction.
+    - Recently, I experienced a significant loss in my family when my grandmother passed away.
+    - It was an emotionally challenging time, and since then, I've been struggling with grief and overwhelming sadness.
+    - Alongside this emotional pain, I've noticed physical symptoms such as headaches, muscle tension, and difficulty sleeping.
+    - These symptoms occur multiple times a week and last for several hours each time.
+    - I would appreciate guidance on how to cope with these stressors and find ways to heal from the loss.
+    
+- intent: grief_loss_p0105
+  examples: |
+    - Stressful life events, such as the recent loss of a loved one, have contributed to my current state.
+    - Grief has made it difficult to cope with daily tasks, and I often find myself overwhelmed by waves of sadness and longing.
+    
+- intent: grief_loss_p0106
+  examples: |
+    - The loss of a close family member has been a significant life event that deeply impacted my mental health.
+    - Their sudden passing left me devastated, and I've been struggling with grief ever since.
+    - It feels like a heavy weight on my chest, making it hard to breathe at times.
+    - Coping with this immense loss has been incredibly challenging.
+    
+- intent: grief_loss_p0107
+  examples: |
+    - The loss of a close friend has had a significant impact on my mental health.
+    - Grief and sadness consume me, and it feels like I'll never be able to fully recover from this devastating loss.
+    
+- intent: grief_loss_p0108
+  examples: |
+    - The loss of a loved one has had a major impact on me.
+    - It feels like a void that can never be filled.
+    - Their absence is felt every day, especially during important milestones or celebrations.
+    - Grief has consumed me for months now and it's become difficult to function normally.
+    - Talking about this grief and finding healthy ways to cope with it would be invaluable to me.
+    
+- intent: grief_loss_p0109
+  examples: |
+    - The loss of a loved one has left me feeling numb and detached from the world around me.
+    - Its impact on my daily life is profound, as I struggle to find motivation or interest in anything.
+    - Grief has painted everything gray, making each passing day feel increasingly heavy.
+    
+- intent: grief_loss_p0110
+  examples: |
+    - The loss of a loved one weighs heavily on me.
+    - Grief seeps into every crack of my being, overwhelming me with sadness and emptiness.
+    - I hope to find ways to honor their memory while also healing myself.
+    - Exploring grief coping strategies and creating a support system will be vital for me during this journey.
+    
+- intent: grief_loss_p0111
+  examples: |
+    - The loss of my loved one has left a deep void in my heart.
+    - It's been months since their passing, but the grief still consumes me.
+    - I struggle with feelings of guilt, regret, and loneliness.
+    - I want to learn how to navigate this immense pain and find some semblance of peace.
+    
+- intent: grief_loss_p0112
+  examples: |
+    - The loss of my loved one has plunged me into profound grief, and I am seeking support to navigate this difficult journey.
+    - My emotions fluctuate greatly, ranging from intense sadness to anger and guilt.
+    - It often feels like a rollercoaster that I cannot get off.
+    - The recent loss of my parent has brought up memories of other significant losses in my life
+    - such as losing a close friend to an illness.
+    - These accumulated losses have made me question the purpose of life and struggle to find meaning in my own existence.
+    - The grief consumes my thoughts, affecting my ability to concentrate on work or engage fully in daily activities.
+    - The waves of sadness are unpredictable and often triggered by mundane things that remind me of the person I lost
+    - like a favorite song or their belongings.
+    - To cope with grief, I try to preserve the memory of my loved one through various rituals and commemorative activities.
+    - While these practices bring temporary solace, they do not alleviate the pain completely.
+    - In counseling, I hope to process my grief, understand the stages of mourning, and integrate the loss into my life in a healthier way.
+    - How can therapy support individuals going through grief and loss?
+    - What strategies would you recommend for honoring and remembering my loved one while still allowing myself to heal?
+    
+- intent: grief_loss_p0113
+  examples: |
+    - The loss of my loved one still haunts me every day.
+    - It's been months, but I can't seem to shake off the deep sadness and grief that has settled within me.
+    - I have trouble sleeping, often waking up in tears from vivid dreams about them.
+    - My energy levels are low, and everything feels like such an effort.
+    - I want to learn healthy ways to remember and honor my loved one while finding a path towards healing.
+    
+- intent: grief_loss_p0114
+  examples: |
+    - The recent breakup of my long-term relationship has been incredibly painful and confusing.
+    - I constantly question what went wrong and blame myself for the dissolution.
+    - I'm seeking therapy to help me navigate through this grief, understand my role in the failed relationship, and learn how to move forward.
+    
+- intent: grief_loss_p0115
+  examples: |
+    - The recent loss of a close family member has left me overwhelmed with grief and sadness.
+    - I struggle to come to terms with their absence and often find myself longing for their presence.
+    - This grief affects my daily functioning and makes it difficult to focus on anything else.
+    - I'm hoping to discuss healthy coping mechanisms for grief and learn how to navigate this painful process.
+    
+- intent: grief_loss_p0116
+  examples: |
+    - The recent loss of a loved one has added an immense amount of stress to my life.
+    - Grief has taken a toll on my emotional well-being, making it difficult to function day-to-day.
+    - I hope counseling can help me navigate through this challenging time and find healing.
+    
+- intent: grief_loss_p0117
+  examples: |
+    - The recent loss of a loved one has had a significant impact on my stress levels.
+    - Grief has made it difficult for me to focus, sleep, and maintain healthy routines.
+    - It feels like a heavy weight on my chest that I can't shake off.
+    
+- intent: grief_loss_p0118
+  examples: |
+    - The recent loss of a loved one has left me feeling completely devastated.
+    - Grief has taken a toll on both my physical and emotional well-being.
+    - I have trouble sleeping, no appetite, and a constant heaviness in my chest.
+    - I'm hopeful that counseling will provide me with guidance to navigate through the grieving process and find ways to honor my loved one's memory.
+    
+- intent: grief_loss_p0119
+  examples: |
+    - The recent loss of a loved one has left me feeling lost, lonely, and consumed by sadness.
+    - Grief seems to wash over me unexpectedly, making it difficult to focus on daily tasks or engage in social activities.
+    - I hope that therapy can provide me with guidance on navigating through the stages of grief and finding healing.
+    
+- intent: grief_loss_p0120
+  examples: |
+    - The recent loss of a loved one has left me feeling overwhelmed and mentally drained.
+    - When I think about the person who passed away, I'm filled with nostalgia and grief.
+    - Each day feels like an uphill battle as I navigate through a sea of emotions.
+    - I would appreciate guidance on how to cope with grief and find solace in memories.
+    
+- intent: grief_loss_p0121
+  examples: |
+    - The recent loss of a loved one has left me grieving and emotionally drained.
+    - Coping with this intense grief has been challenging as it often feels all-consuming.
+    - In this counseling session
+    - I would like to explore healthy ways to process and move through the stages of grief while honoring the memory of my loved one.
+    
+- intent: grief_loss_p0122
+  examples: |
+    - The stress from my recent divorce has left me emotionally drained.
+    - I feel like I'm navigating uncharted territory, trying to rebuild my life while coping with the grief and various responsibilities.
+    - My goal in attending counseling is to develop resilience, regain self-confidence, and discover healthy strategies to manage the stress associated with major life changes.
+    
+- intent: grief_loss_p0123
+  examples: |
+    - The stress in my life has reached overwhelming levels
+    - and I'm hoping counseling can provide me with tools to better manage it before it takes a toll on my well-being.
+    - My mind constantly races, making it difficult to focus on even simple tasks.
+    - Thoughts of uncertainty about the future keep popping up, leading to feelings of helplessness and hopelessness at times.
+    - The physical symptoms associated with stress, such as tension headaches and muscle tightness, have become more frequent.
+    - One recent situation that triggered my stress was when I lost my job unexpectedly due to downsizing.
+    - Financial insecurity began to weigh heavily on my mind, exacerbating my stress levels.
+    - It felt like everything around me was falling apart.
+    - These stress symptoms occur almost daily, especially when facing challenging situations or undergoing major life changes.
+    - The intensity of stress tends to be high during these times, leaving me drained both physically and mentally.
+    - I've tried various coping strategies such as exercising regularly, practicing mindfulness, and reaching out to a support network, but they only offer temporary relief.
+    - It would be helpful to gain insights into long-term management techniques for stress.
+    - As we delve into counseling sessions, I am curious to know if there are specific stress-reducing techniques you can recommend.
+    - Are there any relaxation exercises or cognitive therapies that have proven effective for others in similar situations?
+    
+- intent: grief_loss_p0124
+  examples: |
+    - The stress in my life has reached unbearable levels.
+    - Alongside work pressures, I recently experienced a major personal loss that has left me emotionally drained.
+    - Grief seems to consume every waking moment, and I struggle to find solace or peace.
+    - Minor setbacks now feel devastatingly amplified, exacerbating the anguish I already carry.
+    - As a result, I'm finding it hard to focus at work, maintaining relationships, or engage in activities I once loved.
+    - In counseling, I hope to explore healthy coping mechanisms to navigate these challenging times and rebuild a sense of stability in my life.
+    
+- intent: grief_loss_p0125
+  examples: |
+    - The underlying cause of our family conflicts is the deep-rooted emotional wounds stemming from past events.
+    - Unfortunately, we tend to avoid discussing these traumatic experiences openly, which only perpetuates the unresolved pain and tension between family members.
+    - One significant event contributing to these tensions was the sudden death of my grandfather a few years ago.
+    - His passing exposed unaddressed grievances within our family and left us struggling to cope with grief individually instead of supporting one another.
+    - Instead of fostering an environment where emotions can be expressed freely, we consistently maintain a facade of strength and composure.
+    - As a result, resentments accumulate, and communication deteriorates further, making any attempt at reconciliation seemingly impossible.
+    - My goal is not only to understand how these traumatic events have shaped our family dynamics but also to find ways to heal and strengthen our relationships.
+    - Are there therapeutic approaches that can help us navigate through past trauma together as a family?
+    
+- intent: grief_loss_p0126
+  examples: |
+    - The weight of despair has settled deep within my soul.
+    - It's as if I'm trapped in a never-ending darkness, unable to see any glimmers of light or hope.
+    - Dealing with the loss of my loved one has shattered me emotionally.
+    - I find myself crying uncontrollably
+    - losing interest in activities I once enjoyed
+    - and struggling with intense feelings of guilt for not being able to prevent their passing.
+    - By seeking counseling, I hope to navigate this grief journey and gradually heal from this profound loss.
+    
+- intent: grief_loss_p0127
+  examples: |
+    - Therapist, I've been struggling with a deep sense of grief and loss since my father passed away six months ago.
+    - My goal for this counseling session is to find healthy ways to cope with the pain and sadness I've been experiencing.
+    - Losing my father has left a huge void in my life, and it feels like everything has changed.
+    - The intense emotions that sweep over me often catch me off guard, causing difficulty concentrating and affecting my appetite.
+    - There are certain trigger points, such as visiting his favorite restaurant or hearing his favorite song, which amplify these feelings even more.
+    - I vividly remember the day he passed away in the hospital.
+    - Witnessing his decline and eventual death was traumatic and unforgettable.
+    - finding myself navigating through all the practical arrangements afterward
+    - like organizing the funeral
+    - arranging finances
+    - and comforting my grieving family members
+    - added further stress to my already heavy emotional burden.
+    - The symptoms of my grief have been fluctuating in intensity and duration throughout the last few months.
+    - Sometimes, I find myself crying uncontrollably for hours, feeling completely overwhelmed by the weight of my loss.
+    - Other times, I am engulfed by a pervasive numbness that prevents me from fully engaging in daily activities.
+    - It's been incredibly challenging to adjust to this new normal without him.
+    - Before my dad's passing, our family dynamics were closely knit, and we shared a strong bond.
+    - He was always there for us, offering guidance and support when needed.
+    - His absence has created fractures within the family, leading to conflicts among siblings regarding estate matters and unresolved emotions surrounding his death.
+    - Coping strategies I have tried so far include seeking solace in my faith
+    - journaling my thoughts and memories of my father
+    - and leaning on close friends who have experienced similar losses.
+    - Regarding therapy, I would like to know what your approach is to helping individuals cope with grief and loss.
+    - Are there any specific therapeutic techniques or exercises you recommend for someone in my situation?
+    - How long might it take to experience some relief from this overwhelming sadness?
+    
+- intent: grief_loss_p0128
+  examples: |
+    - Today, I seek counseling support to navigate the difficult process of ending a long-term romantic relationship.
+    - It has become evident that despite our best efforts, our values and life goals are no longer aligned.
+    - My goal is to find emotional healing and discover coping mechanisms to move forward with strength.
+    - The emotions and thoughts surrounding this decision are complex.
+    - I feel a sense of loss, sadness, and grief for the life we once shared.
+    - Simultaneously, there is relief knowing that we can now pursue personal growth independently.
+    - It's challenging to balance these conflicting feelings.
+    - One significant event leading to this relationship dissolution was realizing our differing expectations about starting a family.
+    - While my desire to have children grew stronger over time, my partner expressed an unwillingness to consider parenthood in the near future.
+    - This revelation opened up deeper conversations about our compatibility as long-term partners.
+    - These symptoms associated with relationship dissolution often emerge when contemplating the end of our journey together or confronting moments where our differences are impossible to ignore.
+    - The frequency of these thoughts has increased gradually over the past six months, manifesting almost daily.
+    - Reflecting on our relationship history, we had been together for nearly a decade, sharing many joys and challenges as a couple.
+    - Unfortunately, external factors such as lack of emotional support from our families during tough times further strained the foundations of our partnership.
+    - In attempts to cope, I've sought solace in supportive friends who remind me of my worth and capabilities outside of this relationship.
+    - Engaging in self-care practices like journaling and meditation also provide moments of respite amidst the emotional turmoil.
+    - While embarking on this journey of separation, I would appreciate any guidance you can provide in terms of managing the grieving process and finding closure.
+    - Furthermore, how can one regain their independence after being intertwined so deeply with another person for such a long period?
+    
