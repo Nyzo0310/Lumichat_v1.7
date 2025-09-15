@@ -1,0 +1,60 @@
+@extends('layouts.admin')
+@section('title','Counselor Logs · '.$counselor->full_name)
+
+@section('content')
+@php
+  $label = \Carbon\Carbon::create($year,$month,1)->format('F Y');
+@endphp
+
+<div class="space-y-6">
+  {{-- Header --}}
+  <div class="flex items-start justify-between gap-3">
+    <div>
+      <h2 class="text-2xl font-semibold text-slate-900">{{ $counselor->full_name }}</h2>
+      <p class="text-sm text-slate-500">Logs for <span class="font-medium text-slate-700">{{ $label }}</span></p>
+    </div>
+    <a href="{{ route('admin.counselor-logs.index') }}"
+       class="inline-flex items-center h-10 px-3 rounded-lg text-sm font-medium border border-slate-200 text-slate-700 hover:bg-slate-50">
+      ← Back
+    </a>
+  </div>
+
+  {{-- Diagnosis summary (chips) --}}
+  @if($dxCounts->count())
+    <div class="flex flex-wrap gap-2">
+      @foreach($dxCounts as $dx)
+        <span class="px-3 py-1.5 rounded-full border border-sky-200 bg-sky-50 text-sky-700 text-xs">
+          {{ $dx->diagnosis_result }} • {{ $dx->cnt }}
+        </span>
+      @endforeach
+    </div>
+  @endif
+
+  {{-- Table --}}
+  <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+    <div class="px-4 py-3 border-b border-slate-200 text-sm font-semibold text-slate-800">Non-Technical</div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead class="bg-slate-50 text-slate-600">
+          <tr>
+            <th class="text-left px-4 py-3 font-medium">Student</th>
+            <th class="text-left px-4 py-3 font-medium">Scheduled</th>
+            <th class="text-left px-4 py-3 font-medium">Diagnosis / Result</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          @forelse($students as $row)
+            <tr class="hover:bg-slate-50/60">
+              <td class="px-4 py-3">{{ $row->student_name ?? '—' }}</td>
+              <td class="px-4 py-3">{{ $row->scheduled_at_fmt }}</td>
+              <td class="px-4 py-3">{{ $row->diagnosis_result }}</td>
+            </tr>
+          @empty
+            <tr><td colspan="3" class="px-4 py-10 text-center text-slate-500">No appointments this month.</td></tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+@endsection
