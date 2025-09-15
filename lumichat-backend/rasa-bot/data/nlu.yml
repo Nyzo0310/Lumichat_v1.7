@@ -9879,4 +9879,1972 @@ nlu:
     - I don't want to bring work stress to my personal life, but it feels unavoidable at times.
     - In counseling, I would like guidance on managing work-related stress and finding a healthier balance.
     
+- intent: depression_p0001
+  examples: |
+    - I recently received a diagnosis for my symptoms, but I'm having trouble understanding what it means and how it will impact me.
+    - Can you explain my diagnosis and what steps we should take moving forward?" Goal: The patient wants to gain a clear understanding of their diagnosis and develop appropriate treatment plans.
+    - Possible reasons triggered the symptoms: The patient has noticed persistent mood swings, including periods of elevated moods followed by episodes of low moods.
+    - They experience racing thoughts and have had occasional difficulties concentrating, which prompted seeking a professional evaluation.
+    - Example situation: The patient recalls an instance where they felt an unusually intense burst of energy accompanied by impulsive decision-making.
+    - Shortly after this, they experienced a period of deep sadness and struggled to cope with daily tasks.
+    - Symptoms: The patient describes alternating episodes of abnormally elevated mood (mania) and low mood (depression)
+    - impulsivity in decision-making
+    - decreased need for sleep during manic episodes
+    - lack of motivation during depressive episodes.
+    - Past trauma/experiences: No mention of any relevant past trauma or experiences contributing to the diagnosis.
+    - Coping strategies: The patient admits trying various relaxation techniques but has not found sufficient relief from their symptoms.
+    - Question: What treatments are available for my specific diagnosis?
+    - How long does it typically take to manage symptoms effectively?
     
+- intent: depression_p0002
+  examples: |
+    - My partner and I have been growing apart over time, and the lack of emotional connection is causing distress.
+    - My goal through counseling is to strengthen our marriage and rediscover the love we once shared." My spouse and I used to be inseparable
+    - but now it feels like we're living separate lives under the same roof.
+    - We rarely communicate, and when we do, it's mostly about mundane daily tasks rather than deep emotions.
+    - This disconnect between us pains me deeply, and I want to find a way to mend it.
+    - I believe this gradual disconnection originated from both of us prioritizing work commitments over our relationship.
+    - Over time, those small sacrifices added up, and the gap between us became wider.
+    - We stopped putting effort into maintaining our emotional connection.
+    - One specific event that triggered my concerns recently was when we celebrated our anniversary.
+    - Instead of celebrating our journey together, it felt empty and devoid of the happiness we used to share.
+    - It was a stark reminder of how much we've drifted apart.
+    - The symptoms of this lack of emotional connection occur almost every day.
+    - We live more like roommates than romantic partners, and the passion that once fueled our relationship has dwindled.
+    - Loneliness, frustration, and sadness have become constant companions.
+    - I have tried initiating conversations about our feelings and needs, but they usually end up in arguments or avoidance.
+    - I want to understand what went wrong and discover ways to rebuild our emotional bond.
+    - During counseling sessions, I would appreciate your guidance on fostering emotional intimacy between us.
+    - How can we break down the barriers preventing vulnerability?
+    - Are there specific strategies or exercises you recommend for couples seeking to strengthen their marriage?
+    
+- intent: depression_p0003
+  examples: |
+    - Recently, I've been feeling extremely down, losing interest in things I used to enjoy, experiencing sleep disturbances, and constantly having negative thoughts.
+    - It's becoming harder to function and find motivation.
+    - My goal for this counseling session is to address my depression
+    - explore treatment options such as therapy or medication
+    - and develop healthy coping mechanisms." Explanation: The patient describes symptoms of depression
+    - such as loss of interest
+    - disturbed sleep patterns
+    - and negative thinking
+    - which have significantly impacted their daily functioning.
+    - They express their intentions for the counseling session, aiming to confront their depression, discuss potential treatments like therapy or medication, and acquire effective coping strategies.
+    
+- intent: depression_p0004
+  examples: |
+    - Doctor, I think I might be experiencing another episode of depression.
+    - This intense sadness keeps coming back, even when everything seems fine in my life.
+    - It's especially debilitating because I struggle to focus or find enjoyment in things that used to make me happy.
+    - My sleep patterns are disrupted—I either sleep too much or have trouble falling asleep at all.
+    - These symptoms have been lasting for weeks now, affecting my ability to function normally.
+    - My goal through counseling is to learn coping strategies and develop resilience to prevent relapses.
+    - I want to effectively manage this recurring depression and live a fulfilling life.
+    
+- intent: depression_p0005
+  examples: |
+    - Doctor, I've been feeling incredibly low for a while now.
+    - It's like a dark cloud is constantly hanging over me, making everything seem pointless and hopeless.
+    - I struggle to get out of bed in the morning because I lack energy and motivation.
+    - My appetite has also changed—I either have no desire to eat or find comfort in overeating.
+    - These symptoms have been persistent for several months now.
+    - I want to alleviate this sadness and find joy in life again.
+    - My goal is to regain my mental and emotional well-being and overcome this overwhelming heaviness.
+    
+- intent: depression_p0006
+  examples: |
+    - I am currently in an abusive relationship, both emotionally and physically.
+    - My partner controls every aspect of my life, and I'm scared to speak up or leave because they threaten me if I do.
+    - The abuse is taking a toll on my mental health, leaving me feeling hopeless and trapped.
+    - I need guidance on how to protect myself and regain control of my life.
+    
+- intent: depression_p0007
+  examples: |
+    - Life has lost its color, and I feel stuck in a never-ending cycle of darkness.
+    - Through counseling, I hope to find ways to lift this heavy fog of depression and rediscover joy and purpose in living.
+    - The weight of sadness and hopelessness is becoming unbearable.
+    - I wake up each morning with a heavy heart, unable to find motivation or interest in anything.
+    - Simple tasks seem like insurmountable challenges, leaving me feeling overwhelmed and defeated.
+    - It's as if I'm trapped in this never-ending tunnel of despair.
+    - For example, I used to love art and creativity, but now even picking up a paintbrush feels impossible.
+    - The spark that once fueled my passion has dulled significantly, robbing me of the one outlet that used to bring solace during difficult times.
+    - These symptoms of depression have persisted for several months, affecting all aspects of my life.
+    - I struggle with low energy levels, finding it difficult to complete even the most basic daily activities.
+    - Sleep disturbances have become routine, either experiencing insomnia or excessive sleepiness.
+    - Depression has also taken a toll on my relationships.
+    - I often withdraw from social interactions, fearing that others will see through my façade of normalcy.
+    - Loneliness becomes pervasive, exacerbating the feelings of emptiness and isolation.
+    - While I've attempted various coping strategies, such as exercise and self-help books, they only provide temporary relief.
+    - I would appreciate your support and guidance in helping me understand and manage my depression
+    - develop healthy coping mechanisms
+    - and work towards leading a more fulfilling life.
+    
+- intent: depression_p0008
+  examples: |
+    - This heavy cloud of depression constantly hangs over me, and I strongly believe counseling can guide me toward finding a way out.
+    - While there isn't one particular event that led to my depression, it seems to be influenced by numerous life stressors that have accumulated over time.
+    - One significant event was the loss of a close friend due to illness.
+    - Their passing deeply impacted me and pushed me into a deep emotional void that I struggle to escape.
+    - Coping with grief has become increasingly challenging as each day passes by.
+    - The symptoms of depression are pervasive in my life.
+    - I feel a constant emptiness and lack motivation or interest in activities that once brought me joy.
+    - Sleep disturbances have become more prominent, ranging from excessive sleeping to difficulties falling asleep or staying asleep.
+    - The persistent negative thoughts about myself make it difficult to believe there's hope for a brighter future.
+    - Within my family dynamics, there have been instances of mental health challenges, specifically related to depression.
+    - This suggests a potential genetic component that could contribute to my current state of mind.
+    - Additionally, childhood experiences of neglect have had a lasting impact on my self-esteem and overall well-being.
+    - Coping strategies I've tried so far, such as journaling and practicing gratitude, offer temporary solace but fail to address the underlying depressive feelings.
+    - Could you provide further guidance in terms of coping methods?
+    - And how can counseling support someone like me in navigating through this dark period and finding healing?
+    
+- intent: depression_p0009
+  examples: |
+    - The demands of juggling multiple roles in my life have led to chronic stress.
+    - It feels like I'm constantly running on empty, trying to keep up with all the responsibilities.
+    - The lack of balance has left me feeling exhausted and burnt out.
+    - I need help in finding effective strategies to manage stress and prioritize self-care.
+    
+- intent: depression_p0010
+  examples: |
+    - Dealing with Depression" I've been struggling with depressive symptoms for quite some time now and decided to seek professional support.
+    - My goal for today's counseling session is to explore ways to cope with depression and improve my overall well-being.
+    - Lately, I've been feeling unmotivated and empty.
+    - Even activities I used to enjoy don't bring me the same pleasure anymore.
+    - I often find myself crying without any specific reason, feeling a deep sense of sadness and hopelessness.
+    - Last week, for example, I couldn't get out of bed for an entire day because everything felt so overwhelming.
+    - The duration of these depressive episodes varies, but they can last from a few days to several weeks.
+    - Although there might be some genetic factors contributing to my depression, it was triggered by significant life events as well.
+    - Losing my job last year and going through a breakup shortly afterward had a profound impact on me.
+    - I feel like I've lost all direction in life.
+    - To cope with my depression, I try to maintain a routine and engage in physical exercise when I have enough energy.
+    - However, finding motivation is extremely challenging, and feelings of guilt for not being productive further exacerbate my mood.
+    - What recommendations do you have for someone dealing with depression?
+    - Are there any specific therapeutic approaches or treatment options that have proven effective for your clients?
+    
+- intent: depression_p0011
+  examples: |
+    - Depression For months now
+    - I've been feeling sadness enveloping every aspect of my life
+    - and I'm seeking counseling in hopes of understanding why and finding ways to lift this heavy fog.
+    - My goal is to alleviate the symptoms of depression that have been impacting my daily functioning.
+    - This pervasive feeling of hopelessness makes it challenging for me to get out of bed in the morning.
+    - I spent an entire day indoors
+    - unable to find any motivation or joy in activities that used to bring me happiness.
+    - It felt like nothing mattered anymore.
+    - These feelings of emptiness and lack of interest in previously enjoyed activities have become increasingly frequent lately.
+    - I believe my depression stems from a combination of factors, including ongoing work stress and unresolved grief from the loss of a close friend.
+    - The pain feels insurmountable at times.
+    - In terms of coping strategies, I've tried engaging in mindfulness meditation and journaling to process my emotions.
+    - While these practices provide temporary relief, they don't address the underlying cause of my depressive symptoms.
+    - Could you explain how therapy may be beneficial in helping me understand and manage my depression?
+    - Additionally, are there any additional treatment options that could complement therapy in improving my overall well-being?
+    
+- intent: depression_p0012
+  examples: |
+    - Depression" I've been feeling very low and down for quite some time now
+    - and I think speaking with a professional could help me navigate through this depression.
+    - It feels like there's a constant cloud hanging over me, making it difficult to find joy or motivation in anything.
+    - One significant event that triggered the worst depressive episode was when I lost my job unexpectedly.
+    - The feelings of rejection and failure overwhelmed me, leading to deep sadness and hopelessness.
+    - These symptoms have been persisting for weeks, where I experience loss of appetite, difficulty sleeping, and an overall lack of energy.
+    - It's affecting my daily functioning, and even simple tasks feel incredibly challenging.
+    - I want to understand why I'm feeling this way and find strategies to regain my sense of purpose and happiness.
+    
+- intent: depression_p0013
+  examples: |
+    - I recently had a falling out with one of my closest friends, and it's left me feeling confused and hurt.
+    - I don't know how to repair our relationship or move forward." The patient aims to mend their broken friendship and understand their role in the conflict.
+    - "We used to share everything and rely on each other for support, but now it feels like we're strangers.
+    - The betrayal and loss of trust have deeply impacted me
+    - and I want to find a way to rebuild our bond." Triggering event: "There was a misunderstanding between us
+    - which escalated into an argument.
+    - Hurtful things were said, and it seems impossible to go back to the way things were.
+    - Both of us are too stubborn to reach out first." Symptoms: "Since the disagreement, I've been experiencing intense sadness, anger, and guilt.
+    - Thoughts about what I could have done differently haunt me
+    - and it's affecting my ability to concentrate on anything else." Examples of situations: "We used to enjoy going out for dinner every Friday night.
+    - I remember sitting alone at our usual spot last week, feeling hopeless without their presence.
+    - It was a reminder of what we had lost." Coping strategies: "I've been writing down my thoughts and emotions in a journal
+    - hoping it might help me gain some clarity or perspective.
+    - Sometimes I also try reaching out with casual messages, but they remain unanswered." Questions: "What steps can I take to repair this broken friendship?
+    - How can I communicate my feelings without coming across as accusatory or defensive?
+    - Is forgiveness an important aspect of rebuilding trust?
+    
+- intent: depression_p0014
+  examples: |
+    - I'm overwhelmed by constant sadness, lack of motivation, and loss of interest in things I used to enjoy.
+    - I suspect I may be dealing with depression." To alleviate depressive symptoms and regain a sense of joy in life.
+    - It feels like a heavy weight is constantly pressing down on me, draining all motivation and energy.
+    - Despite trying to participate in activities that once brought happiness, everything seems dull and uninteresting.
+    - I want to escape this dark cloud of depression and start experiencing life more fully again.
+    - Specific examples of situations and events: I used to be passionate about hobbies like painting and playing music
+    - but now even picking up a brush or instrument feels pointless.
+    - Everyday tasks become overwhelming challenges, leading to a never-ending cycle of procrastination and self-criticism for not being productive.
+    - Symptom description: Symptoms include persistent sadness
+    - loss of interest in previously enjoyable activities
+    - changes in appetite and sleep patterns
+    - low energy levels
+    - and negative thoughts about oneself and the future.
+    - These symptoms occur daily, with varying levels of intensity throughout the day, and have been present for several months.
+    - Coping strategies: In an effort to cope with depressive symptoms, I try engaging in mindfulness exercises and practicing gratitude.
+    - Occasionally, I share my struggles with close friends who provide support and reassurance.
+    - However, these coping mechanisms only offer temporary relief.
+    - Question for the mental health professional: What are some evidence-based treatment options for depression?
+    - Can therapy help me identify underlying causes and develop strategies to manage my symptoms effectively?
+    
+- intent: depression_p0015
+  examples: |
+    - I've been feeling completely overwhelmed by this black cloud of depression that seems to follow me everywhere.
+    - It feels like there's no escape, and I'm losing hope." 38.
+    - Through this counseling session, my goal is to find relief from my depression and regain control over my life.
+    - I want to discover healthy coping mechanisms that provide long-lasting support and improve my mental wellbeing.
+    - 39.
+    - Emotionally, I feel trapped in a cycle of hopelessness and sadness.
+    - There's a persistent heaviness inside me, preventing any joy or motivation from seeping through.
+    - Negative thoughts consume my mind, making it difficult to believe in a brighter future.
+    - 40.
+    - The trigger for my depressive symptoms was experiencing a significant loss in my personal life.
+    - The grief and subsequent changes associated with this loss have deeply impacted my mental state.
+    - 41.
+    - Frequent symptoms of depression include feelings of emptiness, loss of interest in once-enjoyed activities, disrupted sleep, changes in appetite, and difficulty concentrating.
+    - 42.
+    - Significant past events that could be relevant to my current struggles include a history of childhood trauma and emotional neglect.
+    - These experiences have affected my self-esteem and ability to form healthy relationships.
+    - 43.
+    - I've tried coping with my depression by engaging in exercise and practicing gratitude, but the relief is only temporary.
+    - I need support and guidance in finding effective long-term strategies to manage my symptoms.
+    - 44.
+    - I'm curious about your therapeutic approach when working with individuals experiencing depression.
+    - How can therapy help me address the underlying causes of my depression and develop resilience?
+    
+- intent: depression_p0016
+  examples: |
+    - Intimacy The lack of emotional and physical intimacy in my marriage has become a major concern for me
+    - and I'm hoping counseling can help me address this issue.
+    - My goal is to rebuild trust, enhance communication, and reignite passion within our relationship.
+    - Recently, I've noticed that we have grown distant both emotionally and sexually.
+    - We rarely express affection towards one another, and our conversations often feel shallow and unfulfilling.
+    - For instance, just last week when attempting to initiate intimacy, my partner seemed disinterested and offered empty excuses.
+    - This rejection left me feeling rejected and undesired.
+    - In order to better understand our struggles
+    - it's important to note that over time
+    - stressful external factors such as work pressures have taken priority over nurturing our relationship.
+    - Past experiences of infidelity have also impacted our ability to trust each other fully.
+    - Although we have discussed this issue several times, we seem unable to break free from these patterns.
+    - Are there any specific exercises or techniques that could help us reconnect at an emotional and physical level?
+    - Furthermore, could you guide us through rebuilding trust after betrayal?
+    
+- intent: depression_p0017
+  examples: |
+    - Lately, I've been feeling extremely low and unable to find joy in anything.
+    - My main goal is to understand what might be causing my depression and find ways to overcome it. I constantly feel sad
+    - empty
+    - and have trouble finding motivation to do anything.
+    - Negative thoughts consume me
+    - and I struggle to see any positive aspects of my life." Examples of triggering situations: "Recently
+    - I lost my job and experienced a significant breakup.
+    - These events have left me feeling worthless and hopeless
+    - wondering if there's any way to rebuild my life. I experience sleep disturbances
+    - such as insomnia or excessive sleeping
+    - almost every night.
+    - The intensity of my sadness is overwhelming
+    - leading to frequent crying spells that last for hours." Relevant life events or trauma: "During my childhood
+    - my family went through financial hardships
+    - which led to feelings of instability and insecurity.
+    - I wonder if these past experiences contribute to my current struggles with depression." Coping strategies: "To cope with my depression
+    - I've tried journaling my thoughts and engaging in creative activities like painting.
+    - However, these activities often feel meaningless and fail to provide lasting relief." Question to the mental health professional: "What are the treatment options for depression?
+    - Are there any lifestyle changes or self-help techniques that can complement therapy?
+    - How long does it typically take to see improvement?
+    
+- intent: depression_p0018
+  examples: |
+    - Lately, I've been losing interest in everything that used to bring me joy.
+    - I have no energy or motivation to do anything and it scares me.
+    - I want to overcome this apathy and reconnect with the things that once made me happy.
+    
+- intent: depression_p0019
+  examples: |
+    - I aim to develop healthy strategies to cope with stress so that it doesn't continue negatively impacting my overall well-being.
+    - Description of emotions and thoughts: Stress has taken its toll on me, leaving me feeling perpetually on edge.
+    - There's a constant sense of restlessness, and my mind rarely finds any respite from worries and endless to-do lists.
+    - Feelings of overwhelm and frustration overshadow moments of joy and contentment.
+    - Example trigger situation: Yesterday, while driving during peak traffic hours, I found myself becoming increasingly agitated and impatient.
+    - It seemed like every little inconvenience added to my stress levels, leading me to snap at fellow drivers.
+    - Symptoms: Stress manifests in my body through frequent tension headaches, muscular tightness, and general fatigue.
+    - On an emotional level, irritability and increased sensitivity have compromised my ability to maintain positive relationships.
+    - Significant life events: Recently, financial difficulties due to unexpected expenses have further intensified my overall stress levels.
+    - This additional burden has weighed heavily on my mind and impacted various facets of my life.
+    - Coping strategy: In attempts to manage stress, I've incorporated regular exercise into my routine.
+    - While physical activity offers temporary release, it doesn't sufficiently address the underlying sources of stress.
+    - Question: How can therapy assist me in developing healthier coping mechanisms for managing stress?
+    - Are there specific techniques or strategies you recommend that have proven effective in reducing stress levels?
+    
+- intent: depression_p0020
+  examples: |
+    - I constantly feel like I'm wearing a mask, pretending to be happy when inside, I am crumbling under immense sadness.
+    - My goal for counseling is to uncover the underlying reasons for my depression and develop effective coping mechanisms to better navigate life.
+    - Reasons triggered symptoms: Several months ago, I lost my job due to downsizing, leaving me feeling worthless and rejected.
+    - This event, combined with a recent breakup, ignited feelings of hopelessness and despair within me.
+    - Specific situations: Yesterday, I received an invitation to attend a celebration for a friend's achievement.
+    - While I initially wanted to go, thinking about being around joyful people made me overwhelmingly sad, causing me to decline the invite.
+    - Symptoms: I experience persistent feelings of sadness and emptiness throughout most days.
+    - Sleep disturbances have become routine, as well as a loss of appetite.
+    - These symptoms have been present for approximately eight months.
+    - Relevant events: In my childhood, my parents divorced, which caused instability and strained relationships within our family.
+    - Witnessing their constant conflict left me feeling insecure and unloved, contributing to my vulnerability towards depressive episodes later in life.
+    - Coping strategies: To cope with my depressive symptoms, I’ve delved into self-help books and motivational podcasts.
+    - While they provide moments of inspiration, the effects are short-lived.
+    - I've also attempted to establish a consistent exercise routine, hoping that endorphins would alleviate my sadness.
+    - Questions: How can therapy help me uncover and overcome the root causes of my depression?
+    - Are there specific techniques you recommend to manage sleep disturbances?
+    - Is it advisable to explore medication options alongside therapy?
+    
+- intent: depression_p0021
+  examples: |
+    - Lately, I've been feeling incredibly low and empty, with no motivation to engage in activities I used to enjoy.
+    - My goal is to overcome depression and regain a sense of purpose and joy in my life.
+    - Emotionally, I feel a deep sadness that lingers no matter what I do.
+    - My thoughts often spiral into negativity, constantly questioning my self-worth and doubting whether things will ever get better.
+    - The trigger for these emotions might be the loss of a loved one and an ongoing sense of loneliness.
+    - There have been specific situations where I experienced heightened feelings of depression.
+    - For instance, birthdays or anniversaries associated with the person I lost can intensify my already low mood.
+    - Additionally, isolation due to social distancing measures has made it more challenging to cope with these emotions.
+    - The symptoms of my depression include persistent feelings of emptiness, changes in appetite leading to significant weight loss, difficulty concentrating, frequent tearfulness, and extreme fatigue.
+    - These symptoms occur daily and last for hours, severely affecting my ability to function normally.
+    - Significant past trauma may play a role in worsening my depressive symptoms.
+    - I experienced childhood abuse, which continues to haunt me emotionally and influences how I perceive myself and others around me.
+    - Addressing this trauma might be essential for my mental well-being.
+    - To manage my depression, I rely on mindfulness exercises like meditation and journaling.
+    - these strategies only provide temporary relief
+    - and I need guidance on long-term coping mechanisms that could help address the underlying issues contributing to my depression.
+    - I would like to understand the therapeutic process better and explore various treatment options available, such as cognitive-behavioral therapy or medication.
+    - Moreover, discussing potential side effects of any prescribed medications and finding ways to integrate therapy into my daily routine would be helpful topics to cover.
+    
+- intent: depression_p0022
+  examples: |
+    - My goal is to manage my depression symptoms effectively so they don't continue interfering with my daily life.
+    - Description of emotions and thoughts: Depression feels like an ongoing battle that drains all my energy and steals away any sense of joy or motivation.
+    - Despite my efforts, the dark clouds persist, leaving me exhausted and desperate for a way out.
+    - Specific example: Most mornings, I struggle immensely just to get out of bed.
+    - The weight of negative thoughts and the feeling of hopelessness make it difficult to find any motivation.
+    - Even simple tasks like showering or preparing a meal feel overwhelming.
+    - Symptoms: My depression symptoms include persistent sadness, fatigue, and an overall sense of emptiness.
+    - Insomnia or oversleeping disrupts my sleep pattern, leaving me tired throughout the day.
+    - Concentration is next to impossible due to racing and intrusive thoughts.
+    - Significant life events: In my teenage years, I experienced a traumatic loss that shattered my world.
+    - Since then, depression has become a recurring presence in my life, manifesting during times of stress or triggering events.
+    - Coping strategies: Sometimes, I indulge in unhealthy coping mechanisms such as emotional eating or excessive gaming to escape from reality temporarily.
+    - These distractions provide momentary relief but worsen the long-term impact of my depression.
+    - Questions for the mental health professional: What are the available treatment options for managing depression?
+    - How can I develop a self-care routine that supports my mental and emotional well-being?
+    
+- intent: depression_p0023
+  examples: |
+    - My presence here today is driven by my desire to alleviate the distressing weight of depression that clings to me day by day.
+    - Through counseling, I hope to uncover ways to manage my depressive symptoms effectively and regain control over my life.
+    - The trigger for my depression was a series of recent failures in various areas of my life - academically, professionally, and personally.
+    - Each setback seemed to snowball into another, forging an impenetrable cloud of despair around me.
+    - Emotionally, I experience a deep sense of emptiness and constant sadness.
+    - It feels as if all color has drained from my world, leaving behind only shades of gray.
+    - My thoughts often drift toward self-criticism and intense guilt for not living up to my own expectations.
+    - These symptoms persist relentlessly, with episodes occurring almost daily.
+    - The duration can vary from hours to days, making it challenging to maintain any semblance of normalcy.
+    - Physical manifestations such as fatigue, changes in appetite, and increased sensitivity to pain further intensify my depressive state.
+    - In my attempts to cope, I've dabbled in self-help books and tried integrating exercise into my routine.
+    - However, I find myself lacking the motivation to follow through consistently.
+    - I am open to exploring different therapeutic approaches and medication options if necessary.
+    - Could you guide me in understanding my depression and assist me in developing strategies to manage its impact on my daily life more effectively?
+    
+- intent: depression_p0024
+  examples: |
+    - My primary objective is to understand and work through my depression, aiming for improved mental well-being and quality of life.
+    - Description of emotions and thoughts: I feel weighed down by persistent sadness, hopelessness, and a lack of interest in activities that once brought me joy.
+    - My mind constantly feels foggy, making it difficult to think clearly or concentrate.
+    - Triggered feelings or concerns: Even small setbacks or disappointments can send me spiraling into deeper depressive states, leaving me feeling utterly defeated.
+    - The inability to experience pleasure erodes my motivation and sense of purpose.
+    - Symptoms description: I've been experiencing these symptoms consistently for the past six months, impacting every aspect of my life.
+    - There are days when getting out of bed feels impossible, and even simple tasks become overwhelming challenges.
+    - Significant life events and family dynamics: Throughout my upbringing, my family didn't fully acknowledge mental health issues.
+    - Consequently, discussing and seeking support for depression was met with resistance, causing further isolation.
+    - Coping strategies: In an effort to cope, I have tried engaging in physical exercise, practicing mindfulness, and journaling about my emotions.
+    - While these strategies offer temporary relief, they haven't provided lasting improvement.
+    - Inquiry about therapeutic process: How can therapy assist me in overcoming depression and regaining a sense of joy and fulfillment?
+    - What treatment options should be explored considering the severity and duration of my symptoms?
+    
+- intent: depression_p0025
+  examples: |
+    - Stress has become overwhelming
+    - impairing my ability to function optimally
+    - and I hope through counseling
+    - I can learn strategies to reduce its impact on my daily life.
+    - Description of emotions and thoughts: Stress engulfs me, leaving me feeling burnt out, exhausted, and drained emotionally.
+    - My mind feels cluttered, making it difficult to focus on tasks and enjoy life's simple pleasures.
+    - Triggering events: A recent promotion at work has come with added responsibilities and longer working hours.
+    - These changes have significantly heightened my stress levels.
+    - Symptoms: Chronic fatigue, difficulty sleeping, frequent mood swings, and decreased motivation are common occurrences attributed to increasing stress levels.
+    - Relevant life events: Throughout my adolescence, I had to take on adult responsibilities due to family circumstances.
+    - This early exposure to excessive stress might have influenced my current struggle in managing it effectively.
+    - Coping strategies: Currently, I strive for perfectionism and tend to overwork myself, falsely believing that it will alleviate the stress.
+    - However, this approach only perpetuates the cycle of burnout.
+    - Question about therapeutic process: Can counseling help me develop effective stress management techniques?
+    - Will we address any underlying causes contributing to my difficulties in handling stress?
+    
+- intent: depression_p0026
+  examples: |
+    - To seek support for their depressive symptoms and explore strategies for improving their emotional well-being.
+    - "I've been feeling incredibly low and unmotivated lately.
+    - It's like a dark cloud is following me everywhere
+    - making it difficult to find joy in anything." Specific examples of triggered situations: "There have been instances when simple tasks such as getting out of bed or completing basic chores felt overwhelming.
+    - social events that I used to enjoy now elicit feelings of apathy and discomfort." The patient experiences persistent sadness
+    - loss of interest in activities they previously enjoyed
+    - changes in appetite
+    - and difficulty concentrating.
+    - These symptoms occur almost every day and last for several weeks.
+    - Significant life events and family dynamics: The patient mentions experiencing significant stress at work and strained relationships within their family
+    - which may contribute to their current state of depression.
+    - Coping strategies: Currently, the patient tries engaging in relaxation exercises such as deep breathing and mindfulness techniques to manage their symptoms.
+    - Questions: "What treatment options are available for managing depression?
+    - Are there any specific therapeutic approaches that might be effective in addressing my symptoms?
+    
+- intent: depression_p0027
+  examples: |
+    - Dealing with depression has become a recurring battle for me.
+    - There are times when I don't want to leave the house or engage with others because of how heavy everything feels.
+    - It often starts with negative thoughts about myself and the world.
+    - I hope counseling can help me identify triggers and provide tools to combat these depressive episodes.
+    
+- intent: depression_p0028
+  examples: |
+    - Depression has always been present in my life, but lately, it has become unbearable.
+    - I struggle with feelings of worthlessness and contemplate escaping from this pain.
+    - My goal in seeking help is to develop a safety plan, gain insight into my triggers, and find a glimmer of hope amidst the darkness.
+    
+- intent: depression_p0029
+  examples: |
+    - Depression has become a recurring pattern in my life.
+    - When I experience stress or major life changes, it intensifies.
+    - It lasts for weeks or even months.
+    - I really want to break free from this cycle and live a fulfilling life.
+    
+- intent: depression_p0030
+  examples: |
+    - Depression has become a recurring theme in my life.
+    - Whenever I experience a setback or face challenges, these feelings of hopelessness and sadness intensify.
+    - The trigger points vary, whether it's receiving negative feedback at work or experiencing a personal loss.
+    - Currently
+    - the death of a loved one has pushed me into a deeper state of despair
+    - amplifying my sense of grief and making it difficult for me to cope.
+    - My goal is to process my emotions surrounding this loss and learn healthy ways to manage depression during such difficult times.
+    
+- intent: depression_p0031
+  examples: |
+    - Depression has been a constant battle for me for years now.
+    - It's like a dark cloud that hangs over me, making it hard to find joy in anything.
+    - Lately, it feels even worse, and I struggle to get out of bed or engage with others.
+    - My goal is to find strategies to cope with my depression and regain control over my life.
+    
+- intent: depression_p0032
+  examples: |
+    - Depression has been a constant companion for as long as I can remember.
+    - The sadness and emptiness are overwhelming at times.
+    - I've tried different coping strategies, but nothing seems to provide lasting relief.
+    - In therapy, I want to delve deeper into the root causes of my depression and find effective ways to manage it.
+    
+- intent: depression_p0033
+  examples: |
+    - Depression has been a constant companion throughout my life, but recently it has reached new depths.
+    - The symptoms are debilitating and seem to be worsening over time.
+    - There have been days when I am unable to get out of bed at all, feeling completely detached from the world around me.
+    - My appetite has decreased, resulting in significant weight loss, and even activities that used to bring me joy now feel empty and meaningless.
+    - My goal is to find relief from this dark cloud that hovers constantly overhead and rediscover my passion for life.
+    
+- intent: depression_p0034
+  examples: |
+    - Depression has been a recurring theme in my life and it's starting to feel overwhelming.
+    - I want to explore the root causes of my depression, understand why it keeps reoccurring, and work towards finding long-term solutions for managing it.
+    
+- intent: depression_p0035
+  examples: |
+    - Depression has been an ongoing battle for as long as I can remember.
+    - Lately, it has become more overwhelming, making it hard to concentrate and complete even the simplest tasks.
+    - Getting out of bed feels nearly impossible most days, and I often find solace in isolation rather than engaging with others.
+    - Negative thoughts constantly plague my mind, convincing me that I am worthless and unlovable.
+    - My goal is to break free from this cycle of negative thinking and regain control over my life.
+    
+- intent: depression_p0036
+  examples: |
+    - Depression has been an ongoing battle for me.
+    - Some days are better than others, but overall, I feel a constant heaviness and sadness.
+    - I hope to utilize counseling to explore the underlying factors contributing to my depression and discover new strategies to manage it effectively.
+    
+- intent: depression_p0037
+  examples: |
+    - Depression has been consuming me lately, making it difficult to function in daily life.
+    - I want to recover from this emotional pain and regain my motivation.
+    - My goal for this counseling session is to discuss treatment options and find solutions to alleviate my symptoms.
+    - It feels like everything overwhelms me, even simple tasks such as completing household chores or maintaining social connections.
+    
+- intent: depression_p0038
+  examples: |
+    - Depression has been draining all of my energy lately.
+    - Even activities I used to enjoy have lost their appeal, and I struggle to find meaning in anything.
+    - It feels as if a heavy fog surrounds me, making it hard to see any possibilities or hope for the future.
+    - Through counseling, I want to explore strategies that can provide relief from these overwhelming feelings and reclaim my sense of purpose.
+    
+- intent: depression_p0039
+  examples: |
+    - Depression has caused a significant loss of appetite, resulting in unhealthy weight loss.
+    - I would like assistance from counseling to understand the connection between my emotional state and physical symptoms and find ways to establish a healthier relationship with food.
+    
+- intent: depression_p0040
+  examples: |
+    - Depression has caused me to withdraw from activities I used to enjoy, including spending time with loved ones.
+    - This isolation further deepens my feelings of sadness and hopelessness.
+    - My goal for counseling is to regain my motivation, rebuild relationships, and rediscover joy in life.
+    
+- intent: depression_p0041
+  examples: |
+    - Depression has caused persistent sleep disturbances for me.
+    - I either struggle with falling asleep or wake up multiple times throughout the night.
+    - As a result, I always wake up feeling fatigued and lacking energy to engage in daily activities.
+    - It's adding to my overall feelings of hopelessness.
+    - I would appreciate guidance on how to improve my sleep quality and break free from this cycle.
+    
+- intent: depression_p0042
+  examples: |
+    - Depression has completely consumed me lately.
+    - I constantly feel empty, worthless, and exhausted.
+    - Simple tasks like showering or cooking meals have become extremely difficult.
+    - This depressive episode was triggered by a major life change – losing my job.
+    - Through counseling, I aim to regain my self-worth and create a plan to get back on track career-wise.
+    
+- intent: depression_p0043
+  examples: |
+    - Depression has consumed me again, and it's affecting my relationships, work, and overall well-being.
+    - Some days, I can't bring myself to get out of bed and fulfill my responsibilities.
+    - I need support in finding ways to alleviate the darkness and regain control over my life.
+    
+- intent: depression_p0044
+  examples: |
+    - Depression has crept back into my life, making it difficult to get out of bed or engage in activities that once brought me happiness.
+    - With counseling, I hope to unravel the underlying causes of my depression and find ways to regain control over my emotions.
+    
+- intent: depression_p0045
+  examples: |
+    - Depression has engulfed every aspect of my life, leaving me feeling utterly hopeless and numb.
+    - It's a struggle just to get out of bed every morning and engage in basic daily activities.
+    - These depressive episodes seem never-ending
+    - and I yearn for some relief and understanding on how to regain control over my own emotions and find happiness again.
+    
+- intent: depression_p0046
+  examples: |
+    - Depression has engulfed every aspect of my life.
+    - I am overcome with sadness, emptiness, and self-doubt.
+    - Even simple tasks such as getting dressed or eating become overwhelming.
+    - I've noticed a loss of interest in activities that used to bring me joy.
+    - By seeking counseling, my aim is to understand the root causes of my depression and find strategies to regain control over my emotions.
+    
+- intent: depression_p0047
+  examples: |
+    - My relationships have suffered, and I often isolate myself because it feels like too much effort to socialize.
+    - The emptiness inside is suffocating, and I'm desperate to find a way to regain my joy and zest for life.
+    
+- intent: depression_p0048
+  examples: |
+    - Depression has engulfed my life for quite some time now.
+    - The constant fatigue, lack of energy, and recurring thoughts of worthlessness make it difficult for me to carry out everyday tasks.
+    - In this session, I want to discuss my ongoing battle with depression and any new approaches to treatment that you may suggest.
+    - How can I regain control over my life and find joy again despite these depressive symptoms?
+    
+- intent: depression_p0049
+  examples: |
+    - Depression has hit me hard again, even after feeling better for a while.
+    - My energy levels are extremely low, making it hard to accomplish anything.
+    - I often isolate myself from friends and family because I don't want to burden them with my sadness.
+    - I need help finding a way out of this darkness.
+    
+- intent: depression_p0050
+  examples: |
+    - Depression has made me lose interest in nearly everything I used to enjoy.
+    - It feels as if I'm trapped in a never-ending cycle of sadness, without any motivation to break free.
+    - Thoughts of worthlessness and self-blame accompany these feelings.
+    - In therapy, I hope to understand the underlying causes of my depression and discover ways to rebuild my life with positivity.
+    
+- intent: depression_p0051
+  examples: |
+    - Depression has overwhelmed me again recently.
+    - It's particularly bad in the mornings when I wake up with a heavy weight on my chest.
+    - Some days, it feels impossible to even get out of bed.
+    - I need help finding effective strategies to manage these depressive episodes and prevent them from consuming my life.
+    
+- intent: depression_p0052
+  examples: |
+    - Depression has taken away my motivation and joy for life.
+    - Each day feels like a never-ending cycle of sadness and disinterest.
+    - I don't enjoy activities that used to bring me happiness anymore.
+    - My energy levels are low, and even getting out of bed feels like an impossible task most days.
+    - I'm hoping therapy can help me identify any underlying causes of my depression and provide support in rebuilding my life and finding reasons to smile again.
+    
+- intent: depression_p0053
+  examples: |
+    - Depression has taken hold of me, and every day feels like an endless black hole of sadness and despair.
+    - I want to gain insight into what might be causing my depression and discover ways to lift this heavy fog from my life.
+    
+- intent: depression_p0054
+  examples: |
+    - Depression has taken over my life and I can't seem to shake it off.
+    - Everything feels empty and meaningless, and I frequently find myself crying for no apparent reason.
+    - I've lost interest in activities that once brought me joy and I constantly doubt my self-worth.
+    
+- intent: depression_p0055
+  examples: |
+    - Depression has taken over my life, and it's becoming increasingly difficult to find joy in anything.
+    - My goal is not only to alleviate these feelings of sadness but also to regain my motivation and find a sense of purpose again.
+    - For instance, I no longer enjoy activities that used to bring me happiness.
+    
+- intent: depression_p0056
+  examples: |
+    - Depression has taken over my life, and it's been really difficult for me to see any light in my days.
+    - I hope that in this counseling session, I can explore the reasons behind my depression and find ways to regain some happiness and motivation.
+    
+- intent: depression_p0057
+  examples: |
+    - Depression seems to be running in my family, and unfortunately, I'm not immune.
+    - It affects my relationships, my motivation, and my overall well-being.
+    - I feel guilty burdening my loved ones, which leads to isolation and further deepens my depression.
+    - I want to break free from this cycle and create a brighter future for myself through therapy.
+    
+- intent: depression_p0058
+  examples: |
+    - Depression
+    
+- intent: depression_p0059
+  examples: |
+    - For a while now, I've been feeling really down and lost interest in things that used to bring me joy.
+    - I frequently have trouble sleeping and lack energy to do anything.
+    - Some days, even getting out of bed feels impossible.
+    - I think the trigger for my depression might be the loss of my job and some personal relationship issues.
+    - I really need support to overcome this darkness and find hope again.
+    
+- intent: depression_p0060
+  examples: |
+    - For the past few months, I've been caught in a cycle of sadness and hopelessness.
+    - It feels like there's a heaviness in my chest that won't go away.
+    - I struggle to find motivation to do anything and sometimes have thoughts of not wanting to live anymore.
+    - It scares me and I don't understand why I'm feeling this way.
+    - My goal is to overcome this depression and start living a fulfilling life again.
+    
+- intent: depression_p0061
+  examples: |
+    - Good day, I'm going through a rough patch in my marriage.
+    - The constant arguments and lack of intimacy have left me feeling hopeless and unsure about the future of our relationship.
+    - My hope for therapy is to gain insights into our underlying issues and learn effective strategies to rebuild trust and strengthen our bond.
+    
+- intent: depression_p0062
+  examples: |
+    - Hello, I am here because I haven't been feeling like myself lately, and I believe I may be experiencing depression.
+    - There is an unshakable sense of sadness that lingers, dampening any enjoyment or motivation I used to have.
+    - Simple tasks like getting out of bed and taking care of my basic needs feel exhausting.
+    - This emotional weight has become increasingly difficult to bear.
+    - While reflecting on potential causes, I've realized that the recent loss of a close family member was a significant trigger for these feelings.
+    - The grief consumes me and interferes with my ability to function effectively at work and maintain fulfilling relationships.
+    - I often find myself crying without any specific reason or withdrawing from activities I once enjoyed.
+    - There have been instances where I couldn't even muster the energy to attend social events or reply to friends' messages
+    - leading to self-isolation and further reinforcing negative thoughts about being a burden to others.
+    - My goal through counseling is not only to understand and manage my depression but also regain some semblance of hope and purpose in life.
+    - Are there different treatment options available?
+    - How can I incorporate self-care practices into my daily routine to support my mental well-being?
+    
+- intent: depression_p0063
+  examples: |
+    - Hey there, lately I've been questioning my purpose and seeking spiritual guidance.
+    - I used to rely heavily on religion, but now I find it hard to connect with my faith.
+    - It feels like something significant is missing in my life, leaving me feeling empty and lost.
+    - I hope to explore different perspectives on spirituality and find a sense of meaning and fulfillment beyond traditional religious practices.
+    
+- intent: depression_p0064
+  examples: |
+    - Hi there, I feel like I'm trapped in this never-ending cycle of sadness and loneliness.
+    - My goal today is to explore ways to break free from this depressive state and regain a sense of purpose in life.
+    - Recently, I experienced a significant loss when my long-term relationship ended abruptly.
+    - Since then, it feels as though my whole world shattered.
+    - I constantly blame myself for the breakup, thinking that I wasn't good enough or deserved love.
+    - Additionally, it has affected my self-confidence and made it difficult to trust others.
+    - These negative emotions show up every day, making it challenging to find motivation or enjoyment in anything.
+    - Furthermore, I've noticed changes in my appetite where I either lack interest in food or turn to unhealthy eating habits as a form of comfort.
+    - Sleep disturbances have also become more frequent, particularly struggling with falling asleep due to racing thoughts.
+    - In terms of family dynamics
+    - I come from a household filled with emotional neglect
+    - which likely contributed to my low self-esteem and difficulty forming healthy relationships.
+    - Initially, I tried distraction activities like watching movies, but the sadness always returns.
+    - I'm curious about how therapy can help me regain control of my life and what other treatment options exist for depression.
+    
+- intent: depression_p0065
+  examples: |
+    - I constantly feel exhausted
+    - hopeless
+    - and struggle to get out of bed in the morning." I want to overcome this overwhelming sense of despair and find the strength to carry on with daily life.
+    - Description of emotions and thoughts: It feels like a dark cloud follows me wherever I go, making it difficult to muster any positivity.
+    - My mind is consumed by negative thoughts that tell me things will never improve
+    - and it's hard to see any purpose or meaning in anything anymore.
+    - Examples of triggering situations: Simple tasks like showering or preparing meals have become monumental challenges.
+    - I see no point in doing them as everything feels futile.
+    - Symptom description: I experience a persistent low mood, loss of interest in previously enjoyable activities, extreme fatigue, disrupted sleep patterns, and weight changes.
+    - These symptoms occur almost every day and have lasted for several months, significantly impacting my functioning and overall well-being.
+    - Discussion of significant events: Since childhood, I've experienced instances of emotional neglect and unresolved trauma that has left deep scars.
+    - More recently, the loss of a loved one and subsequent relationship difficulties compounded these feelings of hopelessness and despair.
+    - Coping strategies: On particularly difficult days
+    - I try to practice self-compassion
+    - engage in activities that offer temporary distraction
+    - and lean on support from friends and loved ones.
+    - However, these coping mechanisms only provide short-term relief without addressing the underlying cause of my depression.
+    - Questions for the mental health professional: What treatment options are available for individuals struggling with severe depression?
+    - How can counseling help someone regain a sense of purpose and overcome feelings of hopelessness?
+    - Are there any alternative therapies or techniques you recommend alongside traditional therapy?
+    
+- intent: depression_p0066
+  examples: |
+    - I feel an overwhelming sadness that just doesn't go away.
+    - It's hard for me to find joy in things I used to enjoy, and sometimes I question if life is even worth living.
+    - My hope through counseling is to understand why I'm feeling this way and learn strategies to manage my depression better.
+    
+- intent: depression_p0067
+  examples: |
+    - I feel like I'm stuck in a never-ending darkness, and it's making me lose all hope for the future.
+    - I constantly find myself feeling empty and unmotivated, with no energy to do the things I once enjoyed.
+    - My goal through counseling is to regain my sense of purpose and rediscover joy in life.
+    
+- intent: depression_p0068
+  examples: |
+    - I feel like I'm trapped in a dark hole and can't find my way out.
+    - Every day feels overwhelming, and it's hard for me to find joy in anything anymore.
+    - I've been experiencing this deep sadness for months now, and it's starting to affect my daily life.
+    - My goal through counseling is to understand the root cause of my depression and learn coping strategies to manage my emotions.
+    
+- intent: depression_p0069
+  examples: |
+    - I feel trapped in this cycle of sadness and emptiness.
+    - It's like a dark cloud constantly hanging over me.
+    - I want to break free from this depression, gain a sense of purpose, and live a more fulfilling life.
+    
+- intent: depression_p0070
+  examples: |
+    - I feel worthless and hopeless most of the time.
+    - It feels like everything I do is meaningless and that no one cares about me.
+    - The smallest tasks seem overwhelming and I have lost interest in things I used to enjoy.
+    - My goal through this counseling session is to find hope again and regain a sense of purpose in my life.
+    
+- intent: depression_p0071
+  examples: |
+    - I find myself slipping into this deep darkness, where everything feels bleak and devoid of meaning.
+    - It's as if my emotions are on mute, and I'm just going through the motions without any real connection to life.
+    - The weight of sadness presses down on me relentlessly." Through counseling
+    - my goal is to rediscover joy and create a path towards emotional healing and well-being.
+    - One significant trigger for my depression is a recent romantic breakup.
+    - The end of a long-term relationship left me feeling abandoned, rejected, and questioning my own worth.
+    - This loss has intensified feelings of loneliness and hopelessness, further perpetuating the cycle of depression.
+    - Another trigger is excessive self-criticism.
+    - I hold myself to impossibly high standards and constantly berate myself for perceived failures and mistakes.
+    - This negative self-talk erodes my self-esteem and fuels my depressive thoughts and behaviors.
+    - The frequency and duration of my depressive episodes vary.
+    - Some days I manage to maintain a semblance of stability, while other times, I feel completely overwhelmed and consumed by despair.
+    - During these periods, I experience changes in appetite and sleep patterns, lack of motivation, social withdrawal, and persistent feelings of guilt and worthlessness.
+    - There are past traumatic events within my childhood that contribute to my struggles with depression.
+    - Emotional abuse and neglect have left lasting scars on my self-image and ability to form healthy relationships.
+    - Unraveling those experiences and their impact on my mental health may be instrumental in my healing journey.
+    - To cope with my depression, I try engaging in creative outlets such as painting or writing expressive poetry.
+    - These activities provide temporary relief and serve as an outlet for my emotions.
+    - However, I recognize the need for professional guidance to address the core issues beneath my depressive symptoms.
+    - I have a question about the therapeutic relationship.
+    - How can I actively participate in my own healing process?
+    - Are there specific homework assignments or exercises that might complement the counseling sessions and facilitate my progress towards emotional well-being?
+    
+- intent: depression_p0072
+  examples: |
+    - I have been experiencing prolonged periods of sadness, loss of interest in activities, lack of energy, and trouble sleeping.
+    - These feelings are affecting every aspect of my life.
+    - My objective is to understand and manage my depression better so that I can lead a fulfilling life.
+    
+- intent: depression_p0073
+  examples: |
+    - I have been experiencing symptoms of depression, such as persistent sadness, loss of interest, and changes in appetite and sleep patterns.
+    - These symptoms have persisted for several weeks now, and they are starting to interfere with my daily life.
+    - I am seeking professional support to address these symptoms.
+    
+- intent: depression_p0074
+  examples: |
+    - I have been feeling numb and empty for as long as I can remember.
+    - It's becoming increasingly difficult to engage in activities I used to enjoy.
+    - I hope to find ways to manage my depression and rediscover joy in my relationships.
+    
+- intent: depression_p0075
+  examples: |
+    - I have been feeling overwhelmed by my depression, and it's impacting my ability to function on a daily basis.
+    - My goal is to find effective treatment options, explore therapy techniques that can help manage my symptoms, and improve my overall well-being.
+    
+- intent: depression_p0076
+  examples: |
+    - I have been feeling really down lately and I think I may be experiencing depression.
+    - My goal for this counseling session is to understand why I'm feeling this way and find ways to alleviate the sadness and emptiness.
+    
+- intent: depression_p0077
+  examples: |
+    - I have been struggling with depression for quite some time now.
+    - It's like a heavy cloud is hanging over me, making it difficult to see any positivity.
+    - The smallest tasks feel insurmountable, and I find myself isolating from friends and family.
+    - There was one instance where I stayed in bed for three days straight without any motivation to get up.
+    - I hope through counseling, I can regain my zest for life and find joy again.
+    
+- intent: depression_p0078
+  examples: |
+    - I often find myself feeling hopeless, unmotivated, and lacking interest in things that used to bring me joy.
+    - These symptoms make me believe that I may be battling with depression again.
+    - Through counseling, I want to explore the underlying reasons behind this and develop strategies to improve my mental health.
+    
+- intent: depression_p0079
+  examples: |
+    - I'm feeling really down lately and it sounds like depression might be the issue.
+    - Sometimes I have trouble even getting out of bed in the morning and everything feels overwhelming.
+    - I think it started after I lost my job a few months ago.
+    
+- intent: depression_p0080
+  examples: |
+    - I'm in a deep state of sadness and it's hard to find motivation when dealing with depression." Depression has consumed me.
+    - The daily slog gets harder each day with feelings of emptiness, loss of interest, and difficulty concentrating.
+    - Getting out of bed seems impossible, and it feels like I'm trapped in this dark cloud.
+    - I long for joy, motivation, and zest for life again.
+    
+- intent: depression_p0081
+  examples: |
+    - I'm struggling with depression and I hope through counseling, I can find healthier ways to cope with my emotions and rediscover joy in life.
+    
+- intent: depression_p0082
+  examples: |
+    - I've been contemplating whether or not I should seek counseling for my ongoing struggles with self-esteem.
+    - Sometimes, I feel worthless and constantly compare myself to others.
+    - I would like to understand how counseling can help me build a positive self-image.
+    
+- intent: depression_p0083
+  examples: |
+    - I've been dealing with depression for several years now, but recently it has worsened.
+    - The loss of my loved one triggered these intense feelings of sadness and hopelessness.
+    - Just thinking about their absence makes tears well up in my eyes.
+    - I feel guilty for not being able to move on and enjoy life fully.
+    - Even small tasks seem overwhelming, and my sleep patterns have become erratic.
+    - I want to work on accepting the loss while finding ways to live a fulfilling life amidst these painful emotions.
+    
+- intent: depression_p0084
+  examples: |
+    - I've been diagnosed with depression and I'm struggling to cope with the constant feelings of sadness, fatigue, and loss of interest in activities.
+    - My goal is to learn more about my depression, discuss treatment options, and find ways to manage its impact on my daily life.
+    
+- intent: depression_p0085
+  examples: |
+    - I've been experiencing a deep sadness that doesn't seem to go away, and it's affecting every aspect of my life.
+    - My main goal in attending counseling is to navigate through this depression and hopefully find some relief from these overwhelming feelings.
+    - It's possible that the loss of a loved one last year has greatly contributed to my current state of mind.
+    - I still find it difficult to accept their absence and often experience guilt over things left unsaid or undone.
+    - Family gatherings and anniversaries provoke immense sorrow as they remind me of their presence.
+    - I would describe my depressive symptoms as persistent and severe
+    - they occur nearly every day
+    - last most of the day
+    - and I experience changes in appetite and sleep patterns.
+    - Furthermore, there were instances during my childhood where emotional neglect played a significant role, making it harder to manage emotions as an adult.
+    - talking to close friends and engaging in creative outlets such as painting have provided temporary relief
+    - but the sadness always returns.
+    - I'm uncertain about what options exist in terms of depression treatment, and if therapy will be able to help me move forward.
+    - Can you explain how counseling can address depressive symptoms?
+    
+- intent: depression_p0086
+  examples: |
+    - I've been experiencing intense episodes of sadness, finding it hard to get out of bed most mornings.
+    - Even small tasks feel overwhelming and exhausting.
+    - This depression is affecting my daily life, and I want to discuss potential approaches to deal with it during this counseling session.
+    
+- intent: depression_p0087
+  examples: |
+    - I've been feeling a constant sense of tension and exhaustion due to all the demands of work, family, and personal life.
+    - It's becoming increasingly difficult to find time for myself and relax." Goal: Explore strategies to manage stress, establish boundaries, and prioritize self-care amidst multiple responsibilities.
+    - Emotions/Thoughts: Overwhelm is a dominant emotion for me right now.
+    - I often feel frustrated, irritable, and fatigued because it seems impossible to meet everyone's expectations while neglecting my own needs.
+    - Triggers: The pressure to excel at work, fulfill my familial obligations, and maintain social connections simultaneously overwhelms me.
+    - Each additional responsibility adds another layer of stress.
+    - Symptoms: I experience chronic fatigue, frequent headaches, muscle tension, and decreased motivation.
+    - These symptoms are present most days and worsen when I'm under immense pressure.
+    - Life events/Family dynamics: Growing up, my family greatly emphasized achievements, which created a mindset centered around constantly striving for success.
+    - This has influenced how I navigate my adult life and contributes to feelings of being overwhelmed.
+    - Coping strategies: Currently, I try to set aside small pockets of time for activities I enjoy, like reading or taking baths.
+    - However, finding a balance between meeting external obligations and prioritizing self-care feels like an ongoing struggle.
+    - Questions: How can therapy help me better manage my stress and find a healthy work-life balance?
+    - Are there any specific techniques to prevent burnout and establish boundaries?
+    
+- intent: depression_p0088
+  examples: |
+    - I've been feeling a deep sadness for an extended period of time, accompanied by feelings of worthlessness and hopelessness.
+    - It's difficult for me to get out of bed most days.
+    - My goal is to overcome this depression and find reasons to embrace life again.
+    
+- intent: depression_p0089
+  examples: |
+    - I've been feeling an overwhelming sadness for quite some time now.
+    - It's impacting my sleep, appetite and overall motivation to engage in activities I used to enjoy.
+    - I hope that counseling can help me address this depression and find a way to feel joy again.
+    
+- intent: depression_p0090
+  examples: |
+    - I've been feeling disconnected from my spirituality lately and I really want to explore that aspect of myself during this counseling session.
+    - Growing up
+    - I used to have a strong connection with my religious beliefs but as I got older
+    - life's challenges took over and I prioritized other things.
+    - Now I feel lost and empty without that spiritual grounding.
+    - How can I reconnect with my spirituality and find meaning again?
+    
+- intent: depression_p0091
+  examples: |
+    - I've been feeling incredibly down for several months now.
+    - I constantly lack energy, have difficulty concentrating, and lose interest in things I used to enjoy.
+    - It's affecting every aspect of my life – work, relationships, and personal fulfillment.
+    - I want to overcome this depression and regain control over my emotions.
+    
+- intent: depression_p0092
+  examples: |
+    - I've been feeling quite low for a while now, and it's gotten to a point where I can no longer ignore it.
+    - My main goal for attending counseling is to find relief from the depressive symptoms that have been impacting my daily life.
+    - One possible reason behind my depression is the constant struggle with self-esteem and body image issues.
+    - Despite attempts to focus on self-care and personal growth, negative thoughts often consume me.
+    - Additionally, certain recent events, such as failing an important exam or going through a breakup, have intensified feelings of hopelessness and worthlessness.
+    - These symptoms occur frequently; I experience persistent sadness and loss of interest in activities almost every day.
+    - Concentration has become incredibly challenging, making academic tasks even more overwhelming.
+    - During therapy, I believe delving into significant life events, particularly past experiences of emotional abuse, will provide valuable context as well.
+    - In terms of coping mechanisms, journaling and practicing gratitude have somewhat helped elevate my mood temporarily.
+    - However, the effects are not long-lasting.
+    - I would appreciate if we could explore different treatment options for depression and discuss potential therapeutic approaches to address my struggles.
+    
+- intent: depression_p0093
+  examples: |
+    - I've been feeling really down lately and it's affecting my daily life.
+    - I wake up feeling empty, can't find joy in anything, and have no energy to do anything.
+    - It's hard for me to concentrate or even get out of bed.
+    - I can't pinpoint exactly why I'm feeling this way, but I just want to feel like myself again.
+    - Can you help me with my depression?
+    
+- intent: depression_p0094
+  examples: |
+    - I've been feeling really down lately and struggling with low moods almost every day.
+    - My main goal for seeking counseling is to understand and overcome these feelings of depression.
+    - It seems like there might be several reasons behind this.
+    - Firstly, the loss of my job earlier this year significantly impacted my self-esteem and sense of purpose.
+    - Additionally, the ongoing conflict within my family relationships adds extra stress and loneliness.
+    - For example, during family gatherings, I often feel excluded and misunderstood because they don't seem to value my opinions or experiences.
+    - This further perpetuates my feelings of sadness and worthlessness.
+    - The symptoms of depression include persistent sadness, loss of interest in activities I used to enjoy, changes in appetite, and difficulty sleeping most nights.
+    - Recently, I have withdrawn from socializing and find it hard to concentrate on tasks.
+    - There have also been past traumatic experiences that still affect my confidence and overall mental well-being.
+    - I have tried engaging in hobbies and talking to close friends about how I feel, but it hasn't helped much.
+    - I wanted to inquire if there are any specific treatment options or therapeutic techniques available that can assist me in overcoming depression more effectively.
+    
+- intent: depression_p0095
+  examples: |
+    - I've been feeling really down lately, and it's affecting every aspect of my life.
+    - I wake up in the morning with no motivation or energy to get out of bed.
+    - I feel like a heavy weight is pressing on me, making it hard to move or even think clearly.
+    - My mind is constantly filled with negative thoughts about myself and the world around me.
+    - It's like I'm trapped in this never-ending cycle of sadness and hopelessness." I hope through counseling
+    - I can find some relief from these overwhelming feelings and start enjoying life again.
+    - There have been a few triggers that seem to intensify my depressive symptoms.
+    - One major trigger for me is social isolation.
+    - When I don't have any social interactions or meaningful connections with others, I tend to spiral into deeper depression.
+    - due to COVID-19 restrictions
+    - I haven't been able to see friends or family as much as before
+    - and that has taken a toll on my mental health.
+    - Another trigger is work-related stress.
+    - I have a demanding job that often leaves me feeling exhausted and drained.
+    - The constant pressure to meet deadlines and perform at a high level adds to my already existing feelings of inadequacy and self-doubt.
+    - The frequency of my depressive episodes varies, but they usually last for several weeks or even months.
+    - During these episodes
+    - I experience intense sadness
+    - loss of interest in activities I used to enjoy
+    - as well as difficulty concentrating and making decisions.
+    - In terms of coping strategies, I try to engage in activities that bring me some temporary relief.
+    - For example, I listen to music, go for walks in nature, or practice relaxation techniques such as deep breathing and mindfulness exercises.
+    - However, these methods only provide temporary relief and don't address the root causes of my depression.
+    - One question I have about therapy is how long it typically takes to see improvement in symptoms.
+    - Also, what treatment options are available to me besides medication?
+    - I'm looking for a holistic approach that considers both my emotional and physical well-being.
+    
+- intent: depression_p0096
+  examples: |
+    - I've been feeling stuck and trapped in a never-ending cycle of sadness and despair.
+    - It's as if happiness is an unattainable luxury that's out of reach for me.
+    - I spend most days going through the motions without any real joy or enthusiasm." Through counseling
+    - my goal is to gain a deeper understanding of my depression and find ways to break free from its grip.
+    - One major trigger for my depressive symptoms is a recent loss in my life.
+    - My beloved pet passed away unexpectedly, and since then, I've been overwhelmed by grief and a profound sense of emptiness.
+    - The absence of my companion has further deepened my feelings of loneliness and hopelessness.
+    - Another significant trigger is social comparison.
+    - Seeing others achieve their goals, having meaningful relationships, and seemingly living content lives intensifies my negative self-perception.
+    - I constantly judge myself, feeling inadequate and unworthy when comparing my own life to those around me.
+    - Sometimes I experience brief periods of relief, but usually, the episodes last for weeks or even months at a time.
+    - During these times
+    - I struggle with low energy
+    - lack of motivation
+    - as well as persistent feelings of sadness and worthlessness.
+    - There have been past traumatic experiences that may contribute to my current state of depression.
+    - Childhood trauma and dysfunctional family dynamics have left emotional scars that impact my mental health to this day.
+    - Exploring those experiences within therapy may be crucial to my healing process.
+    - To cope with my depression, I try to engage in creative activities such as painting or writing as a form of emotional release.
+    - I also lean on trusted friends and loved ones for support
+    - although I understand the importance of seeking professional help to address the underlying causes of my depression.
+    - I have some questions about the therapeutic process.
+    - How do you approach therapy for clients with depression?
+    - Are there specific treatment modalities or interventions that have proven to be effective in helping individuals overcome depressive disorders?
+    
+- intent: depression_p0097
+  examples: |
+    - I've been struggling with depression and I really want to work towards finding effective coping mechanisms and improving my mental well-being.
+    - The past few months have felt incredibly difficult.
+    - I often feel lethargic, lose interest in activities I used to enjoy, and have trouble sleeping.
+    - What steps can I take to manage my depression and regain a sense of fulfillment?
+    
+- intent: depression_p0098
+  examples: |
+    - I've been struggling with depression for a while now, but it's gotten worse recently.
+    - Sometimes my thoughts are so dark that I have fleeting thoughts of not wanting to be alive.
+    - Therapy has helped me in the past, but I'm looking for additional support.
+    
+- intent: depression_p0099
+  examples: |
+    - I've been struggling with depression for quite some time now.
+    - It's like a dark cloud follows me everywhere, and finding joy in anything feels impossible.
+    - Lately, even getting out of bed has become a daunting task.
+    - My goal for today's counseling session is to explore different treatment options for depression and understand how therapy can help me.
+    - I believe past traumatic experiences may have contributed to my current state.
+    
+- intent: depression_p0100
+  examples: |
+    - I've been struggling with depression for some time now
+    - and I need assistance in managing my symptoms and finding hope and joy again." Depression has been weighing me down for a while now.
+    - Some days, it feels impossible to get out of bed or engage in activities that used to bring me joy.
+    - My mood is low, and negative thoughts often consume me.
+    - I want to learn coping mechanisms and strategies to manage my depression and regain a sense of hope and happiness.
+    
+- intent: depression_p0101
+  examples: |
+    - I've reached a breaking point with the amount of stress in my life.
+    - It feels like I'm always running on empty, constantly trying to keep up with never-ending demands.
+    - Yesterday, I had a minor disagreement with a colleague that normally wouldn't affect me, but this time it triggered an intense stress response.
+    - My heart started pounding, and I felt tightness in my chest.
+    - I had to go to the bathroom to calm myself down before I could continue working.
+    - It's clear that my coping mechanisms are no longer enough, and I'm desperately seeking new strategies to help me navigate through these stressors.
+    
+- intent: depression_p0102
+  examples: |
+    - I've recently lost interest in activities that used to bring me joy, and feelings of emptiness have taken over.
+    - Even simple tasks require immense effort, as if I'm constantly pushing against an invisible force.
+    - My hope for therapy is to address these symptoms of depression, uncover any underlying triggers, and regain my motivation and zest for life.
+    
+- intent: depression_p0103
+  examples: |
+    - In addition to feeling depressed, I've noticed that I've been isolating myself from friends and family.
+    - I spend most of my days alone, avoiding social interactions.
+    - I don't even have the motivation to leave the house anymore.
+    
+- intent: depression_p0104
+  examples: |
+    - It feels like a dark cloud is constantly hanging over me.
+    - I struggle with persistent feelings of sadness, hopelessness, and loss of interest.
+    - Through therapy, I hope to understand the root causes of my depression and learn effective strategies to improve my mental health.
+    
+- intent: depression_p0105
+  examples: |
+    - It's been a while since I experienced any real joy in my life.
+    - Everything feels meaningless and I spend most days just going through the motions.
+    - I've noticed that certain triggers, like stress at work or conflicts in my relationships, exacerbate my feelings of depression.
+    - In therapy, I'm hoping to understand the root causes of my depression and develop healthier coping mechanisms.
+    
+- intent: depression_p0106
+  examples: |
+    - Lately, depression has made me lose interest in activities that used to bring me joy.
+    - For example, I used to love painting, but now I can't even pick up a brush without feeling like it's pointless.
+    - The lack of motivation and pleasure in life is really getting to me.
+    
+- intent: depression_p0107
+  examples: |
+    - Lately, I have been feeling an overwhelming sense of sadness, emptiness, and loss of interest in activities that used to bring me joy.
+    - These feelings of depression have started interfering with my daily life and relationships.
+    - My goal for therapy is to understand the underlying causes of my depression and develop strategies to manage it effectively.
+    
+- intent: depression_p0108
+  examples: |
+    - Lately, I have been feeling extremely low and detached from everything around me.
+    - Even activities that used to bring joy no longer hold any appeal.
+    - The sadness and emptiness have become constant companions, impacting my motivation and daily functioning.
+    - I'd like to address these feelings of depression and explore potential treatment options available.
+    
+- intent: depression_p0109
+  examples: |
+    - Lately, I've been experiencing overwhelming sadness, lack of motivation, and loss of interest in activities I used to enjoy.
+    - It feels like a constant heaviness in my chest that I can't shake off.
+    - My goal is to work through this depression, regain my sense of joy and purpose, and develop healthy coping mechanisms.
+    
+- intent: depression_p0110
+  examples: |
+    - Lately, I've been feeling an overwhelming sadness that consumes me most days.
+    - It affects my motivation, energy levels, sleep, and overall enjoyment of life.
+    - I'm interested in exploring treatment options for depression and finding healthier ways to cope.
+    
+- intent: depression_p0111
+  examples: |
+    - Lately, I've been feeling an overwhelming sadness that makes it difficult to find joy in anything.
+    - My goal with counseling is to gain a better understanding of my depression and learn strategies to lift myself out of this emotional numbness.
+    - even when I'm surrounded by loved ones or engaging in activities I used to enjoy
+    - there's this constant heaviness in my chest that drains any happiness away.
+    - I attended my best friend's wedding
+    - hoping to feel some excitement
+    - but instead
+    - I struggled to put on a smile and connect with others emotionally.
+    - These depressive feelings persist almost every day and last for hours on end.
+    - Additionally, I've noticed changes in my appetite, disrupted sleep patterns, and difficulty concentrating.
+    - I'm seeking guidance on how to regain motivation, reconnect with my emotions, and reintroduce meaning into my life.
+    
+- intent: depression_p0112
+  examples: |
+    - Lately, I've been feeling an overwhelming sense of emptiness and sadness that looms over me like a dark cloud.
+    - My lack of energy has led me to neglect personal hygiene and my immediate surroundings, as even the simplest tasks feel daunting.
+    - Although I used to enjoy hobbies and spending time with friends, depression has caused a disinterest in everything.
+    - It often feels like there's no light at the end of the tunnel
+    - and loneliness envelops me despite being surrounded by people who care about me.
+    - I aim to gain insight into the root causes of this depressive state
+    - find effective treatment options
+    - and rebuild my life filled with purpose and happiness.
+    
+- intent: depression_p0113
+  examples: |
+    - Lately, I've been feeling extremely down and lacking motivation for anything.
+    - Even things that used to bring me joy now feel like a chore.
+    - I hope that through counseling, I can address this depression and regain a sense of fulfillment and purpose in my life.
+    
+- intent: depression_p0114
+  examples: |
+    - Lately, I've been feeling extremely down and nothing seems to bring me joy anymore.
+    - It's like a cloud of sadness is constantly hanging over me.
+    - I want to overcome this depression and find happiness again.
+    
+- intent: depression_p0115
+  examples: |
+    - Lately, I've been feeling extremely low and unmotivated.
+    - I lack energy and interest in activities that used to bring me joy.
+    - I often find myself crying without any apparent reason.
+    - These symptoms have been persistent for several weeks now, making it hard for me to function daily.
+    - My goal is to understand the underlying cause of my depression and learn effective strategies to cope with it.
+    
+- intent: depression_p0116
+  examples: |
+    - Lately, I've been feeling incredibly down and hopeless.
+    - It feels like there's a cloud hanging over me all the time and I don't know how to shake it off.
+    - Simple tasks become overwhelming and I lack motivation to do anything.
+    - My loved ones are concerned about me and urge me to seek help.
+    - I want to understand what's causing these feelings of depression and find strategies to overcome them.
+    
+- intent: depression_p0117
+  examples: |
+    - Lately, I've been feeling so down and hopeless.
+    - It's hard to find enjoyment in anything and even getting out of bed feels like a struggle.
+    - I want to understand why I'm feeling this way and learn strategies to cope with my depression.
+    
+- intent: depression_p0118
+  examples: |
+    - Lately, I've been feeling so hopeless and empty inside.
+    - It's hard to explain, but it feels like all the color has drained from my life.
+    - Sometimes I even have thoughts of not wanting to be here anymore.
+    - I hope through counseling, I can learn to manage these negative thoughts and start seeing some light again.
+    
+- intent: depression_p0119
+  examples: |
+    - Lately, I've felt an overwhelming sense of sadness that doesn't go away.
+    - It feels like there's a heavy weight pressing down on me all the time.
+    - My concentration has plummeted, making it difficult to focus at work or engage in meaningful activities.
+    - Simple tasks take longer because I lack energy and motivation.
+    - On some days, I struggle with basic self-care, such as getting out of bed or eating properly.
+    - I know this prolonged state of depression is affecting my relationships
+    - especially with my loved ones who are concerned but don't fully understand what I'm going through.
+    - In therapy, I hope to find ways to alleviate these depressive symptoms, reconnect with my loved ones, and rediscover myself again.
+    
+- intent: depression_p0120
+  examples: |
+    - Lately, I've lost interest in everything that used to bring me joy.
+    - It's as if all the colors in my life have faded away.
+    - This loss of pleasure is accompanied by a persistent feeling of fatigue and a lack of motivation.
+    - I want to work with my therapist to identify the underlying causes of my depression and develop strategies to restore my interest in life.
+    
+- intent: depression_p0121
+  examples: |
+    - Lately, I've noticed a significant decrease in my energy levels and motivation to do things I once enjoyed.
+    - Simple tasks feel arduous, and I have trouble concentrating.
+    - My hope for this counseling session is to uncover possible causes for my depression and learn coping mechanisms to regain my enthusiasm for life.
+    
+- intent: depression_p0122
+  examples: |
+    - Lately, it feels like I'm surrounded by a deep darkness, and it's becoming increasingly difficult to find joy in anything.
+    - My goal today is to seek support and explore ways to overcome this overwhelming depression.
+    - There isn't one particular event that caused this current depressive state
+    - rather
+    - it seems to have gradually taken hold of me over the past few months.
+    - However, there are several recent life events which have added to its intensity.
+    - the loss of a close friend due to illness and experiencing a breakup with my long-term partner have left me feeling incredibly sad and downhearted.
+    - These emotional states linger even on days where nothing particular has happened.
+    - The symptoms of depression I am experiencing include persistent feelings of hopelessness, lack of energy and motivation, changes in appetite, and difficulty maintaining concentration.
+    - The duration of these symptoms varies but lasts for extended periods more often than not.
+    - Looking back at my childhood, there were moments when external factors contributed to similar feelings of sadness and isolation.
+    - Throughout all of this, it's been hard to engage in activities that used to bring me happiness.
+    - I would greatly appreciate your guidance on how to navigate through this darkness and find a way toward healing.
+    
+- intent: depression_p0123
+  examples: |
+    - Lately, my depression has been accompanied by feelings of emptiness and persistent fatigue.
+    - It feels as if there's a dark cloud hanging over me all the time.
+    - Even getting out of bed requires tremendous effort.
+    - The guilt I feel for not being able to function normally only feeds into this cycle.
+    - My concentration is deteriorating, affecting my work performance.
+    - I hope counseling can help me address these symptoms and provide me with tools to regain control over my life.
+    
+- intent: depression_p0124
+  examples: |
+    - Lately, my depression has worsened due to some significant life events.
+    - I lost my job, went through a breakup, and experienced the loss of a loved one.
+    - These events have left me feeling isolated, worthless, and profoundly sad.
+    - I would like counseling to help me navigate through grief and build resilience.
+    
+- intent: depression_p0125
+  examples: |
+    - Life feels extremely heavy lately, and I can't seem to explain why.
+    - Lack of motivation, constant sadness, and feelings of emptiness accompany me daily.
+    - The emotional pain is unbearable at times, making even basic functioning challenging.
+    - These symptoms of depression impact not only my personal life but also my professional performance.
+    - I want to understand the root causes of my depression and learn strategies to manage it effectively.
+    
+- intent: depression_p0126
+  examples: |
+    - Living with depression has made it challenging to maintain motivation and consistently contribute to my responsibilities.
+    - In therapy, I hope to address these feelings of apathy so I can regain my drive and sense of purpose.
+    
+- intent: depression_p0127
+  examples: |
+    - My depression has become increasingly worse over the past few months.
+    - I find myself crying uncontrollably and feeling hopeless.
+    - Even getting out of bed feels like an impossible task.
+    - The death of a loved one triggered these feelings, and I haven't been able to recover since.
+    - My goal in therapy is to address my grief and find ways to heal from it.
+    
+- intent: depression_p0128
+  examples: |
+    - My depression has caused a loss of appetite, and I've noticed a significant weight loss recently.
+    - Along with the lack of motivation and sadness, these physical symptoms are affecting my overall well-being.
+    - Can therapy help address these issues?
+    
+- intent: depression_p0129
+  examples: |
+    - My depression has led to increased fatigue and an inability to concentrate, which have interfered with my work and relationships.
+    - Through counseling, I hope to gain insight into these symptoms and discover techniques to improve my energy levels and focus.
+    
+- intent: depression_p0130
+  examples: |
+    - My depression has resurfaced after some recent challenging life events." Life hasn't been kind lately, and it triggered the return of my depression.
+    - Some significant losses occurred—job insecurity, the death of a loved one, and a failed relationship.
+    - These experiences have shattered me emotionally, amplifying feelings of despair, hopelessness, and loneliness.
+    
+- intent: depression_p0131
+  examples: |
+    - Recently, I experienced a significant loss in my life which triggered my depression.
+    - Losing my job meant not only financial strain but also a blow to my self-esteem.
+    - The combination of these factors has made me feel hopeless and defeated.
+    - In therapy, I aim to process the grief and rebuild my confidence.
+    
+- intent: depression_p0132
+  examples: |
+    - Sometimes I feel like the world would be better off without me.
+    - These thoughts frighten me, and they've become more persistent lately.
+    - My depression hits its peak during the evenings when loneliness sets in.
+    - It feels like a never-ending cycle of sadness, hopelessness, and self-doubt.
+    - I truly need help to overcome these dark moments and find hope again.
+    
+- intent: depression_p0133
+  examples: |
+    - Stress is overwhelming me right now as I'm trying to balance multiple responsibilities.
+    - On top of managing a full-time job, I recently became a caretaker for my aging parent.
+    - This added pressure is causing chronic fatigue, loss of appetite, and frequent headaches.
+    - My main objective in therapy is to explore healthy ways to reduce stress and establish self-care routines.
+    
+- intent: depression_p0134
+  examples: |
+    - The depression I've been experiencing has put a strain on my personal relationships.
+    - I withdraw from social interactions and isolate myself as a defense mechanism, but it leaves me feeling lonely and detached.
+    - Exploring how this impacts my overall well-being and learning healthier ways to connect with others is essential for me.
+    
+- intent: depression_p0135
+  examples: |
+    - The heaviness and hopelessness that depression brings have been suffocating me.
+    - It feels like there's no escape from this constant darkness.
+    - My hope in attending this counseling session is to find a glimmer of hope and regain control over my life.
+    
+- intent: depression_p0136
+  examples: |
+    - A major life event that triggered my depression was the loss of my job.
+    - Losing employment not only brought financial insecurity but also shattered my self-esteem and left me questioning my worth as a person.
+    - These feelings of failure deepen my depressive state.
+    
+- intent: depression_p0137
+  examples: |
+    - A past traumatic experience has contributed to my current struggle with depression.
+    - The event left me feeling vulnerable, hopeless, and disconnected from others.
+    - Processing and healing from this trauma is an essential part of my journey towards recovery.
+    
+- intent: depression_p0138
+  examples: |
+    - A recent breakup with my long-term partner has triggered a deep sense of loss and abandonment.
+    - It was a sudden and unexpected event that shattered my sense of security and stability.
+    - Since then, I've been questioning my worthiness of love and struggling with feelings of loneliness and rejection.
+    - Exploring these emotions and their connection to my current state of depression would be helpful.
+    
+- intent: depression_p0139
+  examples: |
+    - A recent life event that has contributed to my depression is the loss of a close friend.
+    - Their sudden passing has left me feeling devastated and overwhelmed with grief.
+    - It's been difficult for me to process this loss on my own.
+    
+- intent: depression_p0140
+  examples: |
+    - A recent major life event, the loss of a loved one, has plunged me into an even deeper state of depression.
+    - Grief has made it difficult to cope with daily life, and I find myself constantly longing for their presence.
+    - I seek counseling to help me process this grief and move forward in a healthier way.
+    
+- intent: depression_p0141
+  examples: |
+    - A significant event that has contributed to my depression is the loss of my job.
+    - Being unemployed has made me feel worthless and hopeless about my future.
+    - Additionally, growing up in a dysfunctional family environment where emotional support was lacking has had a lasting impact on my mental well-being.
+    
+- intent: depression_p0142
+  examples: |
+    - A significant life event that contributed to my current state of depression was the end of a long-term relationship.
+    - The loss has left me feeling empty and questioning my self-worth.
+    - It's challenging to navigate through this emotional turmoil alone.
+    
+- intent: depression_p0143
+  examples: |
+    - A significant life event that contributed to my depression was going through a divorce.
+    - The breakdown of my marriage left me feeling heartbroken and lost.
+    - I mourned not only the loss of the relationship but also the dreams and plans we had made together.
+    - Rebuilding my life after this devastating experience has been incredibly challenging.
+    
+- intent: depression_p0144
+  examples: |
+    - A significant life event that contributed to my depression was the loss of a close friend.
+    - Their sudden passing left me feeling empty and questioning the meaning of life.
+    - I struggle with guilt and regret, wondering if there was something more I could have done.
+    
+- intent: depression_p0145
+  examples: |
+    - A significant life event that triggered my current state of depression was the end of a long-term relationship.
+    - We were together for several years and the breakup came as a shock to me.
+    - Since then, I've been feeling heartbroken and lost.
+    - I've also experienced a lot of self-blame, wondering what I did wrong to cause the relationship to fall apart.
+    
+- intent: depression_p0146
+  examples: |
+    - Above all, I hope to rediscover joy and motivation in life while managing my depressive symptoms effectively.
+    - Depression paints everything in shades of gray.
+    - Feelings of sadness, emptiness, and hopelessness have taken over, eroding any sense of joy or purpose.
+    - Negative self-talk echoes loudly, drowning out any positive thoughts.
+    - A trigger for my depression is when I receive criticism or negative feedback from others.
+    - It reinforces my belief that I am not good enough and intensifies feelings of worthlessness.
+    - My depressive symptoms include low energy levels, changes in appetite, and difficulty concentrating.
+    - These symptoms have been present for several months and often persist throughout the day.
+    - While there haven't been any recent traumatic events, I experienced a difficult breakup two years ago, which had a profound impact on my emotional well-being.
+    - The repercussions of that event still linger.
+    - Engaging in creative outlets like painting and seeking support from close friends provide temporary relief from depressive symptoms.
+    - However, these measures do not address the underlying causes.
+    - How can counseling help me challenge negative thought patterns associated with depression?
+    - What are some proven techniques used in treating depressive disorders?
+    - Should medication also be considered as part of my treatment plan?
+    
+- intent: depression_p0147
+  examples: |
+    - Additionally, I'm curious about the different treatment options available for depression.
+    - Are medications commonly prescribed, or is therapy alone sufficient in most cases?
+    - How long does it usually take to see improvements when undergoing counseling for depression?
+    
+- intent: depression_p0148
+  examples: |
+    - Although I try to put on a brave face, deep inside, I feel empty and numb.
+    - I lost interest in activities I used to enjoy, and it's affecting my relationships as well.
+    - I want to talk about possible causes of my depression and develop strategies to overcome this emotional emptiness.
+    
+- intent: depression_p0149
+  examples: |
+    - Another aspect of my depression is feeling a deep sense of guilt for not being able to function like before.
+    - This guilt stems from comparing myself to others and thinking that I should be able to handle life's challenges better.
+    - It's a constant battle between wanting to get better and feeling guilty for even feeling this way in the first place.
+    
+- intent: depression_p0150
+  examples: |
+    - Another significant life event that contributed to my depression was going through a divorce.
+    - The breakdown of my marriage brought feelings of failure, guilt, and loneliness.
+    - It's challenging to navigate this new chapter of my life while carrying the weight of these emotions.
+    
+- intent: depression_p0151
+  examples: |
+    - Another significant life event that has contributed to my depression is the loss of a close family member.
+    - Their sudden passing took an immense toll on me emotionally.
+    - I struggle with grief and find it difficult to accept their absence.
+    - It feels like a part of me is missing, and I'm not sure how to move forward.
+    
+- intent: depression_p0152
+  examples: |
+    - Another symptom of depression that I've been experiencing is changes in appetite and sleep patterns.
+    - I either have no appetite at all or turn to food as a source of comfort, leading to unhealthy eating habits.
+    - Similarly, my sleep schedule is disrupted, with frequent insomnia or oversleeping, leaving me feeling fatigued throughout the day.
+    
+- intent: depression_p0153
+  examples: |
+    - Another symptom of my depression is a lack of energy and motivation.
+    - Even simple tasks like getting out of bed or taking care of basic self-care become incredibly difficult.
+    - This constant fatigue adds to my feelings of frustration and hopelessness.
+    
+- intent: depression_p0154
+  examples: |
+    - Another symptom of my depression is disrupted sleep patterns.
+    - I struggle to fall asleep at night, and when I do, I wake up multiple times throughout the night.
+    - This lack of restful sleep leaves me feeling groggy and irritable during the day, exacerbating my depressive symptoms.
+    
+- intent: depression_p0155
+  examples: |
+    - Another trigger for my depressed mood is the strained relationship with my family.
+    - We've had frequent arguments and misunderstandings, which has further contributed to my feelings of isolation.
+    
+- intent: depression_p0156
+  examples: |
+    - Are there any specific treatment options for depression that you recommend?
+    - I've heard about medication, but I'm hesitant to try it.
+    - I would prefer exploring other avenues first if possible.
+    
+- intent: depression_p0157
+  examples: |
+    - Are there any treatment options besides medication that could be beneficial for someone with depression? I would prefer exploring non-pharmacological approaches if possible.
+    
+- intent: depression_p0158
+  examples: |
+    - As a mental health professional, I understand it can be difficult to open up about your struggles and emotions.
+    - Could you please share with me one of the situations that you feel triggered your depression?
+    - Describe step by step what happened, including your thoughts and emotions throughout the process.
+    - Aim for around 500 words.
+    
+- intent: depression_p0159
+  examples: |
+    - As a mental health professional, I understand that you might be struggling with depression and would like to share your experiences and concerns.
+    - Please provide detailed information about your situation, symptoms, triggers, and any coping strategies you have tried.
+    - Recently, I've been feeling extremely down and lacking the motivation to do anything.
+    - It's like this heavy cloud is hanging over me all the time.
+    - My goal for our counseling session is to find ways to lift this fog of depression and start enjoying life again.
+    - I often find myself feeling hopeless and sad for no apparent reason.
+    - Sometimes, negative thoughts consume my mind, making it hard for me to focus or think positively.
+    - Perhaps it started when I lost my job last year and since then, finding a new one has been an ongoing struggle.
+    - The constant rejection and feelings of inadequacy have taken a toll on my self-esteem.
+    - One specific trigger for my depressive episodes is social gatherings.
+    - Whenever I attend parties or events, I feel overwhelmingly excluded and like I don't belong.
+    - It intensifies my feelings of loneliness and sadness.
+    - Last month, during a friend's birthday celebration, I couldn't shake off the feeling of being disconnected from everyone else.
+    - It made me realize how much I am missing out on in life.
+    - My depressive symptoms occur almost every day, lasting for several hours at a time.
+    - I experience a persistent low mood, loss of interest in activities I once enjoyed, changes in appetite, and disrupted sleep patterns.
+    - These symptoms greatly impact my daily functioning and overall quality of life.
+    - I have tried engaging in physical exercise as a way to boost my mood
+    - but it hasn't been very effective so far.
+    - I'm hoping to explore additional methods to manage my depression and learn healthier ways to deal with my emotions.
+    - I have some questions regarding the therapeutic process.
+    - How long does counseling typically take before I start noticing any improvements?
+    - Are there any specific treatment options you would recommend for my situation, or is it a case-by-case basis?
+    
+- intent: depression_p0160
+  examples: |
+    - As a mental health professional, you should treat the patient's situation with empathy and sensitivity while providing guidance to help them cope with their struggles.
+    - Here is an example of a message related to depression: "I've been feeling really down lately, like everything is just too hard.
+    - My goal for counseling is to find ways to feel more motivated and positive about life again.
+    - I think my mood started to decline a few months ago when my grandmother passed away.
+    - She was always there for me, and her death has left a void in my life.
+    - I feel guilty for not being able to cope with this loss better.
+    - Sometimes even getting out of bed feels impossible, and I constantly question if I'm a burden to others.
+    - Just yesterday, I missed an important deadline at work because I couldn't find the energy to focus.
+    - These feelings have been occurring almost every day for several weeks now.
+    - I haven't told anyone about this before, but it seems like the grief triggered something deeper within me.
+    
+- intent: depression_p0161
+  examples: |
+    - As a patient experiencing depression, my goal in this counseling session is to find ways to manage my symptoms and improve my overall mental well-being.
+    - Lately, I have been feeling extremely low and hopeless.
+    - It's been affecting all aspects of my life, including my relationships and work performance.
+    - This constant sadness has made it difficult for me to find joy in things that used to bring me happiness or feel motivated.
+    - There are several triggers that may be contributing to my depressive symptoms.
+    - One major factor is the loss of my job six months ago.
+    - Since then, I've struggled with financial instability and feelings of worthlessness.
+    - Moreover, a recent breakup has left me feeling rejected and unlovable.
+    - These events, coupled with a history of childhood trauma, have significantly impacted my mental state.
+    - My symptoms include persistent sadness, lack of energy, difficulty concentrating, and disrupted sleep patterns.
+    - I often experience intense feelings of guilt and self-blame, even when there isn't a logical reason.
+    - These symptoms have been present daily for the past three months and they range from moderate to severe depending on the day.
+    - It would be helpful if we could explore any underlying issues related to my childhood trauma and how those experiences might be influencing my current struggles.
+    - Additionally, I would appreciate guidance on coping strategies to help me regain a sense of stability and hope in my life.
+    
+- intent: depression_p0162
+  examples: |
+    - As an individual struggling with depression
+    - my aim in this counseling session is to develop a treatment plan that addresses my symptoms and helps alleviate the constant sadness and emotional numbness I experience.
+    - A perpetual sense of hopelessness and despair engulfs me daily.
+    - Diminished interest or pleasure in activities once cherished leaves me feeling trapped in a state of joyless existence.
+    - Negative thoughts flood my mind relentlessly, perpetuating self-critical beliefs and hindering any form of motivation or enjoyment.
+    - The onset of my depressive symptoms followed a significant life event – the end of a long-standing romantic relationship.
+    - The breakup shattered my confidence and belief in love, leaving me emotionally devastated and questioning my worthiness of affection or happiness.
+    - Depressive episodes occur frequently, lasting for weeks at a time.
+    - Sleep disruptions become commonplace as both insomnia and excessive sleeping habits plague me.
+    - Appetite fluctuates between reduced hunger and overeating.
+    - Engaging in day-to-day activities requires immense effort due to physical and mental fatigue.
+    - Examining my family dynamics reveals patterns of unresolved traumas and familial conflicts, which may have contributed to my susceptibility to depression.
+    - Open discussions of emotions were uncommon during my upbringing, further isolating and intensifying negative feelings.
+    - In attempts to cope with depression, I have sought solace in artistic expression and regular exercise.
+    - Although these outlets offer temporary respite, they haven't provided substantial relief from my ongoing struggles.
+    - I would like to discuss various therapeutic approaches in this counseling session and explore potential medication options that could support me in recovering from depression.
+    
+- intent: depression_p0163
+  examples: |
+    - As days pass, my depression seems to worsen.
+    - I often find myself in a state of complete emptiness and sadness.
+    - Getting through each day requires immense effort, and the fatigue has become unbearable.
+    - Not too long ago, I lost my job due to my lack of motivation and inability to concentrate.
+    - I want nothing more than to regain control over my life
+    - so I believe counseling might offer some clarity and strategies to overcome this debilitating depression.
+    
+- intent: depression_p0164
+  examples: |
+    - As someone who has been struggling with depression
+    - my goal for this counseling session is to find ways to regain motivation and overcome the constant exhaustion I've been experiencing.
+    - Lately, I've been feeling lethargic all the time, making even the simplest tasks incredibly challenging.
+    - Thoughts of self-doubt dominate my mind, making it difficult to start or complete anything.
+    - This profound lack of energy leads to increased isolation from others and decreased engagement with hobbies.
+    - The trigger for my current state of depression was a series of major life changes occurring one after another
+    - including a job loss
+    - relocation
+    - and the end of a significant relationship.
+    - These combined events left me feeling lost and severely impacted my sense of stability and purpose.
+    - Depressive symptoms have become persistent over the past six months.
+    - On most days, I struggle with low mood and lack of motivation.
+    - Even when I do find interest in something, it quickly dissipates.
+    - The duration of these episodes ranges from a few hours to several days at a time, resulting in a continuous cycle of ups and downs.
+    - Reflecting on my upbringing, I experienced emotionally distant relationships within my family.
+    - There were also periods of financial instability and unresolved traumas, which could contribute to my susceptibility to depression.
+    - In terms of addressing these feelings, I have tried implementing daily routines and practicing gratitude, but they haven't provided sustainable results.
+    - I would like to understand the therapeutic approaches available for managing severe fatigue and lack of motivation associated with depression.
+    - Additionally, exploring potential treatment options that may complement therapy would be beneficial.
+    
+- intent: depression_p0165
+  examples: |
+    - Ask questions about therapeutic process, treatment options, or their approach to counseling, related to "Depression": "I'm curious about how therapy can help with depression.
+    - Is it through talk therapy or are there other approaches?
+    - Also, what kind of role would medication play in my treatment plan?
+    
+- intent: depression_p0166
+  examples: |
+    - Behavioral Change "I desperately want to break free from my destructive habits, but I don't know where to start.
+    - It feels impossible to change. Through counseling
+    - I hope to gain insight into why I engage in these behaviors and acquire strategies to break free from them." Description of emotions and thoughts: "I feel trapped
+    - and overwhelmed by guilt.
+    - No matter how hard I try
+    - I always end up falling back into the same destructive patterns." Example triggering situation/event: "Whenever something goes wrong in my life
+    - instead of facing it head-on
+    - I turn to substances or impulsive behaviors to numb my pain and momentarily distract myself from reality." Symptom description: "The intensity of my desire to engage in self-destructive behaviors is consuming.
+    - It's a constant battle between wanting to change and giving in to what feels familiar." Discussion of significant life events/family dynamics_past trauma: "I grew up in an unstable environment with neglectful parents who were often absent emotionally.
+    - I struggle with feelings of inadequacy and use self-destructive behaviors as a coping mechanism." Coping strategies: "In moments of vulnerability
+    - I've attempted to replace my harmful habits with healthier alternatives such as exercise and finding hobbies
+    - but they don't provide the same level of relief." Question: "How long does it typically take to break free from deeply ingrained behavioral patterns?
+    - Are there specific techniques or exercises we can work on together?
+    
+- intent: depression_p0167
+  examples: |
+    - Breaking Free from the Darkness of Depression Lately, I've been feeling an overwhelming sense of sadness and hopelessness that seems to consume my being.
+    - My goal for this counseling session is to understand my depression better and develop strategies to improve my mental well-being.
+    - The root cause behind my depressive emotions might be a combination of various factors
+    - including a recent breakup
+    - difficulties at work
+    - and a family history of depression.
+    - One particular event that triggered my deep sadness was the end of my long-term relationship.
+    - It left me feeling abandoned, worthless, and questioning my own self-worth.
+    - Since then
+    - I have been struggling to find joy in activities that used to bring me happiness
+    - such as spending time with friends or pursuing hobbies.
+    - These symptoms of depression occur almost every day and persist over several weeks.
+    - They are accompanied by physical manifestations like changes in appetite, difficulty concentrating, and constant fatigue.
+    - Reflecting on my past experiences, there have been instances of childhood trauma that may contribute to my current challenges.
+    - Growing up, I faced emotional neglect due to a lack of parental support.
+    - This has made it difficult for me to form healthy relationships and trust others.
+    - Coping with depression, I have tried engaging in mindfulness practices like meditation, which temporarily alleviate some of my distress.
+    - However, I am eager to explore additional coping mechanisms or therapy options that could provide more lasting relief.
+    - During our session, I would appreciate discussing different treatment approaches for depression.
+    - In particular, I am curious about the effectiveness of medication in conjunction with talk therapy.
+    - Furthermore
+    - I am interested in hearing your perspective on how to navigate the stigma associated with mental health issues and incorporate self-care practices into my daily routine.
+    
+- intent: depression_p0168
+  examples: |
+    - Childhood experiences have shaped my current struggles with depression.
+    - Growing up, I faced emotional neglect and witnessed frequent conflicts between my parents.
+    - These dynamics created an environment where expressing emotions was discouraged, leading me to internalize my feelings.
+    - I believe these early experiences contribute to my difficulty in managing emotions and maintaining healthy relationships.
+    
+- intent: depression_p0169
+  examples: |
+    - Childhood trauma, including physical abuse, has left deep emotional scars.
+    - Memories of those experiences resurface frequently, causing intense distress and triggering my depression.
+    - It feels like I'm trapped in a cycle of pain and despair.
+    
+- intent: depression_p0170
+  examples: |
+    - Could you please explain the therapeutic process to me?
+    - How long does it typically take to see progress in managing depression?
+    - Are there any specific treatment options that have proven effective for others?
+    
+- intent: depression_p0171
+  examples: |
+    - Counselor, depression has taken control of my life, and I'm seeking help to regain a sense of joy and purpose.
+    - Emotionally, I feel empty, hopeless, and disconnected from the world around me.
+    - My thoughts are primarily negative, distorted, and self-critical.
+    - The trigger for my depressive symptoms was a major betrayal by someone I trusted deeply.
+    - This severed trust has shattered my self-esteem and left me feeling unworthy of love and friendship.
+    - It feels like I've lost part of myself in this process.
+    - Depression symptoms occur nearly every day, characterized by profound sadness, loss of interest in previously enjoyed activities, changes in appetite, fatigue, and difficulty concentrating.
+    - The intensity varies but generally persists throughout the week, making it hard to engage with everyday responsibilities.
+    - In terms of significant life events, growing up, my family dynamics were complicated due to consistent conflicts and emotional neglect.
+    - These experiences may have contributed to my vulnerability to developing depression later in life.
+    - To cope with depression, I've been trying to incorporate exercise into my routine as a way to boost my mood.
+    - However, motivation is severely lacking, making it challenging to maintain regular habits that could potentially contribute to long-term improvement.
+    - I would appreciate any guidance you can provide on managing depression and regaining a sense of purpose.
+    - Additionally, what treatment options do you recommend when therapy alone might not be sufficient?
+    - Thank you for your support through this difficult journey.
+    
+- intent: depression_p0172
+  examples: |
+    - Currently, I'm struggling with profound feelings of sadness and emptiness.
+    - My goal for this counseling session is to address these symptoms of depression and develop a plan for healing.
+    - The onset of my depressive state seems to be connected to interpersonal conflicts and relationship breakdowns.
+    - For instance, following the end of a long-term relationship, I experienced an overwhelming sense of grief and a loss of self-worth.
+    - During these periods, I find it difficult to get out of bed, lack motivation, and question my purpose in life.
+    - These episodes usually persist for several weeks, affecting all aspects of my daily routine.
+    
+- intent: depression_p0173
+  examples: |
+    - Dealing with depression has become an overwhelming battle, and I hope this counseling session will provide me with guidance to overcome it.
+    - My thoughts are consumed by self-doubt, guilt, and worthlessness.
+    - Additionally, I have frequent difficulty sleeping, lack of appetite, and low energy levels.
+    - Just getting out of bed in the morning feels like an exhausting task.
+    - The intensification of my depressive symptoms often occurs when I face failures or experience rejection.
+    - For example, recently I applied for a job I had set high expectations for but received a rejection letter instead.
+    - It triggered feelings of defeat and intensified my pre-existing depressive state.
+    
+- intent: depression_p0174
+  examples: |
+    - Dealing with depression has been incredibly challenging, and through counseling, I hope to make progress towards finding joy in my life once again.
+    - Lately, I've been feeling a constant heaviness that weighs me down emotionally.
+    - A general sense of apathy pervades my actions, robbing me of any enjoyment or motivation.
+    - I find myself withdrawing from friends and family, often preferring to spend time alone instead.
+    - The trigger for my depression was the loss of a loved one.
+    - Coping with grief has been an overwhelming process, leading to feelings of sadness and emptiness that seem never-ending.
+    - Symptoms of depression are present almost every day, lasting hours at a time.
+    - My energy levels plummet significantly, resulting in difficulties staying awake during the day while also struggling with insomnia at night.
+    - The emotional pain is persistent, leaving me feeling drained physically and mentally.
+    - Reflecting on past experiences, there have been instances of familial conflict and minimal emotional support that may contribute to my vulnerability towards depression.
+    - In terms of coping strategies, I've attempted practicing self-compassion and engaging in light exercise, but they have provided only temporary relief.
+    - Understanding the therapeutic approaches available for managing severe grief-related depression would be valuable information.
+    - Are there specific techniques we can focus on?
+    - Additionally, exploring how counseling can help navigate the grieving process and recover a sense of purpose.
+    
+- intent: depression_p0175
+  examples: |
+    - Dealing with depression has left me feeling isolated and disconnected from others.
+    - I want to explore how my family dynamics and past experiences might be influencing my depressive symptoms, and find ways to improve my relationships.
+    
+- intent: depression_p0176
+  examples: |
+    - Dear Mental Health Professional, I'm seeking help because I want to overcome the persistent grip of depression that has left me feeling helpless and drained.
+    - By attending counseling sessions, I hope to regain my motivation and sense of purpose.
+    - Emotionally, I grapple with a profound sadness that seems to overshadow everything else in my life.
+    - Negative thoughts frequently plague my mind, emphasizing feelings of worthlessness and self-blame.
+    - One event that contributed significantly to my depression was experiencing a recent breakup.
+    - The loss of this relationship intensified feelings of loneliness and further dampened my ability to find enjoyment in daily activities.
+    - As for symptoms, I struggle with low energy levels, disrupted sleep patterns, diminished appetite, and feelings of hopelessness.
+    - These symptoms persist daily, sometimes varying in intensity but never truly subsiding.
+    - In terms of coping strategies, I have sought solace in nature through walks and spending time with my pets.
+    - Although these activities provide temporary relief, they do not address the underlying causes that contribute to my depressive episodes.
+    - Within therapy, I am interested in learning how we can identify and address the root causes of my depression.
+    - What treatment options are available for individuals dealing with depression, and what approach do you utilize when working with patients like me?
+    - Thank you for your consideration, Patient
+    
+- intent: depression_p0177
+  examples: |
+    - Dear Mental Health Professional, My primary goal for attending counseling sessions is to find ways to overcome my ongoing battle with depression.
+    - It feels as though I am stuck in a deep void where sadness prevails, and joy seems elusive.
+    - Emotionally, I frequently experience a mix of hopelessness and emptiness that is hard to shake off.
+    - My thoughts are often self-critical, undermining my sense of self-worth and making it difficult to engage in activities I once found enjoyable.
+    - One event that has contributed significantly to my depression is the loss of a close friend.
+    - The pain of their absence and the feeling of not having anyone to confide in has been overwhelming.
+    - In terms of symptoms, I struggle with low energy levels, disrupted sleep patterns, changes in appetite, and frequent feelings of fatigue.
+    - These symptoms persist daily and can last for extended periods, affecting my ability to function optimally.
+    - For coping, I have tried incorporating routines into my daily life, engaging in creative outlets like painting, and seeking support from loved ones.
+    - While these efforts provide temporary relief, they don't address the underlying causes which trigger my depressive episodes.
+    - I'm curious about what therapeutic techniques or treatment options might be helpful specifically for individuals dealing with depression.
+    - Additionally, how does the therapy process typically unfold when working towards overcoming depression?
+    - Thank you for your understanding, Patient
+    
+- intent: depression_p0178
+  examples: |
+    - Dear Mental Health Professional, I hope to achieve a sense of relief and regain my motivation through this counseling session.
+    - Lately, I've been feeling overwhelmed by sadness, emptiness, and lack of interest in things I used to enjoy.
+    - The thoughts racing through my mind are predominantly negative - constant self-criticism and feelings of worthlessness.
+    - It's like a heavy fog that clouds my every thought and action.
+    - At times, it feels as though there is no point in continuing with life.
+    - One situation that triggered these emotions was losing my job due to the pandemic.
+    - Since then, I have struggled to find another one, which has led to financial instability and increased stress.
+    - My symptoms include overwhelming fatigue, difficulty sleeping, changes in appetite, and decreased concentration.
+    - The intensity varies, but on most days, it is at its peak, leaving me unable to complete even simple tasks.
+    - In terms of significant life events, I experienced a traumatic loss of a close family member a few years ago.
+    - This event brought about a lot of grief and guilt, which may contribute to my current challenges.
+    - As for coping strategies, I have tried journaling my thoughts and feelings, engaging in regular physical exercise, and talking to trusted friends.
+    - While they provide temporary relief, they don't seem to address the underlying emotions causing my depression.
+    - Within the therapeutic process
+    - I would like to know how we can work together to identify the root causes of my depression and develop strategies to cope with it effectively.
+    - What treatment options do you recommend, and what approach do you take in counseling individuals with depression?
+    - Patient
+    
+- intent: depression_p0179
+  examples: |
+    - Dear therapist, all I feel is an overwhelming emptiness that lingers within me.
+    - It has made it hard for me to concentrate, sleep, and engage with others.
+    - My objective for counseling is to explore the root causes of my depression and work towards healing.
+    
+- intent: depression_p0180
+  examples: |
+    - Dear therapist, I have been struggling with depression for several years now, and it has taken a toll on every aspect of my life.
+    - Through this therapy session
+    - my primary objective is to regain my sense of joy
+    - motivation
+    - and zest for life that has been lost due to depression.
+    - It feels like a dark cloud constantly hangs above me, leaving me with feelings of sadness, hopelessness, and emptiness.
+    - This depressive episode began after the loss of my loved one.
+    - Their sudden passing deeply impacted me emotionally, and it triggered an ongoing state of grief that transitioned into depression.
+    - I have trouble finding pleasure in activities I used to enjoy, as everything now feels dull and meaningless.
+    - My sleep has also been severely disrupted – most nights, I struggle with insomnia or find myself oversleeping.
+    - An event that particularly stands out is when my closest friends surprised me on my birthday.
+    - Despite their efforts, I felt detached from the celebration and struggled to genuinely engage with them.
+    - This made me realize how much depression has isolated me from those around me, which only further perpetuates my negative thoughts.
+    - I recognize that professional help is necessary for me to address this deep-rooted depression.
+    - Are there any specific therapeutic approaches you recommend for treating depression?
+    - How long should I expect the recovery process to take?
+    - Additionally, are there any lifestyle changes or coping strategies I can use to complement therapy?
+    
+- intent: depression_p0181
+  examples: |
+    - Dear therapist, I have noticed a pattern where my depression symptoms become more severe during winter months.
+    - The lack of sunlight and long stretches of darkness seem to exacerbate my feelings of sadness and lethargy.
+    - During these times, I struggle to get out of bed or maintain any level of productivity.
+    - I genuinely want to learn strategies to manage this seasonal aspect of my depression effectively.
+    
+- intent: depression_p0182
+  examples: |
+    - Deep-rooted sadness seems to have settled within me for an extended period.
+    - It permeates every aspect of my existence, hindering my ability to find pleasure or interest in activities I used to love.
+    - With the help of counseling, my hope is to untangle the complexities of my depression and foster a path towards healing.
+    
+- intent: depression_p0183
+  examples: |
+    - Depression I've been battling depression for quite some time now, and it's affecting every aspect of my life.
+    - My goal is to regain a sense of joy and find effective coping mechanisms to overcome this overwhelming darkness.
+    - I feel a constant heaviness, sadness, and lack of motivation that saps the energy out of me.
+    - Negative thoughts monopolize my mind, leaving little room for positive emotions.
+    - The potential causes for my depression could be a combination of genetic predisposition and unresolved traumatic experiences.
+    - There isn't one specific triggering event; rather, it is an ongoing struggle.
+    - However, recently, after experiencing a major setback at work, I spiraled into deep despair.
+    - It felt like everything was falling apart, rendering any progress insignificant.
+    - This incident exacerbated my depressive symptoms.
+    - The frequency, intensity, and duration of these symptoms vary.
+    - Some days are better than others, but on average, they persist throughout most of my day, hampering productivity and enjoyment in life.
+    - Coping with the simplest tasks can become overwhelming during periods of intense depression.
+    - Significant life events, such as the loss of loved ones or past abusive relationships, contribute to my vulnerability towards depression.
+    - Additionally, family history of mental health struggles creates a genetic predisposition that adds complexity to my experience.
+    - To cope, I've sought solace in therapy, medication, and engaging in activities that usually bring joy.
+    - While these have provided some relief, they often fall short when confronted with the depths of my depression.
+    - My hope is that counseling will help me identify deeper patterns and establish more effective coping strategies.
+    - Questions: - Are there alternative treatment options or therapies besides medication that you recommend?
+    - - What strategies can I employ to regain motivation and cultivate a more positive outlook despite ongoing depressive episodes?
+    
+- intent: depression_p0184
+  examples: |
+    - Depression "I've been experiencing symptoms of depression and I believe counseling might assist me in managing them effectively.
+    - Lately, I have felt overwhelming sadness and hopelessness, making it difficult to find joy or motivation in daily activities.
+    - My goal here is to work towards recovery and regain control over my life. For example, I've noticed a significant decrease in energy levels recently.
+    - Simple tasks that used to bring me pleasure now feel exhausting and burdensome.
+    - This loss of interest has further deepened my feelings of despair. These depressive symptoms have been persistent for several months, with varying intensities.
+    - Most days
+    - I experience a constant cloud of melancholy
+    - but there are also periods where the symptoms worsen
+    - making it challenging to function. In terms of potential triggers
+    - I've experienced a series of significant losses in my personal life
+    - including the death of a loved one and the end of a long-lasting friendship.
+    - These events have undoubtedly impacted my mental well-being. What strategies or therapeutic techniques do you typically utilize when working with individuals experiencing depression?
+    - How can I begin taking steps towards recovery and rebuilding my life?
+    
+- intent: depression_p0185
+  examples: |
+    - Depression Hi, thank you for meeting with me today.
+    - I'm struggling with depression
+    - I can gain a better understanding of why I'm feeling this way and develop strategies to manage it effectively.
+    - Lately, I've been experiencing overwhelming sadness and a lack of motivation.
+    - Simple tasks like getting out of bed or taking care of myself have become incredibly challenging.
+    - This state of melancholy often lingers throughout the day, lasting for weeks at a time.
+    - There are days when I struggle to find joy in activities I used to love.
+    - For example, playing guitar used to bring me immense pleasure, but now it feels like a burden.
+    - This loss of interest and pleasure in things that once brought me joy has further reinforced my sadness.
+    - One trigger for my depression is the recent loss of a loved one.
+    - My grandmother, who was like a second mother to me, passed away unexpectedly last month.
+    - I've been overwhelmed by grief and have found it difficult to not only cope with her absence but also process my emotions surrounding her passing.
+    - In terms of coping strategies, I try to maintain a routine, engage in light exercise, and practice mindfulness techniques such as deep breathing or meditation.
+    - However, these strategies often feel inadequate in alleviating the heaviness of my depression.
+    - My question for you is what therapeutic approaches do you recommend for managing depression?
+    - Are there any specific techniques or exercises we can work on together to address the root causes of my sadness?
+    
+- intent: depression_p0186
+  examples: |
+    - Depression Lately, I've been feeling extremely down and hopeless, and I want to work towards overcoming this depression.
+    - My ultimate goal for this counseling session is to regain a sense of joy, purpose, and motivation in my life.
+    - My overwhelming sadness seems to consume me almost every day.
+    - No matter how hard I try to shift my thoughts, I'm constantly plagued by negative emotions and a persistent feeling of emptiness.
+    - It's affecting my ability to enjoy activities I once loved.
+    - One event that triggered these depressive symptoms was the loss of a close friend last year.
+    - Ever since then, I have struggled with grief and finding meaning in life.
+    - Additionally, there were instances of bullying during my teenage years that significantly impacted my self-esteem and contributed to my current state.
+    - I experience physical symptoms along with the emotional aspects of depression.
+    - I usually find it difficult to get out of bed, lack energy throughout the day, and have lost my appetite.
+    - These symptoms persist for weeks or even months at a time.
+    - In terms of coping strategies, I find solace in painting and music as they provide temporary relief from the overwhelming sadness.
+    - However, these activities are not enough to fully navigate through my depression.
+    - Can you please explain how therapy can help individuals dealing with depression?
+    - Additionally, I'd like to know if medication is often recommended alongside counseling.
+    
+- intent: depression_p0187
+  examples: |
+    - Depression Lately, I've been feeling extremely sad and unmotivated.
+    - It's affecting all aspects of my life and I just want to regain control and happiness.
+    - Through counseling, my goal is to understand the root causes of my depression and develop strategies for managing and overcoming it.
+    - I've always been a perfectionist, constantly putting pressure on myself to succeed.
+    - This has caused a lot of stress and ultimately triggered my symptoms of depression.
+    - Recently, I experienced a major setback at work where I failed to meet expectations.
+    - The disappointment and feelings of inadequacy overwhelmed me, and since then, I've been spiraling into this deep sadness.
+    - My symptoms include persistent feelings of hopelessness and lethargy
+    - as well as recurrent thoughts of worthlessness.
+    - These symptoms have been present for the past two months and seem to fluctuate in intensity throughout the day.
+    - I come from a family that values success above everything else, which has added additional pressure to perform well.
+    - In terms of coping strategies, I find solace in journaling and expressing my emotions through art.
+    - However, these activities only provide temporary relief.
+    - I'm now reaching out for professional help to address the underlying issues causing my depression.
+    - Do you believe therapy is an effective treatment option?
+    - How long does it typically take to notice improvements with therapy?
+    
+- intent: depression_p0188
+  examples: |
+    - Depression - Start here:
+    
+- intent: depression_p0189
+  examples: |
+    - Depression affects every aspect of my life right now.
+    - I often question my worth and struggle to find joy in anything.
+    - Recently, my grandmother passed away, triggering intense grief which exacerbated my depressive symptoms.
+    - The loss feels unbearable, and I constantly think about everything she meant to me.
+    - I hope counseling can help me process this loss along with my ongoing battle with depression.
+    
+- intent: depression_p0190
+  examples: |
+    - Depression affects me both physically and emotionally.
+    - I often feel exhausted and lack motivation to engage in activities I once enjoyed.
+    - My mood is consistently low, and I struggle to find pleasure in anything.
+    - It's like I'm trapped in a dark cloud, unable to see any light or hope.
+    
+- intent: depression_p0191
+  examples: |
+    - Depression continues to hold me captive, and it's become increasingly difficult to find any light amidst the darkness.
+    - My emotions fluctuate between sadness, emptiness, and constant self-criticism.
+    - It feels as if I'm trapped in a never-ending cycle of negative thoughts and hopelessness.
+    - The possible triggers for my depression could be a combination of genetic predisposition and prolonged exposure to stressful environments.
+    - My family has a history of depression, which increases my susceptibility to this mental health condition.
+    - Additionally, ongoing work-related stress and financial difficulties have added significant strain to my emotional well-being.
+    - A specific situation that contributes to my feelings of despair is when I constantly compare myself to others.
+    - I see everyone else seemingly leading successful lives while I feel stuck and incapable of achieving anything worthwhile.
+    - This comparison only intensifies my self-doubt and fuels my depressive symptoms.
+    - Symptomatically, I experience changes in appetite, disrupted sleep patterns, and physical exhaustion.
+    - The duration of these symptoms can last for weeks or even months before experiencing any temporary relief.
+    - Discussing my past experiences reveals a traumatic event that may be relevant to my current struggles.
+    - During my adolescence, I experienced severe bullying at school, which left me feeling isolated and worthless.
+    - These memories resurface frequently, further deepening my depressive state.
+    - In terms of coping mechanisms, I engage in journaling and listening to uplifting music as ways to distract myself temporarily from the darkness.
+    - However, these strategies offer only short-lived moments of solace.
+    - I have some questions regarding treatment options for depression.
+    - How effective are therapy techniques specifically targeted toward overcoming depression?
+    - Is there a need for medication alongside counseling?
+    - And how long does it typically take to shift towards recovery through therapy?
+    
+- intent: depression_p0192
+  examples: |
+    - Depression has affected many areas of my life, including my relationships.
+    - After experiencing a major loss in my family, I've found it difficult to connect with others emotionally.
+    - I often feel numb and detached, unable to express or receive affection.
+    - This has strained my relationships and left me feeling isolated.
+    - How can I rebuild these connections and find joy in my interactions again?
+    
+- intent: depression_p0193
+  examples: |
+    - Depression has affected me deeply due to significant life events such as the loss of a loved one.
+    - Recently, I experienced the passing of a close family member, and it triggered a profound sense of grief and emptiness.
+    - Coping with this loss has been incredibly challenging, and it has exacerbated my feelings of depression.
+    
+- intent: depression_p0194
+  examples: |
+    - Depression has affected my ability to concentrate and focus on tasks.
+    - Even simple chores become overwhelming, and I end up procrastinating or not completing them at all.
+    - I want to discuss these difficulties in maintaining productivity and find ways to improve my motivation and concentration.
+    
+- intent: depression_p0195
+  examples: |
+    - Simple everyday activities have become challenging, and I struggle to find the energy to complete them.
+    
+- intent: depression_p0196
+  examples: |
+    - Simple things like reading a book or completing assignments at work take much longer than they used to.
+    - This lack of productivity only adds to my feelings of worthlessness and frustration.
+    
+- intent: depression_p0197
+  examples: |
+    - Depression has affected my appetite, causing fluctuations in my weight.
+    - During periods of deep sadness, I tend to lose interest in food and experience a loss of appetite.
+    - On the other hand, there are times when I turn to food as a source of comfort, leading to overeating and subsequent guilt.
+    - These unhealthy eating patterns contribute to my negative body image and worsen my depressive symptoms.
+    
+- intent: depression_p0198
+  examples: |
+    - Depression has affected my appetite, leading to significant changes in weight.
+    - I've noticed a decrease in my interest in food and find it challenging to maintain a healthy diet.
+    
+- intent: depression_p0199
+  examples: |
+    - Depression has affected my appetite, leading to significant weight loss.
+    - I've also noticed a decrease in my interest in food, which further contributes to my low energy levels.
+    - What steps can I take to improve my nutrition and regain a healthy relationship with food?
+    
+- intent: depression_p0200
+  examples: |
+    - Depression has affected my concentration and memory, making it difficult to focus on tasks or retain information.
+    - I'm seeking strategies to improve cognitive function and enhance my productivity.    
