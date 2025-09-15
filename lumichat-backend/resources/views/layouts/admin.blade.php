@@ -207,6 +207,19 @@
 
         <p class="mt-4 px-3 text-[11px] uppercase tracking-wider/relaxed opacity-90 nav-label">Reports</p>
 
+        <a href="{{ route('admin.counselor-logs.index') }}"
+          aria-current="{{ request()->routeIs('admin.counselor-logs.*') ? 'page' : 'false' }}"
+          class="nav-item group relative mt-1.5 flex items-center gap-3 px-3 py-2.5 rounded-lg
+                  ring-1 ring-transparent hover:ring-white/10 hover:bg-white/10
+                  {{ request()->routeIs('admin.counselor-logs.*') ? 'is-active bg-white/15 ring-white/10' : '' }}">
+          <span class="inline-flex w-10 h-10 items-center justify-center rounded-lg
+                      {{ request()->routeIs('admin.counselor-logs.*') ? 'bg-white/20' : 'bg-white/10' }}">
+            <img src="{{ asset('images/icons/logs.png') }}" class="w-[22px] h-[22px]" alt="">
+          </span>
+          <span class="nav-label font-medium">Counselor Logs</span>
+          <span class="rail-tip">Counselor Logs</span>
+        </a>
+
         <a href="{{ route('admin.chatbot-sessions.index') }}"
           aria-current="{{ request()->routeIs('admin.chatbot-sessions.*') ? 'page' : 'false' }}"
           class="nav-item group relative mt-1.5 flex items-center gap-3 px-3 py-2.5 rounded-lg
@@ -218,19 +231,6 @@
           </span>
           <span class="nav-label font-medium">Chatbot Sessions</span>
           <span class="rail-tip">Chatbot Sessions</span>
-        </a>
-
-        <a href="{{ route('admin.self-assessments.index') }}"
-          aria-current="{{ request()->routeIs('admin.self-assessments.*') ? 'page' : 'false' }}"
-          class="nav-item group relative mt-1.5 flex items-center gap-3 px-3 py-2.5 rounded-lg
-                  ring-1 ring-transparent hover:ring-white/10 hover:bg-white/10
-                  {{ request()->routeIs('admin.self-assessments.*') ? 'is-active bg-white/15 ring-white/10' : '' }}">
-          <span class="inline-flex w-10 h-10 items-center justify-center rounded-lg
-                      {{ request()->routeIs('admin.self-assessments.*') ? 'bg-white/20' : 'bg-white/10' }}">
-            <img src="{{ asset('images/icons/self-assessment.png') }}" class="w-[22px] h-[22px]" alt="">
-          </span>
-          <span class="nav-label font-medium">Self-Assessments</span>
-          <span class="rail-tip">Self-Assessments</span>
         </a>
 
         <a href="{{ route('admin.diagnosis-reports.index') }}"

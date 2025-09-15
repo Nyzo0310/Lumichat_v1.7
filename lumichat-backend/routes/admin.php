@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\ChatbotSessionController;
 use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
 use App\Http\Controllers\Admin\SelfAssessmentController;
+use App\Http\Controllers\Admin\CounselorLogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -81,17 +82,13 @@ Route::prefix('admin')
             ->name('appointments.saveReport')
             ->whereNumber('appointment');
 
-        /* ========== SELF-ASSESSMENTS (Controller-driven) ========== */
-        Route::get('/self-assessments', [SelfAssessmentController::class, 'index'])
-            ->name('self-assessments.index');
+        // --- Counselor Logs ---
+        Route::get('/counselor-logs', [CounselorLogController::class, 'index'])
+            ->name('counselor-logs.index');
 
-        Route::get('/self-assessments/{assessment}', [SelfAssessmentController::class, 'show'])
-            ->name('self-assessments.show')
-            ->whereNumber('assessment');
-
-        Route::post('/self-assessments/{assessment}/feedback', [SelfAssessmentController::class, 'feedback'])
-            ->name('self-assessments.feedback')
-            ->whereNumber('assessment');
+        Route::get('/counselor-logs/{counselor}', [CounselorLogController::class, 'show'])
+            ->whereNumber('counselor')
+            ->name('counselor-logs.show');
 
         /* ========== OTHER STATIC REPORT VIEWS (PLACEHOLDERS) ========== */
         Route::view('diagnosis-reports',      'admin.diagnosis-reports.index')->name('diagnosis-reports.index');
