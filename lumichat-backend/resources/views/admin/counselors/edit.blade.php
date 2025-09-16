@@ -6,7 +6,7 @@
 <div class="max-w-5xl mx-auto p-6 space-y-6">
 
   {{-- Top bar --}}
-  <div class="flex items-center justify-between">
+  <div class="flex items-center justify-between animate-fadeup">
     <a href="{{ route('admin.counselors.index') }}"
        class="text-slate-600 hover:text-slate-800 inline-flex items-center gap-2">
       <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -22,8 +22,8 @@
     $initialSlots = old('availability',
       optional($counselor->availabilities)->map(function($a){
         return [
-          'weekday'    => (int) $a->weekday,
-          'start_time' => $a->start_time,
+          'weekday'    => (int) $a->weekday,   // 0=Sun..6=Sat
+          'start_time' => $a->start_time,      // may be HH:MM or HH:MM:SS
           'end_time'   => $a->end_time,
         ];
       })->values() ?? []
@@ -33,13 +33,13 @@
   {{-- Form Card --}}
   <div x-data="CounselorForm()"
        x-init="init(@js($initialSlots))"
-       class="bg-white rounded-2xl shadow-sm border border-slate-200/70 overflow-hidden">
+       class="bg-white rounded-2xl shadow-sm border border-slate-200/70 overflow-hidden animate-fadeup">
 
     <form method="POST" action="{{ route('admin.counselors.update', $counselor) }}" novalidate>
       @csrf
       @method('PUT')
 
-      {{-- ========== Counselor Details ========== --}}
+      {{-- ===== Counselor Details ===== --}}
       <div class="p-6 sm:p-8 border-b border-slate-200/70">
         <h2 class="text-lg font-semibold text-slate-800">Counselor Details</h2>
         <p class="text-sm text-slate-500">Edit the counselor’s basic info and status.</p>
@@ -81,34 +81,32 @@
         </div>
       </div>
 
-      {{-- ========== Weekly Availability (same UI as create) ========== --}}
+      {{-- ===== Weekly Availability (Weekdays only) ===== --}}
       <div class="p-6 sm:p-8">
         <div class="flex items-center justify-between">
           <div>
             <h2 class="text-lg font-semibold text-slate-800">Weekly Availability</h2>
-            <p class="text-sm text-slate-500">Pick days, set a time range, and add to multiple days in one click.</p>
+            <p class="text-sm text-slate-500">Weekdays only (Mon–Fri). Pick days, set a time range, then add.</p>
           </div>
 
           {{-- Shortcuts --}}
           <div class="inline-flex rounded-xl ring-1 ring-slate-200 bg-white overflow-hidden">
             <button type="button" @click="preset('monfri')" class="px-3 py-1.5 text-sm hover:bg-slate-50">Mon–Fri</button>
             <div class="w-px bg-slate-200/80"></div>
-            <button type="button" @click="preset('alldays')" class="px-3 py-1.5 text-sm hover:bg-slate-50">All days</button>
-            <div class="w-px bg-slate-200/80"></div>
             <button type="button" @click="clearSelection()" class="px-3 py-1.5 text-sm hover:bg-rose-50 text-rose-700">Clear</button>
           </div>
         </div>
 
         <div class="mt-4 rounded-xl border border-slate-200/70 bg-white">
-          {{-- Controls row --}}
+          {{-- Controls --}}
           <div class="p-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            {{-- Day chips (left) --}}
+            {{-- Day chips (Mon–Fri only) --}}
             <div class="flex flex-wrap gap-1.5">
               <template x-for="(d, idx) in days" :key="idx">
                 <button type="button"
-                        @click="toggleDay(idx)"
+                        @click="toggleDay(d.value)"
                         class="h-9 px-3 rounded-lg ring-1 text-sm transition"
-                        :class="isSelected(idx)
+                        :class="isSelected(d.value)
                                 ? 'bg-indigo-600 text-white ring-indigo-600'
                                 : 'bg-white text-slate-700 hover:bg-slate-50 ring-slate-200'">
                   <span x-text="d.short"></span>
@@ -116,7 +114,7 @@
               </template>
             </div>
 
-            {{-- Time + Add (right) --}}
+            {{-- Time + Add --}}
             <div class="flex items-center gap-2 w-full md:w-auto">
               <span class="text-xs font-medium text-slate-600 mr-1 hidden md:inline-block">Time</span>
 
@@ -153,7 +151,7 @@
                     <div class="col-span-12 sm:col-span-3 lg:col-span-2">
                       <span class="inline-flex items-center h-8 px-3 rounded-full text-xs font-semibold
                                    bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200 whitespace-nowrap"
-                            x-text="days[row.weekday].long"></span>
+                            x-text="dayLabel(row.weekday)"></span>
                     </div>
 
                     {{-- Times --}}
@@ -218,70 +216,122 @@
   </div>
 </div>
 
-{{-- Alpine.js (if not already included globally) --}}
+{{-- Alpine.js (if not loaded globally) --}}
 <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
+{{-- SweetAlert2 --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
+  // ===== Server feedback (SweetAlert) =====
+  @if (session('success'))
+    Swal.fire({ icon: 'success', title: 'Updated', text: @json(session('success')), confirmButtonColor: '#4f46e5' });
+  @endif
+  @if (session('error'))
+    Swal.fire({ icon: 'error', title: 'Error', text: @json(session('error')), confirmButtonColor: '#ef4444' });
+  @endif
+  @if ($errors->any())
+    Swal.fire({
+      icon: 'error',
+      title: 'Please fix the following',
+      html: `{!! implode('<br>', $errors->all()) !!}`,
+      confirmButtonColor: '#ef4444'
+    });
+  @endif
+
+  // ===== Alpine component (Weekdays only, robust time parsing) =====
   function CounselorForm() {
     return {
+      // Only weekdays (Mon..Fri)
       days: [
-        { short:'Su', long:'Sunday' },
-        { short:'Mon', long:'Monday' },
-        { short:'Tue', long:'Tuesday' },
-        { short:'Wed', long:'Wednesday' },
-        { short:'Thu', long:'Thursday' },
-        { short:'Fri', long:'Friday' },
-        { short:'Sat', long:'Saturday' },
+        { value:1, short:'Mon', long:'Monday' },
+        { value:2, short:'Tue', long:'Tuesday' },
+        { value:3, short:'Wed', long:'Wednesday' },
+        { value:4, short:'Thu', long:'Thursday' },
+        { value:5, short:'Fri', long:'Friday' },
       ],
-      selectedDays: [1,2,3,4,5], // default Mon–Fri
+      selectedDays: [1,2,3,4,5],
       range: { start: '09:00', end: '12:00' },
       slots: [],
 
-      init(oldOrExistingSlots) {
-        if (Array.isArray(oldOrExistingSlots) && oldOrExistingSlots.length) {
-          this.slots = oldOrExistingSlots.map(s => ({
-            weekday: Number(s.weekday),
-            start_time: s.start_time,
-            end_time: s.end_time
-          }));
-          // Sort nicely on load
-          this.slots.sort((a,b)=> a.weekday - b.weekday || a.start_time.localeCompare(b.start_time));
+      // Convert "10:00 AM", "17:30", or "09:00:00" => "10:00" / "17:30" / "09:00"
+      to24(t) {
+        if (!t) return '';
+        t = (''+t).trim();
+
+        // Already 24h, with or without seconds
+        const mmss = t.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+        if (mmss) {
+          const hh = String(mmss[1]).padStart(2,'0');
+          const mm = mmss[2];
+          return `${hh}:${mm}`;
         }
+
+        // h:mm AM/PM
+        const ampm = t.match(/^(\d{1,2}):(\d{2})\s*([ap]m)$/i);
+        if (ampm) {
+          let hh = parseInt(ampm[1],10), mm = ampm[2], ap = ampm[3].toLowerCase();
+          if (ap==='pm' && hh !== 12) hh += 12;
+          if (ap==='am' && hh === 12) hh = 0;
+          return `${String(hh).padStart(2,'0')}:${mm}`;
+        }
+
+        return '';
       },
 
-      // Helpers for day chips
+      init(oldOrExistingSlots) {
+        const allowed = new Set([1,2,3,4,5]); // Mon..Fri
+        if (Array.isArray(oldOrExistingSlots) && oldOrExistingSlots.length) {
+          this.slots = oldOrExistingSlots
+            .filter(s => allowed.has(Number(s.weekday))) // ignore weekends in UI
+            .map(s => ({
+              weekday: Number(s.weekday),
+              start_time: this.to24(s.start_time),
+              end_time: this.to24(s.end_time),
+            }))
+            .filter(s => s.start_time && s.end_time);
+          this.sortSlots();
+        }
+        // Normalize default range
+        this.range.start = this.to24(this.range.start) || '09:00';
+        this.range.end   = this.to24(this.range.end)   || '12:00';
+      },
+
+      dayLabel(wd) {
+        const map = {1:'Monday',2:'Tuesday',3:'Wednesday',4:'Thursday',5:'Friday'};
+        return map[wd] || '';
+      },
       isSelected(d) { return this.selectedDays.includes(d); },
       toggleDay(d) {
         this.isSelected(d)
-          ? this.selectedDays = this.selectedDays.filter(x => x !== d)
-          : this.selectedDays.push(d);
+          ? this.selectedDays = this.selectedDays.filter(x=>x!==d)
+          : this.selectedDays = [...this.selectedDays, d];
         this.selectedDays.sort((a,b)=>a-b);
       },
-      preset(type) {
-        if (type === 'monfri') this.selectedDays = [1,2,3,4,5];
-        if (type === 'alldays') this.selectedDays = [0,1,2,3,4,5,6];
-      },
+      preset(type) { if (type==='monfri') this.selectedDays = [1,2,3,4,5]; },
       clearSelection() { this.selectedDays = []; },
+      sortSlots() { this.slots.sort((a,b)=> a.weekday - b.weekday || a.start_time.localeCompare(b.start_time)); },
 
-      // Add slots
+      // Add slots with client validation
       bulkAdd() {
-        if (!this.selectedDays.length || !this.range.start || !this.range.end) return;
-        if (this.range.end <= this.range.start) { alert('End time must be after start time.'); return; }
-
-        const start = this.range.start, end = this.range.end;
+        const start = this.to24(this.range.start), end = this.to24(this.range.end);
+        if (!this.selectedDays.length || !start || !end) {
+          Swal.fire({icon:'warning', title:'Incomplete', text:'Pick weekday(s) and set a time range first.', confirmButtonColor:'#4f46e5'});
+          return;
+        }
+        if (end <= start) {
+          Swal.fire({icon:'error', title:'Time invalid', text:'End time must be after start time.', confirmButtonColor:'#ef4444'});
+          return;
+        }
         this.selectedDays.forEach(d => {
           const exists = this.slots.some(s => s.weekday===d && s.start_time===start && s.end_time===end);
           if (!exists) this.slots.push({ weekday:d, start_time:start, end_time:end });
         });
-        this.slots.sort((a,b)=> a.weekday - b.weekday || a.start_time.localeCompare(b.start_time));
+        this.sortSlots();
       },
 
-      // Row actions
       remove(i) { this.slots.splice(i,1); },
-      duplicate(i) {
-        const item = this.slots[i];
-        this.slots.splice(i+1, 0, { ...item });
-      },
+      duplicate(i) { const item = this.slots[i]; this.slots.splice(i+1, 0, { ...item }); },
     }
   }
 </script>
