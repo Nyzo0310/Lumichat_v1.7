@@ -1,16 +1,16 @@
+{{-- resources/views/admin/course-analytics/show.blade.php --}}
 @extends('layouts.admin')
 @section('title','Course Analytics • Details')
 
 @section('content')
-
-
 <div class="max-w-5xl mx-auto space-y-6">
-
   {{-- Header --}}
   <div class="flex items-start justify-between gap-4">
     <div>
       <h2 class="text-2xl font-semibold tracking-tight text-slate-800">Course Analytics</h2>
-      <p class="text-sm text-slate-500">{{ $title }}</p>
+      <p class="text-sm text-slate-500">
+        {{ $course->course ?? '—' }} • {{ $course->year_level ?? '—' }}
+      </p>
     </div>
     <a href="{{ route('admin.course-analytics.index') }}"
        class="inline-flex items-center h-9 px-3 rounded-lg text-sm font-medium bg-white border border-slate-200 shadow-sm hover:bg-slate-50">

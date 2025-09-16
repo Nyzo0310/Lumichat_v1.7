@@ -12,6 +12,11 @@ use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\ChatbotSessionController;
 use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
 use App\Http\Controllers\Admin\SelfAssessmentController;
+use App\Http\Controllers\Admin\DiagnosisReportController;
+use App\Http\Controllers\Admin\CounselorLogController;
+use App\Http\Controllers\Admin\CourseAnalyticsController;  
+      
+
 
 /*
 |--------------------------------------------------------------------------
@@ -89,16 +94,17 @@ Route::prefix('admin')
             ->whereNumber('counselor')
             ->name('counselor-logs.show');
 
-             /* ========== Diagnosis Reports ========== */
+    /* ========== Diagnosis Reports ========== */
            Route::resource('diagnosis-reports', DiagnosisReportController::class)
             ->only(['index','show'])
             ->parameters(['diagnosis-reports' => 'report']);
 
-      
 
-      /* ========== COURSE ANALYTICS (Controller-driven) ========== */
-    Route::resource('course-analytics', CourseAnalyticsController::class)
-    ->only(['index', 'show'])
-    ->parameters(['course-analytics' => 'course'])      // {course} is the ID
-    ->whereNumber('course');                             // numeric id
+           /* ========== COURSE ANALYTICS (Controller-driven) ========== */
+Route::get('course-analytics', [CourseAnalyticsController::class, 'index'])
+    ->name('course-analytics.index');
+
+Route::get('course-analytics/{course}', [CourseAnalyticsController::class, 'show'])
+    ->name('course-analytics.show')
+    ->whereNumber('course');
     });
