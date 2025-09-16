@@ -351,3 +351,195 @@ html[data-app="student"].compact .h-11 { height: 2.5rem !important; }
   .btn-press:active{ transform:translateY(1px) scale(.985); }
 
 }
+/* =========================================
+   12.) ADMIN RAIL (same as student sidebar)
+   ========================================= */
+#adminSidebar {
+  border-radius: 0 0 12px 0 !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,.18) !important;
+
+  /* fallback (in case variables fail) */
+  background-color: #4f46e5 !important;
+
+  /* gradient */
+  background-image: linear-gradient(135deg, var(--sidebar-grad-a), var(--sidebar-grad-b)) !important;
+  background-size: 200% 200% !important;
+
+  /* smooth animated sweep */
+  animation: sidebarGradient 14s ease infinite !important;
+}
+
+/* Match student sidebar spacing + pill behavior */
+#adminSidebar .nav-item {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .75rem 1rem !important;
+  border-radius: .9rem !important;   /* rounder, like student */
+  transition: background .2s, transform .12s ease;
+  position: relative; /* required for active marker */
+}
+
+#adminSidebar .nav-item:hover {
+  background: rgba(255,255,255,.14) !important;
+  transform: translateY(-1px); /* tiny lift effect */
+}
+
+#adminSidebar .nav-item.is-active {
+  background: rgba(255,255,255,.22) !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+}
+
+/* Left active marker (matches student sidebar) */
+#adminSidebar .nav-item.is-active::before {
+  content:"";
+  position:absolute;
+  left:10px;
+  top:50%;
+  transform:translateY(-50%);
+  width:4px;
+  height:26px;
+  border-radius:999px;
+  background:rgba(255,255,255,.96);
+}
+
+/* Icons container (circle behind icons) */
+#adminSidebar .nav-item > span.inline-flex {
+  border-radius: .75rem !important;
+  background: rgba(255,255,255,.1) !important;
+}
+
+#adminSidebar .nav-item.is-active > span.inline-flex {
+  background: rgba(255,255,255,.2) !important;
+}
+
+/* Sidebar icons (force white treatment like student) */
+#adminSidebar .sidebar-icon {
+  width: 22px !important;
+  height: 22px !important;
+  object-fit: contain;
+  -webkit-filter: invert(1) brightness(1.15);
+          filter: invert(1) brightness(1.15);
+}
+
+#adminSidebar .logout-icon {
+  filter:none !important; /* keep logout red */
+}
+
+/* Scrollbar styling (student parity) */
+#adminSidebar #railScroll::-webkit-scrollbar { width: 10px; }
+#adminSidebar #railScroll::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,.65);
+  border-radius: 9999px;
+  border: 2px solid rgba(255,255,255,.25);
+  background-clip: padding-box;
+}
+#adminSidebar #railScroll { scrollbar-color: rgba(255,255,255,.7) transparent; }
+
+/* ===== Collapsed rail polish: center logo + bigger icon pills ===== */
+
+/* Center the brand in the header when collapsed (desktop) */
+@media (min-width:1024px){
+  body.admin-collapsed #adminSidebar .rail-header{
+    justify-content: center !important;
+    gap: .5rem;
+  }
+  /* Make the logo a bit bigger when collapsed for presence */
+  body.admin-collapsed #adminSidebar .rail-header img{
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 9999px !important;
+  }
+}
+
+/* Give items breathing room in collapsed mode */
+@media (min-width:1024px){
+  body.admin-collapsed #adminSidebar a.nav-item{
+    /* center already handled by your JS/CSS, we just space them out */
+    margin: .45rem 0 !important;        /* vertical spacing */
+    padding: .5rem 0 !important;        /* tighter side padding */
+  }
+
+  /* Enlarge the icon container (the rounded square behind icons) */
+  body.admin-collapsed #adminSidebar a.nav-item > span.inline-flex{
+    width: 3rem !important;             /* 48px */
+    height: 3rem !important;
+    border-radius: .9rem !important;    /* same pill shape as student */
+    background: rgba(255,255,255,.12) !important;
+  }
+
+  /* Make the actual PNG/SVG icon a bit larger */
+  body.admin-collapsed #adminSidebar a.nav-item img.sidebar-icon{
+    width: 26px !important;
+    height: 26px !important;
+    -webkit-filter: invert(1) brightness(1.1);
+            filter: invert(1) brightness(1.1);
+  }
+
+  /* Subtle lift on hover even when collapsed */
+  body.admin-collapsed #adminSidebar a.nav-item:hover > span.inline-flex{
+    background: rgba(255,255,255,.18) !important;
+    transform: translateY(-1px);
+    transition: transform .12s ease, background .2s ease;
+  }
+
+  /* Hide the left active bar in collapsed mode (looks odd when centered) */
+  body.admin-collapsed #adminSidebar a.nav-item.is-active::before{
+    display: none !important;
+  }
+
+  /* Use a stronger active background to compensate for hidden marker */
+  body.admin-collapsed #adminSidebar a.nav-item.is-active > span.inline-flex{
+    background: rgba(255,255,255,.22) !important;
+  }
+}
+/* =========================================
+   X) DASHBOARD ENTRANCE ANIMATIONS
+   ========================================= */
+
+/* Fade + subtle rise + tiny scale-in */
+.animate-fadeup{
+  opacity: 0;
+  transform: translateY(12px) scale(.98);
+  animation: fadeUp .6s cubic-bezier(.22,1,.36,1) forwards;
+  will-change: transform, opacity;
+}
+@keyframes fadeUp {
+  0% { opacity: 0; transform: translateY(12px) scale(.96); }
+  70% { opacity: 1; transform: translateY(-2px) scale(1.02); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .animate-fadeup{ animation:none !important; opacity:1 !important; transform:none !important; }
+}
+.stagger-list > * {
+  opacity: 0;
+  transform: translateY(6px);
+  animation: fadeUp .5s ease forwards;
+}
+/* ----- Stagger helpers (set animation-delay via nth-child) ----- */
+/* Apply to a parent: .stagger-60; make sure children also have .animate-fadeup */
+.stagger-60 > *{ animation-delay: 0ms; }
+.stagger-60 > *:nth-child(1){ animation-delay: 0ms; }
+.stagger-60 > *:nth-child(2){ animation-delay: 60ms; }
+.stagger-60 > *:nth-child(3){ animation-delay: 120ms; }
+.stagger-60 > *:nth-child(4){ animation-delay: 180ms; }
+.stagger-60 > *:nth-child(5){ animation-delay: 240ms; }
+.stagger-60 > *:nth-child(6){ animation-delay: 300ms; }
+.stagger-60 > *:nth-child(7){ animation-delay: 360ms; }
+.stagger-60 > *:nth-child(8){ animation-delay: 420ms; }
+
+/* A slightly slower stagger, if you want it for other rows */
+.stagger-80 > *{ animation-delay: 0ms; }
+.stagger-80 > *:nth-child(1){ animation-delay: 0ms; }
+.stagger-80 > *:nth-child(2){ animation-delay: 80ms; }
+.stagger-80 > *:nth-child(3){ animation-delay: 160ms; }
+.stagger-80 > *:nth-child(4){ animation-delay: 240ms; }
+.stagger-80 > *:nth-child(5){ animation-delay: 320ms; }
+.stagger-80 > *:nth-child(6){ animation-delay: 400ms; }
+.stagger-80 > *:nth-child(7){ animation-delay: 480ms; }
+.stagger-80 > *:nth-child(8){ animation-delay: 560ms; }
+

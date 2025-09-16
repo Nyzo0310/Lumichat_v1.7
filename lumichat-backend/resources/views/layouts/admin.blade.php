@@ -116,163 +116,160 @@
 <body class="bg-slate-50 text-slate-800 antialiased">
 
   {{-- ===== SIDEBAR / RAIL ===== --}}
-  <aside id="adminSidebar"
-         class="fixed inset-y-0 left-0 z-40 -translate-x-full lg:translate-x-0
-                bg-gradient-to-b from-cyan-500 via-sky-500 to-violet-600 text-white shadow-xl">
+ {{-- ===== SIDEBAR / RAIL ===== --}}
+<aside id="adminSidebar"
+  class="fixed inset-y-0 left-0 z-40 -translate-x-full lg:translate-x-0 text-white shadow-xl">
 
-    {{-- Brand --}}
-    <div class="rail-header px-4 flex items-center justify-between border-b border-white/20">
-      <div class="flex items-center gap-2">
-        <img src="{{ asset('images/chatbot.png') }}"
-             class="w-9 h-9 rounded-full ring-2 ring-white/30 object-cover"
-             alt="LumiCHAT">
-        <span class="brand-text font-semibold tracking-wide">LumiCHAT</span>
-      </div>
-
-      {{-- X: collapse on desktop / close on mobile --}}
-      <button id="railClose"
-              class="p-2 rounded-md hover:bg-white/10 focus:outline-none"
-              aria-label="Collapse/Close sidebar"
-              title="Collapse (desktop) / Close (mobile)">
-        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"/>
-        </svg>
-      </button>
+  {{-- Brand --}}
+  <div class="rail-header px-4 flex items-center justify-between border-b border-white/20">
+    <div class="flex items-center gap-2">
+      <img src="{{ asset('images/chatbot.png') }}"
+           class="w-9 h-9 rounded-full ring-2 ring-white/30 object-cover"
+           alt="LumiCHAT">
+      <span class="brand-text font-semibold tracking-wide">LumiCHAT</span>
     </div>
 
-    {{-- Nav --}}
-    <nav class="h-[calc(100vh-var(--header-h))] flex flex-col">
-      <div id="railScroll" class="px-3 py-3 grow">
+    {{-- X: collapse on desktop / close on mobile --}}
+    <button id="railClose"
+            class="p-2 rounded-md hover:bg-white/10 focus:outline-none"
+            aria-label="Collapse/Close sidebar"
+            title="Collapse (desktop) / Close (mobile)">
+      <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
 
-        <p class="px-3 text-[11px] uppercase tracking-wider/relaxed opacity-90 nav-label">Main</p>
+  {{-- Nav --}}
+  <nav class="h-[calc(100vh-var(--header-h))] flex flex-col">
+    <div id="railScroll" class="px-3 py-3 grow">
 
-        {{-- Dashboard (only active on admin.dashboard) --}}
-        <a href="{{ route('admin.dashboard') }}"
-          aria-current="{{ request()->routeIs('admin.dashboard') ? 'page' : 'false' }}"
-          class="nav-item group relative mt-2 flex items-center gap-3 px-3 py-2.5 rounded-lg
-                  ring-1 ring-transparent hover:ring-white/10 hover:bg-white/10
-                  {{ request()->routeIs('admin.dashboard') ? 'is-active bg-white/15 ring-white/10' : '' }}">
-          <span class="inline-flex w-10 h-10 items-center justify-center rounded-lg
-                      {{ request()->routeIs('admin.dashboard') ? 'bg-white/20' : 'bg-white/10' }}">
-            <img src="{{ asset('images/icons/home.png') }}" class="w-[22px] h-[22px]" alt="">
-          </span>
-          <span class="nav-label font-medium">Dashboard Overview</span>
-          <span class="rail-tip">Dashboard Overview</span>
-        </a>
+      <p class="px-3 text-[11px] uppercase tracking-wider/relaxed opacity-90 nav-label">Main</p>
 
-        {{-- Counselor (active on any admin.counselors.*) --}}
-        <a href="{{ route('admin.counselors.index') }}"
-          aria-current="{{ request()->routeIs('admin.counselors.*') ? 'page' : 'false' }}"
-          class="nav-item group relative mt-1.5 flex items-center gap-3 px-3 py-2.5 rounded-lg
-                  ring-1 ring-transparent hover:ring-white/10 hover:bg-white/10
-                  {{ request()->routeIs('admin.counselors.*') ? 'is-active bg-white/15 ring-white/10' : '' }}">
-          <span class="inline-flex w-10 h-10 items-center justify-center rounded-lg
-                      {{ request()->routeIs('admin.counselors.*') ? 'bg-white/20' : 'bg-white/10' }}">
-            <img src="{{ asset('images/icons/counselor.png') }}" class="w-[22px] h-[22px]" alt="">
-          </span>
-          <span class="nav-label font-medium">Counselor</span>
-          <span class="rail-tip">Counselor</span>
-        </a>
+      {{-- Dashboard --}}
+      <a href="{{ route('admin.dashboard') }}"
+         aria-current="{{ request()->routeIs('admin.dashboard') ? 'page' : 'false' }}"
+         class="nav-item group relative mt-2 px-3 py-2.5 ring-1 ring-transparent
+                hover:bg-white/10 hover:ring-white/10
+                {{ request()->routeIs('admin.dashboard') ? 'is-active bg-white/15 ring-white/10' : '' }}">
+        <span class="inline-flex w-10 h-10 items-center justify-center">
+          <img src="{{ asset('images/icons/home.png') }}" class="sidebar-icon" alt="">
+        </span>
+        <span class="nav-label font-medium">Dashboard Overview</span>
+        <span class="rail-tip">Dashboard Overview</span>
+      </a>
 
-        <p class="mt-4 px-3 text-[11px] uppercase tracking-wider/relaxed opacity-90 nav-label">Student Management</p>
-        
-        {{-- Student Records (active on any admin.students.*) --}}
-        <a href="{{ route('admin.students.index') }}"
-          aria-current="{{ request()->routeIs('admin.students.*') ? 'page' : 'false' }}"
-          class="nav-item group relative mt-1.5 flex items-center gap-3 px-3 py-2.5 rounded-lg
-                  ring-1 ring-transparent hover:ring-white/10 hover:bg-white/10
-                  {{ request()->routeIs('admin.students.*') ? 'is-active bg-white/15 ring-white/10' : '' }}">
-          <span class="inline-flex w-10 h-10 items-center justify-center rounded-lg
-                      {{ request()->routeIs('admin.students.*') ? 'bg-white/20' : 'bg-white/10' }}">
-            <img src="{{ asset('images/icons/user.png') }}" class="w-[22px] h-[22px]" alt="">
-          </span>
-          <span class="nav-label font-medium">Student Records</span>
-          <span class="rail-tip">Student Records</span>
-        </a>
+      {{-- Counselor --}}
+      <a href="{{ route('admin.counselors.index') }}"
+         aria-current="{{ request()->routeIs('admin.counselors.*') ? 'page' : 'false' }}"
+         class="nav-item group relative mt-1.5 px-3 py-2.5 ring-1 ring-transparent
+                hover:bg-white/10 hover:ring-white/10
+                {{ request()->routeIs('admin.counselors.*') ? 'is-active bg-white/15 ring-white/10' : '' }}">
+        <span class="inline-flex w-10 h-10 items-center justify-center">
+          <img src="{{ asset('images/icons/counselor.png') }}" class="sidebar-icon" alt="">
+        </span>
+        <span class="nav-label font-medium">Counselor</span>
+        <span class="rail-tip">Counselor</span>
+      </a>
 
+      <p class="mt-4 px-3 text-[11px] uppercase tracking-wider/relaxed opacity-90 nav-label">Student Management</p>
 
-        <a href="{{ route('admin.appointments.index') }}"
-          aria-current="{{ request()->routeIs('admin.appointments.*') ? 'page' : 'false' }}"
-          class="nav-item group relative mt-1.5 flex items-center gap-3 px-3 py-2.5 rounded-lg
-                  ring-1 ring-transparent hover:ring-white/10 hover:bg-white/10
-                  {{ request()->routeIs('admin.appointments.*') ? 'is-active bg-white/15 ring-white/10' : '' }}">
-          <span class="inline-flex w-10 h-10 items-center justify-center rounded-lg
-                      {{ request()->routeIs('admin.appointments.*') ? 'bg-white/20' : 'bg-white/10' }}">
-            <img src="{{ asset('images/icons/appointment.png') }}" class="w-[22px] h-[22px]" alt="">
-          </span>
-          <span class="nav-label font-medium">Appointments</span>
-          <span class="rail-tip">Appointments</span>
-        </a>
+      {{-- Student Records --}}
+      <a href="{{ route('admin.students.index') }}"
+         aria-current="{{ request()->routeIs('admin.students.*') ? 'page' : 'false' }}"
+         class="nav-item group relative mt-1.5 px-3 py-2.5 ring-1 ring-transparent
+                hover:bg-white/10 hover:ring-white/10
+                {{ request()->routeIs('admin.students.*') ? 'is-active bg-white/15 ring-white/10' : '' }}">
+        <span class="inline-flex w-10 h-10 items-center justify-center">
+          <img src="{{ asset('images/icons/user.png') }}" class="sidebar-icon" alt="">
+        </span>
+        <span class="nav-label font-medium">Student Records</span>
+        <span class="rail-tip">Student Records</span>
+      </a>
 
-        <p class="mt-4 px-3 text-[11px] uppercase tracking-wider/relaxed opacity-90 nav-label">Reports</p>
+      {{-- Appointments --}}
+      <a href="{{ route('admin.appointments.index') }}"
+         aria-current="{{ request()->routeIs('admin.appointments.*') ? 'page' : 'false' }}"
+         class="nav-item group relative mt-1.5 px-3 py-2.5 ring-1 ring-transparent
+                hover:bg-white/10 hover:ring-white/10
+                {{ request()->routeIs('admin.appointments.*') ? 'is-active bg-white/15 ring-white/10' : '' }}">
+        <span class="inline-flex w-10 h-10 items-center justify-center">
+          <img src="{{ asset('images/icons/appointment.png') }}" class="sidebar-icon" alt="">
+        </span>
+        <span class="nav-label font-medium">Appointments</span>
+        <span class="rail-tip">Appointments</span>
+      </a>
 
-        <a href="{{ route('admin.counselor-logs.index') }}"
-          aria-current="{{ request()->routeIs('admin.counselor-logs.*') ? 'page' : 'false' }}"
-          class="nav-item group relative mt-1.5 flex items-center gap-3 px-3 py-2.5 rounded-lg
-                  ring-1 ring-transparent hover:ring-white/10 hover:bg-white/10
-                  {{ request()->routeIs('admin.counselor-logs.*') ? 'is-active bg-white/15 ring-white/10' : '' }}">
-          <span class="inline-flex w-10 h-10 items-center justify-center rounded-lg
-                      {{ request()->routeIs('admin.counselor-logs.*') ? 'bg-white/20' : 'bg-white/10' }}">
-            <img src="{{ asset('images/icons/logs.png') }}" class="w-[22px] h-[22px]" alt="">
-          </span>
-          <span class="nav-label font-medium">Counselor Logs</span>
-          <span class="rail-tip">Counselor Logs</span>
-        </a>
+      <p class="mt-4 px-3 text-[11px] uppercase tracking-wider/relaxed opacity-90 nav-label">Reports</p>
 
-        <a href="{{ route('admin.chatbot-sessions.index') }}"
-          aria-current="{{ request()->routeIs('admin.chatbot-sessions.*') ? 'page' : 'false' }}"
-          class="nav-item group relative mt-1.5 flex items-center gap-3 px-3 py-2.5 rounded-lg
-                  ring-1 ring-transparent hover:ring-white/10 hover:bg-white/10
-                  {{ request()->routeIs('admin.chatbot-sessions.*') ? 'is-active bg-white/15 ring-white/10' : '' }}">
-          <span class="inline-flex w-10 h-10 items-center justify-center rounded-lg
-                      {{ request()->routeIs('admin.chatbot-sessions.*') ? 'bg-white/20' : 'bg-white/10' }}">
-            <img src="{{ asset('images/icons/chatbot-session.png') }}" class="w-[22px] h-[22px]" alt="">
-          </span>
-          <span class="nav-label font-medium">Chatbot Sessions</span>
-          <span class="rail-tip">Chatbot Sessions</span>
-        </a>
+      {{-- Counselor Logs --}}
+      <a href="{{ route('admin.counselor-logs.index') }}"
+         aria-current="{{ request()->routeIs('admin.counselor-logs.*') ? 'page' : 'false' }}"
+         class="nav-item group relative mt-1.5 px-3 py-2.5 ring-1 ring-transparent
+                hover:bg-white/10 hover:ring-white/10
+                {{ request()->routeIs('admin.counselor-logs.*') ? 'is-active bg-white/15 ring-white/10' : '' }}">
+        <span class="inline-flex w-10 h-10 items-center justify-center">
+          <img src="{{ asset('images/icons/logs.png') }}" class="sidebar-icon" alt="">
+        </span>
+        <span class="nav-label font-medium">Counselor Logs</span>
+        <span class="rail-tip">Counselor Logs</span>
+      </a>
 
-        <a href="{{ route('admin.diagnosis-reports.index') }}"
-          aria-current="{{ request()->routeIs('admin.diagnosis-reports.*') ? 'page' : 'false' }}"
-          class="nav-item group relative mt-1.5 flex items-center gap-3 px-3 py-2.5 rounded-lg
-                  ring-1 ring-transparent hover:ring-white/10 hover:bg-white/10
-                  {{ request()->routeIs('admin.diagnosis-reports.*') ? 'is-active bg-white/15 ring-white/10' : '' }}">
-          <span class="inline-flex w-10 h-10 items-center justify-center rounded-lg
-                      {{ request()->routeIs('admin.diagnosis-reports.*') ? 'bg-white/20' : 'bg-white/10' }}">
-            <img src="{{ asset('images/icons/diagnosis.png') }}" class="w-[22px] h-[22px]" alt="">
-          </span>
-          <span class="nav-label font-medium">Diagnosis Reports</span>
-          <span class="rail-tip">Diagnosis Reports</span>
-        </a>
+      {{-- Chatbot Sessions --}}
+      <a href="{{ route('admin.chatbot-sessions.index') }}"
+         aria-current="{{ request()->routeIs('admin.chatbot-sessions.*') ? 'page' : 'false' }}"
+         class="nav-item group relative mt-1.5 px-3 py-2.5 ring-1 ring-transparent
+                hover:bg-white/10 hover:ring-white/10
+                {{ request()->routeIs('admin.chatbot-sessions.*') ? 'is-active bg-white/15 ring-white/10' : '' }}">
+        <span class="inline-flex w-10 h-10 items-center justify-center">
+          <img src="{{ asset('images/icons/chatbot-session.png') }}" class="sidebar-icon" alt="">
+        </span>
+        <span class="nav-label font-medium">Chatbot Sessions</span>
+        <span class="rail-tip">Chatbot Sessions</span>
+      </a>
 
+      {{-- Diagnosis Reports --}}
+      <a href="{{ route('admin.diagnosis-reports.index') }}"
+         aria-current="{{ request()->routeIs('admin.diagnosis-reports.*') ? 'page' : 'false' }}"
+         class="nav-item group relative mt-1.5 px-3 py-2.5 ring-1 ring-transparent
+                hover:bg-white/10 hover:ring-white/10
+                {{ request()->routeIs('admin.diagnosis-reports.*') ? 'is-active bg-white/15 ring-white/10' : '' }}">
+        <span class="inline-flex w-10 h-10 items-center justify-center">
+          <img src="{{ asset('images/icons/diagnosis.png') }}" class="sidebar-icon" alt="">
+        </span>
+        <span class="nav-label font-medium">Diagnosis Reports</span>
+        <span class="rail-tip">Diagnosis Reports</span>
+      </a>
 
-        <p class="mt-4 px-3 text-[11px] uppercase tracking-wider/relaxed opacity-90 nav-label">Analytics</p>
+      <p class="mt-4 px-3 text-[11px] uppercase tracking-wider/relaxed opacity-90 nav-label">Analytics</p>
 
-        <a href="{{ route('admin.course-analytics.index') }}"
-          aria-current="{{ request()->routeIs('admin.course-analytics.*') ? 'page' : 'false' }}"
-          class="nav-item group relative mt-1.5 flex items-center gap-3 px-3 py-2.5 rounded-lg
-                  ring-1 ring-transparent hover:ring-white/10 hover:bg-white/10
-                  {{ request()->routeIs('admin.course-analytics.*') ? 'is-active bg-white/15 ring-white/10' : '' }}">
-          <span class="inline-flex w-10 h-10 items-center justify-center rounded-lg
-                      {{ request()->routeIs('admin.course-analytics.*') ? 'bg-white/20' : 'bg-white/10' }}">
-            <img src="{{ asset('images/icons/graduate.png') }}" class="w-[22px] h-[22px]" alt="">
-          </span>
-          <span class="nav-label font-medium">Course Analytics</span>
-          <span class="rail-tip">Course Analytics</span>
-        </a>
+      {{-- Course Analytics --}}
+      <a href="{{ route('admin.course-analytics.index') }}"
+         aria-current="{{ request()->routeIs('admin.course-analytics.*') ? 'page' : 'false' }}"
+         class="nav-item group relative mt-1.5 px-3 py-2.5 ring-1 ring-transparent
+                hover:bg-white/10 hover:ring-white/10
+                {{ request()->routeIs('admin.course-analytics.*') ? 'is-active bg-white/15 ring-white/10' : '' }}">
+        <span class="inline-flex w-10 h-10 items-center justify-center">
+          <img src="{{ asset('images/icons/graduate.png') }}" class="sidebar-icon" alt="">
+        </span>
+        <span class="nav-label font-medium">Course Analytics</span>
+        <span class="rail-tip">Course Analytics</span>
+      </a>
+    </div>
 
-      {{-- Logout — visible only when rail is expanded --}}
-      <div class="px-3 py-3 border-t border-white/15 hide-when-collapsed">
-        <form method="POST" action="{{ route('logout') }}">
-          @csrf
-          <button class="w-full text-left px-3 py-2.5 rounded-lg bg-rose-600/90 hover:bg-rose-600 text-white font-medium">
-            Logout
-          </button>
-        </form>
-      </div>
-    </nav>
-  </aside>
+    {{-- Logout — visible only when rail is expanded --}}
+    <div class="px-3 py-3 border-t border-white/15 hide-when-collapsed">
+      <form method="POST" action="{{ route('logout') }}">
+        @csrf
+        <button class="w-full text-left px-3 py-2.5 rounded-lg bg-rose-600/90 hover:bg-rose-600 text-white font-medium">
+          Logout
+        </button>
+      </form>
+    </div>
+  </nav>
+</aside>
+
 
   {{-- Mobile scrim --}}
   <div id="sidebarScrim" class="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm hidden lg:hidden"></div>
