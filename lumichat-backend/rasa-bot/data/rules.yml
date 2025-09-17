@@ -1,8 +1,6 @@
 version: "3.1"
 rules:
-# ------------------------------
-# SIMPLE INTENTS
-# ------------------------------
+
 - rule: respond to greeting
   steps:
     - intent: greet
@@ -2413,7 +2411,7 @@ rules:
 - rule: respond to stress_burnout_p0200
   steps:
     - intent: stress_burnout_p0200
-    - action: utter_stress_burnout_p0200    
+    - action: utter_stress_burnout_p0200  
 
 - rule: respond to anger_p0001
   steps:
@@ -3147,6 +3145,7 @@ rules:
   steps:
     - intent: anger_p0183
     - action: utter_anger_p0183
+
 
 - rule: respond to depression_p0001
   steps:
@@ -4462,3 +4461,3017 @@ rules:
   steps:
     - intent: grief_loss_p0128
     - action: utter_grief_loss_p0128
+
+
+- rule: respond to loneliness_isolation_p0001
+  steps:
+    - intent: loneliness_isolation_p0001
+    - action: utter_loneliness_isolation_p0001
+- rule: respond to loneliness_isolation_p0002
+  steps:
+    - intent: loneliness_isolation_p0002
+    - action: utter_loneliness_isolation_p0002
+- rule: respond to loneliness_isolation_p0003
+  steps:
+    - intent: loneliness_isolation_p0003
+    - action: utter_loneliness_isolation_p0003
+- rule: respond to loneliness_isolation_p0004
+  steps:
+    - intent: loneliness_isolation_p0004
+    - action: utter_loneliness_isolation_p0004
+- rule: respond to loneliness_isolation_p0005
+  steps:
+    - intent: loneliness_isolation_p0005
+    - action: utter_loneliness_isolation_p0005
+- rule: respond to loneliness_isolation_p0006
+  steps:
+    - intent: loneliness_isolation_p0006
+    - action: utter_loneliness_isolation_p0006
+- rule: respond to loneliness_isolation_p0007
+  steps:
+    - intent: loneliness_isolation_p0007
+    - action: utter_loneliness_isolation_p0007
+- rule: respond to loneliness_isolation_p0008
+  steps:
+    - intent: loneliness_isolation_p0008
+    - action: utter_loneliness_isolation_p0008
+- rule: respond to loneliness_isolation_p0009
+  steps:
+    - intent: loneliness_isolation_p0009
+    - action: utter_loneliness_isolation_p0009
+- rule: respond to loneliness_isolation_p0010
+  steps:
+    - intent: loneliness_isolation_p0010
+    - action: utter_loneliness_isolation_p0010
+- rule: respond to loneliness_isolation_p0011
+  steps:
+    - intent: loneliness_isolation_p0011
+    - action: utter_loneliness_isolation_p0011
+- rule: respond to loneliness_isolation_p0012
+  steps:
+    - intent: loneliness_isolation_p0012
+    - action: utter_loneliness_isolation_p0012
+- rule: respond to loneliness_isolation_p0013
+  steps:
+    - intent: loneliness_isolation_p0013
+    - action: utter_loneliness_isolation_p0013
+- rule: respond to loneliness_isolation_p0014
+  steps:
+    - intent: loneliness_isolation_p0014
+    - action: utter_loneliness_isolation_p0014
+- rule: respond to loneliness_isolation_p0015
+  steps:
+    - intent: loneliness_isolation_p0015
+    - action: utter_loneliness_isolation_p0015
+- rule: respond to loneliness_isolation_p0016
+  steps:
+    - intent: loneliness_isolation_p0016
+    - action: utter_loneliness_isolation_p0016
+- rule: respond to loneliness_isolation_p0017
+  steps:
+    - intent: loneliness_isolation_p0017
+    - action: utter_loneliness_isolation_p0017
+- rule: respond to loneliness_isolation_p0018
+  steps:
+    - intent: loneliness_isolation_p0018
+    - action: utter_loneliness_isolation_p0018
+- rule: respond to loneliness_isolation_p0019
+  steps:
+    - intent: loneliness_isolation_p0019
+    - action: utter_loneliness_isolation_p0019
+- rule: respond to loneliness_isolation_p0020
+  steps:
+    - intent: loneliness_isolation_p0020
+    - action: utter_loneliness_isolation_p0020
+- rule: respond to loneliness_isolation_p0021
+  steps:
+    - intent: loneliness_isolation_p0021
+    - action: utter_loneliness_isolation_p0021
+- rule: respond to loneliness_isolation_p0022
+  steps:
+    - intent: loneliness_isolation_p0022
+    - action: utter_loneliness_isolation_p0022
+- rule: respond to loneliness_isolation_p0023
+  steps:
+    - intent: loneliness_isolation_p0023
+    - action: utter_loneliness_isolation_p0023
+- rule: respond to loneliness_isolation_p0024
+  steps:
+    - intent: loneliness_isolation_p0024
+    - action: utter_loneliness_isolation_p0024
+- rule: respond to loneliness_isolation_p0025
+  steps:
+    - intent: loneliness_isolation_p0025
+    - action: utter_loneliness_isolation_p0025
+- rule: respond to loneliness_isolation_p0026
+  steps:
+    - intent: loneliness_isolation_p0026
+    - action: utter_loneliness_isolation_p0026
+- rule: respond to loneliness_isolation_p0027
+  steps:
+    - intent: loneliness_isolation_p0027
+    - action: utter_loneliness_isolation_p0027
+- rule: respond to loneliness_isolation_p0028
+  steps:
+    - intent: loneliness_isolation_p0028
+    - action: utter_loneliness_isolation_p0028
+- rule: respond to loneliness_isolation_p0029
+  steps:
+    - intent: loneliness_isolation_p0029
+    - action: utter_loneliness_isolation_p0029
+- rule: respond to loneliness_isolation_p0030
+  steps:
+    - intent: loneliness_isolation_p0030
+    - action: utter_loneliness_isolation_p0030
+- rule: respond to loneliness_isolation_p0031
+  steps:
+    - intent: loneliness_isolation_p0031
+    - action: utter_loneliness_isolation_p0031
+- rule: respond to loneliness_isolation_p0032
+  steps:
+    - intent: loneliness_isolation_p0032
+    - action: utter_loneliness_isolation_p0032
+- rule: respond to loneliness_isolation_p0033
+  steps:
+    - intent: loneliness_isolation_p0033
+    - action: utter_loneliness_isolation_p0033
+- rule: respond to loneliness_isolation_p0034
+  steps:
+    - intent: loneliness_isolation_p0034
+    - action: utter_loneliness_isolation_p0034
+- rule: respond to loneliness_isolation_p0035
+  steps:
+    - intent: loneliness_isolation_p0035
+    - action: utter_loneliness_isolation_p0035
+- rule: respond to loneliness_isolation_p0036
+  steps:
+    - intent: loneliness_isolation_p0036
+    - action: utter_loneliness_isolation_p0036
+- rule: respond to loneliness_isolation_p0037
+  steps:
+    - intent: loneliness_isolation_p0037
+    - action: utter_loneliness_isolation_p0037
+- rule: respond to loneliness_isolation_p0038
+  steps:
+    - intent: loneliness_isolation_p0038
+    - action: utter_loneliness_isolation_p0038
+- rule: respond to loneliness_isolation_p0039
+  steps:
+    - intent: loneliness_isolation_p0039
+    - action: utter_loneliness_isolation_p0039
+- rule: respond to loneliness_isolation_p0040
+  steps:
+    - intent: loneliness_isolation_p0040
+    - action: utter_loneliness_isolation_p0040
+- rule: respond to loneliness_isolation_p0041
+  steps:
+    - intent: loneliness_isolation_p0041
+    - action: utter_loneliness_isolation_p0041
+- rule: respond to loneliness_isolation_p0042
+  steps:
+    - intent: loneliness_isolation_p0042
+    - action: utter_loneliness_isolation_p0042
+- rule: respond to loneliness_isolation_p0043
+  steps:
+    - intent: loneliness_isolation_p0043
+    - action: utter_loneliness_isolation_p0043
+- rule: respond to loneliness_isolation_p0044
+  steps:
+    - intent: loneliness_isolation_p0044
+    - action: utter_loneliness_isolation_p0044
+- rule: respond to loneliness_isolation_p0045
+  steps:
+    - intent: loneliness_isolation_p0045
+    - action: utter_loneliness_isolation_p0045
+- rule: respond to loneliness_isolation_p0046
+  steps:
+    - intent: loneliness_isolation_p0046
+    - action: utter_loneliness_isolation_p0046
+
+
+- rule: respond to relationship_romance_p0001
+  steps:
+    - intent: relationship_romance_p0001
+    - action: utter_relationship_romance_p0001
+- rule: respond to relationship_romance_p0002
+  steps:
+    - intent: relationship_romance_p0002
+    - action: utter_relationship_romance_p0002
+- rule: respond to relationship_romance_p0003
+  steps:
+    - intent: relationship_romance_p0003
+    - action: utter_relationship_romance_p0003
+- rule: respond to relationship_romance_p0004
+  steps:
+    - intent: relationship_romance_p0004
+    - action: utter_relationship_romance_p0004
+- rule: respond to relationship_romance_p0005
+  steps:
+    - intent: relationship_romance_p0005
+    - action: utter_relationship_romance_p0005
+- rule: respond to relationship_romance_p0006
+  steps:
+    - intent: relationship_romance_p0006
+    - action: utter_relationship_romance_p0006
+- rule: respond to relationship_romance_p0007
+  steps:
+    - intent: relationship_romance_p0007
+    - action: utter_relationship_romance_p0007
+- rule: respond to relationship_romance_p0008
+  steps:
+    - intent: relationship_romance_p0008
+    - action: utter_relationship_romance_p0008
+- rule: respond to relationship_romance_p0009
+  steps:
+    - intent: relationship_romance_p0009
+    - action: utter_relationship_romance_p0009
+- rule: respond to relationship_romance_p0010
+  steps:
+    - intent: relationship_romance_p0010
+    - action: utter_relationship_romance_p0010
+- rule: respond to relationship_romance_p0011
+  steps:
+    - intent: relationship_romance_p0011
+    - action: utter_relationship_romance_p0011
+- rule: respond to relationship_romance_p0012
+  steps:
+    - intent: relationship_romance_p0012
+    - action: utter_relationship_romance_p0012
+- rule: respond to relationship_romance_p0013
+  steps:
+    - intent: relationship_romance_p0013
+    - action: utter_relationship_romance_p0013
+- rule: respond to relationship_romance_p0014
+  steps:
+    - intent: relationship_romance_p0014
+    - action: utter_relationship_romance_p0014
+- rule: respond to relationship_romance_p0015
+  steps:
+    - intent: relationship_romance_p0015
+    - action: utter_relationship_romance_p0015
+- rule: respond to relationship_romance_p0016
+  steps:
+    - intent: relationship_romance_p0016
+    - action: utter_relationship_romance_p0016
+- rule: respond to relationship_romance_p0017
+  steps:
+    - intent: relationship_romance_p0017
+    - action: utter_relationship_romance_p0017
+- rule: respond to relationship_romance_p0018
+  steps:
+    - intent: relationship_romance_p0018
+    - action: utter_relationship_romance_p0018
+- rule: respond to relationship_romance_p0019
+  steps:
+    - intent: relationship_romance_p0019
+    - action: utter_relationship_romance_p0019
+- rule: respond to relationship_romance_p0020
+  steps:
+    - intent: relationship_romance_p0020
+    - action: utter_relationship_romance_p0020
+- rule: respond to relationship_romance_p0021
+  steps:
+    - intent: relationship_romance_p0021
+    - action: utter_relationship_romance_p0021
+- rule: respond to relationship_romance_p0022
+  steps:
+    - intent: relationship_romance_p0022
+    - action: utter_relationship_romance_p0022
+- rule: respond to relationship_romance_p0023
+  steps:
+    - intent: relationship_romance_p0023
+    - action: utter_relationship_romance_p0023
+- rule: respond to relationship_romance_p0024
+  steps:
+    - intent: relationship_romance_p0024
+    - action: utter_relationship_romance_p0024
+- rule: respond to relationship_romance_p0025
+  steps:
+    - intent: relationship_romance_p0025
+    - action: utter_relationship_romance_p0025
+- rule: respond to relationship_romance_p0026
+  steps:
+    - intent: relationship_romance_p0026
+    - action: utter_relationship_romance_p0026
+- rule: respond to relationship_romance_p0027
+  steps:
+    - intent: relationship_romance_p0027
+    - action: utter_relationship_romance_p0027
+- rule: respond to relationship_romance_p0028
+  steps:
+    - intent: relationship_romance_p0028
+    - action: utter_relationship_romance_p0028
+- rule: respond to relationship_romance_p0029
+  steps:
+    - intent: relationship_romance_p0029
+    - action: utter_relationship_romance_p0029
+- rule: respond to relationship_romance_p0030
+  steps:
+    - intent: relationship_romance_p0030
+    - action: utter_relationship_romance_p0030
+- rule: respond to relationship_romance_p0031
+  steps:
+    - intent: relationship_romance_p0031
+    - action: utter_relationship_romance_p0031
+- rule: respond to relationship_romance_p0032
+  steps:
+    - intent: relationship_romance_p0032
+    - action: utter_relationship_romance_p0032
+- rule: respond to relationship_romance_p0033
+  steps:
+    - intent: relationship_romance_p0033
+    - action: utter_relationship_romance_p0033
+- rule: respond to relationship_romance_p0034
+  steps:
+    - intent: relationship_romance_p0034
+    - action: utter_relationship_romance_p0034
+- rule: respond to relationship_romance_p0035
+  steps:
+    - intent: relationship_romance_p0035
+    - action: utter_relationship_romance_p0035
+- rule: respond to relationship_romance_p0036
+  steps:
+    - intent: relationship_romance_p0036
+    - action: utter_relationship_romance_p0036
+- rule: respond to relationship_romance_p0037
+  steps:
+    - intent: relationship_romance_p0037
+    - action: utter_relationship_romance_p0037
+- rule: respond to relationship_romance_p0038
+  steps:
+    - intent: relationship_romance_p0038
+    - action: utter_relationship_romance_p0038
+- rule: respond to relationship_romance_p0039
+  steps:
+    - intent: relationship_romance_p0039
+    - action: utter_relationship_romance_p0039
+- rule: respond to relationship_romance_p0040
+  steps:
+    - intent: relationship_romance_p0040
+    - action: utter_relationship_romance_p0040
+- rule: respond to relationship_romance_p0041
+  steps:
+    - intent: relationship_romance_p0041
+    - action: utter_relationship_romance_p0041
+- rule: respond to relationship_romance_p0042
+  steps:
+    - intent: relationship_romance_p0042
+    - action: utter_relationship_romance_p0042
+- rule: respond to relationship_romance_p0043
+  steps:
+    - intent: relationship_romance_p0043
+    - action: utter_relationship_romance_p0043
+- rule: respond to relationship_romance_p0044
+  steps:
+    - intent: relationship_romance_p0044
+    - action: utter_relationship_romance_p0044
+- rule: respond to relationship_romance_p0045
+  steps:
+    - intent: relationship_romance_p0045
+    - action: utter_relationship_romance_p0045
+- rule: respond to relationship_romance_p0046
+  steps:
+    - intent: relationship_romance_p0046
+    - action: utter_relationship_romance_p0046
+- rule: respond to relationship_romance_p0047
+  steps:
+    - intent: relationship_romance_p0047
+    - action: utter_relationship_romance_p0047
+- rule: respond to relationship_romance_p0048
+  steps:
+    - intent: relationship_romance_p0048
+    - action: utter_relationship_romance_p0048
+- rule: respond to relationship_romance_p0049
+  steps:
+    - intent: relationship_romance_p0049
+    - action: utter_relationship_romance_p0049
+- rule: respond to relationship_romance_p0050
+  steps:
+    - intent: relationship_romance_p0050
+    - action: utter_relationship_romance_p0050
+- rule: respond to relationship_romance_p0051
+  steps:
+    - intent: relationship_romance_p0051
+    - action: utter_relationship_romance_p0051
+- rule: respond to relationship_romance_p0052
+  steps:
+    - intent: relationship_romance_p0052
+    - action: utter_relationship_romance_p0052
+- rule: respond to relationship_romance_p0053
+  steps:
+    - intent: relationship_romance_p0053
+    - action: utter_relationship_romance_p0053
+- rule: respond to relationship_romance_p0054
+  steps:
+    - intent: relationship_romance_p0054
+    - action: utter_relationship_romance_p0054
+- rule: respond to relationship_romance_p0055
+  steps:
+    - intent: relationship_romance_p0055
+    - action: utter_relationship_romance_p0055
+- rule: respond to relationship_romance_p0056
+  steps:
+    - intent: relationship_romance_p0056
+    - action: utter_relationship_romance_p0056
+- rule: respond to relationship_romance_p0057
+  steps:
+    - intent: relationship_romance_p0057
+    - action: utter_relationship_romance_p0057
+- rule: respond to relationship_romance_p0058
+  steps:
+    - intent: relationship_romance_p0058
+    - action: utter_relationship_romance_p0058
+- rule: respond to relationship_romance_p0059
+  steps:
+    - intent: relationship_romance_p0059
+    - action: utter_relationship_romance_p0059
+- rule: respond to relationship_romance_p0060
+  steps:
+    - intent: relationship_romance_p0060
+    - action: utter_relationship_romance_p0060
+- rule: respond to relationship_romance_p0061
+  steps:
+    - intent: relationship_romance_p0061
+    - action: utter_relationship_romance_p0061
+- rule: respond to relationship_romance_p0062
+  steps:
+    - intent: relationship_romance_p0062
+    - action: utter_relationship_romance_p0062
+- rule: respond to relationship_romance_p0063
+  steps:
+    - intent: relationship_romance_p0063
+    - action: utter_relationship_romance_p0063
+- rule: respond to relationship_romance_p0064
+  steps:
+    - intent: relationship_romance_p0064
+    - action: utter_relationship_romance_p0064
+- rule: respond to relationship_romance_p0065
+  steps:
+    - intent: relationship_romance_p0065
+    - action: utter_relationship_romance_p0065
+- rule: respond to relationship_romance_p0066
+  steps:
+    - intent: relationship_romance_p0066
+    - action: utter_relationship_romance_p0066
+- rule: respond to relationship_romance_p0067
+  steps:
+    - intent: relationship_romance_p0067
+    - action: utter_relationship_romance_p0067
+- rule: respond to relationship_romance_p0068
+  steps:
+    - intent: relationship_romance_p0068
+    - action: utter_relationship_romance_p0068
+- rule: respond to relationship_romance_p0069
+  steps:
+    - intent: relationship_romance_p0069
+    - action: utter_relationship_romance_p0069
+- rule: respond to relationship_romance_p0070
+  steps:
+    - intent: relationship_romance_p0070
+    - action: utter_relationship_romance_p0070
+- rule: respond to relationship_romance_p0071
+  steps:
+    - intent: relationship_romance_p0071
+    - action: utter_relationship_romance_p0071
+- rule: respond to relationship_romance_p0072
+  steps:
+    - intent: relationship_romance_p0072
+    - action: utter_relationship_romance_p0072
+- rule: respond to relationship_romance_p0073
+  steps:
+    - intent: relationship_romance_p0073
+    - action: utter_relationship_romance_p0073
+- rule: respond to relationship_romance_p0074
+  steps:
+    - intent: relationship_romance_p0074
+    - action: utter_relationship_romance_p0074
+- rule: respond to relationship_romance_p0075
+  steps:
+    - intent: relationship_romance_p0075
+    - action: utter_relationship_romance_p0075
+- rule: respond to relationship_romance_p0076
+  steps:
+    - intent: relationship_romance_p0076
+    - action: utter_relationship_romance_p0076
+- rule: respond to relationship_romance_p0077
+  steps:
+    - intent: relationship_romance_p0077
+    - action: utter_relationship_romance_p0077
+- rule: respond to relationship_romance_p0078
+  steps:
+    - intent: relationship_romance_p0078
+    - action: utter_relationship_romance_p0078
+- rule: respond to relationship_romance_p0079
+  steps:
+    - intent: relationship_romance_p0079
+    - action: utter_relationship_romance_p0079
+- rule: respond to relationship_romance_p0080
+  steps:
+    - intent: relationship_romance_p0080
+    - action: utter_relationship_romance_p0080
+- rule: respond to relationship_romance_p0081
+  steps:
+    - intent: relationship_romance_p0081
+    - action: utter_relationship_romance_p0081
+- rule: respond to relationship_romance_p0082
+  steps:
+    - intent: relationship_romance_p0082
+    - action: utter_relationship_romance_p0082
+- rule: respond to relationship_romance_p0083
+  steps:
+    - intent: relationship_romance_p0083
+    - action: utter_relationship_romance_p0083
+- rule: respond to relationship_romance_p0084
+  steps:
+    - intent: relationship_romance_p0084
+    - action: utter_relationship_romance_p0084
+- rule: respond to relationship_romance_p0085
+  steps:
+    - intent: relationship_romance_p0085
+    - action: utter_relationship_romance_p0085
+- rule: respond to relationship_romance_p0086
+  steps:
+    - intent: relationship_romance_p0086
+    - action: utter_relationship_romance_p0086
+- rule: respond to relationship_romance_p0087
+  steps:
+    - intent: relationship_romance_p0087
+    - action: utter_relationship_romance_p0087
+- rule: respond to relationship_romance_p0088
+  steps:
+    - intent: relationship_romance_p0088
+    - action: utter_relationship_romance_p0088
+- rule: respond to relationship_romance_p0089
+  steps:
+    - intent: relationship_romance_p0089
+    - action: utter_relationship_romance_p0089
+- rule: respond to relationship_romance_p0090
+  steps:
+    - intent: relationship_romance_p0090
+    - action: utter_relationship_romance_p0090
+- rule: respond to relationship_romance_p0091
+  steps:
+    - intent: relationship_romance_p0091
+    - action: utter_relationship_romance_p0091
+- rule: respond to relationship_romance_p0092
+  steps:
+    - intent: relationship_romance_p0092
+    - action: utter_relationship_romance_p0092
+- rule: respond to relationship_romance_p0093
+  steps:
+    - intent: relationship_romance_p0093
+    - action: utter_relationship_romance_p0093
+- rule: respond to relationship_romance_p0094
+  steps:
+    - intent: relationship_romance_p0094
+    - action: utter_relationship_romance_p0094
+- rule: respond to relationship_romance_p0095
+  steps:
+    - intent: relationship_romance_p0095
+    - action: utter_relationship_romance_p0095
+- rule: respond to relationship_romance_p0096
+  steps:
+    - intent: relationship_romance_p0096
+    - action: utter_relationship_romance_p0096
+- rule: respond to relationship_romance_p0097
+  steps:
+    - intent: relationship_romance_p0097
+    - action: utter_relationship_romance_p0097
+- rule: respond to relationship_romance_p0098
+  steps:
+    - intent: relationship_romance_p0098
+    - action: utter_relationship_romance_p0098
+- rule: respond to relationship_romance_p0099
+  steps:
+    - intent: relationship_romance_p0099
+    - action: utter_relationship_romance_p0099
+- rule: respond to relationship_romance_p0100
+  steps:
+    - intent: relationship_romance_p0100
+    - action: utter_relationship_romance_p0100
+- rule: respond to relationship_romance_p0101
+  steps:
+    - intent: relationship_romance_p0101
+    - action: utter_relationship_romance_p0101
+- rule: respond to relationship_romance_p0102
+  steps:
+    - intent: relationship_romance_p0102
+    - action: utter_relationship_romance_p0102
+- rule: respond to relationship_romance_p0103
+  steps:
+    - intent: relationship_romance_p0103
+    - action: utter_relationship_romance_p0103
+- rule: respond to relationship_romance_p0104
+  steps:
+    - intent: relationship_romance_p0104
+    - action: utter_relationship_romance_p0104
+- rule: respond to relationship_romance_p0105
+  steps:
+    - intent: relationship_romance_p0105
+    - action: utter_relationship_romance_p0105
+- rule: respond to relationship_romance_p0106
+  steps:
+    - intent: relationship_romance_p0106
+    - action: utter_relationship_romance_p0106
+- rule: respond to relationship_romance_p0107
+  steps:
+    - intent: relationship_romance_p0107
+    - action: utter_relationship_romance_p0107
+- rule: respond to relationship_romance_p0108
+  steps:
+    - intent: relationship_romance_p0108
+    - action: utter_relationship_romance_p0108
+- rule: respond to relationship_romance_p0109
+  steps:
+    - intent: relationship_romance_p0109
+    - action: utter_relationship_romance_p0109
+- rule: respond to relationship_romance_p0110
+  steps:
+    - intent: relationship_romance_p0110
+    - action: utter_relationship_romance_p0110
+- rule: respond to relationship_romance_p0111
+  steps:
+    - intent: relationship_romance_p0111
+    - action: utter_relationship_romance_p0111
+- rule: respond to relationship_romance_p0112
+  steps:
+    - intent: relationship_romance_p0112
+    - action: utter_relationship_romance_p0112
+- rule: respond to relationship_romance_p0113
+  steps:
+    - intent: relationship_romance_p0113
+    - action: utter_relationship_romance_p0113
+- rule: respond to relationship_romance_p0114
+  steps:
+    - intent: relationship_romance_p0114
+    - action: utter_relationship_romance_p0114
+- rule: respond to relationship_romance_p0115
+  steps:
+    - intent: relationship_romance_p0115
+    - action: utter_relationship_romance_p0115
+- rule: respond to relationship_romance_p0116
+  steps:
+    - intent: relationship_romance_p0116
+    - action: utter_relationship_romance_p0116
+- rule: respond to relationship_romance_p0117
+  steps:
+    - intent: relationship_romance_p0117
+    - action: utter_relationship_romance_p0117
+- rule: respond to relationship_romance_p0118
+  steps:
+    - intent: relationship_romance_p0118
+    - action: utter_relationship_romance_p0118
+- rule: respond to relationship_romance_p0119
+  steps:
+    - intent: relationship_romance_p0119
+    - action: utter_relationship_romance_p0119
+- rule: respond to relationship_romance_p0120
+  steps:
+    - intent: relationship_romance_p0120
+    - action: utter_relationship_romance_p0120
+- rule: respond to relationship_romance_p0121
+  steps:
+    - intent: relationship_romance_p0121
+    - action: utter_relationship_romance_p0121
+- rule: respond to relationship_romance_p0122
+  steps:
+    - intent: relationship_romance_p0122
+    - action: utter_relationship_romance_p0122
+- rule: respond to relationship_romance_p0123
+  steps:
+    - intent: relationship_romance_p0123
+    - action: utter_relationship_romance_p0123
+- rule: respond to relationship_romance_p0124
+  steps:
+    - intent: relationship_romance_p0124
+    - action: utter_relationship_romance_p0124
+- rule: respond to relationship_romance_p0125
+  steps:
+    - intent: relationship_romance_p0125
+    - action: utter_relationship_romance_p0125
+- rule: respond to relationship_romance_p0126
+  steps:
+    - intent: relationship_romance_p0126
+    - action: utter_relationship_romance_p0126
+- rule: respond to relationship_romance_p0127
+  steps:
+    - intent: relationship_romance_p0127
+    - action: utter_relationship_romance_p0127
+- rule: respond to relationship_romance_p0128
+  steps:
+    - intent: relationship_romance_p0128
+    - action: utter_relationship_romance_p0128
+- rule: respond to relationship_romance_p0129
+  steps:
+    - intent: relationship_romance_p0129
+    - action: utter_relationship_romance_p0129
+- rule: respond to relationship_romance_p0130
+  steps:
+    - intent: relationship_romance_p0130
+    - action: utter_relationship_romance_p0130
+- rule: respond to relationship_romance_p0131
+  steps:
+    - intent: relationship_romance_p0131
+    - action: utter_relationship_romance_p0131
+- rule: respond to relationship_romance_p0132
+  steps:
+    - intent: relationship_romance_p0132
+    - action: utter_relationship_romance_p0132
+- rule: respond to relationship_romance_p0133
+  steps:
+    - intent: relationship_romance_p0133
+    - action: utter_relationship_romance_p0133
+- rule: respond to relationship_romance_p0134
+  steps:
+    - intent: relationship_romance_p0134
+    - action: utter_relationship_romance_p0134
+- rule: respond to relationship_romance_p0135
+  steps:
+    - intent: relationship_romance_p0135
+    - action: utter_relationship_romance_p0135
+- rule: respond to relationship_romance_p0136
+  steps:
+    - intent: relationship_romance_p0136
+    - action: utter_relationship_romance_p0136
+- rule: respond to relationship_romance_p0137
+  steps:
+    - intent: relationship_romance_p0137
+    - action: utter_relationship_romance_p0137
+- rule: respond to relationship_romance_p0138
+  steps:
+    - intent: relationship_romance_p0138
+    - action: utter_relationship_romance_p0138
+- rule: respond to relationship_romance_p0139
+  steps:
+    - intent: relationship_romance_p0139
+    - action: utter_relationship_romance_p0139
+- rule: respond to relationship_romance_p0140
+  steps:
+    - intent: relationship_romance_p0140
+    - action: utter_relationship_romance_p0140
+- rule: respond to relationship_romance_p0141
+  steps:
+    - intent: relationship_romance_p0141
+    - action: utter_relationship_romance_p0141
+- rule: respond to relationship_romance_p0142
+  steps:
+    - intent: relationship_romance_p0142
+    - action: utter_relationship_romance_p0142
+- rule: respond to relationship_romance_p0143
+  steps:
+    - intent: relationship_romance_p0143
+    - action: utter_relationship_romance_p0143
+- rule: respond to relationship_romance_p0144
+  steps:
+    - intent: relationship_romance_p0144
+    - action: utter_relationship_romance_p0144
+- rule: respond to relationship_romance_p0145
+  steps:
+    - intent: relationship_romance_p0145
+    - action: utter_relationship_romance_p0145
+- rule: respond to relationship_romance_p0146
+  steps:
+    - intent: relationship_romance_p0146
+    - action: utter_relationship_romance_p0146
+- rule: respond to relationship_romance_p0147
+  steps:
+    - intent: relationship_romance_p0147
+    - action: utter_relationship_romance_p0147
+- rule: respond to relationship_romance_p0148
+  steps:
+    - intent: relationship_romance_p0148
+    - action: utter_relationship_romance_p0148
+- rule: respond to relationship_romance_p0149
+  steps:
+    - intent: relationship_romance_p0149
+    - action: utter_relationship_romance_p0149
+- rule: respond to relationship_romance_p0150
+  steps:
+    - intent: relationship_romance_p0150
+    - action: utter_relationship_romance_p0150
+- rule: respond to relationship_romance_p0151
+  steps:
+    - intent: relationship_romance_p0151
+    - action: utter_relationship_romance_p0151
+- rule: respond to relationship_romance_p0152
+  steps:
+    - intent: relationship_romance_p0152
+    - action: utter_relationship_romance_p0152
+- rule: respond to relationship_romance_p0153
+  steps:
+    - intent: relationship_romance_p0153
+    - action: utter_relationship_romance_p0153
+- rule: respond to relationship_romance_p0154
+  steps:
+    - intent: relationship_romance_p0154
+    - action: utter_relationship_romance_p0154
+- rule: respond to relationship_romance_p0155
+  steps:
+    - intent: relationship_romance_p0155
+    - action: utter_relationship_romance_p0155
+- rule: respond to relationship_romance_p0156
+  steps:
+    - intent: relationship_romance_p0156
+    - action: utter_relationship_romance_p0156
+- rule: respond to relationship_romance_p0157
+  steps:
+    - intent: relationship_romance_p0157
+    - action: utter_relationship_romance_p0157
+- rule: respond to relationship_romance_p0158
+  steps:
+    - intent: relationship_romance_p0158
+    - action: utter_relationship_romance_p0158
+- rule: respond to relationship_romance_p0159
+  steps:
+    - intent: relationship_romance_p0159
+    - action: utter_relationship_romance_p0159
+- rule: respond to relationship_romance_p0160
+  steps:
+    - intent: relationship_romance_p0160
+    - action: utter_relationship_romance_p0160
+- rule: respond to relationship_romance_p0161
+  steps:
+    - intent: relationship_romance_p0161
+    - action: utter_relationship_romance_p0161
+- rule: respond to relationship_romance_p0162
+  steps:
+    - intent: relationship_romance_p0162
+    - action: utter_relationship_romance_p0162
+- rule: respond to relationship_romance_p0163
+  steps:
+    - intent: relationship_romance_p0163
+    - action: utter_relationship_romance_p0163
+- rule: respond to relationship_romance_p0164
+  steps:
+    - intent: relationship_romance_p0164
+    - action: utter_relationship_romance_p0164
+- rule: respond to relationship_romance_p0165
+  steps:
+    - intent: relationship_romance_p0165
+    - action: utter_relationship_romance_p0165
+- rule: respond to relationship_romance_p0166
+  steps:
+    - intent: relationship_romance_p0166
+    - action: utter_relationship_romance_p0166
+- rule: respond to relationship_romance_p0167
+  steps:
+    - intent: relationship_romance_p0167
+    - action: utter_relationship_romance_p0167
+- rule: respond to relationship_romance_p0168
+  steps:
+    - intent: relationship_romance_p0168
+    - action: utter_relationship_romance_p0168
+- rule: respond to relationship_romance_p0169
+  steps:
+    - intent: relationship_romance_p0169
+    - action: utter_relationship_romance_p0169
+- rule: respond to relationship_romance_p0170
+  steps:
+    - intent: relationship_romance_p0170
+    - action: utter_relationship_romance_p0170
+- rule: respond to relationship_romance_p0171
+  steps:
+    - intent: relationship_romance_p0171
+    - action: utter_relationship_romance_p0171
+- rule: respond to relationship_romance_p0172
+  steps:
+    - intent: relationship_romance_p0172
+    - action: utter_relationship_romance_p0172
+- rule: respond to relationship_romance_p0173
+  steps:
+    - intent: relationship_romance_p0173
+    - action: utter_relationship_romance_p0173
+- rule: respond to relationship_romance_p0174
+  steps:
+    - intent: relationship_romance_p0174
+    - action: utter_relationship_romance_p0174
+- rule: respond to relationship_romance_p0175
+  steps:
+    - intent: relationship_romance_p0175
+    - action: utter_relationship_romance_p0175
+- rule: respond to relationship_romance_p0176
+  steps:
+    - intent: relationship_romance_p0176
+    - action: utter_relationship_romance_p0176
+- rule: respond to relationship_romance_p0177
+  steps:
+    - intent: relationship_romance_p0177
+    - action: utter_relationship_romance_p0177
+- rule: respond to relationship_romance_p0178
+  steps:
+    - intent: relationship_romance_p0178
+    - action: utter_relationship_romance_p0178
+- rule: respond to relationship_romance_p0179
+  steps:
+    - intent: relationship_romance_p0179
+    - action: utter_relationship_romance_p0179
+- rule: respond to relationship_romance_p0180
+  steps:
+    - intent: relationship_romance_p0180
+    - action: utter_relationship_romance_p0180
+- rule: respond to relationship_romance_p0181
+  steps:
+    - intent: relationship_romance_p0181
+    - action: utter_relationship_romance_p0181
+- rule: respond to relationship_romance_p0182
+  steps:
+    - intent: relationship_romance_p0182
+    - action: utter_relationship_romance_p0182
+- rule: respond to relationship_romance_p0183
+  steps:
+    - intent: relationship_romance_p0183
+    - action: utter_relationship_romance_p0183
+- rule: respond to relationship_romance_p0184
+  steps:
+    - intent: relationship_romance_p0184
+    - action: utter_relationship_romance_p0184
+- rule: respond to relationship_romance_p0185
+  steps:
+    - intent: relationship_romance_p0185
+    - action: utter_relationship_romance_p0185
+- rule: respond to relationship_romance_p0186
+  steps:
+    - intent: relationship_romance_p0186
+    - action: utter_relationship_romance_p0186
+- rule: respond to relationship_romance_p0187
+  steps:
+    - intent: relationship_romance_p0187
+    - action: utter_relationship_romance_p0187
+- rule: respond to relationship_romance_p0188
+  steps:
+    - intent: relationship_romance_p0188
+    - action: utter_relationship_romance_p0188
+- rule: respond to relationship_romance_p0189
+  steps:
+    - intent: relationship_romance_p0189
+    - action: utter_relationship_romance_p0189
+- rule: respond to relationship_romance_p0190
+  steps:
+    - intent: relationship_romance_p0190
+    - action: utter_relationship_romance_p0190
+- rule: respond to relationship_romance_p0191
+  steps:
+    - intent: relationship_romance_p0191
+    - action: utter_relationship_romance_p0191
+- rule: respond to relationship_romance_p0192
+  steps:
+    - intent: relationship_romance_p0192
+    - action: utter_relationship_romance_p0192
+- rule: respond to relationship_romance_p0193
+  steps:
+    - intent: relationship_romance_p0193
+    - action: utter_relationship_romance_p0193
+- rule: respond to relationship_romance_p0194
+  steps:
+    - intent: relationship_romance_p0194
+    - action: utter_relationship_romance_p0194
+- rule: respond to relationship_romance_p0195
+  steps:
+    - intent: relationship_romance_p0195
+    - action: utter_relationship_romance_p0195
+- rule: respond to relationship_romance_p0196
+  steps:
+    - intent: relationship_romance_p0196
+    - action: utter_relationship_romance_p0196
+- rule: respond to relationship_romance_p0197
+  steps:
+    - intent: relationship_romance_p0197
+    - action: utter_relationship_romance_p0197
+- rule: respond to relationship_romance_p0198
+  steps:
+    - intent: relationship_romance_p0198
+    - action: utter_relationship_romance_p0198
+- rule: respond to relationship_romance_p0199
+  steps:
+    - intent: relationship_romance_p0199
+    - action: utter_relationship_romance_p0199
+- rule: respond to relationship_romance_p0200
+  steps:
+    - intent: relationship_romance_p0200
+    - action: utter_relationship_romance_p0200
+
+- rule: respond to school_academic_p0001
+  steps:
+    - intent: school_academic_p0001
+    - action: utter_school_academic_p0001
+- rule: respond to school_academic_p0002
+  steps:
+    - intent: school_academic_p0002
+    - action: utter_school_academic_p0002
+- rule: respond to school_academic_p0003
+  steps:
+    - intent: school_academic_p0003
+    - action: utter_school_academic_p0003
+- rule: respond to school_academic_p0004
+  steps:
+    - intent: school_academic_p0004
+    - action: utter_school_academic_p0004
+- rule: respond to school_academic_p0005
+  steps:
+    - intent: school_academic_p0005
+    - action: utter_school_academic_p0005
+- rule: respond to school_academic_p0006
+  steps:
+    - intent: school_academic_p0006
+    - action: utter_school_academic_p0006
+
+- rule: respond to self_esteem_body_p0001
+  steps:
+    - intent: self_esteem_body_p0001
+    - action: utter_self_esteem_body_p0001
+- rule: respond to self_esteem_body_p0002
+  steps:
+    - intent: self_esteem_body_p0002
+    - action: utter_self_esteem_body_p0002
+- rule: respond to self_esteem_body_p0003
+  steps:
+    - intent: self_esteem_body_p0003
+    - action: utter_self_esteem_body_p0003
+- rule: respond to self_esteem_body_p0004
+  steps:
+    - intent: self_esteem_body_p0004
+    - action: utter_self_esteem_body_p0004
+- rule: respond to self_esteem_body_p0005
+  steps:
+    - intent: self_esteem_body_p0005
+    - action: utter_self_esteem_body_p0005
+- rule: respond to self_esteem_body_p0006
+  steps:
+    - intent: self_esteem_body_p0006
+    - action: utter_self_esteem_body_p0006
+- rule: respond to self_esteem_body_p0007
+  steps:
+    - intent: self_esteem_body_p0007
+    - action: utter_self_esteem_body_p0007
+- rule: respond to self_esteem_body_p0008
+  steps:
+    - intent: self_esteem_body_p0008
+    - action: utter_self_esteem_body_p0008
+- rule: respond to self_esteem_body_p0009
+  steps:
+    - intent: self_esteem_body_p0009
+    - action: utter_self_esteem_body_p0009
+- rule: respond to self_esteem_body_p0010
+  steps:
+    - intent: self_esteem_body_p0010
+    - action: utter_self_esteem_body_p0010
+- rule: respond to self_esteem_body_p0011
+  steps:
+    - intent: self_esteem_body_p0011
+    - action: utter_self_esteem_body_p0011
+- rule: respond to self_esteem_body_p0012
+  steps:
+    - intent: self_esteem_body_p0012
+    - action: utter_self_esteem_body_p0012
+- rule: respond to self_esteem_body_p0013
+  steps:
+    - intent: self_esteem_body_p0013
+    - action: utter_self_esteem_body_p0013
+- rule: respond to self_esteem_body_p0014
+  steps:
+    - intent: self_esteem_body_p0014
+    - action: utter_self_esteem_body_p0014
+- rule: respond to self_esteem_body_p0015
+  steps:
+    - intent: self_esteem_body_p0015
+    - action: utter_self_esteem_body_p0015
+- rule: respond to self_esteem_body_p0016
+  steps:
+    - intent: self_esteem_body_p0016
+    - action: utter_self_esteem_body_p0016
+- rule: respond to self_esteem_body_p0017
+  steps:
+    - intent: self_esteem_body_p0017
+    - action: utter_self_esteem_body_p0017
+- rule: respond to self_esteem_body_p0018
+  steps:
+    - intent: self_esteem_body_p0018
+    - action: utter_self_esteem_body_p0018
+- rule: respond to self_esteem_body_p0019
+  steps:
+    - intent: self_esteem_body_p0019
+    - action: utter_self_esteem_body_p0019
+- rule: respond to self_esteem_body_p0020
+  steps:
+    - intent: self_esteem_body_p0020
+    - action: utter_self_esteem_body_p0020
+- rule: respond to self_esteem_body_p0021
+  steps:
+    - intent: self_esteem_body_p0021
+    - action: utter_self_esteem_body_p0021
+- rule: respond to self_esteem_body_p0022
+  steps:
+    - intent: self_esteem_body_p0022
+    - action: utter_self_esteem_body_p0022
+- rule: respond to self_esteem_body_p0023
+  steps:
+    - intent: self_esteem_body_p0023
+    - action: utter_self_esteem_body_p0023
+- rule: respond to self_esteem_body_p0024
+  steps:
+    - intent: self_esteem_body_p0024
+    - action: utter_self_esteem_body_p0024
+- rule: respond to self_esteem_body_p0025
+  steps:
+    - intent: self_esteem_body_p0025
+    - action: utter_self_esteem_body_p0025
+- rule: respond to self_esteem_body_p0026
+  steps:
+    - intent: self_esteem_body_p0026
+    - action: utter_self_esteem_body_p0026
+- rule: respond to self_esteem_body_p0027
+  steps:
+    - intent: self_esteem_body_p0027
+    - action: utter_self_esteem_body_p0027
+- rule: respond to self_esteem_body_p0028
+  steps:
+    - intent: self_esteem_body_p0028
+    - action: utter_self_esteem_body_p0028
+- rule: respond to self_esteem_body_p0029
+  steps:
+    - intent: self_esteem_body_p0029
+    - action: utter_self_esteem_body_p0029
+- rule: respond to self_esteem_body_p0030
+  steps:
+    - intent: self_esteem_body_p0030
+    - action: utter_self_esteem_body_p0030
+- rule: respond to self_esteem_body_p0031
+  steps:
+    - intent: self_esteem_body_p0031
+    - action: utter_self_esteem_body_p0031
+- rule: respond to self_esteem_body_p0032
+  steps:
+    - intent: self_esteem_body_p0032
+    - action: utter_self_esteem_body_p0032
+- rule: respond to self_esteem_body_p0033
+  steps:
+    - intent: self_esteem_body_p0033
+    - action: utter_self_esteem_body_p0033
+- rule: respond to self_esteem_body_p0034
+  steps:
+    - intent: self_esteem_body_p0034
+    - action: utter_self_esteem_body_p0034
+- rule: respond to self_esteem_body_p0035
+  steps:
+    - intent: self_esteem_body_p0035
+    - action: utter_self_esteem_body_p0035
+- rule: respond to self_esteem_body_p0036
+  steps:
+    - intent: self_esteem_body_p0036
+    - action: utter_self_esteem_body_p0036
+- rule: respond to self_esteem_body_p0037
+  steps:
+    - intent: self_esteem_body_p0037
+    - action: utter_self_esteem_body_p0037
+- rule: respond to self_esteem_body_p0038
+  steps:
+    - intent: self_esteem_body_p0038
+    - action: utter_self_esteem_body_p0038
+- rule: respond to self_esteem_body_p0039
+  steps:
+    - intent: self_esteem_body_p0039
+    - action: utter_self_esteem_body_p0039
+- rule: respond to self_esteem_body_p0040
+  steps:
+    - intent: self_esteem_body_p0040
+    - action: utter_self_esteem_body_p0040
+- rule: respond to self_esteem_body_p0041
+  steps:
+    - intent: self_esteem_body_p0041
+    - action: utter_self_esteem_body_p0041
+- rule: respond to self_esteem_body_p0042
+  steps:
+    - intent: self_esteem_body_p0042
+    - action: utter_self_esteem_body_p0042
+- rule: respond to self_esteem_body_p0043
+  steps:
+    - intent: self_esteem_body_p0043
+    - action: utter_self_esteem_body_p0043
+- rule: respond to self_esteem_body_p0044
+  steps:
+    - intent: self_esteem_body_p0044
+    - action: utter_self_esteem_body_p0044
+- rule: respond to self_esteem_body_p0045
+  steps:
+    - intent: self_esteem_body_p0045
+    - action: utter_self_esteem_body_p0045
+- rule: respond to self_esteem_body_p0046
+  steps:
+    - intent: self_esteem_body_p0046
+    - action: utter_self_esteem_body_p0046
+- rule: respond to self_esteem_body_p0047
+  steps:
+    - intent: self_esteem_body_p0047
+    - action: utter_self_esteem_body_p0047
+- rule: respond to self_esteem_body_p0048
+  steps:
+    - intent: self_esteem_body_p0048
+    - action: utter_self_esteem_body_p0048
+- rule: respond to self_esteem_body_p0049
+  steps:
+    - intent: self_esteem_body_p0049
+    - action: utter_self_esteem_body_p0049
+- rule: respond to self_esteem_body_p0050
+  steps:
+    - intent: self_esteem_body_p0050
+    - action: utter_self_esteem_body_p0050
+- rule: respond to self_esteem_body_p0051
+  steps:
+    - intent: self_esteem_body_p0051
+    - action: utter_self_esteem_body_p0051
+- rule: respond to self_esteem_body_p0052
+  steps:
+    - intent: self_esteem_body_p0052
+    - action: utter_self_esteem_body_p0052
+- rule: respond to self_esteem_body_p0053
+  steps:
+    - intent: self_esteem_body_p0053
+    - action: utter_self_esteem_body_p0053
+- rule: respond to self_esteem_body_p0054
+  steps:
+    - intent: self_esteem_body_p0054
+    - action: utter_self_esteem_body_p0054
+- rule: respond to self_esteem_body_p0055
+  steps:
+    - intent: self_esteem_body_p0055
+    - action: utter_self_esteem_body_p0055
+- rule: respond to self_esteem_body_p0056
+  steps:
+    - intent: self_esteem_body_p0056
+    - action: utter_self_esteem_body_p0056
+- rule: respond to self_esteem_body_p0057
+  steps:
+    - intent: self_esteem_body_p0057
+    - action: utter_self_esteem_body_p0057
+- rule: respond to self_esteem_body_p0058
+  steps:
+    - intent: self_esteem_body_p0058
+    - action: utter_self_esteem_body_p0058
+- rule: respond to self_esteem_body_p0059
+  steps:
+    - intent: self_esteem_body_p0059
+    - action: utter_self_esteem_body_p0059
+- rule: respond to self_esteem_body_p0060
+  steps:
+    - intent: self_esteem_body_p0060
+    - action: utter_self_esteem_body_p0060
+- rule: respond to self_esteem_body_p0061
+  steps:
+    - intent: self_esteem_body_p0061
+    - action: utter_self_esteem_body_p0061
+- rule: respond to self_esteem_body_p0062
+  steps:
+    - intent: self_esteem_body_p0062
+    - action: utter_self_esteem_body_p0062
+- rule: respond to self_esteem_body_p0063
+  steps:
+    - intent: self_esteem_body_p0063
+    - action: utter_self_esteem_body_p0063
+- rule: respond to self_esteem_body_p0064
+  steps:
+    - intent: self_esteem_body_p0064
+    - action: utter_self_esteem_body_p0064
+- rule: respond to self_esteem_body_p0065
+  steps:
+    - intent: self_esteem_body_p0065
+    - action: utter_self_esteem_body_p0065
+- rule: respond to self_esteem_body_p0066
+  steps:
+    - intent: self_esteem_body_p0066
+    - action: utter_self_esteem_body_p0066
+- rule: respond to self_esteem_body_p0067
+  steps:
+    - intent: self_esteem_body_p0067
+    - action: utter_self_esteem_body_p0067
+- rule: respond to self_esteem_body_p0068
+  steps:
+    - intent: self_esteem_body_p0068
+    - action: utter_self_esteem_body_p0068
+- rule: respond to self_esteem_body_p0069
+  steps:
+    - intent: self_esteem_body_p0069
+    - action: utter_self_esteem_body_p0069
+- rule: respond to self_esteem_body_p0070
+  steps:
+    - intent: self_esteem_body_p0070
+    - action: utter_self_esteem_body_p0070
+- rule: respond to self_esteem_body_p0071
+  steps:
+    - intent: self_esteem_body_p0071
+    - action: utter_self_esteem_body_p0071
+- rule: respond to self_esteem_body_p0072
+  steps:
+    - intent: self_esteem_body_p0072
+    - action: utter_self_esteem_body_p0072
+- rule: respond to self_esteem_body_p0073
+  steps:
+    - intent: self_esteem_body_p0073
+    - action: utter_self_esteem_body_p0073
+- rule: respond to self_esteem_body_p0074
+  steps:
+    - intent: self_esteem_body_p0074
+    - action: utter_self_esteem_body_p0074
+- rule: respond to self_esteem_body_p0075
+  steps:
+    - intent: self_esteem_body_p0075
+    - action: utter_self_esteem_body_p0075
+- rule: respond to self_esteem_body_p0076
+  steps:
+    - intent: self_esteem_body_p0076
+    - action: utter_self_esteem_body_p0076
+- rule: respond to self_esteem_body_p0077
+  steps:
+    - intent: self_esteem_body_p0077
+    - action: utter_self_esteem_body_p0077
+- rule: respond to self_esteem_body_p0078
+  steps:
+    - intent: self_esteem_body_p0078
+    - action: utter_self_esteem_body_p0078
+- rule: respond to self_esteem_body_p0079
+  steps:
+    - intent: self_esteem_body_p0079
+    - action: utter_self_esteem_body_p0079
+- rule: respond to self_esteem_body_p0080
+  steps:
+    - intent: self_esteem_body_p0080
+    - action: utter_self_esteem_body_p0080
+- rule: respond to self_esteem_body_p0081
+  steps:
+    - intent: self_esteem_body_p0081
+    - action: utter_self_esteem_body_p0081
+- rule: respond to self_esteem_body_p0082
+  steps:
+    - intent: self_esteem_body_p0082
+    - action: utter_self_esteem_body_p0082
+- rule: respond to self_esteem_body_p0083
+  steps:
+    - intent: self_esteem_body_p0083
+    - action: utter_self_esteem_body_p0083
+- rule: respond to self_esteem_body_p0084
+  steps:
+    - intent: self_esteem_body_p0084
+    - action: utter_self_esteem_body_p0084
+- rule: respond to self_esteem_body_p0085
+  steps:
+    - intent: self_esteem_body_p0085
+    - action: utter_self_esteem_body_p0085
+- rule: respond to self_esteem_body_p0086
+  steps:
+    - intent: self_esteem_body_p0086
+    - action: utter_self_esteem_body_p0086
+- rule: respond to self_esteem_body_p0087
+  steps:
+    - intent: self_esteem_body_p0087
+    - action: utter_self_esteem_body_p0087
+- rule: respond to self_esteem_body_p0088
+  steps:
+    - intent: self_esteem_body_p0088
+    - action: utter_self_esteem_body_p0088
+- rule: respond to self_esteem_body_p0089
+  steps:
+    - intent: self_esteem_body_p0089
+    - action: utter_self_esteem_body_p0089
+- rule: respond to self_esteem_body_p0090
+  steps:
+    - intent: self_esteem_body_p0090
+    - action: utter_self_esteem_body_p0090
+- rule: respond to self_esteem_body_p0091
+  steps:
+    - intent: self_esteem_body_p0091
+    - action: utter_self_esteem_body_p0091
+- rule: respond to self_esteem_body_p0092
+  steps:
+    - intent: self_esteem_body_p0092
+    - action: utter_self_esteem_body_p0092
+- rule: respond to self_esteem_body_p0093
+  steps:
+    - intent: self_esteem_body_p0093
+    - action: utter_self_esteem_body_p0093
+- rule: respond to self_esteem_body_p0094
+  steps:
+    - intent: self_esteem_body_p0094
+    - action: utter_self_esteem_body_p0094
+- rule: respond to self_esteem_body_p0095
+  steps:
+    - intent: self_esteem_body_p0095
+    - action: utter_self_esteem_body_p0095
+- rule: respond to self_esteem_body_p0096
+  steps:
+    - intent: self_esteem_body_p0096
+    - action: utter_self_esteem_body_p0096
+- rule: respond to self_esteem_body_p0097
+  steps:
+    - intent: self_esteem_body_p0097
+    - action: utter_self_esteem_body_p0097
+- rule: respond to self_esteem_body_p0098
+  steps:
+    - intent: self_esteem_body_p0098
+    - action: utter_self_esteem_body_p0098
+- rule: respond to self_esteem_body_p0099
+  steps:
+    - intent: self_esteem_body_p0099
+    - action: utter_self_esteem_body_p0099
+- rule: respond to self_esteem_body_p0100
+  steps:
+    - intent: self_esteem_body_p0100
+    - action: utter_self_esteem_body_p0100
+- rule: respond to self_esteem_body_p0101
+  steps:
+    - intent: self_esteem_body_p0101
+    - action: utter_self_esteem_body_p0101
+- rule: respond to self_esteem_body_p0102
+  steps:
+    - intent: self_esteem_body_p0102
+    - action: utter_self_esteem_body_p0102
+- rule: respond to self_esteem_body_p0103
+  steps:
+    - intent: self_esteem_body_p0103
+    - action: utter_self_esteem_body_p0103
+- rule: respond to self_esteem_body_p0104
+  steps:
+    - intent: self_esteem_body_p0104
+    - action: utter_self_esteem_body_p0104
+- rule: respond to self_esteem_body_p0105
+  steps:
+    - intent: self_esteem_body_p0105
+    - action: utter_self_esteem_body_p0105
+- rule: respond to self_esteem_body_p0106
+  steps:
+    - intent: self_esteem_body_p0106
+    - action: utter_self_esteem_body_p0106
+- rule: respond to self_esteem_body_p0107
+  steps:
+    - intent: self_esteem_body_p0107
+    - action: utter_self_esteem_body_p0107
+- rule: respond to self_esteem_body_p0108
+  steps:
+    - intent: self_esteem_body_p0108
+    - action: utter_self_esteem_body_p0108
+- rule: respond to self_esteem_body_p0109
+  steps:
+    - intent: self_esteem_body_p0109
+    - action: utter_self_esteem_body_p0109
+- rule: respond to self_esteem_body_p0110
+  steps:
+    - intent: self_esteem_body_p0110
+    - action: utter_self_esteem_body_p0110
+- rule: respond to self_esteem_body_p0111
+  steps:
+    - intent: self_esteem_body_p0111
+    - action: utter_self_esteem_body_p0111
+- rule: respond to self_esteem_body_p0112
+  steps:
+    - intent: self_esteem_body_p0112
+    - action: utter_self_esteem_body_p0112
+- rule: respond to self_esteem_body_p0113
+  steps:
+    - intent: self_esteem_body_p0113
+    - action: utter_self_esteem_body_p0113
+- rule: respond to self_esteem_body_p0114
+  steps:
+    - intent: self_esteem_body_p0114
+    - action: utter_self_esteem_body_p0114
+- rule: respond to self_esteem_body_p0115
+  steps:
+    - intent: self_esteem_body_p0115
+    - action: utter_self_esteem_body_p0115
+- rule: respond to self_esteem_body_p0116
+  steps:
+    - intent: self_esteem_body_p0116
+    - action: utter_self_esteem_body_p0116
+- rule: respond to self_esteem_body_p0117
+  steps:
+    - intent: self_esteem_body_p0117
+    - action: utter_self_esteem_body_p0117
+- rule: respond to self_esteem_body_p0118
+  steps:
+    - intent: self_esteem_body_p0118
+    - action: utter_self_esteem_body_p0118
+- rule: respond to self_esteem_body_p0119
+  steps:
+    - intent: self_esteem_body_p0119
+    - action: utter_self_esteem_body_p0119
+- rule: respond to self_esteem_body_p0120
+  steps:
+    - intent: self_esteem_body_p0120
+    - action: utter_self_esteem_body_p0120
+- rule: respond to self_esteem_body_p0121
+  steps:
+    - intent: self_esteem_body_p0121
+    - action: utter_self_esteem_body_p0121
+- rule: respond to self_esteem_body_p0122
+  steps:
+    - intent: self_esteem_body_p0122
+    - action: utter_self_esteem_body_p0122
+- rule: respond to self_esteem_body_p0123
+  steps:
+    - intent: self_esteem_body_p0123
+    - action: utter_self_esteem_body_p0123
+- rule: respond to self_esteem_body_p0124
+  steps:
+    - intent: self_esteem_body_p0124
+    - action: utter_self_esteem_body_p0124
+- rule: respond to self_esteem_body_p0125
+  steps:
+    - intent: self_esteem_body_p0125
+    - action: utter_self_esteem_body_p0125
+- rule: respond to self_esteem_body_p0126
+  steps:
+    - intent: self_esteem_body_p0126
+    - action: utter_self_esteem_body_p0126
+- rule: respond to self_esteem_body_p0127
+  steps:
+    - intent: self_esteem_body_p0127
+    - action: utter_self_esteem_body_p0127
+- rule: respond to self_esteem_body_p0128
+  steps:
+    - intent: self_esteem_body_p0128
+    - action: utter_self_esteem_body_p0128
+- rule: respond to self_esteem_body_p0129
+  steps:
+    - intent: self_esteem_body_p0129
+    - action: utter_self_esteem_body_p0129
+- rule: respond to self_esteem_body_p0130
+  steps:
+    - intent: self_esteem_body_p0130
+    - action: utter_self_esteem_body_p0130
+- rule: respond to self_esteem_body_p0131
+  steps:
+    - intent: self_esteem_body_p0131
+    - action: utter_self_esteem_body_p0131
+- rule: respond to self_esteem_body_p0132
+  steps:
+    - intent: self_esteem_body_p0132
+    - action: utter_self_esteem_body_p0132
+- rule: respond to self_esteem_body_p0133
+  steps:
+    - intent: self_esteem_body_p0133
+    - action: utter_self_esteem_body_p0133
+- rule: respond to self_esteem_body_p0134
+  steps:
+    - intent: self_esteem_body_p0134
+    - action: utter_self_esteem_body_p0134
+- rule: respond to self_esteem_body_p0135
+  steps:
+    - intent: self_esteem_body_p0135
+    - action: utter_self_esteem_body_p0135
+- rule: respond to self_esteem_body_p0136
+  steps:
+    - intent: self_esteem_body_p0136
+    - action: utter_self_esteem_body_p0136
+- rule: respond to self_esteem_body_p0137
+  steps:
+    - intent: self_esteem_body_p0137
+    - action: utter_self_esteem_body_p0137
+- rule: respond to self_esteem_body_p0138
+  steps:
+    - intent: self_esteem_body_p0138
+    - action: utter_self_esteem_body_p0138
+- rule: respond to self_esteem_body_p0139
+  steps:
+    - intent: self_esteem_body_p0139
+    - action: utter_self_esteem_body_p0139
+- rule: respond to self_esteem_body_p0140
+  steps:
+    - intent: self_esteem_body_p0140
+    - action: utter_self_esteem_body_p0140
+- rule: respond to self_esteem_body_p0141
+  steps:
+    - intent: self_esteem_body_p0141
+    - action: utter_self_esteem_body_p0141
+- rule: respond to self_esteem_body_p0142
+  steps:
+    - intent: self_esteem_body_p0142
+    - action: utter_self_esteem_body_p0142
+- rule: respond to self_esteem_body_p0143
+  steps:
+    - intent: self_esteem_body_p0143
+    - action: utter_self_esteem_body_p0143
+- rule: respond to self_esteem_body_p0144
+  steps:
+    - intent: self_esteem_body_p0144
+    - action: utter_self_esteem_body_p0144
+- rule: respond to self_esteem_body_p0145
+  steps:
+    - intent: self_esteem_body_p0145
+    - action: utter_self_esteem_body_p0145
+- rule: respond to self_esteem_body_p0146
+  steps:
+    - intent: self_esteem_body_p0146
+    - action: utter_self_esteem_body_p0146
+- rule: respond to self_esteem_body_p0147
+  steps:
+    - intent: self_esteem_body_p0147
+    - action: utter_self_esteem_body_p0147
+- rule: respond to self_esteem_body_p0148
+  steps:
+    - intent: self_esteem_body_p0148
+    - action: utter_self_esteem_body_p0148
+- rule: respond to self_esteem_body_p0149
+  steps:
+    - intent: self_esteem_body_p0149
+    - action: utter_self_esteem_body_p0149
+- rule: respond to self_esteem_body_p0150
+  steps:
+    - intent: self_esteem_body_p0150
+    - action: utter_self_esteem_body_p0150
+- rule: respond to self_esteem_body_p0151
+  steps:
+    - intent: self_esteem_body_p0151
+    - action: utter_self_esteem_body_p0151
+- rule: respond to self_esteem_body_p0152
+  steps:
+    - intent: self_esteem_body_p0152
+    - action: utter_self_esteem_body_p0152
+- rule: respond to self_esteem_body_p0153
+  steps:
+    - intent: self_esteem_body_p0153
+    - action: utter_self_esteem_body_p0153
+- rule: respond to self_esteem_body_p0154
+  steps:
+    - intent: self_esteem_body_p0154
+    - action: utter_self_esteem_body_p0154
+- rule: respond to self_esteem_body_p0155
+  steps:
+    - intent: self_esteem_body_p0155
+    - action: utter_self_esteem_body_p0155
+- rule: respond to self_esteem_body_p0156
+  steps:
+    - intent: self_esteem_body_p0156
+    - action: utter_self_esteem_body_p0156
+- rule: respond to self_esteem_body_p0157
+  steps:
+    - intent: self_esteem_body_p0157
+    - action: utter_self_esteem_body_p0157
+- rule: respond to self_esteem_body_p0158
+  steps:
+    - intent: self_esteem_body_p0158
+    - action: utter_self_esteem_body_p0158
+- rule: respond to self_esteem_body_p0159
+  steps:
+    - intent: self_esteem_body_p0159
+    - action: utter_self_esteem_body_p0159
+- rule: respond to self_esteem_body_p0160
+  steps:
+    - intent: self_esteem_body_p0160
+    - action: utter_self_esteem_body_p0160
+- rule: respond to self_esteem_body_p0161
+  steps:
+    - intent: self_esteem_body_p0161
+    - action: utter_self_esteem_body_p0161
+- rule: respond to self_esteem_body_p0162
+  steps:
+    - intent: self_esteem_body_p0162
+    - action: utter_self_esteem_body_p0162
+- rule: respond to self_esteem_body_p0163
+  steps:
+    - intent: self_esteem_body_p0163
+    - action: utter_self_esteem_body_p0163
+- rule: respond to self_esteem_body_p0164
+  steps:
+    - intent: self_esteem_body_p0164
+    - action: utter_self_esteem_body_p0164
+- rule: respond to self_esteem_body_p0165
+  steps:
+    - intent: self_esteem_body_p0165
+    - action: utter_self_esteem_body_p0165
+- rule: respond to self_esteem_body_p0166
+  steps:
+    - intent: self_esteem_body_p0166
+    - action: utter_self_esteem_body_p0166
+- rule: respond to self_esteem_body_p0167
+  steps:
+    - intent: self_esteem_body_p0167
+    - action: utter_self_esteem_body_p0167
+- rule: respond to self_esteem_body_p0168
+  steps:
+    - intent: self_esteem_body_p0168
+    - action: utter_self_esteem_body_p0168
+- rule: respond to self_esteem_body_p0169
+  steps:
+    - intent: self_esteem_body_p0169
+    - action: utter_self_esteem_body_p0169
+
+
+- rule: respond to sleep_insomnia_p0001
+  steps:
+    - intent: sleep_insomnia_p0001
+    - action: utter_sleep_insomnia_p0001
+- rule: respond to sleep_insomnia_p0002
+  steps:
+    - intent: sleep_insomnia_p0002
+    - action: utter_sleep_insomnia_p0002
+- rule: respond to sleep_insomnia_p0003
+  steps:
+    - intent: sleep_insomnia_p0003
+    - action: utter_sleep_insomnia_p0003
+- rule: respond to sleep_insomnia_p0004
+  steps:
+    - intent: sleep_insomnia_p0004
+    - action: utter_sleep_insomnia_p0004
+- rule: respond to sleep_insomnia_p0005
+  steps:
+    - intent: sleep_insomnia_p0005
+    - action: utter_sleep_insomnia_p0005
+- rule: respond to sleep_insomnia_p0006
+  steps:
+    - intent: sleep_insomnia_p0006
+    - action: utter_sleep_insomnia_p0006
+- rule: respond to sleep_insomnia_p0007
+  steps:
+    - intent: sleep_insomnia_p0007
+    - action: utter_sleep_insomnia_p0007
+- rule: respond to sleep_insomnia_p0008
+  steps:
+    - intent: sleep_insomnia_p0008
+    - action: utter_sleep_insomnia_p0008
+- rule: respond to sleep_insomnia_p0009
+  steps:
+    - intent: sleep_insomnia_p0009
+    - action: utter_sleep_insomnia_p0009
+- rule: respond to sleep_insomnia_p0010
+  steps:
+    - intent: sleep_insomnia_p0010
+    - action: utter_sleep_insomnia_p0010
+- rule: respond to sleep_insomnia_p0011
+  steps:
+    - intent: sleep_insomnia_p0011
+    - action: utter_sleep_insomnia_p0011
+- rule: respond to sleep_insomnia_p0012
+  steps:
+    - intent: sleep_insomnia_p0012
+    - action: utter_sleep_insomnia_p0012
+- rule: respond to sleep_insomnia_p0013
+  steps:
+    - intent: sleep_insomnia_p0013
+    - action: utter_sleep_insomnia_p0013
+- rule: respond to sleep_insomnia_p0014
+  steps:
+    - intent: sleep_insomnia_p0014
+    - action: utter_sleep_insomnia_p0014
+- rule: respond to sleep_insomnia_p0015
+  steps:
+    - intent: sleep_insomnia_p0015
+    - action: utter_sleep_insomnia_p0015
+- rule: respond to sleep_insomnia_p0016
+  steps:
+    - intent: sleep_insomnia_p0016
+    - action: utter_sleep_insomnia_p0016
+- rule: respond to sleep_insomnia_p0017
+  steps:
+    - intent: sleep_insomnia_p0017
+    - action: utter_sleep_insomnia_p0017
+- rule: respond to sleep_insomnia_p0018
+  steps:
+    - intent: sleep_insomnia_p0018
+    - action: utter_sleep_insomnia_p0018
+- rule: respond to sleep_insomnia_p0019
+  steps:
+    - intent: sleep_insomnia_p0019
+    - action: utter_sleep_insomnia_p0019
+- rule: respond to sleep_insomnia_p0020
+  steps:
+    - intent: sleep_insomnia_p0020
+    - action: utter_sleep_insomnia_p0020
+- rule: respond to sleep_insomnia_p0021
+  steps:
+    - intent: sleep_insomnia_p0021
+    - action: utter_sleep_insomnia_p0021
+- rule: respond to sleep_insomnia_p0022
+  steps:
+    - intent: sleep_insomnia_p0022
+    - action: utter_sleep_insomnia_p0022
+- rule: respond to sleep_insomnia_p0023
+  steps:
+    - intent: sleep_insomnia_p0023
+    - action: utter_sleep_insomnia_p0023
+- rule: respond to sleep_insomnia_p0024
+  steps:
+    - intent: sleep_insomnia_p0024
+    - action: utter_sleep_insomnia_p0024
+- rule: respond to sleep_insomnia_p0025
+  steps:
+    - intent: sleep_insomnia_p0025
+    - action: utter_sleep_insomnia_p0025
+- rule: respond to sleep_insomnia_p0026
+  steps:
+    - intent: sleep_insomnia_p0026
+    - action: utter_sleep_insomnia_p0026
+- rule: respond to sleep_insomnia_p0027
+  steps:
+    - intent: sleep_insomnia_p0027
+    - action: utter_sleep_insomnia_p0027
+- rule: respond to sleep_insomnia_p0028
+  steps:
+    - intent: sleep_insomnia_p0028
+    - action: utter_sleep_insomnia_p0028
+- rule: respond to sleep_insomnia_p0029
+  steps:
+    - intent: sleep_insomnia_p0029
+    - action: utter_sleep_insomnia_p0029
+- rule: respond to sleep_insomnia_p0030
+  steps:
+    - intent: sleep_insomnia_p0030
+    - action: utter_sleep_insomnia_p0030
+- rule: respond to sleep_insomnia_p0031
+  steps:
+    - intent: sleep_insomnia_p0031
+    - action: utter_sleep_insomnia_p0031
+- rule: respond to sleep_insomnia_p0032
+  steps:
+    - intent: sleep_insomnia_p0032
+    - action: utter_sleep_insomnia_p0032
+- rule: respond to sleep_insomnia_p0033
+  steps:
+    - intent: sleep_insomnia_p0033
+    - action: utter_sleep_insomnia_p0033
+- rule: respond to sleep_insomnia_p0034
+  steps:
+    - intent: sleep_insomnia_p0034
+    - action: utter_sleep_insomnia_p0034
+- rule: respond to sleep_insomnia_p0035
+  steps:
+    - intent: sleep_insomnia_p0035
+    - action: utter_sleep_insomnia_p0035
+- rule: respond to sleep_insomnia_p0036
+  steps:
+    - intent: sleep_insomnia_p0036
+    - action: utter_sleep_insomnia_p0036
+- rule: respond to sleep_insomnia_p0037
+  steps:
+    - intent: sleep_insomnia_p0037
+    - action: utter_sleep_insomnia_p0037
+- rule: respond to sleep_insomnia_p0038
+  steps:
+    - intent: sleep_insomnia_p0038
+    - action: utter_sleep_insomnia_p0038
+- rule: respond to sleep_insomnia_p0039
+  steps:
+    - intent: sleep_insomnia_p0039
+    - action: utter_sleep_insomnia_p0039
+- rule: respond to sleep_insomnia_p0040
+  steps:
+    - intent: sleep_insomnia_p0040
+    - action: utter_sleep_insomnia_p0040
+- rule: respond to sleep_insomnia_p0041
+  steps:
+    - intent: sleep_insomnia_p0041
+    - action: utter_sleep_insomnia_p0041
+- rule: respond to sleep_insomnia_p0042
+  steps:
+    - intent: sleep_insomnia_p0042
+    - action: utter_sleep_insomnia_p0042
+- rule: respond to sleep_insomnia_p0043
+  steps:
+    - intent: sleep_insomnia_p0043
+    - action: utter_sleep_insomnia_p0043
+- rule: respond to sleep_insomnia_p0044
+  steps:
+    - intent: sleep_insomnia_p0044
+    - action: utter_sleep_insomnia_p0044
+- rule: respond to sleep_insomnia_p0045
+  steps:
+    - intent: sleep_insomnia_p0045
+    - action: utter_sleep_insomnia_p0045
+- rule: respond to sleep_insomnia_p0046
+  steps:
+    - intent: sleep_insomnia_p0046
+    - action: utter_sleep_insomnia_p0046
+- rule: respond to sleep_insomnia_p0047
+  steps:
+    - intent: sleep_insomnia_p0047
+    - action: utter_sleep_insomnia_p0047
+- rule: respond to sleep_insomnia_p0048
+  steps:
+    - intent: sleep_insomnia_p0048
+    - action: utter_sleep_insomnia_p0048
+- rule: respond to sleep_insomnia_p0049
+  steps:
+    - intent: sleep_insomnia_p0049
+    - action: utter_sleep_insomnia_p0049
+- rule: respond to sleep_insomnia_p0050
+  steps:
+    - intent: sleep_insomnia_p0050
+    - action: utter_sleep_insomnia_p0050
+- rule: respond to sleep_insomnia_p0051
+  steps:
+    - intent: sleep_insomnia_p0051
+    - action: utter_sleep_insomnia_p0051
+- rule: respond to sleep_insomnia_p0052
+  steps:
+    - intent: sleep_insomnia_p0052
+    - action: utter_sleep_insomnia_p0052
+- rule: respond to sleep_insomnia_p0053
+  steps:
+    - intent: sleep_insomnia_p0053
+    - action: utter_sleep_insomnia_p0053
+- rule: respond to sleep_insomnia_p0054
+  steps:
+    - intent: sleep_insomnia_p0054
+    - action: utter_sleep_insomnia_p0054
+- rule: respond to sleep_insomnia_p0055
+  steps:
+    - intent: sleep_insomnia_p0055
+    - action: utter_sleep_insomnia_p0055
+- rule: respond to sleep_insomnia_p0056
+  steps:
+    - intent: sleep_insomnia_p0056
+    - action: utter_sleep_insomnia_p0056
+- rule: respond to sleep_insomnia_p0057
+  steps:
+    - intent: sleep_insomnia_p0057
+    - action: utter_sleep_insomnia_p0057
+- rule: respond to sleep_insomnia_p0058
+  steps:
+    - intent: sleep_insomnia_p0058
+    - action: utter_sleep_insomnia_p0058
+- rule: respond to sleep_insomnia_p0059
+  steps:
+    - intent: sleep_insomnia_p0059
+    - action: utter_sleep_insomnia_p0059
+- rule: respond to sleep_insomnia_p0060
+  steps:
+    - intent: sleep_insomnia_p0060
+    - action: utter_sleep_insomnia_p0060
+- rule: respond to sleep_insomnia_p0061
+  steps:
+    - intent: sleep_insomnia_p0061
+    - action: utter_sleep_insomnia_p0061
+- rule: respond to sleep_insomnia_p0062
+  steps:
+    - intent: sleep_insomnia_p0062
+    - action: utter_sleep_insomnia_p0062
+- rule: respond to sleep_insomnia_p0063
+  steps:
+    - intent: sleep_insomnia_p0063
+    - action: utter_sleep_insomnia_p0063
+- rule: respond to sleep_insomnia_p0064
+  steps:
+    - intent: sleep_insomnia_p0064
+    - action: utter_sleep_insomnia_p0064
+- rule: respond to sleep_insomnia_p0065
+  steps:
+    - intent: sleep_insomnia_p0065
+    - action: utter_sleep_insomnia_p0065
+- rule: respond to sleep_insomnia_p0066
+  steps:
+    - intent: sleep_insomnia_p0066
+    - action: utter_sleep_insomnia_p0066
+
+
+- rule: respond to trauma_ptsd_p0001
+  steps:
+    - intent: trauma_ptsd_p0001
+    - action: utter_trauma_ptsd_p0001
+- rule: respond to trauma_ptsd_p0002
+  steps:
+    - intent: trauma_ptsd_p0002
+    - action: utter_trauma_ptsd_p0002
+- rule: respond to trauma_ptsd_p0003
+  steps:
+    - intent: trauma_ptsd_p0003
+    - action: utter_trauma_ptsd_p0003
+- rule: respond to trauma_ptsd_p0004
+  steps:
+    - intent: trauma_ptsd_p0004
+    - action: utter_trauma_ptsd_p0004
+- rule: respond to trauma_ptsd_p0005
+  steps:
+    - intent: trauma_ptsd_p0005
+    - action: utter_trauma_ptsd_p0005
+- rule: respond to trauma_ptsd_p0006
+  steps:
+    - intent: trauma_ptsd_p0006
+    - action: utter_trauma_ptsd_p0006
+- rule: respond to trauma_ptsd_p0007
+  steps:
+    - intent: trauma_ptsd_p0007
+    - action: utter_trauma_ptsd_p0007
+- rule: respond to trauma_ptsd_p0008
+  steps:
+    - intent: trauma_ptsd_p0008
+    - action: utter_trauma_ptsd_p0008
+- rule: respond to trauma_ptsd_p0009
+  steps:
+    - intent: trauma_ptsd_p0009
+    - action: utter_trauma_ptsd_p0009
+- rule: respond to trauma_ptsd_p0010
+  steps:
+    - intent: trauma_ptsd_p0010
+    - action: utter_trauma_ptsd_p0010
+- rule: respond to trauma_ptsd_p0011
+  steps:
+    - intent: trauma_ptsd_p0011
+    - action: utter_trauma_ptsd_p0011
+- rule: respond to trauma_ptsd_p0012
+  steps:
+    - intent: trauma_ptsd_p0012
+    - action: utter_trauma_ptsd_p0012
+- rule: respond to trauma_ptsd_p0013
+  steps:
+    - intent: trauma_ptsd_p0013
+    - action: utter_trauma_ptsd_p0013
+- rule: respond to trauma_ptsd_p0014
+  steps:
+    - intent: trauma_ptsd_p0014
+    - action: utter_trauma_ptsd_p0014
+- rule: respond to trauma_ptsd_p0015
+  steps:
+    - intent: trauma_ptsd_p0015
+    - action: utter_trauma_ptsd_p0015
+- rule: respond to trauma_ptsd_p0016
+  steps:
+    - intent: trauma_ptsd_p0016
+    - action: utter_trauma_ptsd_p0016
+- rule: respond to trauma_ptsd_p0017
+  steps:
+    - intent: trauma_ptsd_p0017
+    - action: utter_trauma_ptsd_p0017
+- rule: respond to trauma_ptsd_p0018
+  steps:
+    - intent: trauma_ptsd_p0018
+    - action: utter_trauma_ptsd_p0018
+- rule: respond to trauma_ptsd_p0019
+  steps:
+    - intent: trauma_ptsd_p0019
+    - action: utter_trauma_ptsd_p0019
+- rule: respond to trauma_ptsd_p0020
+  steps:
+    - intent: trauma_ptsd_p0020
+    - action: utter_trauma_ptsd_p0020
+- rule: respond to trauma_ptsd_p0021
+  steps:
+    - intent: trauma_ptsd_p0021
+    - action: utter_trauma_ptsd_p0021
+- rule: respond to trauma_ptsd_p0022
+  steps:
+    - intent: trauma_ptsd_p0022
+    - action: utter_trauma_ptsd_p0022
+- rule: respond to trauma_ptsd_p0023
+  steps:
+    - intent: trauma_ptsd_p0023
+    - action: utter_trauma_ptsd_p0023
+- rule: respond to trauma_ptsd_p0024
+  steps:
+    - intent: trauma_ptsd_p0024
+    - action: utter_trauma_ptsd_p0024
+- rule: respond to trauma_ptsd_p0025
+  steps:
+    - intent: trauma_ptsd_p0025
+    - action: utter_trauma_ptsd_p0025
+- rule: respond to trauma_ptsd_p0026
+  steps:
+    - intent: trauma_ptsd_p0026
+    - action: utter_trauma_ptsd_p0026
+- rule: respond to trauma_ptsd_p0027
+  steps:
+    - intent: trauma_ptsd_p0027
+    - action: utter_trauma_ptsd_p0027
+- rule: respond to trauma_ptsd_p0028
+  steps:
+    - intent: trauma_ptsd_p0028
+    - action: utter_trauma_ptsd_p0028
+- rule: respond to trauma_ptsd_p0029
+  steps:
+    - intent: trauma_ptsd_p0029
+    - action: utter_trauma_ptsd_p0029
+- rule: respond to trauma_ptsd_p0030
+  steps:
+    - intent: trauma_ptsd_p0030
+    - action: utter_trauma_ptsd_p0030
+- rule: respond to trauma_ptsd_p0031
+  steps:
+    - intent: trauma_ptsd_p0031
+    - action: utter_trauma_ptsd_p0031
+- rule: respond to trauma_ptsd_p0032
+  steps:
+    - intent: trauma_ptsd_p0032
+    - action: utter_trauma_ptsd_p0032
+- rule: respond to trauma_ptsd_p0033
+  steps:
+    - intent: trauma_ptsd_p0033
+    - action: utter_trauma_ptsd_p0033
+- rule: respond to trauma_ptsd_p0034
+  steps:
+    - intent: trauma_ptsd_p0034
+    - action: utter_trauma_ptsd_p0034
+- rule: respond to trauma_ptsd_p0035
+  steps:
+    - intent: trauma_ptsd_p0035
+    - action: utter_trauma_ptsd_p0035
+- rule: respond to trauma_ptsd_p0036
+  steps:
+    - intent: trauma_ptsd_p0036
+    - action: utter_trauma_ptsd_p0036
+- rule: respond to trauma_ptsd_p0037
+  steps:
+    - intent: trauma_ptsd_p0037
+    - action: utter_trauma_ptsd_p0037
+- rule: respond to trauma_ptsd_p0038
+  steps:
+    - intent: trauma_ptsd_p0038
+    - action: utter_trauma_ptsd_p0038
+- rule: respond to trauma_ptsd_p0039
+  steps:
+    - intent: trauma_ptsd_p0039
+    - action: utter_trauma_ptsd_p0039
+- rule: respond to trauma_ptsd_p0040
+  steps:
+    - intent: trauma_ptsd_p0040
+    - action: utter_trauma_ptsd_p0040
+- rule: respond to trauma_ptsd_p0041
+  steps:
+    - intent: trauma_ptsd_p0041
+    - action: utter_trauma_ptsd_p0041
+- rule: respond to trauma_ptsd_p0042
+  steps:
+    - intent: trauma_ptsd_p0042
+    - action: utter_trauma_ptsd_p0042
+- rule: respond to trauma_ptsd_p0043
+  steps:
+    - intent: trauma_ptsd_p0043
+    - action: utter_trauma_ptsd_p0043
+- rule: respond to trauma_ptsd_p0044
+  steps:
+    - intent: trauma_ptsd_p0044
+    - action: utter_trauma_ptsd_p0044
+- rule: respond to trauma_ptsd_p0045
+  steps:
+    - intent: trauma_ptsd_p0045
+    - action: utter_trauma_ptsd_p0045
+- rule: respond to trauma_ptsd_p0046
+  steps:
+    - intent: trauma_ptsd_p0046
+    - action: utter_trauma_ptsd_p0046
+- rule: respond to trauma_ptsd_p0047
+  steps:
+    - intent: trauma_ptsd_p0047
+    - action: utter_trauma_ptsd_p0047
+- rule: respond to trauma_ptsd_p0048
+  steps:
+    - intent: trauma_ptsd_p0048
+    - action: utter_trauma_ptsd_p0048
+- rule: respond to trauma_ptsd_p0049
+  steps:
+    - intent: trauma_ptsd_p0049
+    - action: utter_trauma_ptsd_p0049
+- rule: respond to trauma_ptsd_p0050
+  steps:
+    - intent: trauma_ptsd_p0050
+    - action: utter_trauma_ptsd_p0050
+- rule: respond to trauma_ptsd_p0051
+  steps:
+    - intent: trauma_ptsd_p0051
+    - action: utter_trauma_ptsd_p0051
+- rule: respond to trauma_ptsd_p0052
+  steps:
+    - intent: trauma_ptsd_p0052
+    - action: utter_trauma_ptsd_p0052
+- rule: respond to trauma_ptsd_p0053
+  steps:
+    - intent: trauma_ptsd_p0053
+    - action: utter_trauma_ptsd_p0053
+- rule: respond to trauma_ptsd_p0054
+  steps:
+    - intent: trauma_ptsd_p0054
+    - action: utter_trauma_ptsd_p0054
+- rule: respond to trauma_ptsd_p0055
+  steps:
+    - intent: trauma_ptsd_p0055
+    - action: utter_trauma_ptsd_p0055
+- rule: respond to trauma_ptsd_p0056
+  steps:
+    - intent: trauma_ptsd_p0056
+    - action: utter_trauma_ptsd_p0056
+- rule: respond to trauma_ptsd_p0057
+  steps:
+    - intent: trauma_ptsd_p0057
+    - action: utter_trauma_ptsd_p0057
+- rule: respond to trauma_ptsd_p0058
+  steps:
+    - intent: trauma_ptsd_p0058
+    - action: utter_trauma_ptsd_p0058
+- rule: respond to trauma_ptsd_p0059
+  steps:
+    - intent: trauma_ptsd_p0059
+    - action: utter_trauma_ptsd_p0059
+- rule: respond to trauma_ptsd_p0060
+  steps:
+    - intent: trauma_ptsd_p0060
+    - action: utter_trauma_ptsd_p0060
+- rule: respond to trauma_ptsd_p0061
+  steps:
+    - intent: trauma_ptsd_p0061
+    - action: utter_trauma_ptsd_p0061
+- rule: respond to trauma_ptsd_p0062
+  steps:
+    - intent: trauma_ptsd_p0062
+    - action: utter_trauma_ptsd_p0062
+- rule: respond to trauma_ptsd_p0063
+  steps:
+    - intent: trauma_ptsd_p0063
+    - action: utter_trauma_ptsd_p0063
+- rule: respond to trauma_ptsd_p0064
+  steps:
+    - intent: trauma_ptsd_p0064
+    - action: utter_trauma_ptsd_p0064
+- rule: respond to trauma_ptsd_p0065
+  steps:
+    - intent: trauma_ptsd_p0065
+    - action: utter_trauma_ptsd_p0065
+- rule: respond to trauma_ptsd_p0066
+  steps:
+    - intent: trauma_ptsd_p0066
+    - action: utter_trauma_ptsd_p0066
+- rule: respond to trauma_ptsd_p0067
+  steps:
+    - intent: trauma_ptsd_p0067
+    - action: utter_trauma_ptsd_p0067
+- rule: respond to trauma_ptsd_p0068
+  steps:
+    - intent: trauma_ptsd_p0068
+    - action: utter_trauma_ptsd_p0068
+- rule: respond to trauma_ptsd_p0069
+  steps:
+    - intent: trauma_ptsd_p0069
+    - action: utter_trauma_ptsd_p0069
+- rule: respond to trauma_ptsd_p0070
+  steps:
+    - intent: trauma_ptsd_p0070
+    - action: utter_trauma_ptsd_p0070
+- rule: respond to trauma_ptsd_p0071
+  steps:
+    - intent: trauma_ptsd_p0071
+    - action: utter_trauma_ptsd_p0071
+- rule: respond to trauma_ptsd_p0072
+  steps:
+    - intent: trauma_ptsd_p0072
+    - action: utter_trauma_ptsd_p0072
+- rule: respond to trauma_ptsd_p0073
+  steps:
+    - intent: trauma_ptsd_p0073
+    - action: utter_trauma_ptsd_p0073
+- rule: respond to trauma_ptsd_p0074
+  steps:
+    - intent: trauma_ptsd_p0074
+    - action: utter_trauma_ptsd_p0074
+- rule: respond to trauma_ptsd_p0075
+  steps:
+    - intent: trauma_ptsd_p0075
+    - action: utter_trauma_ptsd_p0075
+- rule: respond to trauma_ptsd_p0076
+  steps:
+    - intent: trauma_ptsd_p0076
+    - action: utter_trauma_ptsd_p0076
+- rule: respond to trauma_ptsd_p0077
+  steps:
+    - intent: trauma_ptsd_p0077
+    - action: utter_trauma_ptsd_p0077
+- rule: respond to trauma_ptsd_p0078
+  steps:
+    - intent: trauma_ptsd_p0078
+    - action: utter_trauma_ptsd_p0078
+- rule: respond to trauma_ptsd_p0079
+  steps:
+    - intent: trauma_ptsd_p0079
+    - action: utter_trauma_ptsd_p0079
+- rule: respond to trauma_ptsd_p0080
+  steps:
+    - intent: trauma_ptsd_p0080
+    - action: utter_trauma_ptsd_p0080
+- rule: respond to trauma_ptsd_p0081
+  steps:
+    - intent: trauma_ptsd_p0081
+    - action: utter_trauma_ptsd_p0081
+- rule: respond to trauma_ptsd_p0082
+  steps:
+    - intent: trauma_ptsd_p0082
+    - action: utter_trauma_ptsd_p0082
+- rule: respond to trauma_ptsd_p0083
+  steps:
+    - intent: trauma_ptsd_p0083
+    - action: utter_trauma_ptsd_p0083
+- rule: respond to trauma_ptsd_p0084
+  steps:
+    - intent: trauma_ptsd_p0084
+    - action: utter_trauma_ptsd_p0084
+- rule: respond to trauma_ptsd_p0085
+  steps:
+    - intent: trauma_ptsd_p0085
+    - action: utter_trauma_ptsd_p0085
+- rule: respond to trauma_ptsd_p0086
+  steps:
+    - intent: trauma_ptsd_p0086
+    - action: utter_trauma_ptsd_p0086
+- rule: respond to trauma_ptsd_p0087
+  steps:
+    - intent: trauma_ptsd_p0087
+    - action: utter_trauma_ptsd_p0087
+- rule: respond to trauma_ptsd_p0088
+  steps:
+    - intent: trauma_ptsd_p0088
+    - action: utter_trauma_ptsd_p0088
+- rule: respond to trauma_ptsd_p0089
+  steps:
+    - intent: trauma_ptsd_p0089
+    - action: utter_trauma_ptsd_p0089
+- rule: respond to trauma_ptsd_p0090
+  steps:
+    - intent: trauma_ptsd_p0090
+    - action: utter_trauma_ptsd_p0090
+- rule: respond to trauma_ptsd_p0091
+  steps:
+    - intent: trauma_ptsd_p0091
+    - action: utter_trauma_ptsd_p0091
+- rule: respond to trauma_ptsd_p0092
+  steps:
+    - intent: trauma_ptsd_p0092
+    - action: utter_trauma_ptsd_p0092
+- rule: respond to trauma_ptsd_p0093
+  steps:
+    - intent: trauma_ptsd_p0093
+    - action: utter_trauma_ptsd_p0093
+- rule: respond to trauma_ptsd_p0094
+  steps:
+    - intent: trauma_ptsd_p0094
+    - action: utter_trauma_ptsd_p0094
+- rule: respond to trauma_ptsd_p0095
+  steps:
+    - intent: trauma_ptsd_p0095
+    - action: utter_trauma_ptsd_p0095
+- rule: respond to trauma_ptsd_p0096
+  steps:
+    - intent: trauma_ptsd_p0096
+    - action: utter_trauma_ptsd_p0096
+- rule: respond to trauma_ptsd_p0097
+  steps:
+    - intent: trauma_ptsd_p0097
+    - action: utter_trauma_ptsd_p0097
+- rule: respond to trauma_ptsd_p0098
+  steps:
+    - intent: trauma_ptsd_p0098
+    - action: utter_trauma_ptsd_p0098
+- rule: respond to trauma_ptsd_p0099
+  steps:
+    - intent: trauma_ptsd_p0099
+    - action: utter_trauma_ptsd_p0099
+- rule: respond to trauma_ptsd_p0100
+  steps:
+    - intent: trauma_ptsd_p0100
+    - action: utter_trauma_ptsd_p0100
+- rule: respond to trauma_ptsd_p0101
+  steps:
+    - intent: trauma_ptsd_p0101
+    - action: utter_trauma_ptsd_p0101
+- rule: respond to trauma_ptsd_p0102
+  steps:
+    - intent: trauma_ptsd_p0102
+    - action: utter_trauma_ptsd_p0102
+- rule: respond to trauma_ptsd_p0103
+  steps:
+    - intent: trauma_ptsd_p0103
+    - action: utter_trauma_ptsd_p0103
+- rule: respond to trauma_ptsd_p0104
+  steps:
+    - intent: trauma_ptsd_p0104
+    - action: utter_trauma_ptsd_p0104
+- rule: respond to trauma_ptsd_p0105
+  steps:
+    - intent: trauma_ptsd_p0105
+    - action: utter_trauma_ptsd_p0105
+- rule: respond to trauma_ptsd_p0106
+  steps:
+    - intent: trauma_ptsd_p0106
+    - action: utter_trauma_ptsd_p0106
+- rule: respond to trauma_ptsd_p0107
+  steps:
+    - intent: trauma_ptsd_p0107
+    - action: utter_trauma_ptsd_p0107
+- rule: respond to trauma_ptsd_p0108
+  steps:
+    - intent: trauma_ptsd_p0108
+    - action: utter_trauma_ptsd_p0108
+- rule: respond to trauma_ptsd_p0109
+  steps:
+    - intent: trauma_ptsd_p0109
+    - action: utter_trauma_ptsd_p0109
+- rule: respond to trauma_ptsd_p0110
+  steps:
+    - intent: trauma_ptsd_p0110
+    - action: utter_trauma_ptsd_p0110
+- rule: respond to trauma_ptsd_p0111
+  steps:
+    - intent: trauma_ptsd_p0111
+    - action: utter_trauma_ptsd_p0111
+- rule: respond to trauma_ptsd_p0112
+  steps:
+    - intent: trauma_ptsd_p0112
+    - action: utter_trauma_ptsd_p0112
+- rule: respond to trauma_ptsd_p0113
+  steps:
+    - intent: trauma_ptsd_p0113
+    - action: utter_trauma_ptsd_p0113
+- rule: respond to trauma_ptsd_p0114
+  steps:
+    - intent: trauma_ptsd_p0114
+    - action: utter_trauma_ptsd_p0114
+- rule: respond to trauma_ptsd_p0115
+  steps:
+    - intent: trauma_ptsd_p0115
+    - action: utter_trauma_ptsd_p0115
+- rule: respond to trauma_ptsd_p0116
+  steps:
+    - intent: trauma_ptsd_p0116
+    - action: utter_trauma_ptsd_p0116
+- rule: respond to trauma_ptsd_p0117
+  steps:
+    - intent: trauma_ptsd_p0117
+    - action: utter_trauma_ptsd_p0117
+- rule: respond to trauma_ptsd_p0118
+  steps:
+    - intent: trauma_ptsd_p0118
+    - action: utter_trauma_ptsd_p0118
+- rule: respond to trauma_ptsd_p0119
+  steps:
+    - intent: trauma_ptsd_p0119
+    - action: utter_trauma_ptsd_p0119
+- rule: respond to trauma_ptsd_p0120
+  steps:
+    - intent: trauma_ptsd_p0120
+    - action: utter_trauma_ptsd_p0120
+- rule: respond to trauma_ptsd_p0121
+  steps:
+    - intent: trauma_ptsd_p0121
+    - action: utter_trauma_ptsd_p0121
+- rule: respond to trauma_ptsd_p0122
+  steps:
+    - intent: trauma_ptsd_p0122
+    - action: utter_trauma_ptsd_p0122
+- rule: respond to trauma_ptsd_p0123
+  steps:
+    - intent: trauma_ptsd_p0123
+    - action: utter_trauma_ptsd_p0123
+- rule: respond to trauma_ptsd_p0124
+  steps:
+    - intent: trauma_ptsd_p0124
+    - action: utter_trauma_ptsd_p0124
+- rule: respond to trauma_ptsd_p0125
+  steps:
+    - intent: trauma_ptsd_p0125
+    - action: utter_trauma_ptsd_p0125
+- rule: respond to trauma_ptsd_p0126
+  steps:
+    - intent: trauma_ptsd_p0126
+    - action: utter_trauma_ptsd_p0126
+- rule: respond to trauma_ptsd_p0127
+  steps:
+    - intent: trauma_ptsd_p0127
+    - action: utter_trauma_ptsd_p0127
+- rule: respond to trauma_ptsd_p0128
+  steps:
+    - intent: trauma_ptsd_p0128
+    - action: utter_trauma_ptsd_p0128
+- rule: respond to trauma_ptsd_p0129
+  steps:
+    - intent: trauma_ptsd_p0129
+    - action: utter_trauma_ptsd_p0129
+- rule: respond to trauma_ptsd_p0130
+  steps:
+    - intent: trauma_ptsd_p0130
+    - action: utter_trauma_ptsd_p0130
+- rule: respond to trauma_ptsd_p0131
+  steps:
+    - intent: trauma_ptsd_p0131
+    - action: utter_trauma_ptsd_p0131
+- rule: respond to trauma_ptsd_p0132
+  steps:
+    - intent: trauma_ptsd_p0132
+    - action: utter_trauma_ptsd_p0132
+- rule: respond to trauma_ptsd_p0133
+  steps:
+    - intent: trauma_ptsd_p0133
+    - action: utter_trauma_ptsd_p0133
+- rule: respond to trauma_ptsd_p0134
+  steps:
+    - intent: trauma_ptsd_p0134
+    - action: utter_trauma_ptsd_p0134
+- rule: respond to trauma_ptsd_p0135
+  steps:
+    - intent: trauma_ptsd_p0135
+    - action: utter_trauma_ptsd_p0135
+- rule: respond to trauma_ptsd_p0136
+  steps:
+    - intent: trauma_ptsd_p0136
+    - action: utter_trauma_ptsd_p0136
+- rule: respond to trauma_ptsd_p0137
+  steps:
+    - intent: trauma_ptsd_p0137
+    - action: utter_trauma_ptsd_p0137
+- rule: respond to trauma_ptsd_p0138
+  steps:
+    - intent: trauma_ptsd_p0138
+    - action: utter_trauma_ptsd_p0138
+- rule: respond to trauma_ptsd_p0139
+  steps:
+    - intent: trauma_ptsd_p0139
+    - action: utter_trauma_ptsd_p0139
+- rule: respond to trauma_ptsd_p0140
+  steps:
+    - intent: trauma_ptsd_p0140
+    - action: utter_trauma_ptsd_p0140
+- rule: respond to trauma_ptsd_p0141
+  steps:
+    - intent: trauma_ptsd_p0141
+    - action: utter_trauma_ptsd_p0141
+- rule: respond to trauma_ptsd_p0142
+  steps:
+    - intent: trauma_ptsd_p0142
+    - action: utter_trauma_ptsd_p0142
+- rule: respond to trauma_ptsd_p0143
+  steps:
+    - intent: trauma_ptsd_p0143
+    - action: utter_trauma_ptsd_p0143
+- rule: respond to trauma_ptsd_p0144
+  steps:
+    - intent: trauma_ptsd_p0144
+    - action: utter_trauma_ptsd_p0144
+- rule: respond to trauma_ptsd_p0145
+  steps:
+    - intent: trauma_ptsd_p0145
+    - action: utter_trauma_ptsd_p0145
+- rule: respond to trauma_ptsd_p0146
+  steps:
+    - intent: trauma_ptsd_p0146
+    - action: utter_trauma_ptsd_p0146
+- rule: respond to trauma_ptsd_p0147
+  steps:
+    - intent: trauma_ptsd_p0147
+    - action: utter_trauma_ptsd_p0147
+- rule: respond to trauma_ptsd_p0148
+  steps:
+    - intent: trauma_ptsd_p0148
+    - action: utter_trauma_ptsd_p0148
+- rule: respond to trauma_ptsd_p0149
+  steps:
+    - intent: trauma_ptsd_p0149
+    - action: utter_trauma_ptsd_p0149
+- rule: respond to trauma_ptsd_p0150
+  steps:
+    - intent: trauma_ptsd_p0150
+    - action: utter_trauma_ptsd_p0150
+- rule: respond to trauma_ptsd_p0151
+  steps:
+    - intent: trauma_ptsd_p0151
+    - action: utter_trauma_ptsd_p0151
+- rule: respond to trauma_ptsd_p0152
+  steps:
+    - intent: trauma_ptsd_p0152
+    - action: utter_trauma_ptsd_p0152
+- rule: respond to trauma_ptsd_p0153
+  steps:
+    - intent: trauma_ptsd_p0153
+    - action: utter_trauma_ptsd_p0153
+- rule: respond to trauma_ptsd_p0154
+  steps:
+    - intent: trauma_ptsd_p0154
+    - action: utter_trauma_ptsd_p0154
+- rule: respond to trauma_ptsd_p0155
+  steps:
+    - intent: trauma_ptsd_p0155
+    - action: utter_trauma_ptsd_p0155
+- rule: respond to trauma_ptsd_p0156
+  steps:
+    - intent: trauma_ptsd_p0156
+    - action: utter_trauma_ptsd_p0156
+- rule: respond to trauma_ptsd_p0157
+  steps:
+    - intent: trauma_ptsd_p0157
+    - action: utter_trauma_ptsd_p0157
+- rule: respond to trauma_ptsd_p0158
+  steps:
+    - intent: trauma_ptsd_p0158
+    - action: utter_trauma_ptsd_p0158
+- rule: respond to trauma_ptsd_p0159
+  steps:
+    - intent: trauma_ptsd_p0159
+    - action: utter_trauma_ptsd_p0159
+- rule: respond to trauma_ptsd_p0160
+  steps:
+    - intent: trauma_ptsd_p0160
+    - action: utter_trauma_ptsd_p0160
+- rule: respond to trauma_ptsd_p0161
+  steps:
+    - intent: trauma_ptsd_p0161
+    - action: utter_trauma_ptsd_p0161
+- rule: respond to trauma_ptsd_p0162
+  steps:
+    - intent: trauma_ptsd_p0162
+    - action: utter_trauma_ptsd_p0162
+- rule: respond to trauma_ptsd_p0163
+  steps:
+    - intent: trauma_ptsd_p0163
+    - action: utter_trauma_ptsd_p0163
+- rule: respond to trauma_ptsd_p0164
+  steps:
+    - intent: trauma_ptsd_p0164
+    - action: utter_trauma_ptsd_p0164
+- rule: respond to trauma_ptsd_p0165
+  steps:
+    - intent: trauma_ptsd_p0165
+    - action: utter_trauma_ptsd_p0165
+- rule: respond to trauma_ptsd_p0166
+  steps:
+    - intent: trauma_ptsd_p0166
+    - action: utter_trauma_ptsd_p0166
+- rule: respond to trauma_ptsd_p0167
+  steps:
+    - intent: trauma_ptsd_p0167
+    - action: utter_trauma_ptsd_p0167
+- rule: respond to trauma_ptsd_p0168
+  steps:
+    - intent: trauma_ptsd_p0168
+    - action: utter_trauma_ptsd_p0168
+- rule: respond to trauma_ptsd_p0169
+  steps:
+    - intent: trauma_ptsd_p0169
+    - action: utter_trauma_ptsd_p0169
+- rule: respond to trauma_ptsd_p0170
+  steps:
+    - intent: trauma_ptsd_p0170
+    - action: utter_trauma_ptsd_p0170
+- rule: respond to trauma_ptsd_p0171
+  steps:
+    - intent: trauma_ptsd_p0171
+    - action: utter_trauma_ptsd_p0171
+- rule: respond to trauma_ptsd_p0172
+  steps:
+    - intent: trauma_ptsd_p0172
+    - action: utter_trauma_ptsd_p0172
+- rule: respond to trauma_ptsd_p0173
+  steps:
+    - intent: trauma_ptsd_p0173
+    - action: utter_trauma_ptsd_p0173
+- rule: respond to trauma_ptsd_p0174
+  steps:
+    - intent: trauma_ptsd_p0174
+    - action: utter_trauma_ptsd_p0174
+- rule: respond to trauma_ptsd_p0175
+  steps:
+    - intent: trauma_ptsd_p0175
+    - action: utter_trauma_ptsd_p0175
+- rule: respond to trauma_ptsd_p0176
+  steps:
+    - intent: trauma_ptsd_p0176
+    - action: utter_trauma_ptsd_p0176
+- rule: respond to trauma_ptsd_p0177
+  steps:
+    - intent: trauma_ptsd_p0177
+    - action: utter_trauma_ptsd_p0177
+- rule: respond to trauma_ptsd_p0178
+  steps:
+    - intent: trauma_ptsd_p0178
+    - action: utter_trauma_ptsd_p0178
+- rule: respond to trauma_ptsd_p0179
+  steps:
+    - intent: trauma_ptsd_p0179
+    - action: utter_trauma_ptsd_p0179
+- rule: respond to trauma_ptsd_p0180
+  steps:
+    - intent: trauma_ptsd_p0180
+    - action: utter_trauma_ptsd_p0180
+- rule: respond to trauma_ptsd_p0181
+  steps:
+    - intent: trauma_ptsd_p0181
+    - action: utter_trauma_ptsd_p0181
+- rule: respond to trauma_ptsd_p0182
+  steps:
+    - intent: trauma_ptsd_p0182
+    - action: utter_trauma_ptsd_p0182
+- rule: respond to trauma_ptsd_p0183
+  steps:
+    - intent: trauma_ptsd_p0183
+    - action: utter_trauma_ptsd_p0183
+- rule: respond to trauma_ptsd_p0184
+  steps:
+    - intent: trauma_ptsd_p0184
+    - action: utter_trauma_ptsd_p0184
+- rule: respond to trauma_ptsd_p0185
+  steps:
+    - intent: trauma_ptsd_p0185
+    - action: utter_trauma_ptsd_p0185
+- rule: respond to trauma_ptsd_p0186
+  steps:
+    - intent: trauma_ptsd_p0186
+    - action: utter_trauma_ptsd_p0186
+- rule: respond to trauma_ptsd_p0187
+  steps:
+    - intent: trauma_ptsd_p0187
+    - action: utter_trauma_ptsd_p0187
+- rule: respond to trauma_ptsd_p0188
+  steps:
+    - intent: trauma_ptsd_p0188
+    - action: utter_trauma_ptsd_p0188
+- rule: respond to trauma_ptsd_p0189
+  steps:
+    - intent: trauma_ptsd_p0189
+    - action: utter_trauma_ptsd_p0189
+- rule: respond to trauma_ptsd_p0190
+  steps:
+    - intent: trauma_ptsd_p0190
+    - action: utter_trauma_ptsd_p0190
+- rule: respond to trauma_ptsd_p0191
+  steps:
+    - intent: trauma_ptsd_p0191
+    - action: utter_trauma_ptsd_p0191
+- rule: respond to trauma_ptsd_p0192
+  steps:
+    - intent: trauma_ptsd_p0192
+    - action: utter_trauma_ptsd_p0192
+- rule: respond to trauma_ptsd_p0193
+  steps:
+    - intent: trauma_ptsd_p0193
+    - action: utter_trauma_ptsd_p0193
+- rule: respond to trauma_ptsd_p0194
+  steps:
+    - intent: trauma_ptsd_p0194
+    - action: utter_trauma_ptsd_p0194
+- rule: respond to trauma_ptsd_p0195
+  steps:
+    - intent: trauma_ptsd_p0195
+    - action: utter_trauma_ptsd_p0195
+- rule: respond to trauma_ptsd_p0196
+  steps:
+    - intent: trauma_ptsd_p0196
+    - action: utter_trauma_ptsd_p0196
+- rule: respond to trauma_ptsd_p0197
+  steps:
+    - intent: trauma_ptsd_p0197
+    - action: utter_trauma_ptsd_p0197
+- rule: respond to trauma_ptsd_p0198
+  steps:
+    - intent: trauma_ptsd_p0198
+    - action: utter_trauma_ptsd_p0198
+- rule: respond to trauma_ptsd_p0199
+  steps:
+    - intent: trauma_ptsd_p0199
+    - action: utter_trauma_ptsd_p0199
+- rule: respond to trauma_ptsd_p0200
+  steps:
+    - intent: trauma_ptsd_p0200
+    - action: utter_trauma_ptsd_p0200
+- rule: respond to trauma_ptsd_p0201
+  steps:
+    - intent: trauma_ptsd_p0201
+    - action: utter_trauma_ptsd_p0201
+- rule: respond to trauma_ptsd_p0202
+  steps:
+    - intent: trauma_ptsd_p0202
+    - action: utter_trauma_ptsd_p0202
+- rule: respond to trauma_ptsd_p0203
+  steps:
+    - intent: trauma_ptsd_p0203
+    - action: utter_trauma_ptsd_p0203
+- rule: respond to trauma_ptsd_p0204
+  steps:
+    - intent: trauma_ptsd_p0204
+    - action: utter_trauma_ptsd_p0204
+- rule: respond to trauma_ptsd_p0205
+  steps:
+    - intent: trauma_ptsd_p0205
+    - action: utter_trauma_ptsd_p0205
+- rule: respond to trauma_ptsd_p0206
+  steps:
+    - intent: trauma_ptsd_p0206
+    - action: utter_trauma_ptsd_p0206
+- rule: respond to trauma_ptsd_p0207
+  steps:
+    - intent: trauma_ptsd_p0207
+    - action: utter_trauma_ptsd_p0207
+- rule: respond to trauma_ptsd_p0208
+  steps:
+    - intent: trauma_ptsd_p0208
+    - action: utter_trauma_ptsd_p0208
+- rule: respond to trauma_ptsd_p0209
+  steps:
+    - intent: trauma_ptsd_p0209
+    - action: utter_trauma_ptsd_p0209
+- rule: respond to trauma_ptsd_p0210
+  steps:
+    - intent: trauma_ptsd_p0210
+    - action: utter_trauma_ptsd_p0210
+- rule: respond to trauma_ptsd_p0211
+  steps:
+    - intent: trauma_ptsd_p0211
+    - action: utter_trauma_ptsd_p0211
+- rule: respond to trauma_ptsd_p0212
+  steps:
+    - intent: trauma_ptsd_p0212
+    - action: utter_trauma_ptsd_p0212
+- rule: respond to trauma_ptsd_p0213
+  steps:
+    - intent: trauma_ptsd_p0213
+    - action: utter_trauma_ptsd_p0213
+- rule: respond to trauma_ptsd_p0214
+  steps:
+    - intent: trauma_ptsd_p0214
+    - action: utter_trauma_ptsd_p0214
+- rule: respond to trauma_ptsd_p0215
+  steps:
+    - intent: trauma_ptsd_p0215
+    - action: utter_trauma_ptsd_p0215
+- rule: respond to trauma_ptsd_p0216
+  steps:
+    - intent: trauma_ptsd_p0216
+    - action: utter_trauma_ptsd_p0216
+- rule: respond to trauma_ptsd_p0217
+  steps:
+    - intent: trauma_ptsd_p0217
+    - action: utter_trauma_ptsd_p0217
+- rule: respond to trauma_ptsd_p0218
+  steps:
+    - intent: trauma_ptsd_p0218
+    - action: utter_trauma_ptsd_p0218
+- rule: respond to trauma_ptsd_p0219
+  steps:
+    - intent: trauma_ptsd_p0219
+    - action: utter_trauma_ptsd_p0219
+- rule: respond to trauma_ptsd_p0220
+  steps:
+    - intent: trauma_ptsd_p0220
+    - action: utter_trauma_ptsd_p0220
+- rule: respond to trauma_ptsd_p0221
+  steps:
+    - intent: trauma_ptsd_p0221
+    - action: utter_trauma_ptsd_p0221
+- rule: respond to trauma_ptsd_p0222
+  steps:
+    - intent: trauma_ptsd_p0222
+    - action: utter_trauma_ptsd_p0222
+- rule: respond to trauma_ptsd_p0223
+  steps:
+    - intent: trauma_ptsd_p0223
+    - action: utter_trauma_ptsd_p0223
+- rule: respond to trauma_ptsd_p0224
+  steps:
+    - intent: trauma_ptsd_p0224
+    - action: utter_trauma_ptsd_p0224
+- rule: respond to trauma_ptsd_p0225
+  steps:
+    - intent: trauma_ptsd_p0225
+    - action: utter_trauma_ptsd_p0225
+- rule: respond to trauma_ptsd_p0226
+  steps:
+    - intent: trauma_ptsd_p0226
+    - action: utter_trauma_ptsd_p0226
+- rule: respond to trauma_ptsd_p0227
+  steps:
+    - intent: trauma_ptsd_p0227
+    - action: utter_trauma_ptsd_p0227
+- rule: respond to trauma_ptsd_p0228
+  steps:
+    - intent: trauma_ptsd_p0228
+    - action: utter_trauma_ptsd_p0228
+- rule: respond to trauma_ptsd_p0229
+  steps:
+    - intent: trauma_ptsd_p0229
+    - action: utter_trauma_ptsd_p0229
+- rule: respond to trauma_ptsd_p0230
+  steps:
+    - intent: trauma_ptsd_p0230
+    - action: utter_trauma_ptsd_p0230
+- rule: respond to trauma_ptsd_p0231
+  steps:
+    - intent: trauma_ptsd_p0231
+    - action: utter_trauma_ptsd_p0231
+- rule: respond to trauma_ptsd_p0232
+  steps:
+    - intent: trauma_ptsd_p0232
+    - action: utter_trauma_ptsd_p0232
+- rule: respond to trauma_ptsd_p0233
+  steps:
+    - intent: trauma_ptsd_p0233
+    - action: utter_trauma_ptsd_p0233
+- rule: respond to trauma_ptsd_p0234
+  steps:
+    - intent: trauma_ptsd_p0234
+    - action: utter_trauma_ptsd_p0234
+- rule: respond to trauma_ptsd_p0235
+  steps:
+    - intent: trauma_ptsd_p0235
+    - action: utter_trauma_ptsd_p0235
+- rule: respond to trauma_ptsd_p0236
+  steps:
+    - intent: trauma_ptsd_p0236
+    - action: utter_trauma_ptsd_p0236
+- rule: respond to trauma_ptsd_p0237
+  steps:
+    - intent: trauma_ptsd_p0237
+    - action: utter_trauma_ptsd_p0237
+- rule: respond to trauma_ptsd_p0238
+  steps:
+    - intent: trauma_ptsd_p0238
+    - action: utter_trauma_ptsd_p0238
+- rule: respond to trauma_ptsd_p0239
+  steps:
+    - intent: trauma_ptsd_p0239
+    - action: utter_trauma_ptsd_p0239
+- rule: respond to trauma_ptsd_p0240
+  steps:
+    - intent: trauma_ptsd_p0240
+    - action: utter_trauma_ptsd_p0240
+- rule: respond to trauma_ptsd_p0241
+  steps:
+    - intent: trauma_ptsd_p0241
+    - action: utter_trauma_ptsd_p0241
+- rule: respond to trauma_ptsd_p0242
+  steps:
+    - intent: trauma_ptsd_p0242
+    - action: utter_trauma_ptsd_p0242
+- rule: respond to trauma_ptsd_p0243
+  steps:
+    - intent: trauma_ptsd_p0243
+    - action: utter_trauma_ptsd_p0243
+- rule: respond to trauma_ptsd_p0244
+  steps:
+    - intent: trauma_ptsd_p0244
+    - action: utter_trauma_ptsd_p0244
+- rule: respond to trauma_ptsd_p0245
+  steps:
+    - intent: trauma_ptsd_p0245
+    - action: utter_trauma_ptsd_p0245
+- rule: respond to trauma_ptsd_p0246
+  steps:
+    - intent: trauma_ptsd_p0246
+    - action: utter_trauma_ptsd_p0246
+- rule: respond to trauma_ptsd_p0247
+  steps:
+    - intent: trauma_ptsd_p0247
+    - action: utter_trauma_ptsd_p0247
+- rule: respond to trauma_ptsd_p0248
+  steps:
+    - intent: trauma_ptsd_p0248
+    - action: utter_trauma_ptsd_p0248
+- rule: respond to trauma_ptsd_p0249
+  steps:
+    - intent: trauma_ptsd_p0249
+    - action: utter_trauma_ptsd_p0249
+- rule: respond to trauma_ptsd_p0250
+  steps:
+    - intent: trauma_ptsd_p0250
+    - action: utter_trauma_ptsd_p0250
+- rule: respond to trauma_ptsd_p0251
+  steps:
+    - intent: trauma_ptsd_p0251
+    - action: utter_trauma_ptsd_p0251
+- rule: respond to trauma_ptsd_p0252
+  steps:
+    - intent: trauma_ptsd_p0252
+    - action: utter_trauma_ptsd_p0252
+- rule: respond to trauma_ptsd_p0253
+  steps:
+    - intent: trauma_ptsd_p0253
+    - action: utter_trauma_ptsd_p0253
+- rule: respond to trauma_ptsd_p0254
+  steps:
+    - intent: trauma_ptsd_p0254
+    - action: utter_trauma_ptsd_p0254
+- rule: respond to trauma_ptsd_p0255
+  steps:
+    - intent: trauma_ptsd_p0255
+    - action: utter_trauma_ptsd_p0255
+- rule: respond to trauma_ptsd_p0256
+  steps:
+    - intent: trauma_ptsd_p0256
+    - action: utter_trauma_ptsd_p0256
+- rule: respond to trauma_ptsd_p0257
+  steps:
+    - intent: trauma_ptsd_p0257
+    - action: utter_trauma_ptsd_p0257
+- rule: respond to trauma_ptsd_p0258
+  steps:
+    - intent: trauma_ptsd_p0258
+    - action: utter_trauma_ptsd_p0258
+- rule: respond to trauma_ptsd_p0259
+  steps:
+    - intent: trauma_ptsd_p0259
+    - action: utter_trauma_ptsd_p0259
+- rule: respond to trauma_ptsd_p0260
+  steps:
+    - intent: trauma_ptsd_p0260
+    - action: utter_trauma_ptsd_p0260
+- rule: respond to trauma_ptsd_p0261
+  steps:
+    - intent: trauma_ptsd_p0261
+    - action: utter_trauma_ptsd_p0261
+- rule: respond to trauma_ptsd_p0262
+  steps:
+    - intent: trauma_ptsd_p0262
+    - action: utter_trauma_ptsd_p0262
+- rule: respond to trauma_ptsd_p0263
+  steps:
+    - intent: trauma_ptsd_p0263
+    - action: utter_trauma_ptsd_p0263
+- rule: respond to trauma_ptsd_p0264
+  steps:
+    - intent: trauma_ptsd_p0264
+    - action: utter_trauma_ptsd_p0264
