@@ -3,20 +3,24 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;                  // <<< use User instead of Registration
+use App\Models\User; // kept for route-model binding type-hint
+use App\Repositories\Contracts\StudentRepositoryInterface;
+use App\Repositories\Contracts\AppointmentRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class StudentController extends Controller
 {
     // ==== Constants ====
-    private const PER_PAGE      = 10;
-    private const VIEW_INDEX    = 'admin.students.index';
-    private const VIEW_SHOW     = 'admin.students.show';
-    private const APPT_TABLE    = 'tbl_appointments';
-    private const APPT_FK_COL   = 'student_id'; // in tbl_appointments
+    private const PER_PAGE    = 10;
+    private const VIEW_INDEX  = 'admin.students.index';
+    private const VIEW_SHOW   = 'admin.students.show';
+
+    public function __construct(
+        protected StudentRepositoryInterface $students,
+        protected AppointmentRepositoryInterface $appointments
+    ) {}
 
     /**
      * List students (from tbl_users) with optional text and year filters.
@@ -24,39 +28,26 @@ class StudentController extends Controller
     public function index(Request $request): View
     {
         $q    = trim((string) $request->input('q', ''));
-        $year = $request->input('year'); // string/int
+        $year = $request->input('year'); // string|int
 
-        $students = User::query()
-            ->where('role', 'student') // only students
-            ->when($year !== null && $year !== '', fn ($q1) => $q1->where('year_level', $year))
-            ->when($q !== '', function ($q1) use ($q) {
-                $like = "%{$q}%";
-                $q1->where(function ($sub) use ($like) {
-                    $sub->where('name', 'like', $like)
-                        ->orWhere('email', 'like', $like)
-                        ->orWhere('contact_number', 'like', $like)
-                        ->orWhere('course', 'like', $like)
-                        ->orWhere('year_level', 'like', $like);
-                });
-            })
-            ->orderBy('name')
-            ->paginate(self::PER_PAGE)
-            ->withQueryString();
+        $paginated = $this->students->paginateWithFilters([
+            'q'    => $q,
+            'year' => $year,
+        ], self::PER_PAGE);
 
-        $yearLevels = User::query()
-            ->where('role', 'student')
-            ->whereNotNull('year_level')
-            ->distinct()
-            ->orderBy('year_level')
-            ->pluck('year_level')
-            ->toArray();
+        $yearLevels = $this->students->distinctYearLevels();
 
-        return view(self::VIEW_INDEX, compact('students', 'q', 'year', 'yearLevels'));
+        return view(self::VIEW_INDEX, [
+            'students'   => $paginated,
+            'q'          => $q,
+            'year'       => $year,
+            'yearLevels' => $yearLevels,
+        ]);
     }
 
     /**
      * Show a student's appointment stats and chart for a selected year.
-     * NOTE: We now bind to App\Models\User and query appointments by users.id.
+     * NOTE: We still type-hint App\Models\User for route-model binding.
      */
     public function show(Request $request, User $student): View
     {
@@ -64,11 +55,7 @@ class StudentController extends Controller
         $studentId     = (int) $student->id;
 
         // Earliest year from appointments for this user
-        $firstYearFromData = DB::table(self::APPT_TABLE)
-            ->where(self::APPT_FK_COL, $studentId)
-            ->whereNotNull('scheduled_at')
-            ->selectRaw('MIN(YEAR(scheduled_at)) AS y')
-            ->value('y');
+        $firstYearFromData = $this->appointments->firstAppointmentYearForStudent($studentId);
 
         $minYear = (int) ($firstYearFromData ?: ($student->created_at?->year ?? now()->year));
         $maxYear = (int) now()->year;
@@ -77,19 +64,7 @@ class StudentController extends Controller
         $year = max(min($requestedYear, $maxYear), $floor);
 
         // Monthly counts for the selected year
-        $start = Carbon::create($year, 1, 1)->startOfDay();
-        $end   = Carbon::create($year, 12, 31)->endOfDay();
-
-        $monthCounts = DB::table(self::APPT_TABLE)
-            ->where(self::APPT_FK_COL, $studentId)
-            ->whereBetween('scheduled_at', [$start, $end])
-            ->whereNotNull('scheduled_at')
-            // ->where('status', 'confirmed') // uncomment to count confirmed only
-            ->selectRaw('MONTH(scheduled_at) AS m, COUNT(*) AS c')
-            ->groupByRaw('MONTH(scheduled_at)')
-            ->orderByRaw('m')
-            ->pluck('c', 'm')
-            ->all();
+        $monthCounts = $this->appointments->monthlyCountsForStudent($studentId, $year);
 
         [$labels, $series] = $this->buildMonthlySeries($year, $monthCounts);
 

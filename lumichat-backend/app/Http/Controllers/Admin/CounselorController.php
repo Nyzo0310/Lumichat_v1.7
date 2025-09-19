@@ -3,36 +3,35 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Counselor;
+use App\Repositories\Contracts\CounselorRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class CounselorController extends Controller
 {
     // ==== Constants (dedupe + consistency) ====
-    private const PER_PAGE     = 10;
+    private const PER_PAGE      = 10;
     private const FLASH_SUCCESS = 'success';
 
-    // ==== Views (optional constants keep things uniform) ====
+    // ==== Views ====
     private const VIEW_INDEX  = 'admin.counselors.index';
     private const VIEW_CREATE = 'admin.counselors.create';
     private const VIEW_EDIT   = 'admin.counselors.edit';
+
+    public function __construct(
+        protected CounselorRepositoryInterface $counselors
+    ) {}
 
     /**
      * List counselors with their availabilities (ordered).
      */
     public function index(): View
     {
-        $counselors = Counselor::with([
-                'availabilities' => function ($q) {
-                    $q->orderBy('weekday')->orderBy('start_time');
-                },
-            ])
-            ->latest()
-            ->paginate(self::PER_PAGE);
+        $counselors = $this->counselors->paginateWithFilters([
+            'with_availabilities_ordered' => true,
+        ], self::PER_PAGE);
 
         return view(self::VIEW_INDEX, compact('counselors'));
     }
@@ -52,18 +51,7 @@ class CounselorController extends Controller
     {
         $data = $request->validate($this->rulesStore());
 
-        DB::transaction(function () use ($data) {
-            $c = Counselor::create([
-                'name'      => $data['name'],
-                'email'     => $data['email'],
-                'phone'     => $data['phone'] ?? null,
-                'is_active' => $data['is_active'],
-            ]);
-
-            foreach (($data['availability'] ?? []) as $slot) {
-                $c->availabilities()->create($slot);
-            }
-        });
+        $this->counselors->create($data);
 
         return redirect()
             ->route('admin.counselors.index')
@@ -73,9 +61,10 @@ class CounselorController extends Controller
     /**
      * Show edit form.
      */
-    public function edit(Counselor $counselor): View
+    public function edit(int $id): View
     {
-        $counselor->load('availabilities');
+        $counselor = $this->counselors->findById($id, ['availabilities']);
+        abort_if(!$counselor, 404);
 
         return view(self::VIEW_EDIT, compact('counselor'));
     }
@@ -83,26 +72,12 @@ class CounselorController extends Controller
     /**
      * Update a counselor and replace availability slots (simple replace).
      */
-    public function update(Request $request, Counselor $counselor): RedirectResponse
+    public function update(Request $request, int $id): RedirectResponse
     {
-        $data = $request->validate($this->rulesUpdate($counselor->id));
+        $data = $request->validate($this->rulesUpdate($id));
 
-        DB::transaction(function () use ($counselor, $data) {
-            $counselor->update([
-                'name'      => $data['name'],
-                'email'     => $data['email'],
-                'phone'     => $data['phone'] ?? null,
-                'is_active' => $data['is_active'],
-            ]);
+        $this->counselors->update($id, $data);
 
-            // Replace all slots (keeps your original approach/behavior)
-            $counselor->availabilities()->delete();
-            foreach (($data['availability'] ?? []) as $slot) {
-                $counselor->availabilities()->create($slot);
-            }
-        });
-
-        // Keep your original message text (no behavior change)
         return redirect()
             ->route('admin.counselors.index')
             ->with(self::FLASH_SUCCESS, 'Counselor added successfully!');
@@ -111,14 +86,14 @@ class CounselorController extends Controller
     /**
      * Remove a counselor.
      */
-    public function destroy(Counselor $counselor): RedirectResponse
+    public function destroy(int $id): RedirectResponse
     {
-        $counselor->delete();
+        $this->counselors->delete($id);
 
         return back()->with(self::FLASH_SUCCESS, 'Counselor removed.');
     }
 
-    // ==== Private helpers (no logic change) ====
+    // ==== Private helpers (kept from your original) ====
 
     /**
      * Validation rules for creating a counselor.

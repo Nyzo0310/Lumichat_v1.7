@@ -1,38 +1,47 @@
 @extends('layouts.admin')
-@section('title','Counselor Logs')
+@section('title','Admin · Counselors Logs')
 
 @section('content')
 @php
-  // For the subtitle header
+  // Labels for subtitle + header counter
   $cName = $cid ? optional($counselors->firstWhere('id',$cid))->full_name : 'All';
   $mName = $month ? \Carbon\Carbon::create(null,$month,1)->format('F') : 'All';
   $yName = $year ?: 'All';
+
+  $totalLogs = method_exists($rows,'total') ? $rows->total() : $rows->count();
 @endphp
 
-<div class="space-y-6">
+<div class="max-w-7xl mx-auto p-6 space-y-6">
 
-  {{-- Header (hidden on print) --}}
-  <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 screen-only">
+  {{-- ========= Page Header (consistent with Appointments) ========= --}}
+  <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between animate-fadeup screen-only">
     <div>
-      <h2 class="text-2xl font-semibold text-slate-900">Counselor Logs</h2>
-      <p class="text-sm text-slate-500">Per counselor, grouped by Month/Year with students handled and most common diagnosis.</p>
+      <h2 class="text-2xl font-bold tracking-tight text-slate-900">Counselor Logs</h2>
+      <p class="text-sm text-slate-600">
+        Per counselor, grouped by Month/Year with students handled and most common diagnosis.
+        <span class="ml-2 text-slate-400">•</span>
+        <span class="ml-2 text-slate-500">{{ $totalLogs }} {{ Str::plural('record', $totalLogs) }}</span>
+      </p>
     </div>
-    <button type="button"
-            onclick="window.print()"
-            class="px-3 py-2 rounded-lg bg-green-600 text-white text-sm hover:bg-green-700">
+
+    <button type="button" onclick="window.print()"
+            class="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 h-10 rounded-xl shadow-sm hover:bg-emerald-700 active:scale-[.99] transition">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V4h12v5M6 18h12a2 2 0 002-2v-5H4v5a2 2 0 002 2z"/>
+      </svg>
       Print
     </button>
   </div>
 
-  {{-- PRINT SCOPE START --}}
-  <div id="print-counselor-index" class="space-y-4">
+  {{-- ========= Filter Bar (match Appointments exactly) ========= --}}
+  <form method="GET" class="mb-6 screen-only">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end animate-fadeup">
 
-    {{-- Filters --}}
-    <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-3 screen-only">
-      <div>
+      {{-- Counselor --}}
+      <div class="md:col-span-3 min-w-0">
         <label class="block text-xs font-medium text-slate-600 mb-1">Counselor</label>
         <select name="counselor_id"
-                class="w-full rounded-xl border-slate-300 focus:ring-2 focus:ring-sky-500">
+                class="w-full h-10 bg-white border border-slate-200 rounded-xl px-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
           <option value="">All counselors</option>
           @foreach($counselors as $co)
             <option value="{{ $co->id }}" @selected($cid==$co->id)>{{ $co->full_name }}</option>
@@ -40,10 +49,11 @@
         </select>
       </div>
 
-      <div>
+      {{-- Month --}}
+      <div class="md:col-span-3 min-w-0">
         <label class="block text-xs font-medium text-slate-600 mb-1">Month</label>
         <select name="month"
-                class="w-full rounded-xl border-slate-300 focus:ring-2 focus:ring-sky-500">
+                class="w-full h-10 bg-white border border-slate-200 rounded-xl px-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
           <option value="">All</option>
           @for($m=1;$m<=12;$m++)
             <option value="{{ $m }}" @selected($month==$m)>{{ \Carbon\Carbon::create(null,$m,1)->format('F') }}</option>
@@ -51,10 +61,11 @@
         </select>
       </div>
 
-      <div>
+      {{-- Year --}}
+      <div class="md:col-span-3 min-w-0">
         <label class="block text-xs font-medium text-slate-600 mb-1">Year</label>
         <select name="year"
-                class="w-full rounded-xl border-slate-300 focus:ring-2 focus:ring-sky-500">
+                class="w-full h-10 bg-white border border-slate-200 rounded-xl px-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
           <option value="">All</option>
           @foreach($years as $y)
             <option value="{{ $y }}" @selected($year==$y)>{{ $y }}</option>
@@ -62,93 +73,122 @@
         </select>
       </div>
 
-      <div class="flex items-end gap-2">
-        <button class="px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white">Apply</button>
+      {{-- Buttons --}}
+      <div class="md:col-span-3 flex items-center justify-end gap-2">
         <a href="{{ route('admin.counselor-logs.index') }}"
-           class="px-3 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50">Reset</a>
-      </div>
-    </form>
-
-    {{-- Results --}}
-    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-      <div class="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
-        <div class="text-sm font-semibold text-slate-800">
-          Non-Technical ({{ $cName }}, {{ $mName }}, {{ $yName }})
-        </div>
-        <div class="text-xs text-slate-500 screen-only">
-          Showing {{ $rows->firstItem() }}–{{ $rows->lastItem() }} of {{ $rows->total() }}
-        </div>
+          class="inline-flex items-center justify-center h-10 px-4 rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 text-sm">
+          Reset
+        </a>
+        <button
+          class="inline-flex items-center justify-center h-10 px-5 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm text-sm">
+          Apply
+        </button>
       </div>
 
-      <div class="overflow-x-auto">
-        <table class="min-w-full text-sm">
-          <thead class="bg-slate-50 text-slate-600">
-            <tr>
-              <th class="text-left px-4 py-3 font-medium">Counselor</th>
-              <th class="text-left px-4 py-3 font-medium">Month / Year</th>
-              <th class="text-left px-4 py-3 font-medium">Students handled</th>
-              <th class="text-left px-4 py-3 font-medium">Common diagnosis</th>
-              <th class="text-right px-4 py-3 font-medium screen-only">Action</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-100">
+    </div>
+  </form>
+
+
+  {{-- RESULTS (screen + print scope) --}}
+  <div id="print-counselor-index" class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+    <div class="relative overflow-x-auto">
+      <table class="min-w-full text-sm leading-6 table-auto">
+        <colgroup>
+          <col style="width:26%">
+          <col style="width:18%">
+          <col style="width:36%">
+          <col style="width:12%">
+          <col class="col-action" style="width:8%">
+        </colgroup>
+
+        {{-- Table header (matches Appointments) --}}
+        <thead class="bg-slate-100 border-b border-slate-200 text-slate-700">
+          <tr class="align-middle">
+            <th class="px-6 py-3 text-left font-semibold uppercase tracking-wide text-[11px] whitespace-nowrap">Counselor</th>
+            <th class="px-6 py-3 text-left font-semibold uppercase tracking-wide text-[11px] whitespace-nowrap">Month / Year</th>
+            <th class="px-6 py-3 text-left font-semibold uppercase tracking-wide text-[11px] whitespace-nowrap">Students handled</th>
+            <th class="px-6 py-3 text-left font-semibold uppercase tracking-wide text-[11px] whitespace-nowrap">Common diagnosis</th>
+            <th class="px-6 py-3 text-right font-semibold uppercase tracking-wide text-[11px] whitespace-nowrap col-action">Action</th>
+          </tr>
+        </thead>
+
+        {{-- ✅ BODY (this was incorrectly <thead> before) --}}
+        <tbody class="divide-y divide-slate-100">
           @forelse($rows as $r)
-            <tr class="hover:bg-slate-50/60">
-              <td class="px-4 py-3">
+            <tr class="align-middle even:bg-slate-50 hover:bg-slate-100/60 transition">
+              <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center gap-3">
                   <div class="w-8 h-8 rounded-full bg-sky-100 text-sky-700 grid place-items-center text-xs font-semibold">
                     {{ \Illuminate\Support\Str::of($r->counselor_name)->explode(' ')->map(fn($p)=>mb_substr($p,0,1))->take(2)->join('') }}
                   </div>
-                  <div class="font-medium text-slate-800">{{ $r->counselor_name }}</div>
+                  <div class="font-medium text-slate-900">{{ $r->counselor_name }}</div>
                 </div>
               </td>
-              <td class="px-4 py-3">{{ $r->month_year }}</td>
-              <td class="px-4 py-3">
+
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="inline-flex items-center h-7 px-3 rounded-full text-xs font-medium ring-1
+                            bg-violet-50 text-violet-700 ring-violet-200">
+                  {{ $r->month_year }}
+                </span>
+              </td>
+
+              <td class="px-6 py-4">
                 @if($r->students_list)
-                  <div class="line-clamp-2 text-slate-700">{{ str_replace(' | ', ', ', $r->students_list) }}</div>
-                  <div class="text-xs text-slate-500 mt-0.5">{{ $r->students_count }} unique</div>
+                  <div class="text-slate-700">{{ str_replace(' | ', ', ', $r->students_list) }}</div>
+                  <span class="inline-flex items-center h-6 px-2 rounded-full text-[11px] font-medium mt-1
+                              bg-slate-50 text-slate-600 ring-1 ring-slate-200">
+                    {{ $r->students_count }} unique
+                  </span>
                 @else
                   <span class="text-slate-400">—</span>
                 @endif
               </td>
-              <td class="px-4 py-3">{{ $r->common_dx ?: '—' }}</td>
-              <td class="px-4 py-3 text-right screen-only">
+
+              <td class="px-6 py-4">{{ $r->common_dx ?: '—' }}</td>
+
+              <td class="px-6 py-4 text-right col-action">
                 <a href="{{ route('admin.counselor-logs.show', ['counselor'=>$r->counselor_id, 'month'=>$r->month_num, 'year'=>$r->year_num]) }}"
-                   class="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white">
+                  class="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-medium hover:bg-indigo-700 active:scale-[.98] transition">
                   View
                 </a>
               </td>
             </tr>
           @empty
-            <tr><td colspan="5" class="px-4 py-10 text-center text-slate-500">No records found.</td></tr>
+            <tr>
+              <td colspan="5" class="px-6 py-10 text-center text-slate-500">No records found.</td>
+            </tr>
           @endforelse
-          </tbody>
-        </table>
-      </div>
+        </tbody>
+      </table>
+    </div>
 
-      <div class="p-3 border-t border-slate-200 screen-only">
+    @if(method_exists($rows,'hasPages') && $rows->hasPages())
+      <div class="px-6 py-4 bg-slate-50 border-t border-slate-200/70 screen-only">
         {{ $rows->withQueryString()->links() }}
       </div>
-    </div>
+    @endif
   </div>
-  {{-- PRINT SCOPE END --}}
-
+</div>
 </div>
 
-{{-- Print rules: show only the report section, hide Action col, remove chrome --}}
-<style>
-@media print{
-  body *{ visibility:hidden !important; }
-  #print-counselor-index, #print-counselor-index *{ visibility:visible !important; }
-  #print-counselor-index{ position:fixed; inset:0; margin:12mm !important; background:#fff; }
-  #print-counselor-index .overflow-x-auto{ overflow:visible !important; }
-  #print-counselor-index .shadow-sm{ box-shadow:none !important; }
-  #print-counselor-index .border{ border:0 !important; }
-  .screen-only{ display:none !important; }
+{{-- ========= PRINT ONLY (mirrors Appointments) ========= --}}
+<style media="print">
+  @page { margin: 12mm; }
+  body * { visibility: hidden !important; }
+  #print-counselor-index, #print-counselor-index * { visibility: visible !important; }
+  #print-counselor-index {
+    position: fixed !important; inset: 0 !important; margin: 12mm !important;
+    background:#fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  #print-counselor-index .rounded-2xl, #print-counselor-index .shadow-sm, #print-counselor-index .border { border:0 !important; box-shadow:none !important; }
+  #print-counselor-index .overflow-hidden, #print-counselor-index .overflow-x-auto { overflow: visible !important; }
+  .print-title { display:block !important; margin:0 0 8mm !important; font-size:20pt !important; font-weight:700 !important; color:#000 !important; }
+
   /* Hide Action column on print */
+  #print-counselor-index th.col-action,
+  #print-counselor-index td.col-action,
+  #print-counselor-index col.col-action,
   #print-counselor-index thead th:last-child,
-  #print-counselor-index tbody td:last-child{ display:none !important; }
-  @page{ size:A4; margin:12mm 14mm; }
-}
+  #print-counselor-index tbody td:last-child { display:none !important; visibility:hidden !important; }
 </style>
 @endsection
