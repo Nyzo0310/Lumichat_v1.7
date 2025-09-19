@@ -2,9 +2,9 @@
 # COMMAND
 # python domain_fixer.py
 # Specify paths:
-# python scpy/domain_fixer.py --in domain.yml --out data\domain_fixed.yml
+# python domain_fixer.py --in data\domain.yml --out data\domain_fixed.yml
 # Overwrite in place (keeps a timestamped .bak):
-# python scpy/domain_fixer.py --in domain.yml --in-place
+# python domain_fixer.py --in domain.yml --in-place
 
 
 import argparse, os, sys, time, copy
