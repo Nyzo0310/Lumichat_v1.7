@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 
 class AppointmentController extends Controller
@@ -127,7 +128,12 @@ class AppointmentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'counselor_id' => 'required|integer|exists:tbl_counselors,id',
+            'counselor_id' => [
+            'required',
+            'integer',
+            Rule::exists('tbl_counselors', 'id')->where('is_active', 1), // only active
+            ],
+            
             'date'         => 'required|date_format:Y-m-d',
             'time'         => 'required|regex:/^\d{2}:\d{2}$/',
             'consent'      => 'accepted',
@@ -292,6 +298,15 @@ class AppointmentController extends Controller
     /* Helpers */
     private function isSlotAvailable(int $counselorId, Carbon $scheduledAt): bool
     {
+        // ✳️ Guard: counselor must be active
+        $isActive = DB::table('tbl_counselors')
+            ->where('id', $counselorId)
+            ->where('is_active', 1)
+            ->exists();
+        if (!$isActive) {
+            return false;
+        }
+
         $date = $scheduledAt->copy()->startOfDay();
 
         // IMPORTANT: use isoWeekday() => 1..7
@@ -331,6 +346,7 @@ class AppointmentController extends Controller
 
         return !$conflict;
     }
+
 
     /* Cancel (student) */
     public function cancel($id, Request $request)   

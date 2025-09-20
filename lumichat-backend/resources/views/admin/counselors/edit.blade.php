@@ -1,15 +1,12 @@
-{{-- resources/views/admin/counselors/edit.blade.php --}}
 @extends('layouts.admin')
 @section('title','Edit Counselor')
 
 @section('content')
 <div class="max-w-5xl mx-auto p-6 space-y-6">
 
-  {{-- Top bar --}}
-  <div class="flex items-center justify-between animate-fadeup">
-    <a href="{{ route('admin.counselors.index') }}"
-       class="text-slate-600 hover:text-slate-800 inline-flex items-center gap-2">
-      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+  <div class="flex items-center justify-between">
+    <a href="{{ route('admin.counselors.index') }}" class="text-slate-600 hover:text-slate-800 inline-flex items-center gap-2">
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
       </svg>
       Back
@@ -18,28 +15,25 @@
   </div>
 
   @php
-    // Build initial availability payload for Alpine (weekday, start_time, end_time)
     $initialSlots = old('availability',
       optional($counselor->availabilities)->map(function($a){
         return [
-          'weekday'    => (int) $a->weekday,   // 0=Sun..6=Sat
-          'start_time' => $a->start_time,      // may be HH:MM or HH:MM:SS
+          'weekday'    => (int) $a->weekday,
+          'start_time' => $a->start_time,
           'end_time'   => $a->end_time,
         ];
       })->values() ?? []
     );
   @endphp
 
-  {{-- Form Card --}}
-  <div x-data="CounselorForm()"
-       x-init="init(@js($initialSlots))"
-       class="bg-white rounded-2xl shadow-sm border border-slate-200/70 overflow-hidden animate-fadeup">
+  <div x-data="CounselorForm()" x-init="init(@js($initialSlots))"
+       class="bg-white rounded-2xl shadow-sm border border-slate-200/70 overflow-hidden">
 
     <form method="POST" action="{{ route('admin.counselors.update', $counselor) }}" novalidate>
       @csrf
       @method('PUT')
 
-      {{-- ===== Counselor Details ===== --}}
+      {{-- Details --}}
       <div class="p-6 sm:p-8 border-b border-slate-200/70">
         <h2 class="text-lg font-semibold text-slate-800">Counselor Details</h2>
         <p class="text-sm text-slate-500">Edit the counselor’s basic info and status.</p>
@@ -48,7 +42,7 @@
           <div>
             <label class="block text-sm font-medium text-slate-700">Full Name <span class="text-rose-600">*</span></label>
             <input name="name" value="{{ old('name', $counselor->name) }}" required
-                   class="mt-1 w-full rounded-xl border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"
+                   class="mt-1 w-full h-10 rounded-xl border border-slate-200 px-3 text-sm focus:ring-2 focus:ring-indigo-500"
                    type="text" placeholder="e.g., Juan Dela Cruz">
             @error('name') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
           </div>
@@ -56,7 +50,7 @@
           <div>
             <label class="block text-sm font-medium text-slate-700">Email <span class="text-rose-600">*</span></label>
             <input name="email" value="{{ old('email', $counselor->email) }}" required
-                   class="mt-1 w-full rounded-xl border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"
+                   class="mt-1 w-full h-10 rounded-xl border border-slate-200 px-3 text-sm focus:ring-2 focus:ring-indigo-500"
                    type="email" placeholder="name@school.edu">
             @error('email') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
           </div>
@@ -64,7 +58,7 @@
           <div>
             <label class="block text-sm font-medium text-slate-700">Contact No.</label>
             <input name="phone" value="{{ old('phone', $counselor->phone) }}"
-                   class="mt-1 w-full rounded-xl border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"
+                   class="mt-1 w-full h-10 rounded-xl border border-slate-200 px-3 text-sm focus:ring-2 focus:ring-indigo-500"
                    type="text" placeholder="09XXXXXXXXX">
             @error('phone') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
           </div>
@@ -72,7 +66,7 @@
           <div>
             <label class="block text-sm font-medium text-slate-700">Status</label>
             <select name="is_active"
-                    class="mt-1 w-full rounded-xl border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
+                    class="mt-1 w-full h-10 rounded-xl border border-slate-200 px-3 text-sm focus:ring-2 focus:ring-indigo-500">
               <option value="1" @selected(old('is_active', $counselor->is_active)==1)>Available</option>
               <option value="0" @selected(old('is_active', $counselor->is_active)==0)>Not Available</option>
             </select>
@@ -81,31 +75,30 @@
         </div>
       </div>
 
-      {{-- ===== Weekly Availability (Weekdays only) ===== --}}
+      {{-- Weekly Availability --}}
       <div class="p-6 sm:p-8">
         <div class="flex items-center justify-between">
           <div>
             <h2 class="text-lg font-semibold text-slate-800">Weekly Availability</h2>
             <p class="text-sm text-slate-500">Weekdays only (Mon–Fri). Pick days, set a time range, then add.</p>
           </div>
-
-          {{-- Shortcuts --}}
           <div class="inline-flex rounded-xl ring-1 ring-slate-200 bg-white overflow-hidden">
-            <button type="button" @click="preset('monfri')" class="px-3 py-1.5 text-sm hover:bg-slate-50">Mon–Fri</button>
+            <button type="button" @click="preset()" class="px-3 py-1.5 text-sm hover:bg-slate-50">Mon–Fri</button>
             <div class="w-px bg-slate-200/80"></div>
             <button type="button" @click="clearSelection()" class="px-3 py-1.5 text-sm hover:bg-rose-50 text-rose-700">Clear</button>
           </div>
         </div>
 
-        <div class="mt-4 rounded-xl border border-slate-200/70 bg-white">
-          {{-- Controls --}}
+        <div class="mt-4 rounded-2xl border border-slate-200/70 bg-white">
           <div class="p-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            {{-- Day chips (Mon–Fri only) --}}
-            <div class="flex flex-wrap gap-1.5">
-              <template x-for="(d, idx) in days" :key="idx">
+            {{-- Day chips --}}
+            <div class="flex flex-wrap gap-1.5" role="group" aria-label="Select weekdays">
+              <template x-for="d in days" :key="d.value">
                 <button type="button"
                         @click="toggleDay(d.value)"
-                        class="h-9 px-3 rounded-lg ring-1 text-sm transition"
+                        :aria-pressed="isSelected(d.value)"
+                        class="h-9 w-[72px] rounded-lg ring-1 text-sm font-medium transition
+                              flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         :class="isSelected(d.value)
                                 ? 'bg-indigo-600 text-white ring-indigo-600'
                                 : 'bg-white text-slate-700 hover:bg-slate-50 ring-slate-200'">
@@ -115,22 +108,21 @@
             </div>
 
             {{-- Time + Add --}}
-            <div class="flex items-center gap-2 w-full md:w-auto">
-              <span class="text-xs font-medium text-slate-600 mr-1 hidden md:inline-block">Time</span>
-
-              <input x-model="range.start" type="time"
-                     class="h-10 min-w-[150px] w-[150px] text-center rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"/>
-
-              <span class="text-slate-500">to</span>
-
-              <input x-model="range.end" type="time"
-                     class="h-10 min-w-[150px] w-[150px] text-center rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"/>
+            <div class="flex items-center gap-2 w-full md:w-auto" aria-describedby="time-hint">
+              <label for="time-in" class="sr-only">Time in (start)</label>
+              <input id="time-in" x-model="range.start" type="time"
+                     class="h-10 min-w-[150px] w-[150px] text-center rounded-lg border border-slate-200 px-3 text-sm focus:ring-2 focus:ring-indigo-500"/>
+              <span class="text-slate-500" aria-hidden="true">to</span>
+              <label for="time-out" class="sr-only">Time out (end)</label>
+              <input id="time-out" x-model="range.end" type="time"
+                     class="h-10 min-w-[150px] w-[150px] text-center rounded-lg border border-slate-200 px-3 text-sm focus:ring-2 focus:ring-indigo-500"/>
 
               <button type="button" @click="bulkAdd()"
                       class="inline-flex items-center gap-1.5 px-3.5 py-2 h-10 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700">
                 + Add
               </button>
             </div>
+            <p id="time-hint" class="sr-only">Set time in first, then time out, then click Add.</p>
           </div>
 
           <div class="h-px bg-slate-200/70"></div>
@@ -139,7 +131,7 @@
           <div class="p-4">
             <template x-if="!slots.length">
               <div class="px-4 py-8 text-center text-slate-500">
-                No availability added yet.
+                <span class="uppercase tracking-wide text-[11px]">No availability added yet.</span>
               </div>
             </template>
 
@@ -147,48 +139,41 @@
               <template x-for="(row, i) in slots" :key="i">
                 <div class="rounded-lg border border-slate-200 bg-white px-3 py-2.5">
                   <div class="grid grid-cols-12 gap-2 items-center">
-                    {{-- Day --}}
                     <div class="col-span-12 sm:col-span-3 lg:col-span-2">
                       <span class="inline-flex items-center h-8 px-3 rounded-full text-xs font-semibold
                                    bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200 whitespace-nowrap"
                             x-text="dayLabel(row.weekday)"></span>
                     </div>
 
-                    {{-- Times --}}
                     <div class="col-span-12 sm:col-span-6 lg:col-span-7 grid grid-cols-9 gap-2 items-center">
                       <div class="col-span-4">
                         <label class="text-[11px] text-slate-500">Start</label>
                         <input type="time" x-model="row.start_time"
                                :name="`availability[${i}][start_time]`"
-                               class="mt-0.5 h-9 w-full min-w-[150px] text-center rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
+                               class="mt-0.5 h-9 w-full min-w-[150px] text-center rounded-lg border border-slate-200 px-3 text-sm focus:ring-2 focus:ring-indigo-500">
                       </div>
                       <div class="col-span-1 text-center text-slate-500 mt-4">–</div>
                       <div class="col-span-4">
                         <label class="text-[11px] text-slate-500">End</label>
                         <input type="time" x-model="row.end_time"
                                :name="`availability[${i}][end_time]`"
-                               class="mt-0.5 h-9 w-full min-w-[150px] text-center rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
+                               class="mt-0.5 h-9 w-full min-w-[150px] text-center rounded-lg border border-slate-200 px-3 text-sm focus:ring-2 focus:ring-indigo-500">
                       </div>
                       <input type="hidden" :name="`availability[${i}][weekday]`" :value="row.weekday">
                     </div>
 
-                    {{-- Actions --}}
-                    <div class="col-span-12 sm:col-span-3 lg:col-span-3 flex justify-start sm:justify-end gap-2">
-                      <button type="button" @click="duplicate(i)"
-                              class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                          <rect x="9" y="9" width="10" height="10" rx="2" stroke-width="1.5"/>
-                          <rect x="5" y="5" width="10" height="10" rx="2" stroke-width="1.5"/>
-                        </svg>
-                        Duplicate
-                      </button>
+                    <!-- Actions (Remove only) -->
+                    <div class="col-span-12 sm:col-span-3 lg:col-span-3 flex justify-start sm:justify-end sm:pr-[8px] lg:pr-[50px] mt-2 sm:mt-0">
                       <button type="button" @click="remove(i)"
-                              class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 ring-1 ring-rose-200 text-xs">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                              title="Remove slot"
+                              class="inline-flex items-center gap-2 h-9 px-3 rounded-xl bg-white text-rose-700
+                                    ring-1 ring-rose-300 hover:bg-rose-50 hover:ring-rose-400
+                                    focus:outline-none focus:ring-2 focus:ring-rose-500/60 text-sm font-medium">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                           <path d="M19 7l-1 12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 7m3 0V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M4 7h16"
                                 stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        Remove
+                        <span>Remove</span>
                       </button>
                     </div>
                   </div>
@@ -203,27 +188,42 @@
         </div>
       </div>
 
-      {{-- Footer actions --}}
+      {{-- Helper Note --}}
+      <div class="p-4 mt-2 screen-only" role="note" aria-label="How to add availability">
+        <div class="rounded-xl bg-indigo-50/70 text-indigo-900 ring-1 ring-indigo-200/70 p-3">
+          <div class="flex items-start gap-3">
+            <svg class="w-5 h-5 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M12 17v-5m0-3h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <div class="text-sm leading-6">
+              <p class="font-medium">How to build the counselor’s availability:</p>
+              <ol class="list-decimal pl-5 mt-1 space-y-1.5">
+                <li>Click the <strong>weekday buttons (Mon–Fri)</strong> to choose the day(s) you want.</li>
+                <li>Set the <strong>time in</strong> (start) and <strong>time out</strong> (end). Make sure end is after start.</li>
+                <li>Click <strong>+ Add</strong> to create the availability slot for the selected day(s).</li>
+                <li>Repeat steps 1–3 as needed for other day(s) or time ranges.</li>
+                <li>Review the list: you can <strong>edit times</strong> inline or <strong>Remove</strong> a slot.</li>
+                <li>When finished, click <strong>Update</strong> to store the changes.</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {{-- Footer --}}
       <div class="px-6 sm:px-8 py-4 bg-slate-50 border-t border-slate-200/70 flex items-center justify-end gap-3">
-        <a href="{{ route('admin.counselors.index') }}"
-           class="px-4 py-2 rounded-xl bg-white ring-1 ring-slate-200 text-slate-700 hover:bg-slate-100">Cancel</a>
-        <button type="submit"
-                class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium">
-          Update
-        </button>
+        <a href="{{ route('admin.counselors.index') }}" class="px-4 py-2 rounded-xl bg-white ring-1 ring-slate-200 text-slate-700 hover:bg-slate-100">Cancel</a>
+        <button type="submit" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium">Update</button>
       </div>
     </form>
   </div>
 </div>
 
-{{-- Alpine.js (if not loaded globally) --}}
 <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-
-{{-- SweetAlert2 --}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-  // ===== Server feedback (SweetAlert) =====
   @if (session('success'))
     Swal.fire({ icon: 'success', title: 'Updated', text: @json(session('success')), confirmButtonColor: '#4f46e5' });
   @endif
@@ -231,18 +231,11 @@
     Swal.fire({ icon: 'error', title: 'Error', text: @json(session('error')), confirmButtonColor: '#ef4444' });
   @endif
   @if ($errors->any())
-    Swal.fire({
-      icon: 'error',
-      title: 'Please fix the following',
-      html: `{!! implode('<br>', $errors->all()) !!}`,
-      confirmButtonColor: '#ef4444'
-    });
+    Swal.fire({ icon:'error', title:'Please fix the following', html:`{!! implode('<br>', $errors->all()) !!}`, confirmButtonColor:'#ef4444' });
   @endif
 
-  // ===== Alpine component (Weekdays only, robust time parsing) =====
   function CounselorForm() {
     return {
-      // Only weekdays (Mon..Fri)
       days: [
         { value:1, short:'Mon', long:'Monday' },
         { value:2, short:'Tue', long:'Tuesday' },
@@ -254,20 +247,11 @@
       range: { start: '09:00', end: '12:00' },
       slots: [],
 
-      // Convert "10:00 AM", "17:30", or "09:00:00" => "10:00" / "17:30" / "09:00"
       to24(t) {
         if (!t) return '';
         t = (''+t).trim();
-
-        // Already 24h, with or without seconds
         const mmss = t.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
-        if (mmss) {
-          const hh = String(mmss[1]).padStart(2,'0');
-          const mm = mmss[2];
-          return `${hh}:${mm}`;
-        }
-
-        // h:mm AM/PM
+        if (mmss) return `${String(mmss[1]).padStart(2,'0')}:${mmss[2]}`;
         const ampm = t.match(/^(\d{1,2}):(\d{2})\s*([ap]m)$/i);
         if (ampm) {
           let hh = parseInt(ampm[1],10), mm = ampm[2], ap = ampm[3].toLowerCase();
@@ -275,15 +259,14 @@
           if (ap==='am' && hh === 12) hh = 0;
           return `${String(hh).padStart(2,'0')}:${mm}`;
         }
-
         return '';
       },
 
       init(oldOrExistingSlots) {
-        const allowed = new Set([1,2,3,4,5]); // Mon..Fri
+        const allowed = new Set([1,2,3,4,5]);
         if (Array.isArray(oldOrExistingSlots) && oldOrExistingSlots.length) {
           this.slots = oldOrExistingSlots
-            .filter(s => allowed.has(Number(s.weekday))) // ignore weekends in UI
+            .filter(s => allowed.has(Number(s.weekday)))
             .map(s => ({
               weekday: Number(s.weekday),
               start_time: this.to24(s.start_time),
@@ -292,28 +275,20 @@
             .filter(s => s.start_time && s.end_time);
           this.sortSlots();
         }
-        // Normalize default range
         this.range.start = this.to24(this.range.start) || '09:00';
         this.range.end   = this.to24(this.range.end)   || '12:00';
       },
 
-      dayLabel(wd) {
-        const map = {1:'Monday',2:'Tuesday',3:'Wednesday',4:'Thursday',5:'Friday'};
-        return map[wd] || '';
-      },
+      dayLabel(wd) { return ({1:'Monday',2:'Tuesday',3:'Wednesday',4:'Thursday',5:'Friday'})[wd] || ''; },
       isSelected(d) { return this.selectedDays.includes(d); },
-      toggleDay(d) {
-        this.isSelected(d)
-          ? this.selectedDays = this.selectedDays.filter(x=>x!==d)
-          : this.selectedDays = [...this.selectedDays, d];
-        this.selectedDays.sort((a,b)=>a-b);
-      },
-      preset(type) { if (type==='monfri') this.selectedDays = [1,2,3,4,5]; },
+      toggleDay(d) { this.isSelected(d) ? this.selectedDays = this.selectedDays.filter(x=>x!==d) : this.selectedDays = [...this.selectedDays, d]; this.selectedDays.sort((a,b)=>a-b); },
+      preset() { this.selectedDays = [1,2,3,4,5]; },
       clearSelection() { this.selectedDays = []; },
       sortSlots() { this.slots.sort((a,b)=> a.weekday - b.weekday || a.start_time.localeCompare(b.start_time)); },
 
-      // Add slots with client validation
-      bulkAdd() {
+      overlaps(d, start, end) { return this.slots.some(s => s.weekday===d && (start < s.end_time && s.start_time < end)); },
+
+      async bulkAdd() {
         const start = this.to24(this.range.start), end = this.to24(this.range.end);
         if (!this.selectedDays.length || !start || !end) {
           Swal.fire({icon:'warning', title:'Incomplete', text:'Pick weekday(s) and set a time range first.', confirmButtonColor:'#4f46e5'});
@@ -323,16 +298,40 @@
           Swal.fire({icon:'error', title:'Time invalid', text:'End time must be after start time.', confirmButtonColor:'#ef4444'});
           return;
         }
+
+        const names = this.selectedDays.map(d => this.dayLabel(d)).join(', ');
+        const confirmed = await Swal.fire({
+          icon: 'question',
+          title: 'Add availability?',
+          html: `<div class="text-left">Days: <b>${names}</b><br/>Time: <b>${start}</b> to <b>${end}</b></div>`,
+          showCancelButton: true,
+          confirmButtonText: 'Yes, add',
+          cancelButtonText: 'Cancel',
+          confirmButtonColor: '#4f46e5',
+          cancelButtonColor: '#64748b'
+        }).then(r => r.isConfirmed);
+
+        if (!confirmed) return;
+
+        let skippedOverlap = false;
         this.selectedDays.forEach(d => {
           const exists = this.slots.some(s => s.weekday===d && s.start_time===start && s.end_time===end);
-          if (!exists) this.slots.push({ weekday:d, start_time:start, end_time:end });
+          if (exists) return;
+          if (this.overlaps(d, start, end)) { skippedOverlap = true; return; }
+          this.slots.push({ weekday:d, start_time:start, end_time:end });
         });
         this.sortSlots();
+        if (skippedOverlap) {
+          Swal.fire({icon:'info', title:'Overlap skipped', text:'Some selected days were skipped due to overlapping times.', confirmButtonColor:'#4f46e5'});
+        }
       },
 
       remove(i) { this.slots.splice(i,1); },
-      duplicate(i) { const item = this.slots[i]; this.slots.splice(i+1, 0, { ...item }); },
     }
   }
 </script>
+
+<style>
+  @media print { .screen-only { display: none !important; } }
+</style>
 @endsection
