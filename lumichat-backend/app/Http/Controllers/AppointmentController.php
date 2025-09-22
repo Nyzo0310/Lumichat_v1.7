@@ -268,7 +268,7 @@ class AppointmentController extends Controller
                 'confirmButtonText' => 'OK',
             ]);
     }
-
+    
     /* ----------------------------- History ----------------------------- */
     public function history(Request $request)
     {

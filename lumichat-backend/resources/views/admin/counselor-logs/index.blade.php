@@ -23,14 +23,13 @@
         <span class="ml-2 text-slate-500">{{ $totalLogs }} {{ Str::plural('record', $totalLogs) }}</span>
       </p>
     </div>
-
-    <button type="button" onclick="window.print()"
-            class="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 h-10 rounded-xl shadow-sm hover:bg-emerald-700 active:scale-[.99] transition">
-      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V4h12v5M6 18h12a2 2 0 002-2v-5H4v5a2 2 0 002 2z"/>
-      </svg>
-      Print
-    </button>
+<a href="{{ route('admin.counselor-logs.export.pdf', request()->only('counselor_id','month','year')) }}"
+   class="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 h-10 rounded-xl shadow-sm hover:bg-emerald-700 active:scale-[.99] transition">
+  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 10l5 5 5-5M12 15V3M5 19h14a2 2 0 002-2v-2H3v2a2 2 0 002 2z"/>
+  </svg>
+  Download PDF
+</a>
   </div>
 
   {{-- ========= Filter Bar (match Appointments exactly) ========= --}}
@@ -171,24 +170,5 @@
 </div>
 </div>
 
-{{-- ========= PRINT ONLY (mirrors Appointments) ========= --}}
-<style media="print">
-  @page { margin: 12mm; }
-  body * { visibility: hidden !important; }
-  #print-counselor-index, #print-counselor-index * { visibility: visible !important; }
-  #print-counselor-index {
-    position: fixed !important; inset: 0 !important; margin: 12mm !important;
-    background:#fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact;
-  }
-  #print-counselor-index .rounded-2xl, #print-counselor-index .shadow-sm, #print-counselor-index .border { border:0 !important; box-shadow:none !important; }
-  #print-counselor-index .overflow-hidden, #print-counselor-index .overflow-x-auto { overflow: visible !important; }
-  .print-title { display:block !important; margin:0 0 8mm !important; font-size:20pt !important; font-weight:700 !important; color:#000 !important; }
 
-  /* Hide Action column on print */
-  #print-counselor-index th.col-action,
-  #print-counselor-index td.col-action,
-  #print-counselor-index col.col-action,
-  #print-counselor-index thead th:last-child,
-  #print-counselor-index tbody td:last-child { display:none !important; visibility:hidden !important; }
-</style>
 @endsection

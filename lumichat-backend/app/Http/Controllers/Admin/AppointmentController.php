@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\AppointmentRepositoryInterface;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -113,4 +114,72 @@ class AppointmentController extends Controller
             'text'  => 'Appointment status has been updated.',
         ]);
     }
+    public function exportPdf(Request $request)
+{
+    $status = (string) $request->query('status', 'all');
+    $period = (string) $request->query('period', 'all');
+    $q      = trim((string) $request->query('q', ''));
+
+    $now = now();
+
+    $query = DB::table('tbl_appointments as a')
+        ->leftJoin('tbl_users as s', 's.id', '=', 'a.student_id')
+        ->leftJoin('tbl_counselors as c', 'c.id', '=', 'a.counselor_id')
+        ->select([
+            'a.id',
+            'a.scheduled_at',
+            'a.created_at as booked_at',
+            'a.status',
+            DB::raw("COALESCE(s.name,'—') as student_name"),
+            DB::raw("COALESCE(c.name,'—') as counselor_name"),
+        ]);
+
+    if ($status !== 'all') {
+        $query->where('a.status', $status);
+    }
+
+    switch ($period) {
+        case 'today':
+            $query->whereDate('a.scheduled_at', $now->toDateString());
+            break;
+        case 'upcoming':
+            $query->where('a.scheduled_at', '>=', $now);
+            break;
+        case 'this_week':
+            $query->whereBetween('a.scheduled_at', [$now->copy()->startOfWeek(), $now->copy()->endOfWeek()]);
+            break;
+        case 'this_month':
+            $query->whereBetween('a.scheduled_at', [$now->copy()->startOfMonth(), $now->copy()->endOfMonth()]);
+            break;
+        case 'past':
+            $query->where('a.scheduled_at', '<', $now);
+            break;
+        case 'all':
+        default:
+            // no date filter
+            break;
+    }
+
+    if ($q !== '') {
+        $query->where(function ($w) use ($q) {
+            $w->where('s.name', 'like', "%{$q}%")
+              ->orWhere('c.name', 'like', "%{$q}%");
+        });
+    }
+
+    $appointments = $query->orderByDesc('a.scheduled_at')->get();
+
+    $pdf = app('dompdf.wrapper');
+    $pdf->setPaper('a4', 'portrait');
+    $pdf->loadView('admin.appointments.pdf', [
+        'appointments' => $appointments,
+        'status'       => $status,
+        'period'       => $period,
+        'q'            => $q,
+        'generatedAt'  => now()->format('Y-m-d H:i'),
+    ]);
+
+    return $pdf->download('Appointments_'.now()->format('Ymd_His').'.pdf');
+}
+
 }

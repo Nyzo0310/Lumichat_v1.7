@@ -13,10 +13,10 @@ class CourseAnalyticsController extends Controller
         protected CourseAnalyticsRepositoryInterface $analytics
     ) {}
 
-    /** INDEX: list rows from tbl_course_analytics with year + search filters */
+    /** INDEX: list rows with year + search filters */
     public function index(Request $request): View
     {
-        $yearKey = (string) $request->query('year', 'all'); // "all" | "1" | "2" | "3" | "4"
+        $yearKey = (string) $request->query('year', 'all');
         $q       = trim((string) $request->query('q', ''));
 
         $courses = $this->analytics->listCourses($yearKey, $q);
@@ -28,7 +28,7 @@ class CourseAnalyticsController extends Controller
         ]);
     }
 
-    /** SHOW: view one course/year with live diagnosis breakdown from reports */
+    /** SHOW: one course/year with diagnosis breakdown */
     public function show(int $id): View
     {
         $course = $this->analytics->findCourseWithBreakdown($id);
@@ -36,6 +36,43 @@ class CourseAnalyticsController extends Controller
 
         $title = "{$course->course} • {$course->year_level}";
 
-        return view('admin.course-analytics.show', compact('course', 'title'));
+        // Pass id explicitly so Blade can build the export link
+        return view('admin.course-analytics.show', [
+            'course'   => $course,
+            'title'    => $title,
+            'courseId' => $id,
+        ]);
     }
+
+    /** Export the INDEX list to PDF (matches route: admin.course-analytics.export.pdf) */
+    public function exportIndexPdf(Request $request)
+    {
+        $yearKey = (string) $request->query('year', 'all');
+        $q       = trim((string) $request->query('q', ''));
+
+        $courses = $this->analytics->listCourses($yearKey, $q);
+
+        $pdf = app('dompdf.wrapper');
+        $pdf->setPaper('a4', 'portrait');
+        // Ensure you have: resources/views/admin/course-analytics/index-pdf.blade.php
+        $pdf->loadView('admin.course-analytics.index-pdf', [
+            'courses'     => $courses,
+            'yearKey'     => $yearKey,
+            'q'           => $q,
+            'generatedAt' => now()->format('Y-m-d H:i'),
+        ]);
+
+        return $pdf->download('Course_Analytics_' . now()->format('Ymd_His') . '.pdf');
+    }
+
+    /**
+     * Alias so the existing route pointing at exportPdf still works.
+     * Route can call this or exportIndexPdf directly.
+     */
+    public function exportPdf(Request $request)
+    {
+        return $this->exportIndexPdf($request);
+    }
+
+
 }

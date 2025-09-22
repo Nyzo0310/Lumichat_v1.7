@@ -4,58 +4,73 @@
 @section('content')
 <div class="max-w-7xl mx-auto p-6 space-y-6">
 
-  {{-- Page header (screen only) --}}
-  {{-- Page header (screen only) --}}
-@php
-  $totalStudents = method_exists($students, 'total') ? $students->total() : $students->count();
-@endphp
-<div class="flex items-center justify-between animate-fadeup screen-only">
-  <div>
-    <h2 class="text-2xl font-bold tracking-tight text-slate-900">Student Records</h2>
-    <p class="text-sm text-slate-600">
-      View and manage student accounts and their academic details.
-      <span class="ml-2 text-slate-400">•</span>
-      <span class="ml-2 text-slate-600">
-        {{ $totalStudents }} {{ Str::plural('student', $totalStudents) }}
-      </span>
-    </p>
-  </div>
+  @php
+    $totalStudents = method_exists($students, 'total') ? $students->total() : $students->count();
+  @endphp
+
+  {{-- ========= Page header ========= --}}
+  <div class="flex items-center justify-between animate-fadeup screen-only">
+    <div>
+      <h2 class="text-2xl font-bold tracking-tight text-slate-900">Student Records</h2>
+      <p class="text-sm text-slate-600">
+        View and manage student accounts and their academic details.
+        <span class="ml-2 text-slate-400">•</span>
+        <span class="ml-2 text-slate-600">
+          {{ $totalStudents }} {{ Str::plural('student', $totalStudents) }}
+        </span>
+      </p>
+    </div>
 
     <div class="flex items-center gap-3">
-      {{-- Search (debounced; no extra vars needed) --}}
-      <form id="searchForm" method="GET" action="{{ route('admin.students.index') }}" class="hidden sm:block">
+      {{-- Filters: Search + Actions --}}
+      <form id="filterForm" method="GET" action="{{ route('admin.students.index') }}" class="hidden sm:flex items-center gap-3">
         <div class="relative">
-          <input id="q-input" type="text" name="q" value="{{ request('q') }}" autocomplete="off"
-                 placeholder="Search student"
-                 class="w-72 bg-white border border-slate-200 rounded-xl pl-10 pr-9 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"/>
+          <input
+            id="q-input"
+            type="text"
+            name="q"
+            value="{{ old('q', request('q')) }}"
+            autocomplete="off"
+            placeholder="Search student"
+            class="w-72 bg-white border border-slate-200 rounded-xl pl-10 pr-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          />
           <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <circle cx="11" cy="11" r="7" stroke-width="2"></circle>
             <path d="M21 21l-4.3-4.3" stroke-width="2" stroke-linecap="round"></path>
           </svg>
-          @if(request('q'))
-          <button type="button" title="Clear" aria-label="Clear"
-                  class="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-slate-400 hover:text-slate-600 focus:ring-2 focus:ring-indigo-500"
-                  onclick="document.getElementById('q-input').value=''; document.getElementById('searchForm').submit();">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-          </button>
-          @endif
         </div>
+
+        <button type="submit"
+          class="inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-xl shadow-sm hover:bg-indigo-700 active:scale-[.99] transition">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"/>
+          </svg>
+          Search
+        </button>
+
+        <button type="button"
+          onclick="window.location='{{ route('admin.students.index') }}'"
+          class="inline-flex items-center gap-2 bg-white text-slate-700 ring-1 ring-slate-200 px-4 py-2 rounded-xl shadow-sm hover:bg-slate-50 active:scale-[.99] transition">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4h7M4 10h16M4 16h10"/>
+          </svg>
+          Reset
+        </button>
       </form>
 
-      <button type="button" onclick="printStudentTable()"
-              class="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl shadow-sm hover:bg-emerald-700 active:scale-[.99] transition">
+      {{-- Download PDF (keeps current q/year filters) --}}
+      <a href="{{ route('admin.students.export.pdf', request()->only('q','year')) }}"
+         class="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl shadow-sm hover:bg-emerald-700 active:scale-[.99] transition">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V4h12v5M6 18h12a2 2 0 002-2v-5H4v5a2 2 0 002 2z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 10l5 5 5-5M12 15V3M5 19h14a2 2 0 002-2v-2H3v2a2 2 0 002 2z"/>
         </svg>
-        Print
-      </button>
+        Download PDF
+      </a>
     </div>
   </div>
 
-  {{-- PRINT SCOPE + TABLE --}}
+  {{-- ========= TABLE ========= --}}
   <div id="print-root" class="space-y-2">
-    <h1 class="print-title hidden">Student Records</h1>
-
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200/70 overflow-hidden">
       <div class="relative overflow-x-auto">
         <table class="min-w-full text-sm leading-6 table-auto">
@@ -65,10 +80,9 @@
             <col style="width:18%">
             <col style="width:15%">
             <col style="width:15%">
-            <col class="col-action" style="width:0"> {{-- hidden in print --}}
+            <col class="col-action" style="width:0">
           </colgroup>
 
-          {{-- Sticky header (screen) to match Counselor --}}
           <thead class="bg-slate-100 border-b border-slate-200 text-slate-700">
             <tr class="align-middle">
               <th class="px-6 py-3 text-left font-semibold uppercase tracking-wide text-[11px] whitespace-nowrap">Student Name</th>
@@ -80,27 +94,12 @@
             </tr>
           </thead>
 
-          {{-- PRINT HEADER (optional; non-sticky) --}}
-          <thead class="hidden print:table-header-group bg-slate-200 text-slate-800">
-            <tr>
-              <th class="px-6 py-2 text-left text-[11px] uppercase">Student Name</th>
-              <th class="px-6 py-2 text-left text-[11px] uppercase">Email</th>
-              <th class="px-6 py-2 text-left text-[11px] uppercase">Contact No.</th>
-              <th class="px-6 py-2 text-left text-[11px] uppercase">Course</th>
-              <th class="px-6 py-2 text-left text-[11px] uppercase">Year Level</th>
-              <th class="px-6 py-2 text-right text-[11px] uppercase col-action">Action</th>
-            </tr>
-          </thead>
-
-
           <tbody class="divide-y divide-slate-100">
             @forelse ($students as $s)
               <tr class="align-middle even:bg-slate-50 hover:bg-slate-100/60 transition">
                 <td class="px-6 py-4 whitespace-nowrap font-semibold text-slate-900">{{ $s->name }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-slate-700">{{ $s->email }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-slate-700">{{ $s->contact_number ?? '—' }}</td>
-
-                {{-- Course chip (indigo) --}}
                 <td class="px-6 py-4 whitespace-nowrap">
                   @if($s->course)
                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200">
@@ -110,8 +109,6 @@
                     <span class="text-slate-400">—</span>
                   @endif
                 </td>
-
-                {{-- Year chip (violet) --}}
                 <td class="px-6 py-4 whitespace-nowrap">
                   @if($s->year_level)
                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs bg-violet-50 text-violet-700 ring-1 ring-violet-200">
@@ -121,7 +118,6 @@
                     <span class="text-slate-400">—</span>
                   @endif
                 </td>
-
                 <td class="px-6 py-4 text-right">
                   <div class="flex items-center justify-end gap-2 whitespace-nowrap">
                     <a href="{{ route('admin.students.show', $s->id) }}"
@@ -172,17 +168,8 @@
   </div>
 </div>
 
-{{-- Helpers (copy + debounce + print) --}}
+{{-- No auto-submit, no print JS --}}
 <script>
-  const qInput = document.getElementById('q-input');
-  const form   = document.getElementById('searchForm');
-  let t = null;
-  if (qInput && form) {
-    qInput.addEventListener('input', function () {
-      if (t) clearTimeout(t);
-      t = setTimeout(function () { form.submit(); }, 300);
-    });
-  }
   function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(function () {
       if (window.Swal) {
@@ -190,30 +177,5 @@
       }
     });
   }
-  function printStudentTable(){ window.print(); }
 </script>
-
-{{-- PRINT ONLY --}}
-<style media="print">
-  @page { margin: 12mm; }
-  body * { visibility: hidden !important; }
-  #print-root, #print-root * { visibility: visible !important; }
-  #print-root {
-    position: fixed !important; inset: 0 !important; margin: 12mm !important;
-    background:#fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact;
-  }
-  #print-root .rounded-2xl, #print-root .shadow-sm, #print-root .border { border:0 !important; box-shadow:none !important; }
-  #print-root .overflow-hidden, #print-root .overflow-x-auto { overflow: visible !important; }
-
-  .print-title { display:block !important; margin:0 0 8mm !important; font-size:20pt !important; font-weight:700 !important; color:#000 !important; }
-
-  /* Hide Action column on print */
-  #print-root th.col-action,
-  #print-root td.col-action,
-  #print-root col.col-action,
-  #print-root thead th:last-child,
-  #print-root tbody td:last-child { display:none !important; visibility:hidden !important; }
-
-  #print-root tr { page-break-inside: avoid !important; }
-</style>
 @endsection

@@ -9,7 +9,6 @@
   $dateKey = request('date','all');
   $q       = request('q','');
 
-  // total for header counter
   $total = ($reports instanceof \Illuminate\Pagination\LengthAwarePaginator)
           ? $reports->total()
           : $reports->count();
@@ -17,7 +16,7 @@
 
 <div class="max-w-7xl mx-auto p-6 space-y-6">
 
-  {{-- ========= Page Header (consistent) ========= --}}
+  {{-- ========= Page Header ========= --}}
   <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between animate-fadeup screen-only">
     <div>
       <h2 class="text-2xl font-bold tracking-tight text-slate-900">Diagnosis Reports</h2>
@@ -28,20 +27,20 @@
       </p>
     </div>
 
-    <button type="button" onclick="window.print()"
-            class="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 h-10 rounded-xl shadow-sm hover:bg-emerald-700 active:scale-[.99] transition">
+    {{-- ✅ Download PDF (keeps current filters) --}}
+    <a href="{{ route('admin.diagnosis-reports.export.pdf', request()->only('date','q')) }}"
+       class="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 h-10 rounded-xl shadow-sm hover:bg-emerald-700 active:scale-[.99] transition">
       <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V4h12v5M6 18h12a2 2 0 002-2v-5H4v5a2 2 0 002 2z"/>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 10l5 5 5-5M12 15V3M5 19h14a2 2 0 002-2v-2H3v2a2 2 0 002 2z"/>
       </svg>
-      Print
-    </button>
+      Download PDF
+    </a>
   </div>
 
-  {{-- ========= Filter Bar (same sizing as Appointments) ========= --}}
+  {{-- ========= Filter Bar ========= --}}
   <form method="GET" action="{{ route('admin.diagnosis-reports.index') }}" class="mb-6 screen-only">
     <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end animate-fadeup">
 
-      {{-- Date Range (4/12) --}}
       <div class="md:col-span-4 min-w-0">
         <label class="block text-xs font-medium text-slate-600 mb-1">Date Range</label>
         <select name="date"
@@ -53,7 +52,6 @@
         </select>
       </div>
 
-      {{-- Search (4/12) --}}
       <div class="md:col-span-4 min-w-0">
         <label class="block text-xs font-medium text-slate-600 mb-1">Search</label>
         <div class="relative">
@@ -67,7 +65,6 @@
         </div>
       </div>
 
-      {{-- Buttons (4/12) --}}
       <div class="md:col-span-4 flex items-center justify-end gap-2">
         <a href="{{ route('admin.diagnosis-reports.index') }}"
           class="inline-flex items-center justify-center h-10 px-4 rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 text-sm">
@@ -80,11 +77,8 @@
     </div>
   </form>
 
-
-  {{-- ========= PRINT SCOPE + TABLE ========= --}}
+  {{-- ========= TABLE ========= --}}
   <div id="diag-print-root" class="space-y-2">
-    <h1 class="diag-print-title hidden">Diagnosis Reports</h1>
-
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200/70 overflow-hidden">
       <div class="relative overflow-x-auto">
         <table class="min-w-full text-sm leading-6 table-auto">
@@ -94,7 +88,7 @@
             <col style="width:22%">
             <col style="width:22%">
             <col style="width:14%">
-            <col class="col-action" style="width:4%"> {{-- hidden in print --}}
+            <col class="col-action" style="width:4%">
           </colgroup>
 
           <thead class="bg-slate-100 border-b border-slate-200 text-slate-700">
@@ -147,7 +141,7 @@
   </div>
 </div>
 
-{{-- ========= PRINT ONLY ========= --}}
+{{-- Print CSS can stay if you still support browser print elsewhere --}}
 <style media="print">
   @page { margin: 12mm; }
   body * { visibility: hidden !important; }
@@ -158,29 +152,11 @@
   }
   #diag-print-root .rounded-2xl, #diag-print-root .shadow-sm, #diag-print-root .border { border:0 !important; box-shadow:none !important; }
   #diag-print-root .overflow-x-auto { overflow: visible !important; }
-
   .diag-print-title { display:block !important; margin:0 0 8mm !important; font-size:20pt !important; font-weight:700 !important; color:#000 !important; }
-
-  /* Hide Action column on print */
   #diag-print-root th.col-action,
   #diag-print-root td.col-action,
   #diag-print-root col.col-action,
   #diag-print-root thead th:last-child,
   #diag-print-root tbody td:last-child { display:none !important; visibility:hidden !important; }
 </style>
-
-{{-- Debounced search (same feel as Students/Appointments) --}}
-<script>
-  const qInput = document.getElementById('qInput');
-  let t = null;
-  if (qInput) {
-    qInput.addEventListener('input', function () {
-      if (t) clearTimeout(t);
-      t = setTimeout(() => {
-        const form = this.closest('form'); // our filter form
-        form && form.submit();
-      }, 300);
-    });
-  }
-</script>
 @endsection
