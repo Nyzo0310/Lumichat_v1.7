@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User; // kept for route-model binding type-hint
 use App\Repositories\Contracts\StudentRepositoryInterface;
 use App\Repositories\Contracts\AppointmentRepositoryInterface;
+use Barryvdh\DomPDF\Facade\Pdf; // <-- add this
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -81,6 +82,32 @@ class StudentController extends Controller
             'total',
             'peakLabel'
         ));
+    }
+
+    /**
+     * Export the filtered Student list to PDF (all matching rows, no pagination).
+     */
+    public function exportPdf(Request $request)
+    {
+        $q    = trim((string) $request->input('q', ''));
+        $year = $request->input('year');
+
+        // Prefer a non-paginated fetch; fallback if your repo lacks it.
+        $students = method_exists($this->students, 'allWithFilters')
+            ? $this->students->allWithFilters(['q' => $q, 'year' => $year])
+            : $this->students->paginateWithFilters(['q' => $q, 'year' => $year], PHP_INT_MAX);
+
+        $generatedAt = now()->format('Y-m-d H:i');
+
+        $pdf = Pdf::loadView('admin.students.pdf', [
+            'students'    => $students,
+            'q'           => $q,
+            'year'        => $year,
+            'generatedAt' => $generatedAt,
+        ])->setPaper('a4', 'portrait');
+
+        $filename = 'Student_Records_' . now()->format('Ymd_His') . '.pdf';
+        return $pdf->download($filename);
     }
 
     // ==== Private helpers ====

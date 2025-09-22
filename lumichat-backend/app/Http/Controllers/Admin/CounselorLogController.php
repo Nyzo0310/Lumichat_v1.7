@@ -50,4 +50,51 @@ class CounselorLogController extends Controller
             'dxCounts'  => $data['dxCounts'],
         ]);
     }
+
+    /** Export filtered list to PDF */
+    public function exportPdf(Request $request)
+    {
+        $month = (int) $request->integer('month') ?: null;
+        $year  = (int) $request->integer('year')  ?: null;
+        $cid   = (int) $request->integer('counselor_id') ?: null;
+
+        if (method_exists($this->logs, 'allLogs')) {
+            $rows = $this->logs->allLogs([
+                'month'        => $month,
+                'year'         => $year,
+                'counselor_id' => $cid,
+            ]);
+        } else {
+            $p    = $this->logs->paginateLogs([
+                'month'        => $month,
+                'year'         => $year,
+                'counselor_id' => $cid,
+                'per_page'     => PHP_INT_MAX,
+            ]);
+            $rows = method_exists($p, 'items') ? collect($p->items()) : collect($p);
+        }
+
+        $counselors = $this->logs->listCounselors();
+        $cName = $cid ? optional($counselors->firstWhere('id',$cid))->full_name : 'All';
+        $mName = $month ? \Carbon\Carbon::create(null,$month,1)->format('F') : 'All';
+        $yName = $year ?: 'All';
+
+        $generatedAt = now()->format('Y-m-d H:i');
+
+        // Dompdf wrapper + explicit default font (match your PDF blade font)
+        $pdf = app('dompdf.wrapper');
+        $pdf->getDomPDF()->getOptions()->set('defaultFont', 'DejaVu Sans');
+        $pdf->getDomPDF()->getOptions()->set('isRemoteEnabled', true);
+        $pdf->setPaper('a4', 'portrait');
+
+        $pdf->loadView('admin.counselor-logs.pdf', [
+            'rows'        => $rows,
+            'cName'       => $cName,
+            'mName'       => $mName,
+            'yName'       => $yName,
+            'generatedAt' => $generatedAt,
+        ]);
+
+        return $pdf->download('Counselor_Logs_'.now()->format('Ymd_His').'.pdf');
+    }
 }

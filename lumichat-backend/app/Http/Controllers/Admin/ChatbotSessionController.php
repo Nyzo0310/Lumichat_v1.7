@@ -60,4 +60,28 @@ class ChatbotSessionController extends Controller
 
         return response()->json(['counts' => $counts]);
     }
+public function exportPdf(Request $request)
+{
+    $q       = trim((string) $request->input('q', ''));
+    $dateReq = (string) $request->input('date', self::DATE_KEY_ALL);
+    $dateKey = in_array($dateReq, self::DATE_KEYS, true) ? $dateReq : self::DATE_KEY_ALL;
+
+    $rows = method_exists($this->sessions, 'allWithFilters')
+        ? $this->sessions->allWithFilters($q, $dateKey)
+        : (function () use ($q, $dateKey) {
+              $p = $this->sessions->paginateWithFilters($q, $dateKey, PHP_INT_MAX);
+              return method_exists($p, 'items') ? collect($p->items()) : collect($p);
+          })();
+
+    $pdf = app('dompdf.wrapper');
+$pdf->setPaper('a4', 'portrait');
+$pdf->loadView('admin.chatbot_sessions.pdf', [
+    'rows'        => $rows,
+    'q'           => $q,
+    'dateKey'     => $dateKey,
+    'generatedAt' => now()->format('Y-m-d H:i'),
+]);
+return $pdf->download('Chatbot_Sessions_'.now()->format('Ymd_His').'.pdf');
+}   
 }
+

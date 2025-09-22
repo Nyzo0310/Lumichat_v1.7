@@ -32,4 +32,33 @@ class DiagnosisReportController extends Controller
 
         return view('admin.diagnosis-reports.show', compact('report'));
     }
+
+    /**
+     * Export Diagnosis Reports to PDF (honors current filters, returns all rows).
+     */
+    public function exportPdf(Request $request)
+    {
+        $dateKey = (string) $request->input('date', 'all');
+        $q       = trim((string) $request->input('q', ''));
+
+        // Prefer a non-paginated fetch if your repo exposes it; otherwise fallback.
+        $reports = method_exists($this->reportsRepo, 'allWithFilters')
+            ? $this->reportsRepo->allWithFilters($dateKey, $q)
+            : $this->reportsRepo->paginateWithFilters($dateKey, $q, PHP_INT_MAX);
+
+        $generatedAt = now()->format('Y-m-d H:i');
+
+        // Use dompdf wrapper (no facade needed)
+        $pdf = app('dompdf.wrapper');
+        $pdf->setPaper('a4', 'portrait');
+        $pdf->loadView('admin.diagnosis-reports.pdf', [
+            'reports'     => $reports,
+            'dateKey'     => $dateKey,
+            'q'           => $q,
+            'generatedAt' => $generatedAt,
+        ]);
+
+        $filename = 'Diagnosis_Reports_' . now()->format('Ymd_His') . '.pdf';
+        return $pdf->download($filename);
+    }
 }

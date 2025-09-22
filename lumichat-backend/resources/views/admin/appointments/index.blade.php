@@ -42,13 +42,14 @@
     </p>
   </div>
 
-  <button type="button" onclick="printAppointments()"
-          class="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 h-10 rounded-xl shadow-sm hover:bg-emerald-700 active:scale-[.99] transition">
-    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V4h12v5M6 18h12a2 2 0 002-2v-5H4v5a2 2 0 002 2z"/>
-    </svg>
-    Print
-  </button>
+  {{-- Header action --}}
+<a href="{{ route('admin.appointments.export.pdf', request()->only('status','period','q')) }}"
+   class="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 h-10 rounded-xl shadow-sm hover:bg-emerald-700 active:scale-[.99] transition">
+  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 10l5 5 5-5M12 15V3M5 19h14a2 2 0 002-2v-2H3v2a2 2 0 002 2z"/>
+  </svg>
+  Download PDF
+</a>
 </div>
 
 {{-- Filter strip --}}
@@ -263,39 +264,5 @@
   function printAppointments(){ window.print(); }
 </script>
 
-{{-- PRINT ONLY (copied style pattern) --}}
-<style media="print">
-  @page { margin: 12mm; }
-  body * { visibility: hidden !important; }
-  #appt-print-root, #appt-print-root * { visibility: visible !important; }
-  #appt-print-root {
-    position: fixed !important; inset: 0 !important; margin: 12mm !important;
-    background:#fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact;
-  }
-  #appt-print-root .rounded-2xl, #appt-print-root .shadow-sm, #appt-print-root .border { border:0 !important; box-shadow:none !important; }
-  #appt-print-root .overflow-hidden, #appt-print-root .overflow-x-auto { overflow: visible !important; }
 
-  .appt-print-title { display:block !important; margin:0 0 8mm !important; font-size:20pt !important; font-weight:700 !important; color:#000 !important; }
-
-  /* Hide Actions column on print */
-  #appt-print-root th.col-action,
-  #appt-print-root td.col-action,
-  #appt-print-root col.col-action,
-  #appt-print-root thead th:last-child,
-  #appt-print-root tbody td:last-child { display:none !important; visibility:hidden !important; }
-
-  #appt-print-root tr { page-break-inside: avoid !important; }
-</style>
-
-<script>
-  const hdrQ = document.getElementById('hdr-q');
-  const hdrForm = document.getElementById('apptHdrSearch');
-  let hdrT = null;
-  if (hdrQ && hdrForm) {
-    hdrQ.addEventListener('input', function () {
-      if (hdrT) clearTimeout(hdrT);
-      hdrT = setTimeout(() => hdrForm.submit(), 300);
-    });
-  }
-</script>
 @endsection

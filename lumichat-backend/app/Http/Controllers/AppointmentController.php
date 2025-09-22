@@ -5,32 +5,83 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 
 class AppointmentController extends Controller
 {
-    /** minutes per slot */
+    /** Minutes per slot */
     private const STEP_MINUTES = 30;
 
-    /** statuses that block a time from being offered again */
+    /** Statuses that block a counselor time from being offered again */
     private const BLOCKING_STATUSES = ['pending', 'confirmed', 'completed'];
 
-    /** Mon–Fri only (1=Mon ... 5=Fri when using isoWeekday) */
+    /** Student “active” statuses that block new bookings (you chose only pending) */
+    private const STUDENT_ACTIVE_STATUSES = ['pending'];
+
+    /** Mon–Fri only (1=Mon ... 5=Fri with isoWeekday) */
     private const WEEKDAY_MIN = 1; // Monday
     private const WEEKDAY_MAX = 5; // Friday
 
-    /* Booking page */
+    /* --------------------------- Booking page --------------------------- */
     public function index()
     {
+        // If the student already has an active appointment, send to History with a blocking modal
+        if ($uid = Auth::id()) {
+            $hasActive = DB::table('tbl_appointments')
+                ->where('student_id', $uid)
+                ->whereIn('status', self::STUDENT_ACTIVE_STATUSES)
+                ->exists();
+
+            if ($hasActive) {
+                return redirect()
+                    ->route('appointment.history')
+                    ->with('swal', [
+                        'icon'               => 'warning',
+                        'title'              => 'You already have a pending appointment',
+                        'text'               => 'Complete or cancel it before booking another.',
+                        'confirmButtonText'  => 'OK',
+                        'allowOutsideClick'  => false,
+                        'allowEscapeKey'     => false,
+                    ]);
+            }
+        }
+
         $counselors = DB::table('tbl_counselors')
             ->where('is_active', true)
             ->orderBy('name')
-            ->get(['id','name']);
+            ->get(['id', 'name']);
 
         return view('appointment.index', compact('counselors'));
     }
 
-    /* Slots (AJAX) */
+    /* -------------- Optional landing: decide index vs history ----------- */
+    public function entrypoint(Request $request)
+    {
+        $userId = Auth::id();
+
+        $hasActive = DB::table('tbl_appointments')
+            ->where('student_id', $userId)
+            ->whereIn('status', self::STUDENT_ACTIVE_STATUSES)
+            ->exists();
+
+        if ($hasActive) {
+            return redirect()
+                ->route('appointment.history')
+                ->with('swal', [
+                    'icon'               => 'warning',
+                    'title'              => 'You already have a pending appointment',
+                    'text'               => 'Complete or cancel it before booking another.',
+                    'confirmButtonText'  => 'OK',
+                    'allowOutsideClick'  => false,
+                    'allowEscapeKey'     => false,
+                ]);
+        }
+
+        return $this->index();
+    }
+
+    /* -------------------------- Slots (AJAX) ---------------------------- */
     public function slots($counselorId, Request $request)
     {
         $dateStr = (string) $request->query('date', '');
@@ -47,29 +98,29 @@ class AppointmentController extends Controller
 
         $date  = Carbon::parse($dateStr)->startOfDay();
         $today = Carbon::now();
-
-        // IMPORTANT: use isoWeekday() => 1..7 (Mon=1 ... Sun=7)
-        $dow   = $date->isoWeekday();
+        $dow   = $date->isoWeekday(); // 1..7 (Mon..Sun)
 
         if ($dow < self::WEEKDAY_MIN || $dow > self::WEEKDAY_MAX) {
             return response()->json(['slots'=>[], 'reason'=>'weekend', 'message'=>'Counselors are available Monday to Friday only.']);
         }
 
-        // One appointment per day (per student)
-        $studentId = Auth::id();
-        if ($studentId) {
-            $hasSameDay = DB::table('tbl_appointments')
+        // If the student already has an ACTIVE appointment (pending), do not offer slots
+        if ($studentId = Auth::id()) {
+            $hasActiveAny = DB::table('tbl_appointments')
                 ->where('student_id', $studentId)
-                ->whereDate('scheduled_at', $date->toDateString())
-                ->whereIn('status', self::BLOCKING_STATUSES)
+                ->whereIn('status', self::STUDENT_ACTIVE_STATUSES)
                 ->exists();
 
-            if ($hasSameDay) {
-                return response()->json(['slots'=>[], 'reason'=>'limit_reached', 'message'=>'You already have an appointment on this date.']);
+            if ($hasActiveAny) {
+                return response()->json([
+                    'slots'   => [],
+                    'reason'  => 'active_appointment',
+                    'message' => 'You already have a pending appointment. Complete or cancel it before booking another.',
+                ]);
             }
         }
 
-        // Availability ranges (weekday stored as 1..7; your data uses 1..5 for Mon..Fri)
+        // Availability ranges for that weekday
         $ranges = DB::table('tbl_counselor_availabilities')
             ->where('counselor_id', $counselorId)->where('weekday', $dow)
             ->orderBy('start_time')->get(['start_time','end_time']);
@@ -78,7 +129,7 @@ class AppointmentController extends Controller
             return response()->json(['slots'=>[], 'reason'=>'no_availability','message'=>'No counselor availability on that day.']);
         }
 
-        // Already booked times for counselor
+        // Already booked (by anyone) for that counselor and date
         $bookedTimes = DB::table('tbl_appointments')
             ->where('counselor_id', $counselorId)
             ->whereDate('scheduled_at', $date->toDateString())
@@ -123,27 +174,42 @@ class AppointmentController extends Controller
         return response()->json(['slots'=>$slots]);
     }
 
-    /* Store booking */
+    /* --------------------------- Store booking -------------------------- */
     public function store(Request $request)
     {
         $request->validate([
-            'counselor_id' => 'required|integer|exists:tbl_counselors,id',
-            'date'         => 'required|date_format:Y-m-d',
-            'time'         => 'required|regex:/^\d{2}:\d{2}$/',
-            'consent'      => 'accepted',
+            'counselor_id' => [
+                'required',
+                'integer',
+                Rule::exists('tbl_counselors', 'id')->where('is_active', 1),
+            ],
+            'date'    => 'required|date_format:Y-m-d',
+            'time'    => 'required|regex:/^\d{2}:\d{2}$/',
+            'consent' => 'accepted',
         ], [], ['counselor_id'=>'counselor', 'date'=>'date', 'time'=>'time']);
 
         $studentId   = Auth::id();
         $counselorId = (int) $request->counselor_id;
         $scheduledAt = Carbon::parse($request->date.' '.$request->time);
 
-        // IMPORTANT: isoWeekday() here too
-        $dow         = $scheduledAt->isoWeekday();
+        // One ACTIVE appointment at a time (pending)
+        $hasActiveAny = DB::table('tbl_appointments')
+            ->where('student_id', $studentId)
+            ->whereIn('status', self::STUDENT_ACTIVE_STATUSES)
+            ->exists();
+        if ($hasActiveAny) {
+            return back()->withErrors([
+                'error' => 'You already have a pending appointment. Complete or cancel it before booking another.',
+            ])->withInput();
+        }
 
+        // Mon–Fri only
+        $dow = $scheduledAt->isoWeekday();
         if ($dow < self::WEEKDAY_MIN || $dow > self::WEEKDAY_MAX) {
             return back()->withErrors(['date'=>'Counselors are available Monday to Friday only.'])->withInput();
         }
 
+        // One appointment per day (any blocking status)
         $hasSameDay = DB::table('tbl_appointments')
             ->where('student_id', $studentId)
             ->whereDate('scheduled_at', $scheduledAt->toDateString())
@@ -167,7 +233,6 @@ class AppointmentController extends Controller
             return back()->withErrors(['time'=>'You already have a booking at that time.'])->withInput();
         }
 
-        // Always INSERT a new row (keep canceled history intact)
         try {
             DB::table('tbl_appointments')->insert([
                 'student_id'   => $studentId,
@@ -178,33 +243,33 @@ class AppointmentController extends Controller
                 'updated_at'   => now(),
             ]);
         } catch (\Illuminate\Database\QueryException $e) {
-            // In case of a last-millisecond collision on a blocking row
             if ((int)($e->errorInfo[1] ?? 0) === 1062) {
                 return back()->withErrors(['time' => 'That time was just taken. Please choose another slot.'])->withInput();
             }
             return back()->withErrors(['error' => 'Unable to book the appointment right now.'])->withInput();
         }
 
+        // ✅ After booking, go straight to History with a success SweetAlert
         return redirect()
-        ->route('appointment.index')   // or ->route('appointment.history') if that's your target
-        ->with('success', 'Appointment booked successfully!');
+            ->route('appointment.history')
+            ->with('swal', [
+                'icon'  => 'success',
+                'title' => 'Appointment booked!',
+                'html'  => sprintf(
+                    '<div style="text-align:left">
+                       <div><b>Counselor:</b> %s</div>
+                       <div><b>Date:</b> %s</div>
+                       <div><b>Time:</b> %s</div>
+                     </div>',
+                    DB::table('tbl_counselors')->where('id', $counselorId)->value('name') ?? '—',
+                    $scheduledAt->format('M d, Y'),
+                    $scheduledAt->format('g:i A')
+                ),
+                'confirmButtonText' => 'OK',
+            ]);
     }
-
-   public function entrypoint(Request $request)
-    {
-        $userId = Auth::id();
-
-        $hasAppointments = DB::table('tbl_appointments')
-            ->where('student_id', $userId)
-            ->exists();
-
-        // No records yet → booking form; otherwise → history
-        return $hasAppointments
-            ? $this->history($request)
-            : $this->index();
-    }
-
-    /* History list */
+    
+    /* ----------------------------- History ----------------------------- */
     public function history(Request $request)
     {
         $status = (string) $request->query('status', 'all');
@@ -267,7 +332,7 @@ class AppointmentController extends Controller
         ]);
     }
 
-    /* Single view */
+    /* ---------------------------- Single view -------------------------- */
     public function show($id)
     {
         $userId = Auth::id();
@@ -281,7 +346,7 @@ class AppointmentController extends Controller
                 'c.phone as counselor_phone'
             )
             ->where('a.id', $id)
-            ->where('a.student_id', $userId) // only owner can view
+            ->where('a.student_id', $userId)
             ->first();
 
         abort_unless($appointment, 404);
@@ -289,12 +354,19 @@ class AppointmentController extends Controller
         return view('appointment.show', compact('appointment'));
     }
 
-    /* Helpers */
+    /* ------------------------------ Helpers ---------------------------- */
     private function isSlotAvailable(int $counselorId, Carbon $scheduledAt): bool
     {
-        $date = $scheduledAt->copy()->startOfDay();
+        // counselor must be active
+        $isActive = DB::table('tbl_counselors')
+            ->where('id', $counselorId)
+            ->where('is_active', 1)
+            ->exists();
+        if (!$isActive) {
+            return false;
+        }
 
-        // IMPORTANT: use isoWeekday() => 1..7
+        $date = $scheduledAt->copy()->startOfDay();
         $dow  = $date->isoWeekday();
 
         // Mon–Fri only
@@ -332,8 +404,8 @@ class AppointmentController extends Controller
         return !$conflict;
     }
 
-    /* Cancel (student) */
-    public function cancel($id, Request $request)   
+    /* --------------------------- Cancel (student) ---------------------- */
+    public function cancel($id, Request $request)
     {
         $userId = Auth::id();
 
@@ -364,8 +436,14 @@ class AppointmentController extends Controller
                 'updated_at' => now(),
             ]);
 
+        // ✅ redirect to history (not index) with a success modal
         return redirect()
-        ->route('appointment.index')   // same target page as above
-        ->with('success', 'Appointment canceled.');
+            ->route('appointment.history')
+            ->with('swal', [
+                'icon'              => 'success',
+                'title'             => 'Appointment canceled',
+                'text'              => 'Your appointment has been canceled successfully.',
+                'confirmButtonText' => 'OK',
+            ]);
     }
 }
