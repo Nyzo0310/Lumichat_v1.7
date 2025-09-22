@@ -1,48 +1,40 @@
+recipe: default.v1
 language: en
+
 pipeline:
 - name: WhitespaceTokenizer
 - name: RegexFeaturizer
 - name: LexicalSyntacticFeaturizer
-- name: CountVectorsFeaturizer
-  analyzer: word
-  min_ngram: 1
-  max_ngram: 1
-  max_features: 10000
-- name: CountVectorsFeaturizer
+- name: CountVectorsFeaturizer                # word-level BoW
+- name: CountVectorsFeaturizer                # char n-grams (helps typos & short prompts)
   analyzer: char_wb
   min_ngram: 3
-  max_ngram: 5
-  max_features: 20000
-
+  max_ngram: 6
 - name: DIETClassifier
-  epochs: 60                # ok to keep decent
-  batch_size: [4, 16]       # ↓ batch to cut memory
-  number_of_transformer_layers: 1
-  transformer_size: 32       # 32 or 64; 32 is very light
-  drop_rate: 0.3
-  embedding_dimension: 20
+  epochs: 80
   constrain_similarities: true
-  batch_strategy: "sequence"     # keeps batches small for long seqs
+  batch_size: [64, 256]
   learning_rate: 0.001
-
-- name: EntitySynonymMapper
+  dropout: 0.2
 - name: ResponseSelector
-  epochs: 30
-  batch_size: [4, 16]
-  transformer_size: 32
-  number_of_transformer_layers: 1
-  drop_rate: 0.3
-assistant_id: 20250912-161419-tender-collateral
+  epochs: 220                                 # higher to separate numbered prompts
+  constrain_similarities: true
+  batch_size: [64, 256]
+  learning_rate: 0.001
+  dropout: 0.2
+  ranking_length: 5
+- name: EntitySynonymMapper
+- name: FallbackClassifier                    # friendly but safe
+  threshold: 0.30
+  ambiguity_threshold: 0.02
+
 policies:
-# # No configuration for policies was provided. The following default policies were used to train your model.
-# # If you'd like to customize them, uncomment and adjust the policies.
-# # See https://rasa.com/docs/rasa/policies for more information.
-#   - name: MemoizationPolicy
-#   - name: RulePolicy
-#   - name: UnexpecTEDIntentPolicy
-#     max_history: 5
-#     epochs: 100
-#   - name: TEDPolicy
-#     max_history: 5
-#     epochs: 100
-#     constrain_similarities: true
+- name: RulePolicy
+  enable_fallback_prediction: true
+  core_fallback_threshold: 0.15
+  core_fallback_action_name: "action_default_fallback"
+- name: MemoizationPolicy
+- name: TEDPolicy
+  epochs: 50
+  constrain_similarities: true
+assistant_id: 20250920-074924-forward-grove
