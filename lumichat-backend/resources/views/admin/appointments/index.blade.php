@@ -91,12 +91,20 @@
       </div>
     </div>
 
-    {{-- Buttons --}}
-    <div class="md:col-span-3 flex items-center justify-end gap-2">
+    {{-- spacer pushes buttons to the right --}}
+    <div class="sm:ml-auto"></div>
+
+    {{-- right side: Reset / Apply --}}
+    <div class="flex items-center gap-2">
       <a href="{{ route('admin.appointments.index') }}"
-         class="inline-flex items-center justify-center h-10 px-4 rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 text-sm">
+         class="h-11 inline-flex items-center gap-2 rounded-xl bg-white px-4 text-slate-700 ring-1 ring-slate-200
+                shadow-sm hover:bg-slate-50 hover:ring-slate-300 active:scale-[.99] transition">
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4h7M4 10h16M4 16h10"/>
+        </svg>
         Reset
       </a>
+
       <button class="inline-flex items-center justify-center h-10 px-5 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm text-sm">
         Apply
       </button>
@@ -104,7 +112,6 @@
 
   </div>
 </form>
-
 {{-- Actions (mobile): put Print beside header on small screens --}}
 <div class="mt-3 md:hidden">
   <button type="button" onclick="printAppointments()"

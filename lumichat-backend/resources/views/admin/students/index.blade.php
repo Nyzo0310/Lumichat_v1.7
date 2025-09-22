@@ -8,8 +8,11 @@
     $totalStudents = method_exists($students, 'total') ? $students->total() : $students->count();
   @endphp
 
-  {{-- ========= Page header ========= --}}
-  <div class="flex items-center justify-between animate-fadeup screen-only">
+  {{-- ========= Page header / Toolbar (like Counselor Logs) ========= --}}
+<div class="screen-only space-y-4">
+
+  {{-- Row 1: title on the left, Download PDF on the right --}}
+  <div class="flex items-center justify-between">
     <div>
       <h2 class="text-2xl font-bold tracking-tight text-slate-900">Student Records</h2>
       <p class="text-sm text-slate-600">
@@ -21,53 +24,75 @@
       </p>
     </div>
 
-    <div class="flex items-center gap-3">
-      {{-- Filters: Search + Actions --}}
-      <form id="filterForm" method="GET" action="{{ route('admin.students.index') }}" class="hidden sm:flex items-center gap-3">
-        <div class="relative">
-          <input
-            id="q-input"
-            type="text"
-            name="q"
-            value="{{ old('q', request('q')) }}"
-            autocomplete="off"
-            placeholder="Search student"
-            class="w-72 bg-white border border-slate-200 rounded-xl pl-10 pr-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-          />
-          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <circle cx="11" cy="11" r="7" stroke-width="2"></circle>
-            <path d="M21 21l-4.3-4.3" stroke-width="2" stroke-linecap="round"></path>
-          </svg>
-        </div>
-
-        <button type="submit"
-          class="inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-xl shadow-sm hover:bg-indigo-700 active:scale-[.99] transition">
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"/>
-          </svg>
-          Search
-        </button>
-
-        <button type="button"
-          onclick="window.location='{{ route('admin.students.index') }}'"
-          class="inline-flex items-center gap-2 bg-white text-slate-700 ring-1 ring-slate-200 px-4 py-2 rounded-xl shadow-sm hover:bg-slate-50 active:scale-[.99] transition">
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4h7M4 10h16M4 16h10"/>
-          </svg>
-          Reset
-        </button>
-      </form>
-
-      {{-- Download PDF (keeps current q/year filters) --}}
-      <a href="{{ route('admin.students.export.pdf', request()->only('q','year')) }}"
-         class="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl shadow-sm hover:bg-emerald-700 active:scale-[.99] transition">
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 10l5 5 5-5M12 15V3M5 19h14a2 2 0 002-2v-2H3v2a2 2 0 002 2z"/>
-        </svg>
-        Download PDF
-      </a>
-    </div>
+    <a href="{{ route('admin.students.export.pdf', request()->only('q','year')) }}"
+       class="h-11 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 text-white shadow-sm
+              hover:bg-emerald-700 active:scale-[.99] transition">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M7 10l5 5 5-5M12 15V3M5 19h14a2 2 0 002-2v-2H3v2a2 2 0 002 2z"/>
+      </svg>
+      Download PDF
+    </a>
   </div>
+
+  {{-- Row 2: filters row (search on the left; Reset/Apply on the right) --}}
+  <form id="filterForm" method="GET" action="{{ route('admin.students.index') }}"
+        class="flex flex-col gap-3 sm:flex-row sm:items-center">
+    {{-- left side: search --}}
+    <div class="relative w-full sm:max-w-sm">
+      <input
+        id="q-input"
+        type="text"
+        name="q"
+        value="{{ old('q', request('q')) }}"
+        placeholder="Search student"
+        autocomplete="off"
+        class="h-11 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-10 text-sm
+               focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
+      />
+      <svg class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400"
+           viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <circle cx="11" cy="11" r="7" stroke-width="2"></circle>
+        <path d="M21 21l-4.3-4.3" stroke-width="2" stroke-linecap="round"></path>
+      </svg>
+
+      @if(request('q'))
+        <button type="button"
+                onclick="document.getElementById('q-input').value=''; document.getElementById('filterForm').submit();"
+                class="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-slate-400
+                       hover:bg-slate-100 hover:text-slate-600"
+                aria-label="Clear search">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      @endif
+    </div>
+
+    {{-- spacer pushes buttons to the right --}}
+    <div class="sm:ml-auto"></div>
+
+    {{-- right side: Reset / Apply --}}
+    <div class="flex items-center gap-2">
+      <a href="{{ route('admin.students.index') }}"
+         class="h-11 inline-flex items-center gap-2 rounded-xl bg-white px-4 text-slate-700 ring-1 ring-slate-200
+                shadow-sm hover:bg-slate-50 hover:ring-slate-300 active:scale-[.99] transition">
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4h7M4 10h16M4 16h10"/>
+        </svg>
+        Reset
+      </a>
+
+      <button type="submit"
+              class="h-11 inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 text-white shadow-sm
+                     hover:bg-indigo-700 active:scale-[.99] transition">
+        Apply
+      </button>
+    </div>
+  </form>
+</div>
+
 
   {{-- ========= TABLE ========= --}}
   <div id="print-root" class="space-y-2">
