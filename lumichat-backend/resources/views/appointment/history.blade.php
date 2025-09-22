@@ -1,185 +1,260 @@
 @extends('layouts.app')
 @section('title','Appointment History')
 
-@section('content')
-<div class="max-w-6xl mx-auto p-6">
+@php
+  use Illuminate\Support\Str;
+@endphp
 
-  <div class="flex items-center justify-between mb-6">
-    <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">Appointment History</h2>
+@section('content')
+<div class="max-w-7xl mx-auto p-6 space-y-6">
+
+  {{-- Page header --}}
+  <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+    <div>
+      <h2 class="text-2xl font-bold tracking-tight text-slate-900">Appointment History</h2>
+      @php $total = $appointments->total(); @endphp
+      <p class="text-sm text-slate-600">
+        View and manage your counseling bookings.
+        <span class="mx-2 text-slate-300">•</span>
+        <span class="text-slate-500">{{ $total }} {{ Str::plural('appointment', $total) }}</span>
+      </p>
+    </div>
+
     <a href="{{ route('appointment.create') }}"
-       class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700">
-      <span class="font-medium">Book New</span>
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+       class="inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 h-10 rounded-xl shadow-sm hover:bg-indigo-700 active:scale-[.99] transition">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
       </svg>
+      Book New
     </a>
   </div>
 
-  @isset($totalCount)
-    <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
-      Showing <span class="font-medium">{{ $appointments->firstItem() ?? 0 }}</span>–
-      <span class="font-medium">{{ $appointments->lastItem() ?? 0 }}</span>
-      of <span class="font-medium">{{ $totalCount }}</span> appointments
-    </p>
-  @endisset
+  {{-- Filter bar --}}
+  @php
+    $status = $status ?? request('status','all');
+    $period = $period ?? request('period','all');
+    $q      = $q      ?? request('q','');
 
-  <form method="GET" action="{{ route('appointment.history') }}" class="flex flex-col gap-3 md:flex-row md:items-center mb-3">
-    <div class="w-full md:w-64">
-      <select name="status" class="w-full rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
-        @php
-          $statuses = ['all'=>'All Appointment','pending'=>'Pending','confirmed'=>'Confirmed','canceled'=>'Canceled','completed'=>'Completed'];
-        @endphp
-        @foreach ($statuses as $val=>$label)
-          <option value="{{ $val }}" @selected(($status ?? 'all')===$val)>{{ $label }}</option>
-        @endforeach
-      </select>
-    </div>
+    $statusOptions = [
+      'all'       => 'All Appointment',
+      'pending'   => 'Pending',
+      'confirmed' => 'Confirmed',
+      'completed' => 'Completed',
+      'canceled'  => 'Canceled',
+    ];
+    $periodOptions = [
+      'all'        => 'All Dates',
+      'upcoming'   => 'Upcoming',
+      'today'      => 'Today',
+      'this_week'  => 'This Week',
+      'this_month' => 'This Month',
+      'past'       => 'Past',
+    ];
+  @endphp
 
-    <div class="w-full md:w-64">
-      <select name="period" class="w-full rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
-        @php
-          $periods = ['all'=>'All Dates','upcoming'=>'Upcoming','today'=>'Today','this_week'=>'This Week','this_month'=>'This Month','past'=>'Past'];
-        @endphp
-        @foreach ($periods as $val=>$label)
-          <option value="{{ $val }}" @selected(($period ?? 'all')===$val)>{{ $label }}</option>
-        @endforeach
-      </select>
-    </div>
+  <form id="studentApptFilters" method="GET" action="{{ route('appointment.history') }}">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+      <div class="md:col-span-3 min-w-0">
+        <label class="block text-xs font-medium text-slate-600 mb-1">Status</label>
+        <select name="status"
+                class="w-full h-10 bg-white border border-slate-200 rounded-xl px-3 text-sm focus:ring-2 focus:ring-indigo-500">
+          @foreach($statusOptions as $val => $label)
+            <option value="{{ $val }}" @selected($status===$val)>{{ $label }}</option>
+          @endforeach
+        </select>
+      </div>
 
-    <div class="flex w-full md:flex-1">
-      <input type="text" name="q" value="{{ $q ?? '' }}" placeholder="Search counselor"
-             class="flex-1 rounded-l-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"/>
-      <button class="rounded-r-lg bg-slate-900 text-white px-4 dark:bg-indigo-600 dark:hover:bg-indigo-700">Search</button>
+      <div class="md:col-span-3 min-w-0">
+        <label class="block text-xs font-medium text-slate-600 mb-1">Date Range</label>
+        <select name="period"
+                class="w-full h-10 bg-white border border-slate-200 rounded-xl px-3 text-sm focus:ring-2 focus:ring-indigo-500">
+          @foreach($periodOptions as $val => $label)
+            <option value="{{ $val }}" @selected($period===$val)>{{ $label }}</option>
+          @endforeach
+        </select>
+      </div>
+
+      <div class="md:col-span-3 min-w-0">
+        <label class="block text-xs font-medium text-slate-600 mb-1">Search</label>
+        <div class="relative">
+          <input id="student-appt-q" type="text" name="q" value="{{ $q }}" placeholder="Search counselor"
+                 class="w-full h-10 bg-white border border-slate-200 rounded-xl pl-10 pr-3 text-sm focus:ring-2 focus:ring-indigo-500"/>
+          <svg class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="11" cy="11" r="7" stroke-width="2"/>
+            <path d="M21 21l-4.3-4.3" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="md:col-span-3 flex items-center justify-end gap-2">
+        <a href="{{ route('appointment.history') }}"
+           class="inline-flex items-center justify-center h-10 px-4 rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 text-sm">
+          Reset
+        </a>
+        <button class="inline-flex items-center justify-center h-10 px-5 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm text-sm">
+          Apply
+        </button>
+      </div>
     </div>
   </form>
 
-  @php
-    $chips = [];
-    if (!empty($status) && $status !== 'all') $chips[] = 'Status: '.ucfirst($status);
-    if (!empty($period) && $period !== 'all') $chips[] = 'Period: '.Str::headline($period);
-    if (!empty($q)) $chips[] = 'Search: '.$q;
-  @endphp
-  @if (count($chips))
-    <div class="flex items-center gap-2 mb-3">
-      <span class="text-sm text-gray-500 dark:text-gray-400">Filters:</span>
-      @foreach ($chips as $c)
-        <span class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-200">{{ $c }}</span>
-      @endforeach
-      <a href="{{ route('appointment.history') }}" class="text-xs text-indigo-600 hover:underline dark:text-indigo-400 ml-2">Reset</a>
+  {{-- Table --}}
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-200/70 overflow-hidden">
+    <div class="relative overflow-x-auto">
+      <table class="min-w-full text-sm leading-6 table-auto">
+        <colgroup>
+          <col style="width:8%">
+          <col style="width:28%">
+          <col style="width:26%">
+          <col style="width:20%">
+          <col style="width:18%">
+        </colgroup>
+
+        <thead class="bg-slate-100 border-b border-slate-200 text-slate-700">
+          <tr class="align-middle">
+            <th class="px-6 py-3 text-left font-semibold uppercase tracking-wide text-[11px] whitespace-nowrap">ID</th>
+            <th class="px-6 py-3 text-left font-semibold uppercase tracking-wide text-[11px] whitespace-nowrap">Counselor</th>
+            <th class="px-6 py-3 text-left font-semibold uppercase tracking-wide text-[11px] whitespace-nowrap">Date &amp; Time</th>
+            <th class="px-6 py-3 text-left font-semibold uppercase tracking-wide text-[11px] whitespace-nowrap">Status</th>
+            <th class="px-6 py-3 text-right font-semibold uppercase tracking-wide text-[11px] whitespace-nowrap">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody class="divide-y divide-slate-100">
+          @forelse ($appointments as $row)
+            @php
+              $start = \Carbon\Carbon::parse($row->scheduled_at);
+              $now   = now();
+              $mins  = $now->diffInMinutes($start, false);
+              $abs   = abs($mins);
+              $d=intdiv($abs,1440); $r=$abs%1440; $h=intdiv($r,60); $m=$r%60;
+              $parts = []; if($d) $parts[]="$d"."d"; if($h) $parts[]="$h"."h"; if(!$d && $m) $parts[]="$m"."m";
+              $countdown = $mins===0 ? 'Starting now' : ($mins>0 ? ('Starts in '.implode(' ', $parts)) : (implode(' ', $parts).' ago'));
+
+              $statusMap = [
+                'pending'   => ['bg'=>'bg-amber-50','text'=>'text-amber-700','ring'=>'ring-amber-200','dot'=>'bg-amber-500'],
+                'confirmed' => ['bg'=>'bg-blue-50','text'=>'text-blue-700','ring'=>'ring-blue-200','dot'=>'bg-blue-500'],
+                'completed' => ['bg'=>'bg-emerald-50','text'=>'text-emerald-700','ring'=>'ring-emerald-200','dot'=>'bg-emerald-500'],
+                'canceled'  => ['bg'=>'bg-rose-50','text'=>'text-rose-700','ring'=>'ring-rose-200','dot'=>'bg-rose-500'],
+              ];
+              $s   = $statusMap[$row->status] ?? ['bg'=>'bg-slate-50','text'=>'text-slate-700','ring'=>'ring-slate-200','dot'=>'bg-slate-400'];
+              $cls = $s['bg'].' '.$s['text'].' ring-1 '.$s['ring'];
+              $dot = $s['dot'];
+            @endphp
+
+            <tr class="align-middle even:bg-slate-50 hover:bg-slate-100/60 transition">
+              <td class="px-6 py-4 font-semibold text-slate-900">{{ $row->id }}</td>
+
+              <td class="px-6 py-4 whitespace-nowrap text-slate-700">{{ $row->counselor_name }}</td>
+
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="leading-tight">
+                  <div class="font-medium text-slate-900">{{ $start->format('M d, Y') }}</div>
+                  <div class="text-slate-500 text-xs">{{ $start->format('g:i A') }} • {{ $countdown }}</div>
+                </div>
+              </td>
+
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="relative inline-flex items-center h-7 w-[112px] rounded-full text-xs font-medium leading-none {{ $cls }}">
+                  <span class="absolute left-3 inline-block size-2 rounded-full {{ $dot }}"></span>
+                  <span class="mx-auto">{{ ucfirst($row->status) }}</span>
+                </span>
+              </td>
+
+              <td class="px-6 py-4 text-right">
+                <div class="flex items-center justify-end gap-2 whitespace-nowrap">
+                  <a href="{{ route('appointment.view', $row->id) }}"
+                     class="inline-flex items-center justify-center h-9 px-3 rounded-lg bg-indigo-600 text-white hover:-translate-y-0.5 active:scale-[.98] transition"
+                     title="View" aria-label="View appointment">
+                    View
+                  </a>
+                </div>
+              </td>
+            </tr>
+          @empty
+            <tr>
+              <td colspan="5" class="px-6 py-10 text-center text-slate-500">No appointments found.</td>
+            </tr>
+          @endforelse
+        </tbody>
+      </table>
     </div>
-  @endif
 
-  <div class="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-    <table class="min-w-full text-sm">
-      <thead class="bg-gray-50 dark:bg-gray-700/50 text-gray-600 dark:text-gray-200">
-        <tr>
-          <th class="px-4 py-3 text-left">ID</th>
-          <th class="px-4 py-3 text-left">Student Name</th>
-          <th class="px-4 py-3 text-left">Counselor Name</th>
-          <th class="px-4 py-3 text-left">Date &amp; Time</th>
-          <th class="px-4 py-3 text-left">Status</th>
-          <th class="px-4 py-3 text-right">Actions</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-        @forelse ($appointments as $row)
-          @php
-            $now   = \Carbon\Carbon::now();
-            $start = \Carbon\Carbon::parse($row->scheduled_at);
-            $mins  = $now->diffInMinutes($start, false);
-            $abs   = abs($mins);
-            $d     = intdiv($abs, 1440); $r=$abs%1440; $h=intdiv($r,60); $m=$r%60;
-            $parts = [];
-            if ($d) $parts[] = "{$d}d";
-            if ($h) $parts[] = "{$h}h";
-            if (!$d && $m) $parts[] = "{$m}m";
-            $countdown = $mins === 0 ? 'Starting now'
-                        : ($mins > 0 ? ('Starts in '.implode(' ', $parts)) : (implode(' ', $parts).' ago'));
-
-            $styles = [
-              'pending'   => ['chip'=>'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200','dot'=>'bg-amber-500','pulse'=>true],
-              'confirmed' => ['chip'=>'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200','dot'=>'bg-blue-500','pulse'=>false],
-              'canceled'  => ['chip'=>'bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-200','dot'=>'bg-rose-500','pulse'=>false],
-              'completed' => ['chip'=>'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200','dot'=>'bg-emerald-500','pulse'=>false],
-            ];
-            $s = $styles[$row->status] ?? ['chip'=>'bg-gray-100 text-gray-700','dot'=>'bg-gray-400','pulse'=>false];
-
-            $canCancel = $row->status === 'pending' && $start->gt($now);
-          @endphp
-
-          <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-700/30">
-            <td class="px-4 py-3">{{ $row->id }}</td>
-            <td class="px-4 py-3">{{ auth()->user()->name }}</td>
-            <td class="px-4 py-3">{{ $row->counselor_name }}</td>
-            <td class="px-4 py-3">
-              <div>{{ $start->format('M d, Y · g:i A') }}</div>
-              <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ $countdown }}</div>
-            </td>
-            <td class="px-4 py-3">
-              <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium {{ $s['chip'] }}">
-                <span class="h-1.5 w-1.5 rounded-full {{ $s['dot'] }} {{ $s['pulse'] ? 'animate-pulse' : '' }}"></span>
-                {{ ucfirst($row->status) }}
-              </span>
-            </td>
-            <td class="px-4 py-3 text-right">
-              <a href="{{ route('appointment.view', $row->id) }}"
-                class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3 py-1.5 text-white hover:bg-indigo-700">
-                View
-              </a>
-            </td>
-          </tr>
-        @empty
-          <tr>
-            <td colspan="6" class="px-4 py-10 text-center text-gray-500 dark:text-gray-300">No appointments found.</td>
-          </tr>
-        @endforelse
-      </tbody>
-    </table>
-  </div>
-
-  <div class="mt-4">
-    {{ $appointments->links() }}
+    @if($appointments->hasPages())
+      <div class="px-6 py-4 bg-slate-50 border-t border-slate-200/70">
+        {{ $appointments->withQueryString()->links() }}
+      </div>
+    @endif
   </div>
 </div>
-@endsection
 
+{{-- SweetAlert toasts + debounced search --}}
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  // Success toast: read 'success' or 'status'
+  // success toast
   const successMsg = @json(session('success') ?? session('status'));
   if (successMsg) {
-    Swal.fire({
-      icon: 'success',
-      title: 'Success',
-      text: successMsg,
-      timer: 2200,
-      showConfirmButton: false
-    });
+    Swal.fire({ icon:'success', title:'Success', text: successMsg, timer:2200, showConfirmButton:false });
   }
 
-  // Validation errors
-  const pageErrors = @json($errors->all());
-  if (Array.isArray(pageErrors) && pageErrors.length) {
+  // validation errors
+  const errs = @json($errors->all());
+  if (Array.isArray(errs) && errs.length) {
     const html = '<ul style="text-align:left;margin:0;padding-left:1rem">' +
-                 pageErrors.map(i => `<li>• ${i}</li>`).join('') + '</ul>';
-    Swal.fire({ icon: 'error', title: 'Unable to proceed', html });
+                 errs.map(i => `<li>• ${i}</li>`).join('') + '</ul>';
+    Swal.fire({ icon:'error', title:'Unable to proceed', html });
   }
 
-  // Confirm before sending PATCH cancel
-  document.querySelectorAll('form.cancel-form').forEach(form => {
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      Swal.fire({
-        icon: 'warning',
-        title: 'Cancel this appointment?',
-        text: 'This cannot be undone.',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, cancel it',
-        cancelButtonText: 'Keep it'
-      }).then(res => { if (res.isConfirmed) form.submit(); });
+  // debounce search
+  const q = document.getElementById('student-appt-q');
+  const f = document.getElementById('studentApptFilters');
+  let t = null;
+  if (q && f) {
+    q.addEventListener('input', function () {
+      if (t) clearTimeout(t);
+      t = setTimeout(() => f.submit(), 300);
     });
-  });
+  }
 });
 </script>
 @endpush
+
+@push('scripts')
+@if (session('swal'))
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const cfg = @json(session('swal'));
+  const go = () => Swal.fire(cfg);
+  if (typeof Swal === 'undefined') {
+    const s=document.createElement('script');
+    s.src='https://cdn.jsdelivr.net/npm/sweetalert2@11';
+    s.onload=go; document.head.appendChild(s);
+  } else go();
+});
+</script>
+@endif
+
+@if (session('success'))
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const msg = @json(session('success'));
+  const go  = () => Swal.fire({ toast:true, position:'top-end', icon:'success', title: msg, timer:2200, showConfirmButton:false });
+  if (typeof Swal === 'undefined') { const s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/sweetalert2@11'; s.onload=go; document.head.appendChild(s);} else go();
+});
+</script>
+@endif
+
+@if ($errors->any())
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const items = @json($errors->all());
+  const html  = '<ul style="text-align:left;margin:0;padding-left:1rem">' + items.map(i => `<li>• ${i}</li>`).join('') + '</ul>';
+  const go    = () => Swal.fire({ icon:'error', title:'Please fix the following', html });
+  if (typeof Swal === 'undefined') { const s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/sweetalert2@11'; s.onload=go; document.head.appendChild(s);} else go();
+});
+</script>
+@endif
+@endpush
+
+@endsection

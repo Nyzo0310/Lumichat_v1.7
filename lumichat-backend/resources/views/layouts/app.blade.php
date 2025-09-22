@@ -105,20 +105,27 @@
               @if ($item['label'] === 'Appointment')
                 @php
                   $showAppointment = $appointmentEnabled ?? false;
+
                   if ($showAppointment) {
-                    $apptLabel = ($hasAppointments ?? false) ? 'Appointment History' : 'Appointment';
-                    $apptRoute = route('appointment.index');
+                    $has = $hasAppointments ?? false; // set this in controllers if you can
+                    $apptLabel = $has ? 'Appointment History' : 'Appointment';
+                    $apptRoute = $has ? route('appointment.history') : route('appointment.index');
+
+                    // active on both booking + history (+ show, etc.)
+                    $apptIsActive = request()->routeIs('appointment.*');
                   }
                 @endphp
+
                 @if ($showAppointment)
                   <li>
                     <a href="{{ $apptRoute }}"
-                       @class(['nav-item','nav-item--active' => request()->routeIs('appointment.index')])>
+                      @class(['nav-item','nav-item--active' => $apptIsActive])>
                       <img src="{{ asset('images/icons/appointment.png') }}" alt="" class="sidebar-icon icon-white">
                       <span>{{ $apptLabel }}</span>
                     </a>
                   </li>
                 @endif
+
                 @continue
               @endif
 
