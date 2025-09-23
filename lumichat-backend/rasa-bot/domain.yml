@@ -3429,18 +3429,17 @@ responses:
     - title: No, thanks
       payload: /deny{"confirm_topic":"coping","mood":"time_management"}
 
+responses:
   utter_offer_referral:
     - text: |
         It’s okay if this still feels heavy. If you want, we can book time with the counselor so you don’t have to handle this alone.
         Would you like me to open the appointment page?
       buttons:
         - title: "Book counselor"
-          payload: /affirm{"confirm_topic":"referral"}
+          url: "http://127.0.0.1:8000/appointment/book"
         - title: "Not now"
           payload: /deny{"confirm_topic":"referral"}
 
-  utter_counselor_link:
-    - text: "Here’s the counselor booking page: https://example.com/counselor (confidential)."
 
   utter_ok_no_referral:
     - text: "No problem. If you change your mind, I’m here for you."
