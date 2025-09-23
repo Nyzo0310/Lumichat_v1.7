@@ -13,7 +13,7 @@
 
 @if($isStudent)
   <!-- Student global prefs boot (runs before CSS to avoid flicker) -->
-  <script>
+  <script src="{{ asset('js/chat.js') }}" defer>
     (() => {
       try {
         const root = document.documentElement;
@@ -64,7 +64,8 @@
   {{-- ✅ make pushed styles from partials (e.g., modal title animation) actually render --}}
   @stack('styles')
 
-  @vite(['resources/css/app.css', 'resources/js/app.js'])
+  @vite(['resources/css/app.css', 'resources/js/app.js','resources/js/chat.js'])
+
 
   <!-- Global z-index helpers so teleported modals always sit above the blur -->
   <style id="lumi-modal-zfix">
@@ -151,7 +152,8 @@
 
         <div>
           <p class="section-label">TOOLS</p>
-          <a href="{{ route('chat.new') }}" class="nav-pill">
+          <!-- ✅ Add the flag so we can clear the welcome state -->
+          <a href="{{ route('chat.new') }}" class="nav-pill" data-new-chat="1">
             <img src="{{ asset('images/icons/new-chat.png') }}" alt="" class="sidebar-icon icon-white">
             <span class="font-medium">New Chat</span>
           </a>
@@ -209,9 +211,11 @@
           </div>
 
           <div class="flex items-center gap-2 sm:gap-3">
+            <!-- ✅ Add the flag here too -->
             <a href="{{ route('chat.new') }}"
                class="header-newchat inline-flex items-center gap-2 h-10 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition focus:outline-none focus:ring-2 focus:ring-indigo-500/60"
-               aria-label="Start a new chat">
+               aria-label="Start a new chat"
+               data-new-chat="1">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               <span class="hidden sm:inline text-sm font-medium">New Chat</span>
             </a>
@@ -344,6 +348,32 @@
       </script>
     @endif
   @endisset
+
+  <!-- ✅ Clear Lumi welcome state whenever user clicks New Chat -->
+  <script>
+  (function(){
+    function clearWelcomeOnNewChat(){
+      try {
+        const wrap = document.querySelector('#chat-wrapper');
+        const threadId = (wrap && wrap.dataset.threadId) || location.pathname;
+        sessionStorage.removeItem(`lumi_welcome_${threadId}`);
+        // also clear any stale keys from other threads
+        const keys = [];
+        for (let i = 0; i < sessionStorage.length; i++) {
+          const k = sessionStorage.key(i);
+          if (k && k.startsWith('lumi_welcome_')) keys.push(k);
+        }
+        keys.forEach(k => sessionStorage.removeItem(k));
+      } catch(_){}
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('[data-new-chat="1"]').forEach(el => {
+        el.addEventListener('click', clearWelcomeOnNewChat, { capture: true });
+      });
+    });
+  })();
+  </script>
+
   @stack('scripts')
 </body>
 </html>

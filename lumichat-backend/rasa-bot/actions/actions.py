@@ -1,14 +1,23 @@
 # actions.py
-"""
-LumiCHAT custom actions for Rasa 3.x
-- Cebuano/English date & time parsing helpers
-- Reflective support action for core emotions
-- Form validators for appointment booking (date/time/consent)
-- Language-aware ask actions for form slots
-- Submit appointment action that returns a robust booking link
-"""
+# =============================================================================
+# MERGED ACTIONS for Rasa 3.x  (Laravel-friendly)
+# -----------------------------------------------------------------------------
+# This file merges two previous action modules:
+#   A) Numbered Response Selector + Safety Override
+#   B) Appointment Flow (Cebuano/English helpers) + Coping Assist + Referral
+#
+# Clear section banners below show where each set starts/ends so you can
+# easily maintain or extract them in the future.
+#
+# Drop-in usage:
+#   - Save this as actions.py at your project root.
+#   - Ensure endpoints.yml -> action_endpoint points to your actions server.
+#   - Start with: `rasa run actions`
+# =============================================================================
 
-from typing import Any, Dict, List, Text, Optional
+from __future__ import annotations
+
+from typing import Any, Text, Dict, List, Optional
 from datetime import datetime, timedelta
 import os
 import re
@@ -18,19 +27,77 @@ from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.events import SlotSet, EventType
 from rasa_sdk.types import DomainDict
 
-# -----------------------------------------------------------------------------
-# Optional dependency (graceful fallback if not installed)
-# -----------------------------------------------------------------------------
+# =============================================================================
+# SECTION A — Numbered Response Selector + Crisis Safety
+# (ActionSelectNumberedResponse)
+# =============================================================================
+
+CRISIS_KEYWORDS = {
+    "suicide", "kill myself", "end my life", "self harm", "self-harm",
+    "i want to die", "i want to end it", "hurt myself"
+}
+
+class ActionSelectNumberedResponse(Action):
+    def name(self) -> Text:
+        return "action_select_numbered_response"
+
+    def _latest_intent_name(self, tracker: Tracker) -> Text:
+        return (tracker.latest_message.get("intent") or {}).get("name", "") or ""
+
+    def _has_crisis_terms(self, text: Text) -> bool:
+        t = (text or "").lower()
+        return any(k in t for k in CRISIS_KEYWORDS)
+
+    def run(
+        self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]
+    ) -> List[Dict[Text, Any]]:
+        # 1) Safety override via intent or keywords
+        latest_intent = self._latest_intent_name(tracker)
+        user_text = tracker.latest_message.get("text", "")
+
+        if latest_intent == "safety_critical" or self._has_crisis_terms(user_text):
+            if "utter_crisis" in (domain.get("responses") or {}):
+                dispatcher.utter_message(response="utter_crisis")
+            else:
+                dispatcher.utter_message(text=(
+                    "I'm concerned for your safety. If you're in immediate danger, "
+                    "please call local emergency services now."
+                ))
+            return []
+
+        # 2) Map <base>/pNNNN -> utter_<base>/pNNNN or <base> -> utter_<base>
+        if "/" in latest_intent:
+            base, suffix = latest_intent.split("/", 1)
+            key = f"utter_{base}/{suffix}"
+        else:
+            base = latest_intent
+            key = f"utter_{base}"
+
+        responses: Dict[str, Any] = domain.get("responses") or {}
+
+        # 3) Prefer numbered template; fallback to parent; then generic text
+        if key in responses:
+            dispatcher.utter_message(response=key)
+        else:
+            parent = f"utter_{base}"
+            if parent in responses:
+                dispatcher.utter_message(response=parent)
+            else:
+                dispatcher.utter_message(text="I'm here with you. Tell me a bit more about what you're feeling.")
+        return []
+
+
+# =============================================================================
+# SECTION B — Helpers (Cebuano/English), Appointment Flow & Coping Assist
+# =============================================================================
+
+# ---- Optional dependency (graceful fallback if not installed) ----
 try:
-    # pip install python-dateutil
-    from dateutil import parser as dateparser  # type: ignore
+    from dateutil import parser as dateparser  # pip install python-dateutil
 except Exception:  # pragma: no cover
-    dateparser = None  # we will just skip fuzzy parsing if missing
+    dateparser = None  # skip fuzzy parsing if missing
 
-
-# -----------------------------------------------------------------------------
-# Cebuano / English normalization maps
-# -----------------------------------------------------------------------------
+# ---- Cebuano / English normalization maps ----
 CEB_DATE_MAP: Dict[str, str] = {
     "ugma": "tomorrow",
     "karon": "today",
@@ -52,10 +119,6 @@ CEB_TIME_KEYWORDS: Dict[str, str] = {
     "karon": "now",
 }
 
-
-# -----------------------------------------------------------------------------
-# Helper utilities
-# -----------------------------------------------------------------------------
 def _lang(meta: Dict[str, Any]) -> Text:
     """Extract UI language from message metadata (default: 'en')."""
     try:
@@ -71,10 +134,10 @@ def _one(lang: Text, en: Text, ceb: Text) -> Text:
 
 def _appointment_link() -> str:
     """
-    Build a robust appointment URL:
+    Build appointment URL:
     - honors LUMICHAT_APPOINTMENT_URL if set
     - falls back to local route
-    - ensures a scheme is present so it doesn't render as 'http:' only
+    - ensures scheme is present
     """
     link = os.getenv("LUMICHAT_APPOINTMENT_URL") or "http://127.0.0.1:8000/appointment"
     if not re.match(r"^https?://", link):
@@ -83,7 +146,6 @@ def _appointment_link() -> str:
 
 
 def normalize_date_text(text: str) -> str:
-    """Lowercase, trim, fix misspellings, and map Cebuano date words."""
     t = (text or "").strip().lower()
     if t in EN_MISSPELLINGS:
         t = EN_MISSPELLINGS[t]
@@ -94,7 +156,6 @@ def normalize_date_text(text: str) -> str:
 
 
 def normalize_time_text(text: str) -> str:
-    """Lowercase, map Cebuano time words, and strip spaces."""
     t = (text or "").strip().lower()
     for k, v in CEB_TIME_KEYWORDS.items():
         if k in t:
@@ -103,10 +164,6 @@ def normalize_time_text(text: str) -> str:
 
 
 def parse_date(value: str) -> Optional[str]:
-    """
-    Parse date from free text. Returns ISO date (YYYY-MM-DD) or None.
-    Accepts Cebuano phrases and common misspellings.
-    """
     s = normalize_date_text(value)
 
     if s in {"today", "now"}:
@@ -124,22 +181,14 @@ def parse_date(value: str) -> Optional[str]:
         except Exception:
             pass
 
-    # Fallback: accept strings that *look* like dates (e.g., 9/7/2025 or Sept 7)
     if re.search(r"\b(?:\d{1,2}[/-]\d{1,2}(?:[/-]\d{2,4})?|[a-z]{3,}\s+\d{1,2})\b", s):
         return s
-
     return None
 
 
 def parse_time(value: str) -> Optional[str]:
-    """
-    Parse time from free text. Returns 24h HH:MM or None.
-    Accepts 10am / 3pm / 15:00, words (morning/noon/afternoon/evening/now),
-    and Cebuano patterns like "alas 10 sa buntag".
-    """
     s = normalize_time_text(value)
 
-    # 10, 10:30, 10am, 10:30pm
     m = re.match(r"^(\d{1,2})(?::(\d{2}))?(am|pm)?$", s)
     if m:
         h = int(m.group(1))
@@ -153,7 +202,6 @@ def parse_time(value: str) -> Optional[str]:
         if 0 <= h < 24 and 0 <= mins < 60:
             return f"{h:02d}:{mins:02d}"
 
-    # Words
     WORD_MAP = {
         "morning": "09:00",
         "noon": "12:00",
@@ -164,7 +212,6 @@ def parse_time(value: str) -> Optional[str]:
     if s in WORD_MAP:
         return WORD_MAP[s]
 
-    # Cebuano: "alas 10 sa buntag/hapon/gabii"
     m2 = re.search(r"alas\s*(\d{1,2})\s*(?:sa)?\s*(buntag|hapon|gabii)", (value or "").lower())
     if m2:
         h = int(m2.group(1))
@@ -176,7 +223,6 @@ def parse_time(value: str) -> Optional[str]:
             if h < 12:
                 h += 12
         return f"{h:02d}:00"
-
     return None
 
 
@@ -191,16 +237,9 @@ def normalize_yes_no(value: Optional[str]) -> Text:
         return "no"
     return v or ""
 
-# -----------------------------------------------------------------------------
-# Conversational actions
-# -----------------------------------------------------------------------------
-class ActionReflectiveSupport(Action):
-    """
-    Gentle reflective responses for common emotional intents.
-    Triggered via rules for:
-    - express_happiness, express_sadness, express_anxiety, express_stress
-    """
 
+# ---- Reflective support ----
+class ActionReflectiveSupport(Action):
     def name(self) -> Text:
         return "action_reflective_support"
 
@@ -233,9 +272,7 @@ class ActionReflectiveSupport(Action):
         return []
 
 
-# -----------------------------------------------------------------------------
-# Language-aware ask actions for form slots
-# -----------------------------------------------------------------------------
+# ---- Ask actions for form ----
 class ActionAskAppointmentDate(Action):
     def name(self) -> Text:
         return "action_ask_appointment_date"
@@ -278,9 +315,7 @@ class ActionAskConsent(Action):
         return []
 
 
-# -----------------------------------------------------------------------------
-# Form validation (used by `appointment_form`)
-# -----------------------------------------------------------------------------
+# ---- Form validation for appointment_form ----
 class ValidateAppointmentForm(FormValidationAction):
     def name(self) -> Text:
         return "validate_appointment_form"
@@ -325,9 +360,7 @@ class ValidateAppointmentForm(FormValidationAction):
         return {"consent": v}
 
 
-# -----------------------------------------------------------------------------
-# Submit appointment action
-# -----------------------------------------------------------------------------
+# ---- Submit appointment ----
 class ActionSubmitAppointment(Action):
     def name(self) -> Text:
         return "action_submit_appointment"
@@ -346,7 +379,7 @@ class ActionSubmitAppointment(Action):
             ))
             return [SlotSet("consent", None)]
 
-        # IMPORTANT: send the placeholder; Laravel replaces {APPOINTMENT_LINK} with a real <a> button.
+        # Laravel: keep token {APPOINTMENT_LINK}; backend replaces with real <a> button/link.
         msg_en  = "Yes, we have a counselor available. Please tap here to book: {APPOINTMENT_LINK}"
         msg_ceb = "Oo, adunay counselor nga available. I-tap diri para magpa-book: {APPOINTMENT_LINK}"
         dispatcher.utter_message(text=_one(lang, msg_en, msg_ceb))
@@ -354,15 +387,113 @@ class ActionSubmitAppointment(Action):
         return [SlotSet("consent", None)]
 
 
-# Exported names (handy for tests/imports)
+# ---- Coping follow-up (optional) ----
+MOOD_TO_SUPPORT_UTTER: Dict[str, str] = {
+    "anxiety": "utter_support_anxiety",
+    "depression": "utter_support_depression",
+    "stress_burnout": "utter_support_stress_burnout",
+    "anger": "utter_support_anger",
+    "addiction": "utter_support_addiction",
+    "self_esteem_body": "utter_support_self_esteem_body",
+    "grief_loss": "utter_support_grief_loss",
+    "sleep_insomnia": "utter_support_sleep_insomnia",
+    "loneliness_isolation": "utter_support_loneliness_isolation",
+    "trauma_ptsd": "utter_support_trauma_ptsd",
+    "relationship_romance": "utter_support_relationship_romance",
+    "school_academic": "utter_support_school_academic",
+}
+
+MOOD_TO_COPING_UTTER: Dict[str, str] = {
+    "anxiety": "utter_coping_anxiety",
+    "depression": "utter_coping_depression",
+    "stress_burnout": "utter_coping_stress_burnout",
+    "anger": "utter_coping_anger",
+    "addiction": "utter_coping_addiction",
+    "self_esteem_body": "utter_coping_self_esteem_body",
+    "grief_loss": "utter_coping_grief_loss",
+    "sleep_insomnia": "utter_coping_sleep_insomnia",
+    "loneliness_isolation": "utter_coping_loneliness_isolation",
+    "trauma_ptsd": "utter_coping_trauma_ptsd",
+    "relationship_romance": "utter_coping_relationship_romance",
+    "school_academic": "utter_coping_school_academic",
+}
+
+def _canonical_mood_from_intent(intent_name: Text) -> Text:
+    if intent_name.startswith("express_"):
+        key = intent_name.replace("express_", "")
+        if key == "sadness": key = "depression"
+        if key == "stress": key = "stress_burnout"
+        if key == "sleep": key = "sleep_insomnia"
+        if key == "relationship": key = "relationship_romance"
+        if key == "low_self_esteem": key = "self_esteem_body"
+        return key
+    m = re.match(r"([a-z_]+?)(?:_p\\d+)$", intent_name)
+    base = m.group(1) if m else intent_name
+    aliases = {
+        "stress":"stress_burnout","burnout":"stress_burnout",
+        "relationship":"relationship_romance","romance":"relationship_romance",
+        "selfesteem":"self_esteem_body","self_esteem":"self_esteem_body","bodyimage":"self_esteem_body",
+        "grief":"grief_loss","loneliness":"loneliness_isolation",
+        "trauma":"trauma_ptsd","ptsd":"trauma_ptsd",
+        "sleep":"sleep_insomnia","insomnia":"sleep_insomnia",
+        "school":"school_academic","sad":"depression",
+    }
+    for k,v in aliases.items():
+        if base.startswith(k):
+            return v
+    return base
+
+class ActionAnalyzeIssue(Action):
+    def name(self) -> Text:
+        return "action_analyze_issue"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict) -> List[EventType]:
+        intent = (tracker.latest_message.get("intent") or {}).get("name", "") or ""
+        mood = _canonical_mood_from_intent(intent)
+        support_utter = MOOD_TO_SUPPORT_UTTER.get(mood)
+
+        if support_utter:
+            dispatcher.utter_message(response=support_utter)
+        else:
+            dispatcher.utter_message(text="Thanks for sharing. I’m here to listen and help with next steps.")
+
+        # Offer generic coping (domain should define 'utter_offer_coping' or per-mood offers)
+        if "responses" in domain and "utter_offer_coping" in domain["responses"]:
+            dispatcher.utter_message(response="utter_offer_coping")
+        return [SlotSet("mood", mood)]
+
+class ActionGiveCoping(Action):
+    def name(self) -> Text:
+        return "action_give_coping"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict) -> List[EventType]:
+        intent_name = (tracker.latest_message.get("intent") or {}).get("name", "") or ""
+        mood = tracker.get_slot("mood") or _canonical_mood_from_intent(intent_name)
+        coping_utter = MOOD_TO_COPING_UTTER.get(mood)
+
+        if coping_utter and "responses" in domain and coping_utter in domain["responses"]:
+            dispatcher.utter_message(response=coping_utter)
+        else:
+            dispatcher.utter_message(text="Here are some general steps: breathe slowly, ground with your senses, and take one small helpful action.")
+
+        # After coping, offer referral (domain should define 'utter_offer_referral' or 'utter_ask_book_counselor')
+        if "responses" in domain:
+            if "utter_offer_referral" in domain["responses"]:
+                dispatcher.utter_message(response="utter_offer_referral")
+            elif "utter_ask_book_counselor" in domain["responses"]:
+                dispatcher.utter_message(response="utter_ask_book_counselor")
+        return []
+
+
 __all__ = [
-    "parse_date",
-    "parse_time",
-    "normalize_yes_no",
+    "ActionSelectNumberedResponse",
+    "parse_date", "parse_time", "normalize_yes_no",
     "ActionReflectiveSupport",
     "ActionAskAppointmentDate",
     "ActionAskAppointmentTime",
     "ActionAskConsent",
     "ValidateAppointmentForm",
     "ActionSubmitAppointment",
+    "ActionAnalyzeIssue",
+    "ActionGiveCoping",
 ]

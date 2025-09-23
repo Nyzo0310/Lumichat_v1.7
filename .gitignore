@@ -26,3 +26,4 @@ lumichat-backend/rasa-bot/models/
 /storage/logs/
 /storage/framework/*
 /lumichat-backend/storage/logs/*.log
+lumichat-backend/rasa-bot/.rasa/cache/

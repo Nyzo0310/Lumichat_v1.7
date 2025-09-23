@@ -1,188 +1,333 @@
 version: "3.1"
 rules:
+# ==== Retrieval + offer (unchanged, good) ====
+- rule: academic_pressure retrieval
+  steps:
+    - intent: academic_pressure
+    - action: utter_academic_pressure
+    - action: utter_offer_coping_academic_pressure
 
-- rule: respond to greeting
+- rule: anxiety retrieval
+  steps:
+    - intent: anxiety
+    - action: utter_anxiety
+    - action: utter_offer_coping_anxiety
+
+- rule: bullying retrieval
+  steps:
+    - intent: bullying
+    - action: utter_bullying
+    - action: utter_offer_coping_bullying
+
+- rule: burnout retrieval
+  steps:
+    - intent: burnout
+    - action: utter_burnout
+    - action: utter_offer_coping_burnout
+
+- rule: depression retrieval
+  steps:
+    - intent: depression
+    - action: utter_depression
+    - action: utter_offer_coping_depression
+
+- rule: family_problems retrieval
+  steps:
+    - intent: family_problems
+    - action: utter_family_problems
+    - action: utter_offer_coping_family_problems
+
+- rule: financial_stress retrieval
+  steps:
+    - intent: financial_stress
+    - action: utter_financial_stress
+    - action: utter_offer_coping_financial_stress
+
+- rule: grief_loss retrieval
+  steps:
+    - intent: grief_loss
+    - action: utter_grief_loss
+    - action: utter_offer_coping_grief_loss
+
+- rule: loneliness retrieval
+  steps:
+    - intent: loneliness
+    - action: utter_loneliness
+    - action: utter_offer_coping_loneliness
+
+- rule: low_self_esteem retrieval
+  steps:
+    - intent: low_self_esteem
+    - action: utter_low_self_esteem
+    - action: utter_offer_coping_low_self_esteem
+
+- rule: relationship_issues retrieval
+  steps:
+    - intent: relationship_issues
+    - action: utter_relationship_issues
+    - action: utter_offer_coping_relationship_issues
+
+- rule: sleep_problems retrieval
+  steps:
+    - intent: sleep_problems
+    - action: utter_sleep_problems
+    - action: utter_offer_coping_sleep_problems
+
+- rule: stress retrieval
+  steps:
+    - intent: stress
+    - action: utter_stress
+    - action: utter_offer_coping_stress
+
+- rule: substance_abuse retrieval
+  steps:
+    - intent: substance_abuse
+    - action: utter_substance_abuse
+    - action: utter_offer_coping_substance_abuse
+
+- rule: time_management retrieval
+  steps:
+    - intent: time_management
+    - action: utter_time_management
+    - action: utter_offer_coping_time_management
+
+# ==== Smalltalk / safety (keep) ====
+- rule: greet -> utter_greet
   steps:
     - intent: greet
     - action: utter_greet
 
-- rule: respond to sadness
-  steps:
-    - intent: express_sadness
-    - action: utter_reflective_support
-
-- rule: respond to anxiety
-  steps:
-    - intent: express_anxiety
-    - action: utter_reflective_support
-
-- rule: respond to stress
-  steps:
-    - intent: express_stress
-    - action: utter_reflective_support
-
-- rule: respond to happiness
-  steps:
-    - intent: express_happiness
-    - action: utter_reflective_support
-
-- rule: respond to smalltalk
-  steps:
-    - intent: smalltalk
-    - action: utter_smalltalk_default
-
-- rule: respond to thanks
-  steps:
-    - intent: thank
-    - action: utter_thanks
-
-- rule: respond to goodbye
+- rule: goodbye -> utter_goodbye
   steps:
     - intent: goodbye
     - action: utter_goodbye
 
-# ------------------------------
-# CRISIS HANDLING
-# ------------------------------
-- rule: crisis protocol
-  condition:
-    - active_loop: null
+- rule: safety critical -> crisis
   steps:
-    - intent: crisis_help
-    - action: utter_crisis_intro
-    - action: utter_crisis_hotlines
-    - action: utter_crisis_next_steps   # asks "proceed to appointment?"
+    - intent: safety_critical
+    - action: utter_crisis
 
-- rule: after crisis next steps, affirm → submit appointment
+# ---- Coping YES/NO (anchored to the specific coping offer), then offer referral ----
+- rule: coping yes -> academic_pressure
   steps:
-    - action: utter_crisis_next_steps
+    - action: utter_offer_coping_academic_pressure
     - intent: affirm
-    - action: utter_submit_appointment
+    - action: utter_coping_academic_pressure
+    - action: utter_offer_referral
 
-# ------------------------------
-# APPOINTMENT FORM LIFECYCLE
-# ------------------------------
-- rule: start appointment form with empathy
+- rule: coping no -> academic_pressure
   steps:
-    - intent: book_appointment
-    - action: utter_reflective_support
-    - action: appointment_form
-    - active_loop: appointment_form
-
-- rule: outside form, affirm → submit appointment
-  condition:
-    - active_loop: null
-  steps:
-    - intent: affirm
-    - action: utter_submit_appointment
-
-- rule: accept inform_date during appointment form
-  condition:
-    - active_loop: appointment_form
-  steps:
-    - intent: inform_date
-    - action: appointment_form
-
-- rule: accept inform_time during appointment form
-  condition:
-    - active_loop: appointment_form
-  steps:
-    - intent: inform_time
-    - action: appointment_form
-
-- rule: accept affirm during appointment form (consent)
-  condition:
-    - active_loop: appointment_form
-  steps:
-    - intent: affirm
-    - action: appointment_form
-
-- rule: cancel appointment form on deny
-  condition:
-    - active_loop: appointment_form
-  steps:
+    - action: utter_offer_coping_academic_pressure
     - intent: deny
-    - action: action_deactivate_loop
-    - active_loop: null
-    - action: utter_goodbye
+    - action: utter_ack_no
+    - action: utter_offer_referral
 
-- rule: submit appointment form
-  condition:
-    - active_loop: appointment_form
+- rule: coping yes -> anxiety
   steps:
-    - action: appointment_form
-    - active_loop: null
-    - action: utter_submit_appointment
+    - action: utter_offer_coping_anxiety
+    - intent: affirm
+    - action: utter_coping_anxiety
+    - action: utter_offer_referral
 
-# ------------------------------
-# OUT OF SCOPE / FALLBACK
-# ------------------------------
-- rule: handle out of scope
+- rule: coping no -> anxiety
   steps:
-    - intent: out_of_scope
-    - action: utter_out_of_scope
+    - action: utter_offer_coping_anxiety
+    - intent: deny
+    - action: utter_ack_no
+    - action: utter_offer_referral
 
-- rule: nlu fallback
+- rule: coping yes -> bullying
   steps:
-    - intent: nlu_fallback
-    - action: utter_fallback
+    - action: utter_offer_coping_bullying
+    - intent: affirm
+    - action: utter_coping_bullying
+    - action: utter_offer_referral
 
-- rule: respond to addiction
+- rule: coping no -> bullying
   steps:
-    - intent: addiction
-    - action: utter_addiction
+    - action: utter_offer_coping_bullying
+    - intent: deny
+    - action: utter_ack_no
+    - action: utter_offer_referral
 
-- rule: respond to anxiety
+- rule: coping yes -> burnout
   steps:
-    - intent: anxiety
-    - action: utter_anxiety
+    - action: utter_offer_coping_burnout
+    - intent: affirm
+    - action: utter_coping_burnout
+    - action: utter_offer_referral
 
-- rule: respond to stress_burnout
+- rule: coping no -> burnout
   steps:
-    - intent: stress_burnout
-    - action: utter_stress_burnout
+    - action: utter_offer_coping_burnout
+    - intent: deny
+    - action: utter_ack_no
+    - action: utter_offer_referral
 
-- rule: respond to anger
+- rule: coping yes -> depression
   steps:
-    - intent: anger
-    - action: utter_anger
+    - action: utter_offer_coping_depression
+    - intent: affirm
+    - action: utter_coping_depression
+    - action: utter_offer_referral
 
-- rule: respond to depression
+- rule: coping no -> depression
   steps:
-    - intent: depression
-    - action: utter_depression
+    - action: utter_offer_coping_depression
+    - intent: deny
+    - action: utter_ack_no
+    - action: utter_offer_referral
 
-- rule: respond to grief_loss
+- rule: coping yes -> family_problems
   steps:
-    - intent: grief_loss
-    - action: utter_grief_loss
+    - action: utter_offer_coping_family_problems
+    - intent: affirm
+    - action: utter_coping_family_problems
+    - action: utter_offer_referral
 
-- rule: respond to loneliness_isolation
+- rule: coping no -> family_problems
   steps:
-    - intent: loneliness_isolation
-    - action: utter_loneliness_isolation
+    - action: utter_offer_coping_family_problems
+    - intent: deny
+    - action: utter_ack_no
+    - action: utter_offer_referral
 
-- rule: respond to relationship_romance
+- rule: coping yes -> financial_stress
   steps:
-    - intent: relationship_romance
-    - action: utter_relationship_romance
+    - action: utter_offer_coping_financial_stress
+    - intent: affirm
+    - action: utter_coping_financial_stress
+    - action: utter_offer_referral
 
-- rule: respond to school_academic
+- rule: coping no -> financial_stress
   steps:
-    - intent: school_academic
-    - action: utter_school_academic
+    - action: utter_offer_coping_financial_stress
+    - intent: deny
+    - action: utter_ack_no
+    - action: utter_offer_referral
 
-- rule: respond to self_esteem_body
+- rule: coping yes -> grief_loss
   steps:
-    - intent: self_esteem_body
-    - action: utter_self_esteem_body
+    - action: utter_offer_coping_grief_loss
+    - intent: affirm
+    - action: utter_coping_grief_loss
+    - action: utter_offer_referral
 
-- rule: respond to sleep_insomnia
+- rule: coping no -> grief_loss
   steps:
-    - intent: sleep_insomnia
-    - action: utter_sleep_insomnia
+    - action: utter_offer_coping_grief_loss
+    - intent: deny
+    - action: utter_ack_no
+    - action: utter_offer_referral
 
-- rule: respond to trauma_ptsd
+- rule: coping yes -> loneliness
   steps:
-    - intent: trauma_ptsd
-    - action: utter_trauma_ptsd
+    - action: utter_offer_coping_loneliness
+    - intent: affirm
+    - action: utter_coping_loneliness
+    - action: utter_offer_referral
+
+- rule: coping no -> loneliness
+  steps:
+    - action: utter_offer_coping_loneliness
+    - intent: deny
+    - action: utter_ack_no
+    - action: utter_offer_referral
+
+- rule: coping yes -> low_self_esteem
+  steps:
+    - action: utter_offer_coping_low_self_esteem
+    - intent: affirm
+    - action: utter_coping_low_self_esteem
+    - action: utter_offer_referral
+
+- rule: coping no -> low_self_esteem
+  steps:
+    - action: utter_offer_coping_low_self_esteem
+    - intent: deny
+    - action: utter_ack_no
+    - action: utter_offer_referral
+
+- rule: coping yes -> relationship_issues
+  steps:
+    - action: utter_offer_coping_relationship_issues
+    - intent: affirm
+    - action: utter_coping_relationship_issues
+    - action: utter_offer_referral
+
+- rule: coping no -> relationship_issues
+  steps:
+    - action: utter_offer_coping_relationship_issues
+    - intent: deny
+    - action: utter_ack_no
+    - action: utter_offer_referral
+
+- rule: coping yes -> sleep_problems
+  steps:
+    - action: utter_offer_coping_sleep_problems
+    - intent: affirm
+    - action: utter_coping_sleep_problems
+    - action: utter_offer_referral
+
+- rule: coping no -> sleep_problems
+  steps:
+    - action: utter_offer_coping_sleep_problems
+    - intent: deny
+    - action: utter_ack_no
+    - action: utter_offer_referral
+
+- rule: coping yes -> stress
+  steps:
+    - action: utter_offer_coping_stress
+    - intent: affirm
+    - action: utter_coping_stress
+    - action: utter_offer_referral
+
+- rule: coping no -> stress
+  steps:
+    - action: utter_offer_coping_stress
+    - intent: deny
+    - action: utter_ack_no
+    - action: utter_offer_referral
+
+- rule: coping yes -> substance_abuse
+  steps:
+    - action: utter_offer_coping_substance_abuse
+    - intent: affirm
+    - action: utter_coping_substance_abuse
+    - action: utter_offer_referral
+
+- rule: coping no -> substance_abuse
+  steps:
+    - action: utter_offer_coping_substance_abuse
+    - intent: deny
+    - action: utter_ack_no
+    - action: utter_offer_referral
+
+- rule: coping yes -> time_management
+  steps:
+    - action: utter_offer_coping_time_management
+    - intent: affirm
+    - action: utter_coping_time_management
+    - action: utter_offer_referral
+
+- rule: coping no -> time_management
+  steps:
+    - action: utter_offer_coping_time_management
+    - intent: deny
+    - action: utter_ack_no
+    - action: utter_offer_referral
+
+    
+# === Global referral follow-ups (put these at the end of rules.yml) ===
+- rule: referral yes -> link
+  steps:
+    - action: utter_offer_referral
+    - intent: affirm
+    - action: utter_counselor_link
+
+- rule: referral no -> ok
+  steps:
+    - action: utter_offer_referral
+    - intent: deny
+    - action: utter_ok_no_referral

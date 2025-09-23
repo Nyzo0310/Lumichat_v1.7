@@ -394,15 +394,44 @@ HTML;
             ];
         }
 
-        return response()->json([
-            'user_message' => [
-                'text'       => $text,
-                'time_human' => $userMsg->sent_at->timezone(config('app.timezone'))->format('H:i'),
-                'sent_at'    => $userMsg->sent_at->toIso8601String(),
-            ],
-            'bot_reply' => $botPayload,
-        ]);
+        $tz       = config('app.timezone');
+$nowHuman = now()->timezone($tz)->format('H:i');
+
+$rawReplies = is_array($botPayload) ? $botPayload : [$botPayload];
+$replies    = array_values(array_filter(array_map(function ($r) {
+    if (is_array($r)) {
+        if (isset($r['text']))      return trim((string) $r['text']);
+        if (isset($r['message']))   return trim((string) $r['message']);
+        if (isset($r['bot_reply'])) return trim((string) $r['bot_reply']);
+        return trim((string) json_encode($r));
     }
+    return trim((string) $r);
+}, $rawReplies), fn ($s) => $s !== ''));
+
+$tz       = config('app.timezone');
+$nowHuman = now()->timezone($tz)->format('H:i');
+
+$rawReplies = is_array($botPayload) ? $botPayload : [$botPayload];
+$replies    = array_values(array_filter(array_map(function ($r) {
+    if (is_array($r)) {
+        if (isset($r['text']))      return trim((string) $r['text']);
+        if (isset($r['message']))   return trim((string) $r['message']);
+        if (isset($r['bot_reply'])) return trim((string) $r['bot_reply']);
+        return trim((string) json_encode($r));
+    }
+    return trim((string) $r);
+}, $rawReplies), fn ($s) => $s !== ''));
+
+return response()->json([
+    'user_message' => [
+        'text'       => $text,
+        'time_human' => $userMsg->sent_at->timezone($tz)->format('H:i'),
+        'sent_at'    => $userMsg->sent_at->toIso8601String(),
+    ],
+    'bot_reply'  => $replies,
+    'time_human' => $nowHuman,
+]);    
+}
 
     /* =========================================================================
      | History utilities

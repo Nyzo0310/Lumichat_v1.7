@@ -41,7 +41,8 @@
   <form method="GET" action="{{ route('admin.diagnosis-reports.index') }}" class="mb-6 screen-only">
     <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end animate-fadeup">
 
-      <div class="md:col-span-4 min-w-0">
+      {{-- Date Range (left - 3 cols) --}}
+      <div class="md:col-span-3 min-w-0">
         <label class="block text-xs font-medium text-slate-600 mb-1">Date Range</label>
         <select name="date"
                 class="w-full h-10 bg-white border border-slate-200 rounded-xl px-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
@@ -52,11 +53,12 @@
         </select>
       </div>
 
-      <div class="md:col-span-4 min-w-0">
+      {{-- Search (middle - 3 cols) --}}
+      <div class="md:col-span-3 min-w-0">
         <label class="block text-xs font-medium text-slate-600 mb-1">Search</label>
         <div class="relative">
           <input id="qInput" type="text" name="q" value="{{ $q }}" autocomplete="off"
-                placeholder="Search student, counselor, result, or report ID"
+                placeholder="Search student or counselor name"
                 class="w-full h-10 bg-white border border-slate-200 rounded-xl pl-10 pr-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"/>
           <svg class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <circle cx="11" cy="11" r="7" stroke-width="2"/>
@@ -65,17 +67,26 @@
         </div>
       </div>
 
-      <div class="md:col-span-4 flex items-center justify-end gap-2">
+      {{-- Right side: Reset / Apply (6 cols; pushed to far right) --}}
+      <div class="md:col-span-6 md:col-start-7 flex items-center justify-end gap-2">
         <a href="{{ route('admin.diagnosis-reports.index') }}"
-          class="inline-flex items-center justify-center h-10 px-4 rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 text-sm">
+          class="h-11 inline-flex items-center gap-2 rounded-xl bg-white px-4 text-slate-700 ring-1 ring-slate-200
+                  shadow-sm hover:bg-slate-50 hover:ring-slate-300 active:scale-[.99] transition">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4h7M4 10h16M4 16h10"/>
+          </svg>
           Reset
         </a>
-        <button class="inline-flex items-center justify-center h-10 px-5 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm text-sm">
+
+        <button type="submit"
+                class="h-11 inline-flex items-center justify-center px-5 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm text-sm">
           Apply
         </button>
       </div>
+
     </div>
   </form>
+
 
   {{-- ========= TABLE ========= --}}
   <div id="diag-print-root" class="space-y-2">
