@@ -21,8 +21,9 @@
     <p class="text-sm text-gray-500">Your mental health support companion</p>
   </div>
 
-  {{-- ======= Scoped UI styles: custom checkbox + eye toggle + loader ======= --}}
+  {{-- ===== UI styles: checkbox, eye toggle, loader, and SweetAlert theme ===== --}}
   <style>
+    /* Custom checkbox */
     .checkbox-wrapper-46 input[type="checkbox"]{display:none;visibility:hidden}
     .checkbox-wrapper-46 .cbx{margin:auto;-webkit-user-select:none;user-select:none;cursor:pointer;display:flex;align-items:center}
     .checkbox-wrapper-46 .cbx span{display:inline-block;vertical-align:middle;transform:translate3d(0,0,0)}
@@ -41,6 +42,7 @@
     .checkbox-wrapper-46 .inp-cbx:checked + .cbx span:first-child:before{transform:scale(3.5);opacity:0;transition:all .6s ease}
     @keyframes wave-46{50%{transform:scale(.9)}}
 
+    /* Eye toggle */
     .eye-btn{position:absolute;right:.5rem;top:50%;transform:translateY(-50%);padding:.25rem;border-radius:.375rem}
     .eye-btn:hover{background:#e5e7eb}
     .eye-btn img{display:block;width:20px;height:20px;user-select:none;pointer-events:none}
@@ -49,11 +51,8 @@
       transform:translate(-50%,-50%) rotate(45deg);border-radius:1px;
     }
 
-    .three-body{
-      --uib-size:35px; --uib-speed:.8s; --uib-color:#5D3FD3;
-      position:relative; display:inline-block; height:var(--uib-size); width:var(--uib-size);
-      animation:spin78236 calc(var(--uib-speed)*2.5) infinite linear;
-    }
+    /* Loader */
+    .three-body{ --uib-size:35px; --uib-speed:.8s; --uib-color:#5D3FD3; position:relative; display:inline-block; height:var(--uib-size); width:var(--uib-size); animation:spin78236 calc(var(--uib-speed)*2.5) infinite linear; }
     .three-body__dot{position:absolute;height:100%;width:30%}
     .three-body__dot:after{content:'';position:absolute;height:0%;width:100%;padding-bottom:100%;background-color:var(--uib-color);border-radius:50%}
     .three-body__dot:nth-child(1){bottom:5%;left:0;transform:rotate(60deg);transform-origin:50% 85%}
@@ -66,15 +65,21 @@
     @keyframes wobble1{0%,100%{transform:translateY(0) scale(1);opacity:1}50%{transform:translateY(-66%) scale(.65);opacity:.8}}
     @keyframes wobble2{0%,100%{transform:translateY(0) scale(1);opacity:1}50%{transform:translateY(66%) scale(.65);opacity:.8}}
 
-    /* SweetAlert button polish */
-    .swal2-confirm.btn-primary-ghost{
-      background:#4f46e5 !important;
-      color:#fff !important;
-      border-radius:.65rem !important;
-      padding:.6rem 1.1rem !important;
-      box-shadow:0 8px 20px rgba(79,70,229,.25) !important;
-    }
-    .swal2-confirm.btn-primary-ghost:hover{ filter:brightness(0.96); }
+    /* ===== SweetAlert "LumiAlert" theme ===== */
+    .swal-lumi-popup{border-radius:1.25rem !important;box-shadow:0 30px 80px rgba(2,6,23,.25) !important;padding:1.6rem !important}
+    .swal-lumi-title{font-size:1.65rem !important;line-height:1.2;font-weight:800;color:#111827;margin:.35rem 0 .9rem}
+    .swal-lumi-body{color:#4b5563;font-size:1rem}
+    .swal-lumi-actions{margin-top:1rem;gap:.5rem}
+    .swal-lumi-btn{display:inline-flex;align-items:center;justify-content:center;border-radius:.75rem;padding:.65rem 1.1rem;font-weight:600}
+    .swal-lumi-confirm{background:#4f46e5;color:#fff;box-shadow:0 10px 24px rgba(79,70,229,.28)}
+    .swal-lumi-confirm:hover{filter:brightness(.96)}
+    .swal-lumi-cancel{background:#fff;border:1px solid #e5e7eb;color:#111827}
+    .swal-lumi-icon-wrap{width:86px;height:86px;margin:0 auto 14px;position:relative}
+    .swal-lumi-ring{position:absolute;inset:0;border-radius:50%;box-shadow:0 0 0 6px rgba(239,68,68,.12), inset 0 0 0 2px rgba(239,68,68,.35);animation:lumiPulse 1.8s ease-out infinite}
+    @keyframes lumiPulse{0%{box-shadow:0 0 0 6px rgba(239,68,68,.12), inset 0 0 0 2px rgba(239,68,68,.35)}70%{box-shadow:0 0 0 18px rgba(239,68,68,0), inset 0 0 0 2px rgba(239,68,68,.35)}100%{box-shadow:0 0 0 6px rgba(239,68,68,0), inset 0 0 0 2px rgba(239,68,68,.35)}}
+    .swal-lumi-x{position:absolute;inset:10px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;border:2px solid #fca5a5}
+    .swal-lumi-list{margin:.25rem 0 0;padding-left:1.15rem}
+    .swal-lumi-list li{margin:.35rem 0}
   </style>
 
   <form id="loginForm" method="POST" action="{{ $postRoute }}" class="space-y-5">
@@ -171,10 +176,11 @@
   </div>
 </div>
 
+{{-- SweetAlert2 (single include) --}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 (function(){
-  // Toggle password
+  // ===== Password eye toggle =====
   const pwd = document.getElementById('passwordInput');
   const btn = document.getElementById('togglePassword');
   function syncEye(){
@@ -187,18 +193,17 @@
   btn.addEventListener('click', () => { pwd.type = (pwd.type === 'password') ? 'text' : 'password'; syncEye(); pwd.focus({preventScroll:true}); });
   syncEye();
 
-  // Caps lock hint
+  // ===== Caps lock hint =====
   const caps = document.getElementById('capsHint');
   function updateCaps(e){ const on = e.getModifierState && e.getModifierState('CapsLock'); caps.classList.toggle('hidden', !on); }
   ['keydown','keyup'].forEach(ev => pwd.addEventListener(ev, updateCaps));
   pwd.addEventListener('blur', () => caps.classList.add('hidden'));
 
-  // Show loader on submit + sanitize email input
+  // ===== Submit: sanitize email + show loader =====
   const form = document.getElementById('loginForm');
   const loginBtn = document.getElementById('loginBtn');
   const loading = document.getElementById('loginLoading');
   form.addEventListener('submit', () => {
-    // normalize email input (trim spaces, remove internal spaces, normalize Unicode)
     const emailInput = form.querySelector('input[name="email"]');
     if (emailInput && typeof emailInput.value === 'string') {
       emailInput.value = emailInput.value.normalize('NFKC').trim().replace(/\s+/g, '');
@@ -208,97 +213,89 @@
     loading.classList.add('flex');
   });
 
-  // ---------- Enhanced SweetAlert for errors (clean, with countdown when throttled) ----------
+  // ===== LumiAlert mixin =====
+  const LumiAlert = Swal.mixin({
+    width: 560,
+    padding: '1.2rem',
+    backdrop: 'rgba(17,24,39,.55)',
+    buttonsStyling: false,
+    focusConfirm: false,
+    showClass: { popup: 'swal2-show' },
+    hideClass: { popup: 'swal2-hide' },
+    customClass: {
+      popup: 'swal-lumi-popup',
+      title: 'swal-lumi-title',
+      htmlContainer: 'swal-lumi-body',
+      actions: 'swal-lumi-actions',
+      confirmButton: 'swal-lumi-btn swal-lumi-confirm',
+      cancelButton:  'swal-lumi-btn swal-lumi-cancel'
+    }
+  });
+
+  // Error icon block
+  const errorIconHTML = `
+    <div class="swal-lumi-icon-wrap">
+      <div class="swal-lumi-ring"></div>
+      <div class="swal-lumi-x">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </div>
+    </div>
+  `;
+
+  function buildList(items){
+    return `<ul class="swal-lumi-list">${items.map(e=>`<li>• ${e}</li>`).join('')}</ul>`;
+  }
+
+  // ===== Server-side messages =====
   @if ($errors->any())
-  (function () {
-    const rawErrors = @json($errors->all());
-    const joined = rawErrors.join(' ');
-    const isThrottle = /too many login attempts|throttle/i.test(joined);
+    (function(){
+      const errs = @json($errors->all());
+      const joined = errs.join(' ');
+      const throttled = /too many login attempts|throttle/i.test(joined);
+      const secMatch = joined.match(/(\d+)\s*seconds?/i);
+      let wait = throttled && secMatch ? parseInt(secMatch[1],10) : 0;
 
-    const secMatch = joined.match(/(\d+)\s*seconds?/i);
-    const waitSec = isThrottle && secMatch ? parseInt(secMatch[1], 10) : 0;
-
-    const crossIcon = `
-      <div style="width:84px;height:84px;margin:0 auto 12px;position:relative;">
-        <div style="position:absolute;inset:0;border-radius:50%;
-                    box-shadow:0 0 0 6px rgba(239,68,68,.12), inset 0 0 0 2px rgba(239,68,68,.35);
-                    animation:pulseRing 1.8s ease-out infinite;"></div>
-        <div style="position:absolute;inset:10px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;border:2px solid #fca5a5">
-          <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </div>
-      </div>
-      <style>
-        @keyframes pulseRing {
-          0%{ box-shadow:0 0 0 6px rgba(239,68,68,.12), inset 0 0 0 2px rgba(239,68,68,.35) }
-          70%{ box-shadow:0 0 0 16px rgba(239,68,68,0), inset 0 0 0 2px rgba(239,68,68,.35) }
-          100%{ box-shadow:0 0 0 6px rgba(239,68,68,0), inset 0 0 0 2px rgba(239,68,68,.35) }
-        }
-      </style>
-    `;
-
-    const throttleHtml = `
-      ${crossIcon}
-      <h2 style="margin:0 0 .35rem;font-size:1.6rem;font-weight:800;color:#111827;">Too many attempts</h2>
-      <p style="margin:.25rem 0 .75rem;color:#4b5563;font-size:.95rem">
-        For your security, login is temporarily locked.
-      </p>
-      <div style="display:flex;align-items:center;justify-content:center;gap:.5rem;margin-bottom:.6rem">
-        <span style="font-size:.9rem;color:#6b7280">Try again in</span>
-        <span id="retryCountdown" style="font-variant-numeric:tabular-nums;
-             font-size:1.05rem;font-weight:700;color:#111827">${waitSec}</span>
-        <span style="font-size:.9rem;color:#6b7280">seconds</span>
-      </div>
-    `;
-
-    const genericHtml = `
-      ${crossIcon}
-      <h2 style="margin:0 0 .35rem;font-size:1.6rem;font-weight:800;color:#111827;">Incorrect credentials</h2>
-      <p style="margin:.25rem 0 .8rem;color:#4b5563;font-size:.95rem">
-        Please check your email and password and try again.
-      </p>
-    `;
-
-    Swal.fire({
-      html: isThrottle ? throttleHtml : genericHtml,
-      showConfirmButton: true,
-      confirmButtonText: 'OK',
-      focusConfirm: false,
-      width: 520,
-      padding: '1.2rem 1.2rem 1.4rem',
-      background: '#ffffff',
-      customClass: {
-        popup: 'rounded-2xl shadow-2xl',
-        confirmButton: 'swal2-confirm btn-primary-ghost'
-      },
-      didOpen: () => {
-        if (isThrottle && waitSec > 0) {
-          const el = document.getElementById('retryCountdown');
-          let sec = waitSec;
-          const iv = setInterval(() => {
-            sec = Math.max(0, sec - 1);
-            if (el) el.textContent = String(sec);
-            if (sec <= 0) clearInterval(iv);
-          }, 1000);
-        }
+      let html = errorIconHTML;
+      if (throttled){
+        html += `
+          <div class="swal-lumi-body">
+            <p class="mb-2">For your security, login is temporarily locked.</p>
+            <p class="mb-2">Try again in <b id="retryCountdown" style="font-variant-numeric:tabular-nums">${wait}</b> seconds.</p>
+          </div>`;
+      } else {
+        html += `<div class="swal-lumi-body">${buildList(errs)}</div>`;
       }
-    });
-  })();
+
+      LumiAlert.fire({
+        title: 'Please fix the following',
+        html,
+        confirmButtonText: 'OK'
+      }).then(() => {
+        const email = document.querySelector('input[name="email"]');
+        if (email) email.focus();
+      });
+
+      if (throttled && wait > 0){
+        const el = () => document.getElementById('retryCountdown');
+        const iv = setInterval(()=>{
+          wait = Math.max(0, wait-1);
+          const node = el(); if (node) node.textContent = String(wait);
+          if (wait <= 0) clearInterval(iv);
+        }, 1000);
+      }
+    })();
   @endif
 
   @if (session('success'))
-    Swal.fire({ icon:'success', title:'Success', text:@json(session('success')), confirmButtonColor:'#3085d6', confirmButtonText:'Continue' });
+    LumiAlert.fire({ icon:'success', title:'Success', html:@json(session('success')), confirmButtonText:'Continue' });
   @endif
 
   @if (session('status'))
-    Swal.fire({ icon:'success', title:'Success', text:@json(session('status')), confirmButtonColor:'#3085d6', confirmButtonText:'OK' });
+    LumiAlert.fire({ icon:'success', title:'Success', html:@json(session('status')), confirmButtonText:'OK' });
   @endif
 })();
 </script>
-  {{-- SweetAlert + global alerts --}}
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  @include('profile.partials.alerts')
-  @stack('scripts')
 @endsection

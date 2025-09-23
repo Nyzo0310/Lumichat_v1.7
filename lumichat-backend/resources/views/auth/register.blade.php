@@ -13,6 +13,16 @@
   .compact .title-sm   { @apply text-lg; }
   .compact .sub-sm     { @apply text-[13px]; }
 }
+
+/* SweetAlert confirm button style (parity with login) */
+.swal2-confirm.btn-primary-ghost{
+  background:#4f46e5 !important;
+  color:#fff !important;
+  border-radius:.65rem !important;
+  padding:.6rem 1.1rem !important;
+  box-shadow:0 8px 20px rgba(79,70,229,.25) !important;
+}
+.swal2-confirm.btn-primary-ghost:hover{ filter:brightness(0.96); }
 </style>
 
 <main class="bg-gray-100">
@@ -23,7 +33,7 @@
       <p class="mt-1 sub-sm text-xs sm:text-sm text-white/85">Complete the sections left → right.</p>
     </div>
 
-    <form method="POST" action="{{ route('register') }}" class="mt-6 space-y-6" novalidate>
+    <form id="registerForm" method="POST" action="{{ route('register') }}" class="mt-6 space-y-6" novalidate>
       @csrf
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 grid-gap">
@@ -43,7 +53,10 @@
                    class="w-full h-11 input-h border-0 bg-transparent text-sm placeholder-gray-400 focus:outline-none focus:ring-0"
                    placeholder="Enter your full name">
           </div>
-          @error('full_name') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+          {{-- Full name error --}}
+          @error('full_name')
+            <p class="mt-1 text-sm text-red-600 server-error" data-error-for="full_name">{{ $message }}</p>
+          @enderror
 
           {{-- Email --}}
           <label for="email" class="mt-4 block text-sm font-medium text-gray-700">Email</label>
@@ -53,7 +66,10 @@
                    class="w-full h-11 input-h border-0 bg-transparent text-sm placeholder-gray-400 focus:outline-none focus:ring-0"
                    placeholder="your.email@example.com">
           </div>
-          @error('email') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+          {{-- Email error --}}
+          @error('email')
+            <p class="mt-1 text-sm text-red-600 server-error" data-error-for="email">{{ $message }}</p>
+          @enderror
 
           {{-- Contact --}}
           <label for="contact_number" class="mt-4 block text-sm font-medium text-gray-700">Contact Number</label>
@@ -63,7 +79,10 @@
                    class="w-full h-11 input-h border-0 bg-transparent text-sm placeholder-gray-400 focus:outline-none focus:ring-0"
                    placeholder="+63 900 000 0000">
           </div>
-          @error('contact_number') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+          {{-- Contact error --}}
+          @error('contact_number')
+          <p class="mt-1 text-sm text-red-600 server-error" data-error-for="contact_number">{{ $message }}</p>
+        @enderror
         </section>
 
         {{-- ===================== Card 2: Academic ===================== --}}
@@ -90,7 +109,10 @@
               <option value="BSBA"      {{ old('course') == 'BSBA' ? 'selected' : '' }}>College of Business</option>
             </select>
           </div>
-          @error('course') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+          {{-- Course error --}}
+          @error('course')
+            <p class="mt-1 text-sm text-red-600 server-error" data-error-for="course">{{ $message }}</p>
+          @enderror
 
           {{-- Year level --}}
           <label for="year_level" class="mt-4 block text-sm font-medium text-gray-700">Year Level</label>
@@ -104,7 +126,10 @@
               <option value="4th year" {{ old('year_level') == '4th year' ? 'selected' : '' }}>4th year</option>
             </select>
           </div>
-          @error('year_level') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+          {{-- Year level error --}}
+         @error('year_level')
+          <p class="mt-1 text-sm text-red-600 server-error" data-error-for="year_level">{{ $message }}</p>
+        @enderror
         </section>
 
         {{-- ===================== Card 3: Security ===================== --}}
@@ -124,8 +149,8 @@
                   aria-describedby="passwordHelp meterText">
             {{-- Eye toggle (PNG icon) --}}
             @php
-              $eye    = asset('images/icons/eye.png');      // <-- change if your icons live elsewhere
-              $eyeOff = asset('images/icons/eye-off.png');  // <-- change if your icons live elsewhere
+              $eye    = asset('images/icons/eye.png');      // update path if needed
+              $eyeOff = asset('images/icons/eye-off.png');  // update path if needed
             @endphp
             <button type="button"
                     class="absolute inset-y-0 right-2 inline-flex items-center justify-center px-2 text-gray-500"
@@ -134,9 +159,12 @@
               <img data-hide src="{{ $eyeOff }}" alt="" class="h-5 w-5 hidden">
             </button>
           </div>
-          @error('password') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+          {{-- Password error --}}
+          @error('password')
+            <p class="mt-1 text-sm text-red-600 server-error" data-error-for="password">{{ $message }}</p>
+          @enderror
 
-          {{-- Strength meter (unchanged) --}}
+          {{-- Strength meter --}}
           <div class="mt-2" id="passwordHelp">
             <div class="flex gap-1" aria-hidden="true">
               <span data-meter class="h-1.5 flex-1 rounded bg-gray-200"></span>
@@ -163,43 +191,44 @@
             </button>
           </div>
           <p id="confirmErr" class="mt-1 text-xs text-red-600 hidden">Passwords do not match.</p>
+          {{-- Optional (if you validate it server-side) --}}
+          @error('password_confirmation')
+            <p class="mt-1 text-sm text-red-600 server-error" data-error-for="password_confirmation">{{ $message }}</p>
+          @enderror
         </section>
       </div>
 
-     {{-- ===== Footer Bar (polished baseline + divider) ===== --}}
-    <div class="mt-6 border-t border-gray-200 pt-4">
-    <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        {{-- Left: consent + inline login on one baseline --}}
-        <div class="flex flex-col gap-2 md:flex-row md:items-center md:gap-4 text-sm text-gray-700">
-        <label class="inline-flex items-start gap-2">
-            <input type="checkbox" id="agree" class="mt-1 rounded border-gray-300 focus:outline-none focus:ring-0">
-            <span class="leading-5">
-              I agree to
-              <a href="{{ route('privacy.policy') }}" class="text-indigo-600 underline">LumiCHAT’s Privacy Policy</a>
-              and understand how my data will be used.
-            </span>
-        </label>
+      {{-- ===== Footer Bar (polished baseline + divider) ===== --}}
+      <div class="mt-6 border-t border-gray-200 pt-4">
+        <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          {{-- Left: consent + inline login on one baseline --}}
+          <div class="flex flex-col gap-2 md:flex-row md:items-center md:gap-4 text-sm text-gray-700">
+            <label class="inline-flex items-start gap-2">
+              <input type="checkbox" id="agree" class="mt-1 rounded border-gray-300 focus:outline-none focus:ring-0">
+              <span class="leading-5">
+                I agree to
+                <a href="{{ route('privacy.policy') }}" class="text-indigo-600 underline">LumiCHAT’s Privacy Policy</a>
+                and understand how my data will be used.
+              </span>
+            </label>
 
-        <span class="hidden md:inline text-gray-300">•</span>
+            <span class="hidden md:inline text-gray-300">•</span>
 
-        <a href="{{ route('login') }}" class="text-indigo-600 hover:underline font-medium">
-            Already have an account? Return to Login
-        </a>
-        </div>
+            <a href="{{ route('login') }}" class="text-indigo-600 hover:underline font-medium">
+              Already have an account? Return to Login
+            </a>
+          </div>
 
-        {{-- Right: primary action --}}
-        <button type="submit" id="registerBtn"
-                class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white shadow-sm transition
-                    hover:bg-indigo-700 active:bg-indigo-800 disabled:cursor-not-allowed disabled:opacity-50">
-          <span data-btn-label>Register Account</span>
-          <svg class="hidden h-4 w-4 animate-spin" data-spinner viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8v4a4 4 0 0 0-4 4H4z"></path>
-          </svg>
-        </button>
-    </div>
-    </div>
-
+          {{-- Right: primary action --}}
+          <button type="submit" id="registerBtn"
+                  class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white shadow-sm transition
+                         hover:bg-indigo-700 active:bg-indigo-800 disabled:cursor-not-allowed disabled:opacity-50">
+            <span data-btn-label>Register Account</span>
+            <svg class="hidden h-4 w-4 animate-spin" data-spinner viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8v4a4 4 0 0 0-4 4H4z"></path>
+            </svg>
+          </button>
         </div>
       </div>
     </form>
@@ -212,68 +241,146 @@
 (function () {
   const SHORT_VH = 760;
   const root = document.documentElement;
-  function setCompact() { 
-    if (window.innerHeight <= SHORT_VH) root.classList.add('compact'); 
-    else root.classList.remove('compact'); 
+  function setCompact() {
+    if (window.innerHeight <= SHORT_VH) root.classList.add('compact');
+    else root.classList.remove('compact');
   }
-  setCompact(); 
+  setCompact();
   window.addEventListener('resize', setCompact);
 })();
 
 document.addEventListener('DOMContentLoaded', () => {
+    const SERVER_FIELDS = [
+    'full_name',
+    'email',
+    'contact_number',
+    'course',
+    'year_level',
+    'password',
+    'password_confirmation'
+  ];
+
+  SERVER_FIELDS.forEach((name) => {
+    const input = document.querySelector(`[name="${name}"]`);
+    const errEl = document.querySelector(`[data-error-for="${name}"]`);
+    if (!input || !errEl) return;
+
+    const hide = () => errEl.classList.add('hidden');
+
+    // Hide as soon as they interact
+    input.addEventListener('input', hide);
+    input.addEventListener('change', hide);
+    input.addEventListener('keydown', hide);
+    input.addEventListener('blur', hide);
+  });
+  // --- SweetAlert helpers (same visual as login) ---
+  function prettyError(htmlInner){
+    const crossIcon = `
+      <div style="width:84px;height:84px;margin:0 auto 12px;position:relative;">
+        <div style="position:absolute;inset:0;border-radius:50%;
+                    box-shadow:0 0 0 6px rgba(239,68,68,.12), inset 0 0 0 2px rgba(239,68,68,.35);
+                    animation:pulseRing 1.8s ease-out infinite;"></div>
+        <div style="position:absolute;inset:10px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;border:2px solid #fca5a5">
+          <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </div>
+      </div>
+      <style>
+        @keyframes pulseRing {
+          0%{ box-shadow:0 0 0 6px rgba(239,68,68,.12), inset 0 0 0 2px rgba(239,68,68,.35) }
+          70%{ box-shadow:0 0 0 16px rgba(239,68,68,0), inset 0 0 0 2px rgba(239,68,68,.35) }
+          100%{ box-shadow:0 0 0 6px rgba(239,68,68,0), inset 0 0 0 2px rgba(239,68,68,.35) }
+        }
+      </style>
+    `;
+    return {
+      html: `
+        <h2 style="margin:0 0 .55rem;font-size:1.55rem;font-weight:800;color:#0f172a;letter-spacing:.2px;text-align:center;">
+          Please fix the following
+        </h2>
+        ${crossIcon}
+        ${htmlInner}
+      `,
+      showConfirmButton:true,
+      confirmButtonText:'OK',
+      width:540,
+      padding:'1.2rem 1.2rem 1.4rem',
+      background:'#ffffff',
+      customClass:{ popup:'rounded-2xl shadow-2xl', confirmButton:'swal2-confirm btn-primary-ghost' }
+    };
+  }
+
   // Show server-side validation errors (if any)
   @if ($errors->any())
-    const errs = @json($errors->all());
-    Swal.fire({ icon:'error', title:'Registration Failed', html: errs.map(e => `• ${e}`).join('<br>'), confirmButtonColor:'#4f46e5' });
+    (function(){
+      const errs = @json($errors->all());
+      const list = `<ul style="margin:.25rem auto 0;max-width:560px;color:#475569;line-height:1.7;font-size:.98rem">
+        ${errs.map(e => `<li style="display:flex;gap:.5rem"><span>•</span><span>${e}</span></li>`).join('')}
+      </ul>`;
+      Swal.fire(prettyError(list));
+    })();
   @endif
 
-  // Enable/disable submit based on Terms
-  const agree = document.getElementById('agree');
-  const btn   = document.getElementById('registerBtn');
-  const spinner = document.querySelector('[data-spinner]');
-  const btnLabel = document.querySelector('[data-btn-label]');
-  const setBtn = () => btn.disabled = !agree?.checked;
-  if (agree) { setBtn(); agree.addEventListener('change', setBtn); }
-
-  // Submit micro-interaction
-  btn?.addEventListener('click', () => {
-    if (btn.disabled) return;
-    btn.setAttribute('aria-busy', 'true');
-    spinner?.classList.remove('hidden');
-    if (btnLabel) btnLabel.textContent = 'Submitting...';
-  });
-
-  // ===== Elements for strength/mismatch logic =====
+  // Elements & refs
+  const form      = document.getElementById('registerForm');
+  const agree     = document.getElementById('agree');
+  const btn       = document.getElementById('registerBtn');
+  const spinner   = document.querySelector('[data-spinner]');
+  const btnLabel  = document.querySelector('[data-btn-label]');
   const pwd       = document.getElementById('password');
   const confirm   = document.getElementById('password_confirmation');
   const fullName  = document.getElementById('full_name');
   const email     = document.getElementById('email');
+  const contact   = document.getElementById('contact_number');
   const bars      = [...document.querySelectorAll('[data-meter]')];
   const meterText = document.getElementById('meterText');
   const lengthHint= document.getElementById('lengthHint');
   const confirmErr= document.getElementById('confirmErr');
 
-  // ===== Helpers =====
+  // Enable/disable submit based on Terms
+  const setBtn = () => { if (btn && agree) btn.disabled = !agree.checked; };
+  setBtn(); agree?.addEventListener('change', setBtn);
+
+  // Submit: guard + sanitation + spinner
+  form?.addEventListener('submit', (e) => {
+    if (agree && !agree.checked) {
+      e.preventDefault();
+      Swal.fire(prettyError(`<p style="color:#475569;font-size:.98rem;text-align:center">Please agree to the Privacy Policy to continue.</p>`));
+      return;
+    }
+    // Sanitize inputs
+    if (email && typeof email.value === 'string') {
+      email.value = email.value.normalize('NFKC').trim().replace(/\s+/g,'');
+    }
+    if (contact && typeof contact.value === 'string') {
+      // keep + and digits only; collapse spaces/dashes
+      contact.value = contact.value.normalize('NFKC').replace(/[^\d+]/g,'').replace(/(?!^)\+/g,'');
+    }
+    if (fullName && typeof fullName.value === 'string') {
+      fullName.value = fullName.value.replace(/\s+/g,' ').trim();
+    }
+    btn?.setAttribute('aria-busy','true');
+    spinner?.classList.remove('hidden');
+    if (btnLabel) btnLabel.textContent = 'Submitting...';
+  });
+
+  // ===== Helpers for strength logic =====
   function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
   function uniqTokens(str){
-    return (str || '')
-      .toLowerCase()
-      .split(/[^a-z0-9]+/i)
-      .filter(t => t.length >= 3);
+    return (str || '').toLowerCase().split(/[^a-z0-9]+/i).filter(t => t.length >= 3);
   }
   function hasSequentialRun(s){
-    const t = (s || '').toLowerCase();
-    if (t.length < 3) return false;
+    const t = (s || '').toLowerCase(); if (t.length < 3) return false;
     for (let i=0;i<t.length-2;i++){
       const a=t.charCodeAt(i), b=t.charCodeAt(i+1), c=t.charCodeAt(i+2);
       if ((b===a+1&&c===b+1)||(b===a-1&&c===b-1)) return true;
-    }
-    return false;
+    } return false;
   }
   function hasRepeatedGroup(s){ return /(.)\1{3,}/.test(s || ''); }
   function containsAny(hay, arr){
-    const t = (hay || '').toLowerCase();
-    return arr.some(x => t.includes(x));
+    const t = (hay || '').toLowerCase(); return arr.some(x => t.includes(x));
   }
 
   // ===== Scoring (0–100) =====
@@ -323,66 +430,59 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function paintStrength(info){
-    // bars
     bars.forEach((b,i) => {
       b.classList.remove('bg-red-500','bg-orange-500','bg-amber-500','bg-blue-500','bg-emerald-500','bg-gray-200');
       b.classList.add(i < info.fill ? info.bar : 'bg-gray-200');
     });
-    // label
     if (meterText){
       meterText.classList.remove('text-gray-600','text-red-600','text-orange-600','text-amber-600','text-blue-600','text-emerald-600');
       meterText.classList.add(info.color);
       meterText.textContent = `Strength: ${info.label}`;
     }
-    // min length hint
     if (lengthHint) lengthHint.classList.toggle('hidden', !info.lengthTooShort);
   }
 
   function checkConfirm(){
     const mismatch = !!confirm?.value && (confirm.value !== pwd?.value);
-    if (confirmErr) confirmErr.classList.toggle('hidden', !mismatch);
+    confirmErr?.classList.toggle('hidden', !mismatch);
     return !mismatch;
   }
 
   function recompute(){
     if (!pwd) return;
     const info = computeScore(pwd.value, { email: email?.value, fullName: fullName?.value });
-    paintStrength(info);
-    checkConfirm();
+    paintStrength(info); checkConfirm();
   }
 
-  // Listen broadly so “sanitation” always updates
+  // Recompute on common events
   [pwd, confirm, email, fullName].forEach(el => {
     if (!el) return;
     ['input','change','keyup','blur'].forEach(evt => el.addEventListener(evt, recompute));
   });
   recompute();
 
-  // === Eye toggles: robust (works even if HTML changes slightly) ===
+  // === Eye toggles ===
   function setupToggle(button) {
     const targetId = button.getAttribute('data-toggle');
     const input = document.getElementById(targetId);
     const iconShow = button.querySelector('[data-show]');
     const iconHide = button.querySelector('[data-hide]');
     if (!input) return;
-
     button.addEventListener('click', (e) => {
       e.preventDefault();
       const showing = input.type === 'text';
       input.type = showing ? 'password' : 'text';
       button.setAttribute('aria-pressed', String(!showing));
-      // swap icons
       if (iconShow && iconHide) {
         iconShow.classList.toggle('hidden', !showing);
         iconHide.classList.toggle('hidden', showing);
       }
       input.focus({ preventScroll:true });
-      // keep strength + mismatch in sync
-      if (typeof recompute === 'function') recompute();
+      recompute();
     });
   }
   document.querySelectorAll('[data-toggle]').forEach(setupToggle);
 
-  });
+});
 </script>
 @endsection
