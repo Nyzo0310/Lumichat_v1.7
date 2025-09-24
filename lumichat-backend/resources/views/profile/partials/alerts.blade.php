@@ -1,116 +1,187 @@
 {{-- resources/views/profile/partials/alerts.blade.php --}}
-@once
-@push('styles')
 <style>
-  /* Bullet list used inside pretty error modal */
-  .swal-bullets{margin:.35rem 0 0;padding:0;list-style:none;line-height:1.7;font-size:.98rem;color:#475569}
-  .swal-bullets li{display:flex;gap:.5rem;align-items:flex-start}
-  .swal-bullets li>span:first-child{line-height:1.7}
-
-  /* Indigo primary OK button to match the app */
-  .swal2-confirm.btn-primary-ghost{
-    background:#4f46e5!important;color:#fff!important;border-radius:.65rem!important;
-    padding:.6rem 1.1rem!important;box-shadow:0 8px 20px rgba(79,70,229,.25)!important;
+  /* ===== ULTRA BIGGER TOAST ===== */
+ /* Bigger toast card */
+  .lumi-toast-xl.swal2-toast{
+    padding: 24px 28px !important;     /* more breathing room */
+    min-height: 70px !important;      /* taller */
+    max-width: 1180px !important;      /* wider */
+    gap: 1rem !important;              /* space between icon & text */
   }
-  .swal2-confirm.btn-primary-ghost:hover{filter:brightness(.96)}
-</style>
-@endpush
-@endonce
 
-@once
-@push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  /* BIGGER ICON */
+  .lumi-toast-xl .swal2-icon{
+    width: 56px !important;
+    min-width: 56px !important;
+    height: 56px !important;
+    margin: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* If you use iconHtml (recommended), ensure the SVG area fills the box */
+  .lumi-toast-xl .swal2-icon .swal2-icon-content{
+    display: grid !important;
+    place-items: center !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  /* BIGGER TITLE */
+  .lumi-toast-xl .swal2-title{
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 22px !important;        /* <- make this 24px if you want louder */
+    font-weight: 900 !important;
+    line-height: 1.25 !important;
+  }
+
+  /* Hide SweetAlert2's default success ring/lines */
+  .lumi-toast-xl .swal2-success-ring,
+  .lumi-toast-xl .swal2-success-fix,
+  .lumi-toast-xl .swal2-success-line-tip,
+  .lumi-toast-xl .swal2-success-line-long,
+  .lumi-toast-xl .swal2-success-circular-line-left,
+  .lumi-toast-xl .swal2-success-circular-line-right{ display:none !important; }
+
+  .lumi-toast-xl .swal2-icon.swal2-info,
+  .lumi-toast-xl .swal2-icon.swal2-warning,
+  .lumi-toast-xl .swal2-icon.swal2-error{ border:0 !important; }
+
+  /* Container: a bit more breathing room on big toasts */
+  .swal2-container.swal2-top-end{
+    background: transparent !important;
+    backdrop-filter: none !important;
+    pointer-events: none !important;
+    padding-top: max(24px, env(safe-area-inset-top)) !important;
+    padding-right: max(24px, env(safe-area-inset-right)) !important;
+    padding-bottom: 20px !important;
+    padding-left: 16px !important;
+    z-index: 2147483600 !important;
+  }
+  .swal2-container.swal2-top-end .swal2-popup{
+    pointer-events: auto !important;
+  }
+
+  /* Thicker progress bar to suit larger toast (optional) */
+  .swal2-timer-progress-bar { height: 4px !important; }
+
+  /* Mobile safety: scale down slightly on very narrow screens */
+  @media (max-width: 420px){
+    .lumi-toast-xl{
+      padding: 18px 20px !important;
+      min-height: 96px !important;
+      max-width: 92vw !important;
+    }
+    .lumi-toast-xl .swal2-title{ font-size: 18px !important; gap: .75rem !important; }
+    .lumi-toast-xl .swal2-icon{ width: 40px !important; height: 40px !important; min-width: 40px !important; }
+  }
+</style>
+
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   if (typeof Swal === 'undefined') return;
 
-  /* ---------------- Toast helper ---------------- */
-  const toast = (title, icon='info', timer=2400) => {
-    if (!title) return;
-    Swal.fire({ toast:true, position:'top-end', showConfirmButton:false, timer, icon, title });
+  /* ---- ULTRA BIG Toast mixin ---- */
+  const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 4200,
+    timerProgressBar: true,
+    backdrop: false,
+    customClass: { popup: 'lumi-toast-xl' },
+    didOpen: (el) => {
+      el.addEventListener('mouseenter', Swal.stopTimer);
+      el.addEventListener('mouseleave', Swal.resumeTimer);
+    }
+  });
+
+  /* 36px inline SVG icons */
+  const ICONS = {
+    success: `
+      <svg width="36" height="36" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="10" fill="none" stroke="rgb(16,185,129)" stroke-width="2"></circle>
+        <path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="rgb(16,185,129)" stroke-width="2.8"
+              stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>`,
+    error: `
+      <svg width="36" height="36" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="10" fill="none" stroke="rgb(239,68,68)" stroke-width="2"></circle>
+        <path d="M8 8l8 8M16 8l-8 8" stroke="rgb(239,68,68)" stroke-width="2.8" stroke-linecap="round"></path>
+      </svg>`,
+    warning: `
+      <svg width="36" height="36" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 3l10 18H2L12 3z" fill="none" stroke="rgb(234,179,8)" stroke-width="2"></path>
+        <path d="M12 9v6" stroke="rgb(234,179,8)" stroke-width="2.8" stroke-linecap="round"></path>
+        <circle cx="12" cy="17" r="1.35" fill="rgb(234,179,8)"></circle>
+      </svg>`,
+    info: `
+      <svg width="36" height="36" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="10" fill="none" stroke="rgb(59,130,246)" stroke-width="2"></circle>
+        <path d="M12 10v6" stroke="rgb(59,130,246)" stroke-width="2.8" stroke-linecap="round"></path>
+        <circle cx="12" cy="7" r="1.5" fill="rgb(59,130,246)"></circle>
+      </svg>`
   };
-  // Expose globally if you want to call it elsewhere
-  window.toast = toast;
 
-  /* ---------------- Pretty error modal ---------------- */
-  function prettyError(items){
-    const crossIcon = `
-      <div style="width:84px;height:84px;margin:0 auto 12px;position:relative;">
-        <div style="position:absolute;inset:0;border-radius:50%;
-                    box-shadow:0 0 0 6px rgba(239,68,68,.12), inset 0 0 0 2px rgba(239,68,68,.35);
-                    animation:pulseRing 1.8s ease-out infinite;"></div>
-        <div style="position:absolute;inset:10px;border-radius:50%;background:#fff;display:flex;
-                    align-items:center;justify-content:center;border:2px solid #fca5a5">
-          <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.6"
-               stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </div>
-      </div>
-      <style>
-        @keyframes pulseRing{
-          0%{box-shadow:0 0 0 6px rgba(239,68,68,.12), inset 0 0 0 2px rgba(239,68,68,.35)}
-          70%{box-shadow:0 0 0 16px rgba(239,68,68,0), inset 0 0 0 2px rgba(239,68,68,.35)}
-          100%{box-shadow:0 0 0 6px rgba(239,68,68,0), inset 0 0 0 2px rgba(239,68,68,.35)}
-        }
-      </style>
-    `;
-
-    const list = `<ul class="swal-bullets">${
-      (items||[]).map(e => `<li><span>•</span><span>${String(e).replace(/hypens/ig,'hyphens')}</span></li>`).join('')
-    }</ul>`;
-
-    Swal.fire({
-      html: `
-        <h2 style="margin:0 0 .55rem;font-size:1.55rem;font-weight:800;color:#0f172a;letter-spacing:.2px;text-align:center;">
-          Please fix the following
-        </h2>
-        ${crossIcon}
-        ${list}
-      `,
-      showConfirmButton:true,
-      confirmButtonText:'OK',
-      width:540,
-      padding:'1.2rem 1.2rem 1.4rem',
-      background:'#ffffff',
-      customClass:{ popup:'rounded-2xl shadow-2xl', confirmButton:'swal2-confirm btn-primary-ghost' }
+  /* Global helper — OVERRIDES any older/smaller toast helpers */
+  function toast(title, type = 'info', timer = 4200){
+    if (!title) return;
+    Toast.fire({
+      // icon: type,                     // ❌ remove this
+      iconHtml: ICONS[type] || ICONS.info, // ✅ only our SVG
+      title,
+      timer
     });
   }
 
-  /* ---------------- Success toasts ----------------
-     Prefer a human-friendly 'success' message; fallback to mapping 'status' codes. */
-  const status  = @json(session('status'));
-  const success = @json(session('success')); // e.g., "Account has been successfully deleted."
-  const statusMap = {
-    'profile-updated' : 'Profile updated',
-    'password-updated': 'Password updated',
-    'account-deleted' : 'Your account was deleted'
-  };
+  const bulletList = arr =>
+    '<ul style="text-align:left;margin:0;padding-left:1.1rem;">'
+    + (arr || []).map(m => `<li>• ${m}</li>`).join('') + '</ul>';
 
-  if (success) {
-    toast(success, 'success');
-  } else if (status && statusMap[status]) {
-    toast(statusMap[status], 'success');
-  }
+  /* ---- Session-driven toasts ---- */
+  const status = @json(session('status'));
+  if (status === 'profile-updated')  toast('Profile updated', 'success', 4800);
+  if (status === 'password-updated') toast('Password updated', 'success', 4800);
+  if (status === 'account-deleted')  toast('Your account was deleted', 'success', 4800);
 
-  // Optional other one-off toasts
   const warn  = @json(session('warning'));
   const info  = @json(session('info'));
   const error = @json(session('error'));
-  if (warn)  toast(warn,  'warning');
-  if (info)  toast(info,  'info');
-  if (error) toast(error, 'error', 3000);
+  if (warn)  toast(warn,  'warning', 5200);
+  if (info)  toast(info,  'info',    5200);
+  if (error) toast(error, 'error',   5600);
 
-  /* ---------------- Error bags -> enhanced dialog ---------------- */
+  /* ---- Validation error MODALS (with backdrop) ---- */
   const pwdErrors  = @json(optional($errors->getBag('updatePassword'))->all() ?? []);
-  const delErrors  = @json(optional($errors->getBag('userDeletion'))  ->all() ?? []);
-  const baseErrors = @json(optional($errors->getBag('default'))       ->all() ?? []);
+  const delErrors  = @json(optional($errors->getBag('userDeletion'))->all() ?? []);
+  const baseErrors = @json(optional($errors->getBag('default'))->all() ?? []);
 
-  if (pwdErrors.length)      prettyError(pwdErrors);
-  else if (delErrors.length) prettyError(delErrors);
-  else if (baseErrors.length)prettyError(baseErrors);
+  function showErrors(arr, afterClose){
+    if (!arr || !arr.length) return;
+    Swal.fire({
+      icon: 'error',
+      title: 'Please fix the following',
+      html: bulletList(arr),
+      confirmButtonText: 'OK'
+    }).then(() => afterClose && afterClose());
+  }
+
+  if (pwdErrors.length){
+    showErrors(pwdErrors, () => {
+      const sec = document.getElementById('update-password-section');
+      sec?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      document.getElementById('update_password_current_password')?.focus();
+    });
+  } else if (delErrors.length){
+    showErrors(delErrors);
+  } else if (baseErrors.length){
+    showErrors(baseErrors);
+  }
+
+  /* Expose the BIG helper globally */
+  window.toast = toast;
+  window.lumiToast = toast;
 });
 </script>
-@endpush
-@endonce

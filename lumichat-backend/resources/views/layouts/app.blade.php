@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-@stack('styles')
   <meta charset="utf-8" />
   <title>LumiCHAT</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+  <!-- SweetAlert2 (force a modern version) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.4/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.4/dist/sweetalert2.all.min.js" defer></script>
+
+  {{-- Global JS to handle dark mode, font size, compact, reduce motion --}}
  @php
   // Decide if current user should get student-scoped global prefs
   $isStudent = Auth::check() && (strtolower((string)(Auth::user()->role ?? 'student')) === 'student');
@@ -13,7 +17,7 @@
 
 @if($isStudent)
   <!-- Student global prefs boot (runs before CSS to avoid flicker) -->
-  <script src="{{ asset('js/chat.js') }}" defer>
+  <script>
     (() => {
       try {
         const root = document.documentElement;
@@ -61,10 +65,119 @@
     [x-cloak] { display: none !important; }
   </style>
 
+<style id="lumi-swal-theme">
+  /* ---------- BACKDROP CONTROL ---------- */
+  /* Only MODALS get the dim/blur backdrop */
+  .swal2-container.swal2-backdrop-show{
+    background: rgba(15,23,42,.55) !important;
+    backdrop-filter: blur(4px) saturate(110%);
+  }
+
+  /* TOAST containers must be transparent & non-blocking */
+  .swal2-container.swal2-top-start,
+  .swal2-container.swal2-top,
+  .swal2-container.swal2-top-end,
+  .swal2-container.swal2-bottom-start,
+  .swal2-container.swal2-bottom,
+  .swal2-container.swal2-bottom-end{
+    background: transparent !important;
+    backdrop-filter: none !important;
+    pointer-events: none !important;     /* no grey sheet eating clicks */
+    z-index: 2147483000 !important;      /* safely above your header */
+  }
+  .swal2-container .swal2-popup{
+    pointer-events: auto !important;     /* toast itself still clickable */
+  }
+
+  /* Respect safe area so toasts never hug the edges on iOS */
+  .swal2-container.swal2-top-end{
+    padding-top: max(12px, env(safe-area-inset-top)) !important;
+    padding-right: max(12px, env(safe-area-inset-right)) !important;
+    padding-bottom: 12px !important;
+    padding-left: 12px !important;
+  }
+
+  /* ---------- DIALOG CARD (not toasts) ---------- */
+  .swal2-popup:not(.swal2-toast){
+    background:#fff !important;
+    border-radius:22px !important;
+    padding:28px 32px !important;
+    box-shadow:
+      0 40px 80px -20px rgba(2,6,23,.35),
+      0 0 0 1px rgba(2,6,23,.05),
+      0 30px 60px rgba(109,40,217,.08) !important;
+    max-width:680px;
+  }
+  .dark .swal2-popup:not(.swal2-toast){
+    background:rgba(17,24,39,.96)!important; color:#e5e7eb!important;
+  }
+  .swal2-popup:not(.swal2-toast) .swal2-title{
+    margin:12px 0 0 !important;
+    font-weight:700; font-size:26px !important;
+    letter-spacing:.2px; text-align:center; color:#0f172a;
+  }
+  .dark .swal2-popup:not(.swal2-toast) .swal2-title{ color:#f8fafc }
+  .swal2-popup:not(.swal2-toast) .swal2-html-container{
+    margin-top:6px !important; font-size:15px !important; color:#475569 !important;
+  }
+  .dark .swal2-popup:not(.swal2-toast) .swal2-html-container{ color:#cbd5e1 !important }
+  .swal2-popup:not(.swal2-toast) .swal2-actions{ margin-top:22px !important; gap:10px; flex-wrap:wrap; }
+
+  /* ---------- BUTTONS ---------- */
+  .swal2-styled{
+    border-radius:14px !important; padding:10px 18px !important; font-weight:700 !important;
+    box-shadow:none !important;
+  }
+  .swal2-confirm{
+    background:linear-gradient(90deg,#7c3aed,#6366f1) !important; color:#fff !important;
+    box-shadow:0 10px 24px rgba(99,102,241,.35) !important;
+  }
+  .swal2-cancel, .swal2-deny{
+    background:#fff !important; color:#334155 !important; border:1px solid #e5e7eb !important;
+  }
+  .dark .swal2-cancel, .dark .swal2-deny{
+    background:#1f2937 !important; color:#e5e7eb !important; border-color:#334155 !important;
+  }
+
+  /* ---------- UTILITIES FOR CUSTOM HTML ---------- */
+  .lumi-check-lg{
+    width:90px;height:90px;margin:.25rem auto 0;border-radius:999px;display:grid;place-items:center;
+    background:rgba(16,185,129,.10);border:3px solid rgba(16,185,129,.25);
+  }
+  .lumi-divider{
+    height:1px;background:linear-gradient(90deg,transparent,rgba(148,163,184,.4),transparent);
+    margin:.75rem 0 1rem;
+  }
+  .lumi-meta{display:grid;gap:.35rem;font-size:.95rem;max-width:420px;margin:0 auto;text-align:left}
+  .lumi-meta b{color:#0f172a}.dark .lumi-meta b{color:#f1f5f9}
+
+  /* ---------- TOAST LOOK (compact + perfectly centered icon/text) ---------- */
+  .swal2-popup.swal2-toast{
+    display:flex !important; align-items:center !important; gap:.55rem !important;
+    border-radius:14px !important; padding:.65rem .9rem !important; min-height:44px !important;
+    background:#fff !important; box-shadow:0 12px 28px rgba(2,6,23,.18);
+    width:auto !important; max-width:360px !important;
+  }
+  .dark .swal2-popup.swal2-toast{ background:#111827 !important; color:#e5e7eb !important; }
+
+  .swal2-popup.swal2-toast .swal2-icon{
+    margin:0 !important; width:22px !important; height:22px !important; min-width:22px !important;
+    display:flex !important; align-items:center !important; justify-content:center !important;
+  }
+  .swal2-popup.swal2-toast .swal2-icon .swal2-icon-content{
+    display:flex; align-items:center; justify-content:center;  /* keeps emoji/check perfectly centered */
+  }
+  .swal2-popup.swal2-toast .swal2-title{
+    margin:0 !important; padding:0 !important; font-size:14px !important; font-weight:700 !important;
+    line-height:1.2 !important; display:flex; align-items:center;  /* keeps text vertically aligned with icon */
+  }
+</style>
+
   {{-- ✅ make pushed styles from partials (e.g., modal title animation) actually render --}}
   @stack('styles')
 
   @vite(['resources/css/app.css', 'resources/js/app.js','resources/js/chat.js'])
+  <script src="{{ asset('js/chat.js') }}" defer></script>
 
 
   <!-- Global z-index helpers so teleported modals always sit above the blur -->
@@ -315,39 +428,7 @@
     })();
   </script>
 
-  <!-- SweetAlert2 -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-  {{-- If your alerts file is at resources/views/partials/alerts.blade.php, use: @include('partials.alerts')
-     If it truly lives under profile/partials, keep as-is. --}}
   @include('profile.partials.alerts')
-
-  @isset($isStudent)
-    @if($isStudent)
-      <script>
-        window.addEventListener('storage', (e) => {
-          const root = document.documentElement;
-          switch (e.key) {
-            case 'lumichat_dark': {
-              const wantsDark = e.newValue === '1' || (!e.newValue && window.matchMedia('(prefers-color-scheme: dark)').matches);
-              root.classList.toggle('dark', !!wantsDark);
-              break;
-            }
-            case 'lumichat_reduce_motion':
-              root.classList.toggle('reduce-motion', e.newValue === '1');
-              break;
-            case 'lumichat_font_size':
-              ['font-sm','font-md','font-lg'].forEach(c => root.classList.remove(c));
-              root.classList.add('font-' + (['sm','md','lg'].includes(e.newValue) ? e.newValue : 'md'));
-              break;
-            case 'lumichat_compact':
-              root.classList.toggle('compact', e.newValue === '1');
-              break;
-          }
-        });
-      </script>
-    @endif
-  @endisset
 
   <!-- ✅ Clear Lumi welcome state whenever user clicks New Chat -->
   <script>
@@ -374,6 +455,87 @@
   })();
   </script>
 
-  @stack('scripts')
+<script>
+(function () {
+  function downloadICS({ title, description = '', location = '', startISO, endISO }) {
+    const pad = s => s.replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z');
+    const dtStart = pad(new Date(startISO).toISOString());
+    const dtEnd   = pad(new Date(endISO).toISOString());
+    const body = [
+      'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//LumiCHAT//Appointments//EN','BEGIN:VEVENT',
+      `UID:${(crypto && crypto.randomUUID ? crypto.randomUUID() : Date.now())}@lumichat.local`,
+      `DTSTAMP:${pad(new Date().toISOString())}`,
+      `DTSTART:${dtStart}`,`DTEND:${dtEnd}`,
+      `SUMMARY:${title}`,
+      `DESCRIPTION:${(description || '').replace(/\n/g,'\\n')}`,
+      `LOCATION:${location || ''}`,
+      'END:VEVENT','END:VCALENDAR'
+    ].join('\r\n');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([body], { type:'text/calendar;charset=utf-8' }));
+    a.download = 'LumiCHAT-appointment.ics';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  }
+
+  window.showBookedModal = function ({ counselor, dateLabel, timeLabel, startISO, endISO, historyUrl }) {
+    const check = `
+      <div class="lumi-check-lg">
+        <svg viewBox="0 0 24 24" width="48" height="48" aria-hidden="true">
+          <circle cx="12" cy="12" r="10" fill="none" stroke="rgba(16,185,129,.4)" stroke-width="2"></circle>
+          <path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="rgb(16,185,129)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+      </div>`;
+
+    Swal.fire({
+      width: 640,
+      title: 'Appointment booked!',
+      html: `
+        ${check}
+        <div class="lumi-divider"></div>
+        <div class="lumi-meta">
+          <div><b>Counselor:</b> ${counselor}</div>
+          <div><b>Date:</b> ${dateLabel}</div>
+          <div><b>Time:</b> ${timeLabel}</div>
+        </div>`,
+      showConfirmButton: true,
+      confirmButtonText: 'OK',
+      showDenyButton: true,
+      denyButtonText: 'Add to calendar',
+      showCancelButton: true,
+      cancelButtonText: 'View history',
+      reverseButtons: true
+    }).then(res => {
+      if (res.isDenied) {
+        downloadICS({
+          title:`Counseling with ${counselor}`,
+          description:`LumiCHAT counseling appointment with ${counselor}.`,
+          location:'Counseling Office · LumiCHAT',
+          startISO, endISO
+        });
+      } else if (res.dismiss === Swal.DismissReason.cancel && historyUrl) {
+        location.href = historyUrl;
+      }
+    });
+  };
+})();
+</script>
+@stack('scripts')
+<script>
+  // Small reusable toast (top-right, compact)
+  window.lumiToast = (title, icon = 'success', ms = 2200) => {
+    return Swal.fire({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: ms,
+      timerProgressBar: true,
+      icon,
+      title,
+      backdrop: false      // ⬅️ IMPORTANT: prevents the page-dimming backdrop
+    });
+  };
+</script>
+
 </body>
 </html>

@@ -190,6 +190,16 @@
 
 {{-- SweetAlert toasts + debounced search --}}
 @push('scripts')
+@if (session('booked'))
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  window.showBookedModal(@json(session('booked')));
+});
+</script>
+@endif
+@endpush
+
+@push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   // success toast

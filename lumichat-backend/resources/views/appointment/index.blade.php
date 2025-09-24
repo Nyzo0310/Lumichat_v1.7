@@ -80,6 +80,11 @@
         <style>
           #dateInput{ background-image:none!important; padding-right:3rem; }
           #dateInput::-webkit-calendar-picker-indicator{ display:none!important; }
+          .hidden-error{ display: none !important; }   /* ← add this */
+
+          .swal2-html-container.lumi{ text-align:left !important; }
+          .swal2-html-container.lumi .lumi-list{ list-style:disc; margin:0; padding-left:1.25rem; line-height:1.6; }
+          .swal2-html-container.lumi .lumi-divider{ margin:.5rem 0 1rem; }
         </style>
 
         <form method="POST" action="{{ route('appointment.store') }}" class="space-y-7">
@@ -180,21 +185,63 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const consentCbx   = document.getElementById('consent-cbx');
 
+  const formEl = document.querySelector('form[action="{{ route('appointment.store') }}"]');
+  const clearAllErrors = () => {
+    document.querySelectorAll('[data-error-for]').forEach(el => el.classList.add('hidden-error'));
+    if (window.Swal && Swal.isVisible()) Swal.close();
+  };
+  if (formEl) {
+    formEl.addEventListener('input',   clearAllErrors, { capture: true });
+    formEl.addEventListener('change',  clearAllErrors, { capture: true });
+    formEl.addEventListener('focusin', clearAllErrors, { capture: true });
+  }
+
   // GUARANTEED trailing slash
   const slotsBase = (@json(url('/appointment/slots')) + '/');
-
-  // SweetAlert helpers
+  // SweetAlert helpers (Lumi theme)
   const toast = (title, icon='info', timer=2500) =>
-    Swal.fire({ toast:true, position:'top-end', showConfirmButton:false, timer, icon, title });
-  const alertHtmlList = (title, items, icon='error') => {
-    const html = '<ul style="text-align:left;margin:0;padding-left:1rem">' + items.map(i => `<li>• ${i}</li>`).join('') + '</ul>';
-    Swal.fire({ icon, title, html });
-  };
+    Swal.fire({
+      toast:true, position:'top-end', showConfirmButton:false, timer, icon, title,
+      customClass:{ popup:'lumi' }
+    });
+
+  // ❗ New: error modal that matches the profile screenshot (big red X + gradient OK)
+  const showFormErrors = (title, items) => {
+  const iconSvg = `
+    <div class="lumi-x">
+      <svg viewBox="0 0 24 24" width="44" height="44" aria-hidden="true">
+        <circle cx="12" cy="12" r="10" fill="none" stroke="rgba(244,63,94,.35)" stroke-width="2"></circle>
+        <path d="M8 8l8 8M16 8l-8 8" fill="none" stroke="rgb(244,63,94)" stroke-width="2.5" stroke-linecap="round"></path>
+      </svg>
+    </div>`;
+
+  const html = `
+    <div class="lumi-divider"></div>
+    <ul style="text-align:left;margin:0;padding-left:1rem;line-height:1.6">
+      ${items.map(i => `<li>• ${i}</li>`).join('')}
+    </ul>`;
+
+  Swal.fire({
+    icon: 'error',              // keeps a11y + aria role
+    iconHtml: iconSvg,          // replaces default tiny X (prevents duplicate)
+    iconColor: 'transparent',   // no default fill
+    title,
+    html,
+    customClass: { popup:'lumi', title:'lumi', htmlContainer:'lumi' },
+    buttonsStyling: false,
+    confirmButtonText: 'OK',
+    showClass: { popup: 'swal2-show' },
+    hideClass:  { popup: 'swal2-hide' },
+    didRender: () => {
+      Swal.getConfirmButton().classList.add('btn-pill','btn-primary');
+    }
+  });
+};
 
   const successMsg = @json(session('status'));
   const pageErrors = @json($errors->all());
   if (successMsg) Swal.fire({ icon:'success', title:'Success', text:successMsg, timer:2200, showConfirmButton:false });
-  if (Array.isArray(pageErrors) && pageErrors.length) alertHtmlList('Please fix the following', pageErrors, 'error');
+  if (Array.isArray(pageErrors) && pageErrors.length) showFormErrors('Please fix the following', pageErrors);
 
   const hideError = (field) => {
     document.querySelectorAll(`[data-error-for="${field}"]`).forEach(el => el.classList.add('hidden-error'));
@@ -311,7 +358,5 @@ document.addEventListener('DOMContentLoaded', () => {
   if(counselorSel.value && dateInput.value) loadSlots();
 });
 </script>
-
-@include('profile.partials.alerts')
 @endpush
 @endsection
