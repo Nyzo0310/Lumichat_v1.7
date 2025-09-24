@@ -149,8 +149,8 @@
                   aria-describedby="passwordHelp meterText">
             {{-- Eye toggle (PNG icon) --}}
             @php
-              $eye    = asset('images/icons/eye.png');      // update path if needed
-              $eyeOff = asset('images/icons/eye-off.png');  // update path if needed
+              $eye    = asset('images/icons/eye-off.png');      // update path if needed
+              $eyeOff = asset('images/icons/eye.png');  // update path if needed
             @endphp
             <button type="button"
                     class="absolute inset-y-0 right-2 inline-flex items-center justify-center px-2 text-gray-500"
@@ -186,8 +186,8 @@
             <button type="button"
                     class="absolute inset-y-0 right-2 inline-flex items-center justify-center px-2 text-gray-500"
                     aria-pressed="false" aria-label="Show confirm password" data-toggle="password_confirmation">
-              <img data-show src="{{ $eye }}"    alt="" class="h-5 w-5">
-              <img data-hide src="{{ $eyeOff }}" alt="" class="h-5 w-5 hidden">
+              <img data-hide src="{{ $eyeOff }}"    alt="" class="h-5 w-5 hidden">
+              <img data-show src="{{ $eye }}" alt="" class="h-5 w-5">
             </button>
           </div>
           <p id="confirmErr" class="mt-1 text-xs text-red-600 hidden">Passwords do not match.</p>

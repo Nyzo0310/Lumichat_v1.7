@@ -210,6 +210,16 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
+  // HH:mm -> hh:mm AM/PM (display only)
+  function fmt12(t) {
+    if (!t) return '';
+    const [H, M] = t.split(':').map(n => parseInt(n, 10));
+    const ampm = H >= 12 ? 'PM' : 'AM';
+    const h12  = ((H % 12) || 12).toString().padStart(2, '0');
+    const mm   = (isNaN(M) ? 0 : M).toString().padStart(2, '0');
+    return `${h12}:${mm} ${ampm}`;
+  }
+
   function CounselorForm() {
     return {
       days: [
@@ -220,7 +230,7 @@
         { value:5, short:'Fri', long:'Friday' },
       ],
       selectedDays: [1,2,3,4,5],
-      range: { start: '09:00', end: '12:00' },
+      range: { start: '09:00', end: '12:00' }, // keep 24h for inputs & DB
       slots: [],
 
       init(oldSlots) {
@@ -230,7 +240,7 @@
             .filter(s => allowed.has(Number(s.weekday)))
             .map(s => ({
               weekday: Number(s.weekday),
-              start_time: (''+s.start_time).slice(0,5),
+              start_time: (''+s.start_time).slice(0,5), // keep 24h in state
               end_time:   (''+s.end_time).slice(0,5),
             }))
             .filter(s => s.start_time && s.end_time)
@@ -238,25 +248,34 @@
         }
       },
 
+      // helpers used by template
       dayLabel(wd) { return ({1:'Monday',2:'Tuesday',3:'Wednesday',4:'Thursday',5:'Friday'})[wd] || ''; },
       isSelected(d) { return this.selectedDays.includes(d); },
       toggleDay(d) { this.isSelected(d) ? this.selectedDays = this.selectedDays.filter(x => x !== d) : this.selectedDays.push(d); this.selectedDays.sort((a,b)=>a-b); },
       preset() { this.selectedDays = [1,2,3,4,5]; },
       clearSelection() { this.selectedDays = []; },
 
-      overlaps(d, start, end) { return this.slots.some(s => s.weekday===d && (start < s.end_time && s.start_time < end)); },
+      // check overlap using 24h values
+      overlaps(d, start, end) {
+        return this.slots.some(s => s.weekday===d && (start < s.end_time && s.start_time < end));
+      },
 
       async bulkAdd() {
         if (!this.selectedDays.length || !this.range.start || !this.range.end) return;
-        if (this.range.end <= this.range.start) { Swal.fire({icon:'error', title:'Time invalid', text:'End time must be after start time.', confirmButtonColor:'#ef4444'}); return; }
+        if (this.range.end <= this.range.start) {
+          Swal.fire({icon:'error', title:'Time invalid', text:'End time must be after start time.', confirmButtonColor:'#ef4444'});
+          return;
+        }
 
-        const start = this.range.start, end = this.range.end;
+        const start24 = this.range.start;
+        const end24   = this.range.end;
+
+        // Show 12h in the modal only
         const names = this.selectedDays.map(d => this.dayLabel(d)).join(', ');
-
         const confirmed = await Swal.fire({
           icon: 'question',
           title: 'Add availability?',
-          html: `<div class="text-left">Days: <b>${names}</b><br/>Time: <b>${start}</b> to <b>${end}</b></div>`,
+          html: `<div class="text-left">Days: <b>${names}</b><br/>Time: <b>${fmt12(start24)}</b> to <b>${fmt12(end24)}</b></div>`,
           showCancelButton: true,
           confirmButtonText: 'Yes, add',
           cancelButtonText: 'Cancel',
@@ -267,10 +286,10 @@
         if (!confirmed) return;
 
         this.selectedDays.forEach(d => {
-          const exists = this.slots.some(s => s.weekday===d && s.start_time===start && s.end_time===end);
+          const exists = this.slots.some(s => s.weekday===d && s.start_time===start24 && s.end_time===end24);
           if (exists) return;
-          if (this.overlaps(d, start, end)) return;
-          this.slots.push({ weekday:d, start_time:start, end_time:end });
+          if (this.overlaps(d, start24, end24)) return;
+          this.slots.push({ weekday:d, start_time:start24, end_time:end24 });
         });
         this.slots.sort((a,b)=> a.weekday - b.weekday || a.start_time.localeCompare(b.start_time));
       },
