@@ -11,14 +11,63 @@ if (!window.LUMI_CHAT_JS_ACTIVE) {
     const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
     if (csrf) axios.defaults.headers.common["X-CSRF-TOKEN"] = csrf;
 
-    const form     = document.querySelector("#chat-form");
-    const input    = document.querySelector("#chat-message");
-    const messages = document.querySelector("#chat-messages");
-    const sendBtn  = document.querySelector("#sendBtn");
-    const STORE_URL = form?.getAttribute("action") || "/chat";
+    const form       = document.querySelector("#chat-form");
+    const input      = document.querySelector("#chat-message");
+    const messages   = document.querySelector("#chat-messages");
+    const sendBtn    = document.querySelector("#sendBtn");
+    const STORE_URL  = form?.getAttribute("action") || "/chat";
+
+    // >>> booking URL (change here when you deploy)
+    const APPT_URL = "http://127.0.0.1:8000/appointment/book";
 
     function scrollBottom(){ if (messages) messages.scrollTop = messages.scrollHeight; }
-    function sanitizeHTML(s){ return /[<>]/.test(s) ? s : String(s||"").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+    // Keep sanitizer (used for non-HTML strings)
+    function sanitizeHTML(s){
+      return /[<>]/.test(s) ? s : String(s||"").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    }
+
+    // --- link helpers: make plain http(s) text clickable inside bubbles
+    function linkify(text) {
+      const urlRE = /(https?:\/\/[^\s)]+)|(www\.[^\s)]+)/gi;
+      return String(text||"").replace(urlRE, (m) => {
+        const href = m.startsWith("http") ? m : `http://${m}`;
+        return `<a href="${href}" target="_blank" rel="noopener">${m}</a>`;
+      });
+    }
+
+    // Render Rasa-style buttons. If `url` exists, render <a>; else send payload.
+    // Also: if payload is /affirm{"confirm_topic":"referral"} → convert to link (APPT_URL)
+    function renderButtons(buttons, { container, sendPayload }) {
+      if (!Array.isArray(buttons) || !buttons.length) return;
+      const wrap = document.createElement("div");
+      wrap.className = "bot-actions mt-2 flex gap-2 flex-wrap";
+
+      buttons.forEach((b) => {
+        const referralPayload =
+          typeof b?.payload === "string" &&
+          /\/affirm\s*\{\s*"confirm_topic"\s*:\s*"referral"\s*\}/i.test(b.payload);
+
+        if (b?.url || referralPayload) {
+          const href = b?.url || APPT_URL;
+          const a = document.createElement("a");
+          a.className = "qr-btn text-xs px-3 py-1.5 rounded-md border";
+          a.textContent = b?.title || "Open link";
+          a.href = href;
+          a.target = "_blank";
+          a.rel = "noopener";
+          wrap.appendChild(a);
+        } else {
+          const btn = document.createElement("button");
+          btn.className = "qr-btn text-xs px-3 py-1.5 rounded-md border";
+          btn.textContent = b?.title || "Select";
+          btn.addEventListener("click", () => sendPayload(b?.payload || b?.title || ""));
+          wrap.appendChild(btn);
+        }
+      });
+
+      container.appendChild(wrap);
+    }
 
     function appendUserBubble(text, time=""){
       messages.insertAdjacentHTML("beforeend", `
@@ -33,27 +82,48 @@ if (!window.LUMI_CHAT_JS_ACTIVE) {
       scrollBottom();
     }
 
+    // Replace quick actions: remove affirm/confirm; show direct booking link when referral is detected
     function maybeAddQuickActions(bubble){
       try{
         const txt = bubble.textContent || "";
         const plain = txt.toLowerCase();
         const isCoping   = /share\s+coping\s+tips/i.test(txt) || (/coping\s+mechanism/i.test(plain) && /want(\s+them)?\s+now\??/i.test(plain));
-        const isReferral = /open the appointment page\??/i.test(txt) || /book\s+counselor/i.test(plain);
+        const isReferral = /open the appointment page\??/i.test(txt) || /book\s+counselor/i.test(plain) || /appointment page/i.test(plain);
         if (!(isCoping || isReferral)) return;
 
         const box = document.createElement("div");
         box.className = "bot-actions mt-2 flex gap-2 flex-wrap";
-        box.innerHTML = isCoping
-          ? `<button class="qr-btn text-xs px-3 py-1.5 rounded-md border" data-qr='/deny{"confirm_topic":"coping"}'>No, thanks</button>
-             <button class="qr-btn text-xs px-3 py-1.5 rounded-md border" data-qr='/affirm{"confirm_topic":"coping"}'>Yes, show tips</button>`
-          : `<button class="qr-btn text-xs px-3 py-1.5 rounded-md border" data-qr='/deny{"confirm_topic":"referral"}'>Not now</button>
-             <button class="qr-btn text-xs px-3 py-1.5 rounded-md border" data-qr='/affirm{"confirm_topic":"referral"}'>Book counselor</button>`;
 
-        box.addEventListener("click",(e)=>{
-          const btn = e.target.closest(".qr-btn"); if (!btn) return;
-          const payload = btn.getAttribute("data-qr") || btn.textContent.trim();
-          sendQuick(payload);
-        });
+        if (isReferral) {
+          // Direct link (open in new tab). No /affirm payloads anymore.
+          const a = document.createElement("a");
+          a.className = "qr-btn text-xs px-3 py-1.5 rounded-md border";
+          a.textContent = "Book counselor";
+          a.href = APPT_URL;
+          a.target = "_blank";
+          a.rel = "noopener";
+          box.appendChild(a);
+
+          const btnNotNow = document.createElement("button");
+          btnNotNow.className = "qr-btn text-xs px-3 py-1.5 rounded-md border";
+          btnNotNow.textContent = "Not now";
+          btnNotNow.addEventListener("click", () => sendQuick('/deny{"confirm_topic":"referral"}'));
+          box.appendChild(btnNotNow);
+        } else if (isCoping) {
+          // Keep coping quick replies
+          const noBtn = document.createElement("button");
+          noBtn.className = "qr-btn text-xs px-3 py-1.5 rounded-md border";
+          noBtn.textContent = "No, thanks";
+          noBtn.addEventListener("click", () => sendQuick('/deny{"confirm_topic":"coping"}'));
+          box.appendChild(noBtn);
+
+          const yesBtn = document.createElement("button");
+          yesBtn.className = "qr-btn text-xs px-3 py-1.5 rounded-md border";
+          yesBtn.textContent = "Yes, show tips";
+          yesBtn.addEventListener("click", () => sendQuick('/affirm{"confirm_topic":"coping"}'));
+          box.appendChild(yesBtn);
+        }
+
         bubble.appendChild(box);
       }catch{}
     }
@@ -83,43 +153,58 @@ if (!window.LUMI_CHAT_JS_ACTIVE) {
       });
     }
 
-function appendBotBubble(payload, time=""){
-  return new Promise(async (resolve)=>{
-    messages.insertAdjacentHTML("beforeend", `
-      <div class="w-full min-w-0">
-        <div class="msg-row bot flex items-end justify-start gap-2">
-          <div class="avatar shrink-0 w-8 h-8 rounded-full grid place-items-center">🤖</div>
-          <div class="bubble bubble-ai px-4 py-2 rounded-2xl text-base text-left max-w-[85%]"></div>
-        </div>
-        <div class="msg-time text-[10px] opacity-70 mt-1">${time}</div>
-      </div>`);
-    const bubble = messages.lastElementChild.querySelector(".bubble-ai");
+    async function appendBotBubble(payload, time=""){
+      return new Promise(async (resolve)=>{
+        messages.insertAdjacentHTML("beforeend", `
+          <div class="w-full min-w-0">
+            <div class="msg-row bot flex items-end justify-start gap-2">
+              <div class="avatar shrink-0 w-8 h-8 rounded-full grid place-items-center">🤖</div>
+              <div class="bubble bubble-ai px-4 py-2 rounded-2xl text-base text-left max-w-[85%]"></div>
+            </div>
+            <div class="msg-time text-[10px] opacity-70 mt-1">${time}</div>
+          </div>`);
+        const bubble = messages.lastElementChild.querySelector(".bubble-ai");
 
-    // ✅ Mark as typing so compact styles apply
-    bubble.classList.add("is-typing");
+        // typing dots style
+        bubble.classList.add("is-typing");
+        bubble.innerHTML = `
+          <span class="inline-flex items-center gap-1 text-gray-500">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          </span>
+          <span class="sr-only">Assistant is typing…</span>`;
+        scrollBottom();
 
-    bubble.innerHTML = `
-      <span class="inline-flex items-center gap-1 text-gray-500">
-        <span class="dot"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-      </span>
-      <span class="sr-only">Assistant is typing…</span>`;
-    scrollBottom();
+        await new Promise(r => setTimeout(r, 320 + Math.floor(Math.random()*420)));
 
-    await new Promise(r => setTimeout(r, 320 + Math.floor(Math.random()*420)));
+        const obj = (payload && typeof payload === "object") ? payload : { text: payload };
 
-    const obj = (payload && typeof payload === "object") ? payload : { text: payload };
-    const finalHTML = sanitizeHTML(obj.text ?? obj.bot_reply ?? obj.message ?? "");
+        const textRaw = obj.text ?? obj.bot_reply ?? obj.message ?? "";
+        const html = linkify(sanitizeHTML(textRaw));
+        await typewriter(bubble, html, 24, 650);
 
-    await typewriter(bubble, finalHTML, 24, 650);
+        bubble.classList.remove("is-typing");
 
-    // ✅ Done typing → revert to normal bubble style
-    bubble.classList.remove("is-typing");
+        // Render Rasa buttons (including `url`) if present; convert referral payloads to APPT_URL
+        if (Array.isArray(obj.buttons) && obj.buttons.length) {
+          renderButtons(obj.buttons, {
+            container: bubble,
+            sendPayload: (payloadStr) => {
+              const inputEl = document.querySelector("#chat-message");
+              if (inputEl) inputEl.value = payloadStr;
+              document.querySelector("#chat-form")?.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+            }
+          });
+        }
 
-    resolve();
-  });
-}
+        // Support custom messages like { custom: { open_url: ... } }
+        if (obj?.custom?.open_url) {
+          window.open(obj.custom.open_url, "_blank");
+        }
+
+        scrollBottom();
+        resolve();
+      });
+    }
 
     // Strict queue so replies never overlap
     let Q = Promise.resolve();
@@ -139,7 +224,7 @@ function appendBotBubble(payload, time=""){
 
         for (const r of (replies || [])){
           await runQ(() => appendBotBubble(r, res.data?.time_human || ""));
-          await runQ(() => new Promise(done => setTimeout(done, 240))); // tiny post-pause
+          await runQ(() => new Promise(done => setTimeout(done, 240)));
         }
       } catch(err){
         console.error("[LUMI_CHAT] Error:", err?.response || err?.message);
@@ -166,11 +251,7 @@ function appendBotBubble(payload, time=""){
       });
     }
 
-    /* === Auto-welcome for brand-new chats with 60min cooldown ===
-       - Fires only if the message list is empty (brand new thread)
-       - Uses #chat-wrapper[data-thread-id] if present, else falls back to URL path
-       - One greeting per thread every 60 minutes
-    */
+    // Auto-welcome for brand-new chats with 60min cooldown
     try {
       const hasMessages = !!messages?.querySelector(".msg-row");
       const wrap = document.getElementById("chat-wrapper");
@@ -184,7 +265,6 @@ function appendBotBubble(payload, time=""){
 
       if (!hasMessages && (!last || elapsedMin >= 60)) {
         sessionStorage.setItem(KEY, JSON.stringify({ ts: now }));
-        // No await needed; queue ensures animation order
         runQ(() => appendBotBubble("Hi! I’m Lumi — how can I help you today?", ""));
       }
     } catch (e) {

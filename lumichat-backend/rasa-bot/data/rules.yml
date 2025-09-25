@@ -320,11 +320,8 @@ rules:
 
     
 # === Global referral follow-ups (put these at the end of rules.yml) ===
-- rule: referral yes -> link
-  steps:
-    - action: utter_offer_referral
-    - intent: affirm
-    - action: utter_counselor_link
+
+    
 
 - rule: referral no -> ok
   steps:

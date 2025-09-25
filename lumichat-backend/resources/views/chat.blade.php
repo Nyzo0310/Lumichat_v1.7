@@ -110,268 +110,272 @@
 @endsection
 
 @push('scripts')
-<script>
-/* ===== Inline fallback (full features). 
-   It will ONLY run if an external chat.js is not already active. ===== */
-(function(){
-  if (window.LUMI_CHAT_JS_ACTIVE) return;   // if external file already bound, skip
-  window.LUMI_CHAT_JS_ACTIVE = true;
+  {{-- LumiCHAT scripts (module + nomodule fallback) --}}
+  <script type="module" src="/build/assets/chat.js?v=2025-09-23-1"></script>
+  <script nomodule src="/chat.js?v=2025-09-23-1"></script>
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const messages = document.getElementById('chat-messages');
-    const form     = document.getElementById('chat-form');
-    const input    = document.getElementById('chat-message');
-    const counter  = document.getElementById('char-counter');
-    const sendBtn  = document.getElementById('sendBtn');
-    const idemEl   = document.getElementById('idem');
-    const chatWrapper = document.getElementById('chat-wrapper');
+  <script>
+  /* ===== Inline fallback (full features). 
+     It will ONLY run if an external chat.js is not already active. ===== */
+  (function(){
+    if (window.LUMI_CHAT_JS_ACTIVE) return;   // if external file already bound, skip
+    window.LUMI_CHAT_JS_ACTIVE = true;
 
-    const STORE_URL = @json(route('chat.store'));
-    const MAXLEN = 2000;
+    document.addEventListener('DOMContentLoaded', () => {
+      const messages = document.getElementById('chat-messages');
+      const form     = document.getElementById('chat-form');
+      const input    = document.getElementById('chat-message');
+      const counter  = document.getElementById('char-counter');
+      const sendBtn  = document.getElementById('sendBtn');
+      const idemEl   = document.getElementById('idem');
+      const chatWrapper = document.getElementById('chat-wrapper');
 
-    // ---- Panel exit (kept)
-    document.querySelectorAll('a[href*="chat/new"]').forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        chatWrapper?.classList.remove('chat-appear');
-        chatWrapper?.classList.add('chat-disappear');
-        setTimeout(() => { window.location = link.href; }, 900);
-      });
-    });
+      const STORE_URL = @json(route('chat.store'));
+      const MAXLEN = 2000;
 
-    // ---- Helpers
-    const INVISIBLE_RE = /[\u200B\u200C\u200D\u2060\uFEFF]/g;
-    const URL_RE = /(https?:\/\/[^\s<>"']+)/gi;
-    const sanitizeClient = raw => (raw || '').replace(INVISIBLE_RE,'').replace(/\s+/g,' ').trim();
-    const linkify = t => String(t).replace(URL_RE, m => `<a href="${m}" target="_blank" rel="noopener noreferrer">${m}</a>`);
-
-    function sanitizeBotHtml(html) {
-      const tmp = document.createElement('div'); tmp.innerHTML = html;
-      const walk = (node) => {
-        for (const child of Array.from(node.childNodes)) {
-          if (child.nodeType === Node.ELEMENT_NODE) {
-            const tag = child.tagName.toLowerCase();
-            if (tag === 'a') {
-              const href = child.getAttribute('href') || '';
-              if (!/^https?:\/\//i.test(href)) { child.replaceWith(document.createTextNode(child.textContent)); continue; }
-              child.setAttribute('target','_blank'); child.setAttribute('rel','noopener noreferrer');
-            } else if (tag !== 'br') {
-              child.replaceWith(document.createTextNode(child.textContent));
-            }
-            walk(child);
-          }
-        }
-      };
-      walk(tmp); 
-      return tmp.innerHTML;
-    }
-    const renderBotContent = s => /[<>]/.test(s) ? sanitizeBotHtml(s) : sanitizeBotHtml(linkify(s));
-
-    // ---- Counter
-    function updateCounter(){
-      let v = input.value || '';
-      if (v.length > MAXLEN){ v = v.slice(0, MAXLEN); input.value = v; }
-      counter.textContent = `${v.length}/${MAXLEN}`;
-      sendBtn.disabled = sanitizeClient(v).length === 0;
-      counter.classList.toggle('text-red-600', v.length >= MAXLEN);
-    }
-    input.addEventListener('input', updateCounter);
-    input.addEventListener('paste', (e)=>{
-      const cd = e.clipboardData || window.clipboardData; if (!cd) return; e.preventDefault();
-      const clip = cd.getData('text'); if (clip == null) return;
-      const sanitized = String(clip).replace(INVISIBLE_RE, '');
-      const start = input.selectionStart ?? input.value.length, end = input.selectionEnd ?? input.value.length;
-      const before = input.value.slice(0, start), after = input.value.slice(end);
-      const remaining = Math.max(0, MAXLEN - (before.length + after.length));
-      const toInsert  = sanitized.slice(0, remaining);
-      input.value = before + toInsert + after;
-      const caret  = start + toInsert.length; input.setSelectionRange?.(caret, caret);
-      updateCounter();
-    });
-
-    // ---- Append bubbles (match server DOM)
-    function appendUserBubble(text, time=''){
-      messages.insertAdjacentHTML('beforeend', `
-        <div class="msg-row flex flex-col w-full min-w-0 items-end text-right">
-          <div class="bubble bubble-user px-4 py-2 rounded-2xl text-base text-left"></div>
-          <div class="msg-time text-[10px] text-gray-400 dark:text-gray-500 mt-1">${time}</div>
-        </div>`);
-      const row = messages.lastElementChild, bubble = row.querySelector('.bubble-user'), timeEl = row.querySelector('.msg-time');
-      bubble.textContent = text;
-      messages.scrollTop = messages.scrollHeight;
-      return {row, timeEl};
-    }
-    function appendBotBubbleShell(time=''){
-      messages.insertAdjacentHTML('beforeend', `
-        <div class="msg-row flex flex-col w-full min-w-0 items-start">
-          <div class="bubble bubble-ai px-4 py-2 rounded-2xl text-base text-left"></div>
-          <div class="msg-time text-[10px] text-gray-400 dark:text-gray-500 mt-1">${time}</div>
-        </div>`);
-      return messages.lastElementChild.querySelector('.bubble-ai');
-    }
-
-    // ---- Dots + typewriter + queue
-    function typewriter(bubble, finalHTML, speed=25, minDotsMs=900){
-      const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      return new Promise((resolve)=>{
-        if (reduced){ bubble.innerHTML = finalHTML; resolve(); return; }
-        const start = performance.now();
-        const waitDots = () => {
-          if (performance.now() - start < minDotsMs) return requestAnimationFrame(waitDots);
-          const tmp = document.createElement('div'); tmp.innerHTML = finalHTML;
-          const plain = tmp.textContent || tmp.innerText || '';
-          bubble.textContent = '';
-          let i = 0;
-          (function tick(){
-            bubble.textContent = plain.slice(0, i+1);
-            i++; messages.scrollTop = messages.scrollHeight;
-            if (i < plain.length) setTimeout(tick, speed);
-            else { bubble.innerHTML = finalHTML; messages.scrollTop = messages.scrollHeight; resolve(); }
-          })();
-        };
-        requestAnimationFrame(waitDots);
-      });
-    }
-
-    async function appendBotBubble(payload, time=''){
-      const bubble = appendBotBubbleShell(time);
-      // dots inside bubble
-      bubble.innerHTML = `
-        <span class="inline-flex items-center gap-1">
-          <span class="dot w-2 h-2 rounded-full"></span>
-          <span class="dot w-2 h-2 rounded-full"></span>
-          <span class="dot w-2 h-2 rounded-full"></span>
-        </span>
-        <span class="sr-only">Assistant is typing…</span>`;
-      messages.scrollTop = messages.scrollHeight;
-
-      // natural think time
-      await new Promise(r => setTimeout(r, 320 + Math.floor(Math.random()*420)));
-
-      // final text (safe)
-      const text = (typeof payload === 'object' && payload) ? (payload.text ?? payload.bot_reply ?? payload.message ?? '') : payload;
-      const html = renderBotContent(text || '');
-      await typewriter(bubble, html, 24, 650);
-
-      // (optional) domain quick actions – based on message content
-      try{
-        const raw = (bubble.textContent || '').toLowerCase();
-        const isCoping   = /share\s+coping\s+tips/.test(bubble.textContent) || (/coping\s+mechanism/.test(raw) && /want(\s+them)?\s+now\??/.test(raw));
-        const isReferral = /open the appointment page\??/i.test(bubble.textContent) || /book\s+counselor/.test(raw);
-        if (isCoping || isReferral){
-          const box = document.createElement('div');
-          box.className = 'bot-actions';
-          box.innerHTML = isCoping
-            ? `<button class="qr-btn" data-qr='/deny{"confirm_topic":"coping"}'>No, thanks</button>
-               <button class="qr-btn" data-qr='/affirm{"confirm_topic":"coping"}' data-variant="primary">Yes, show tips</button>`
-            : `<button class="qr-btn" data-qr='/deny{"confirm_topic":"referral"}'>Not now</button>
-               <button class="qr-btn" data-qr='/affirm{"confirm_topic":"referral"}' data-variant="primary">Book counselor</button>`;
-          box.addEventListener('click', (ev)=>{
-            const btn = ev.target.closest('.qr-btn'); if (!btn) return;
-            const payload = btn.getAttribute('data-qr') || btn.textContent.trim();
-            sendQuick(payload);
-          });
-          bubble.appendChild(box);
-        }
-      }catch{}
-
-      return bubble;
-    }
-
-    // strict queue so replies never overlap
-    let Q = Promise.resolve();
-    const runQ = (task) => (Q = Q.then(task).catch(e => console.warn('[LumiCHAT] queue error', e)));
-
-    function sendQuick(text){
-      appendUserBubble(text, new Date().toLocaleTimeString());
-      send(text);
-    }
-
-    async function send(message){
-      try{
-        sendBtn && (sendBtn.disabled = true);
-        const idem = (window.crypto?.randomUUID?.() ?? (Date.now() + '-' + Math.random().toString(16).slice(2)));
-        idemEl.value = idem;
-
-        const res = await fetch(STORE_URL, {
-          method:'POST',
-          headers:{
-            'Content-Type':'application/json',
-            'Accept':'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-          },
-          body: JSON.stringify({ message, _idem: idem })
+      // ---- Panel exit (kept)
+      document.querySelectorAll('a[href*="chat/new"]').forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          chatWrapper?.classList.remove('chat-appear');
+          chatWrapper?.classList.add('chat-disappear');
+          setTimeout(() => { window.location = link.href; }, 900);
         });
+      });
 
-        if (!res.ok){ await runQ(()=>appendBotBubble('No reply from LumiCHAT Assistant.', '')); return; }
-        const data = await res.json();
+      // ---- Helpers
+      const INVISIBLE_RE = /[\u200B\u200C\u200D\u2060\uFEFF]/g;
+      const URL_RE = /(https?:\/\/[^\s<>"']+)/gi;
+      const sanitizeClient = raw => (raw || '').replace(INVISIBLE_RE,'').replace(/\s+/g,' ').trim();
+      const linkify = t => String(t).replace(URL_RE, m => `<a href="${m}" target="_blank" rel="noopener noreferrer">${m}</a>`);
 
-        let replies = data?.bot_reply;
-        if (!Array.isArray(replies)) replies = [replies];
-
-        for (const r of (replies || [])){
-          await runQ(() => appendBotBubble(r, data?.time_human || ''));
-          await runQ(() => new Promise(done => setTimeout(done, 240))); // tiny post pause
-        }
-      } catch (e){
-        console.error(e);
-        await runQ(()=>appendBotBubble('No reply from LumiCHAT Assistant.', ''));
-      } finally {
-        sendBtn && (sendBtn.disabled = false);
-        input && input.focus();
+      function sanitizeBotHtml(html) {
+        const tmp = document.createElement('div'); tmp.innerHTML = html;
+        const walk = (node) => {
+          for (const child of Array.from(node.childNodes)) {
+            if (child.nodeType === Node.ELEMENT_NODE) {
+              const tag = child.tagName.toLowerCase();
+              if (tag === 'a') {
+                const href = child.getAttribute('href') || '';
+                if (!/^https?:\/\//i.test(href)) { child.replaceWith(document.createTextNode(child.textContent)); continue; }
+                child.setAttribute('target','_blank'); child.setAttribute('rel','noopener noreferrer');
+              } else if (tag !== 'br') {
+                child.replaceWith(document.createTextNode(child.textContent));
+              }
+              walk(child);
+            }
+          }
+        };
+        walk(tmp); 
+        return tmp.innerHTML;
       }
-    }
+      const renderBotContent = s => /[<>]/.test(s) ? sanitizeBotHtml(s) : sanitizeBotHtml(linkify(s));
 
-    // enter-to-send
-    input.addEventListener('keydown', (e) => {
-      if (e.isComposing) return;
-      if (e.key === 'Enter' && !e.shiftKey){
-        e.preventDefault();
-        const raw = input.value;
-        input.value = '';
+      // ---- Counter
+      function updateCounter(){
+        let v = input.value || '';
+        if (v.length > MAXLEN){ v = v.slice(0, MAXLEN); input.value = v; }
+        counter.textContent = `${v.length}/${MAXLEN}`;
+        sendBtn.disabled = sanitizeClient(v).length === 0;
+        counter.classList.toggle('text-red-600', v.length >= MAXLEN);
+      }
+      input.addEventListener('input', updateCounter);
+      input.addEventListener('paste', (e)=>{
+        const cd = e.clipboardData || window.clipboardData; if (!cd) return; e.preventDefault();
+        const clip = cd.getData('text'); if (clip == null) return;
+        const sanitized = String(clip).replace(INVISIBLE_RE, '');
+        const start = input.selectionStart ?? input.value.length, end = input.selectionEnd ?? input.value.length;
+        const before = input.value.slice(0, start), after = input.value.slice(end);
+        const remaining = Math.max(0, MAXLEN - (before.length + after.length));
+        const toInsert  = sanitized.slice(0, remaining);
+        input.value = before + toInsert + after;
+        const caret  = start + toInsert.length; input.setSelectionRange?.(caret, caret);
         updateCounter();
-        const cleaned = sanitizeClient(raw);
-        if (!cleaned) return;
-        appendUserBubble(cleaned, new Date().toLocaleTimeString());
-        send(cleaned);
+      });
+
+      // ---- Append bubbles (match server DOM)
+      function appendUserBubble(text, time=''){
+        messages.insertAdjacentHTML('beforeend', `
+          <div class="msg-row flex flex-col w-full min-w-0 items-end text-right">
+            <div class="bubble bubble-user px-4 py-2 rounded-2xl text-base text-left"></div>
+            <div class="msg-time text-[10px] text-gray-400 dark:text-gray-500 mt-1">${time}</div>
+          </div>`);
+        const row = messages.lastElementChild, bubble = row.querySelector('.bubble-user'), timeEl = row.querySelector('.msg-time');
+        bubble.textContent = text;
+        messages.scrollTop = messages.scrollHeight;
+        return {row, timeEl};
       }
+      function appendBotBubbleShell(time=''){
+        messages.insertAdjacentHTML('beforeend', `
+          <div class="msg-row flex flex-col w-full min-w-0 items-start">
+            <div class="bubble bubble-ai px-4 py-2 rounded-2xl text-base text-left"></div>
+            <div class="msg-time text-[10px] text-gray-400 dark:text-gray-500 mt-1">${time}</div>
+          </div>`);
+        return messages.lastElementChild.querySelector('.bubble-ai');
+      }
+
+      // ---- Dots + typewriter + queue
+      function typewriter(bubble, finalHTML, speed=25, minDotsMs=900){
+        const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        return new Promise((resolve)=>{
+          if (reduced){ bubble.innerHTML = finalHTML; resolve(); return; }
+          const start = performance.now();
+          const waitDots = () => {
+            if (performance.now() - start < minDotsMs) return requestAnimationFrame(waitDots);
+            const tmp = document.createElement('div'); tmp.innerHTML = finalHTML;
+            const plain = tmp.textContent || tmp.innerText || '';
+            bubble.textContent = '';
+            let i = 0;
+            (function tick(){
+              bubble.textContent = plain.slice(0, i+1);
+              i++; messages.scrollTop = messages.scrollHeight;
+              if (i < plain.length) setTimeout(tick, speed);
+              else { bubble.innerHTML = finalHTML; messages.scrollTop = messages.scrollHeight; resolve(); }
+            })();
+          };
+          requestAnimationFrame(waitDots);
+        });
+      }
+
+      async function appendBotBubble(payload, time=''){
+        const bubble = appendBotBubbleShell(time);
+        // dots inside bubble
+        bubble.innerHTML = `
+          <span class="inline-flex items-center gap-1">
+            <span class="dot w-2 h-2 rounded-full"></span>
+            <span class="dot w-2 h-2 rounded-full"></span>
+            <span class="dot w-2 h-2 rounded-full"></span>
+          </span>
+          <span class="sr-only">Assistant is typing…</span>`;
+        messages.scrollTop = messages.scrollHeight;
+
+        // natural think time
+        await new Promise(r => setTimeout(r, 320 + Math.floor(Math.random()*420)));
+
+        // final text (safe)
+        const text = (typeof payload === 'object' && payload) ? (payload.text ?? payload.bot_reply ?? payload.message ?? '') : payload;
+        const html = renderBotContent(text || '');
+        await typewriter(bubble, html, 24, 650);
+
+        // (optional) domain quick actions – based on message content
+        try{
+          const raw = (bubble.textContent || '').toLowerCase();
+          const isCoping   = /share\s+coping\s+tips/.test(bubble.textContent) || (/coping\s+mechanism/.test(raw) && /want(\s+them)?\s+now\??/.test(raw));
+          const isReferral = /open the appointment page\??/i.test(bubble.textContent) || /book\s+counselor/.test(raw);
+          if (isCoping || isReferral){
+            const box = document.createElement('div');
+            box.className = 'bot-actions';
+            box.innerHTML = isCoping
+              ? `<button class="qr-btn" data-qr='/deny{"confirm_topic":"coping"}'>No, thanks</button>
+                 <button class="qr-btn" data-variant="primary" data-qr='/affirm{"confirm_topic":"coping"}'>Yes, show tips</button>`
+              : `<a class="qr-btn" data-variant="primary" href="http://127.0.0.1:8000/appointment/book" target="_blank" rel="noopener">Book counselor</a>
+                 <button class="qr-btn" data-qr='/deny{"confirm_topic":"referral"}'>Not now</button>`;
+            box.addEventListener('click', (ev)=>{
+              const btn = ev.target.closest('.qr-btn'); 
+              if (!btn || btn.tagName === 'A') return;
+              const payload = btn.getAttribute('data-qr') || btn.textContent.trim();
+              appendUserBubble(payload, new Date().toLocaleTimeString());
+              send(payload);
+            });
+            bubble.appendChild(box);
+          }
+        }catch{}
+
+        return bubble;
+      }
+
+      // strict queue so replies never overlap
+      let Q = Promise.resolve();
+      const runQ = (task) => (Q = Q.then(task).catch(e => console.warn('[LumiCHAT] queue error', e)));
+
+      function sendQuick(text){
+        appendUserBubble(text, new Date().toLocaleTimeString());
+        send(text);
+      }
+
+      async function send(message){
+        try{
+          sendBtn && (sendBtn.disabled = true);
+          const idem = (window.crypto?.randomUUID?.() ?? (Date.now() + '-' + Math.random().toString(16).slice(2)));
+          idemEl.value = idem;
+
+          const res = await fetch(STORE_URL, {
+            method:'POST',
+            headers:{
+              'Content-Type':'application/json',
+              'Accept':'application/json',
+              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({ message, _idem: idem })
+          });
+
+          if (!res.ok){ await runQ(()=>appendBotBubble('No reply from LumiCHAT Assistant.', '')); return; }
+          const data = await res.json();
+
+          let replies = data?.bot_reply;
+          if (!Array.isArray(replies)) replies = [replies];
+
+          for (const r of (replies || [])){
+            await runQ(() => appendBotBubble(r, data?.time_human || ''));
+            await runQ(() => new Promise(done => setTimeout(done, 240))); // tiny post pause
+          }
+        } catch (e){
+          console.error(e);
+          await runQ(()=>appendBotBubble('No reply from LumiCHAT Assistant.', ''));
+        } finally {
+          sendBtn && (sendBtn.disabled = false);
+          input && input.focus();
+        }
+      }
+
+      // enter-to-send
+      input.addEventListener('keydown', (e) => {
+        if (e.isComposing) return;
+        if (e.key === 'Enter' && !e.shiftKey){
+          e.preventDefault();
+          const raw = input.value;
+          input.value = '';
+          updateCounter();
+          const cleaned = sanitizeClient(raw);
+          if (!cleaned) return;
+          appendUserBubble(cleaned, new Date().toLocaleTimeString());
+          send(cleaned);
+        }
+      });
+
+      // submit handler (button click)
+      if (!form.dataset.bound){
+        form.dataset.bound = '1';
+        form.addEventListener('submit', (e)=>{
+          e.preventDefault();
+          const raw = input.value;
+          input.value = '';
+          updateCounter();
+          const cleaned = sanitizeClient(raw);
+          if (!cleaned) return;
+          appendUserBubble(cleaned, new Date().toLocaleTimeString());
+          send(cleaned);
+        });
+      }
+
+      // ---- Init
+      function updateCounter(){ /* defined earlier; reattached to keep scope */ }
+      // Call the actual one now:
+      (function(){ const evt=new Event('input'); input.dispatchEvent(evt); })();
+      if (messages) messages.scrollTop = messages.scrollHeight;
+
+      /* === Auto-welcome on first load (only if no messages) === */
+      try {
+        const hasMessages = !!messages.querySelector('.msg-row');
+        if (!hasMessages && !sessionStorage.getItem('lumi_welcome')) {
+          sessionStorage.setItem('lumi_welcome','1');
+          runQ(() => appendBotBubble("Hi! I’m Lumi — how can I help you today?", ""));
+        }
+      } catch (e) { console.warn("Welcome message skipped:", e); }
+
+      console.log('%c[LumiCHAT] inline chat script active', 'color:#4f46e5;font-weight:bold');
     });
 
-    // submit handler (button click)
-    if (!form.dataset.bound){
-      form.dataset.bound = '1';
-      form.addEventListener('submit', (e)=>{
-        e.preventDefault();
-        const raw = input.value;
-        input.value = '';
-        updateCounter();
-        const cleaned = sanitizeClient(raw);
-        if (!cleaned) return;
-        appendUserBubble(cleaned, new Date().toLocaleTimeString());
-        send(cleaned);
-      });
-    }
-
-    // ---- Init
-    function updateCounter(){ /* defined earlier; reattached to keep scope */ }
-    // NOTE: the real updateCounter is above; this keeps order tidy.
-    // Call the actual one now:
-    (function(){ const evt=new Event('input'); input.dispatchEvent(evt); })();
-    if (messages) messages.scrollTop = messages.scrollHeight;
-
-    /* === Auto-welcome on first load (only if no messages) === */
-/* === Auto-welcome on first load (only if no messages) === */
-  try {
-  const hasMessages = !!messages.querySelector('.msg-row');
-  if (!hasMessages && !sessionStorage.getItem('lumi_welcome')) {
-    sessionStorage.setItem('lumi_welcome','1');
-    runQ(() => appendBotBubble("Hi! I’m Lumi — how can I help you today?", ""));
-  }
-} catch (e) { console.warn("Welcome message skipped:", e); }
-
-    console.log('%c[LumiCHAT] inline chat script active', 'color:#4f46e5;font-weight:bold');
-  });
-
-})();
-</script>
+  })();
+  </script>
 @endpush

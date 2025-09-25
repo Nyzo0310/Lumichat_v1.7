@@ -3429,7 +3429,8 @@ responses:
     - title: No, thanks
       payload: /deny{"confirm_topic":"coping","mood":"time_management"}
 
-responses:
+
+
   utter_offer_referral:
     - text: |
         It’s okay if this still feels heavy. If you want, we can book time with the counselor so you don’t have to handle this alone.
@@ -3438,7 +3439,7 @@ responses:
         - title: "Book counselor"
           url: "http://127.0.0.1:8000/appointment/book"
         - title: "Not now"
-          payload: /deny{"confirm_topic":"referral"}
+          payload: "/deny{\"confirm_topic\":\"referral\"}"
 
 
   utter_ok_no_referral:

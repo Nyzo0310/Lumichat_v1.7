@@ -10,9 +10,11 @@
   // Decide if current user should get student-scoped global prefs
   $isStudent = Auth::check() && (strtolower((string)(Auth::user()->role ?? 'student')) === 'student');
 @endphp
-
+    <script type="module" src="/build/assets/chat.js?v=2025-09-23-1"></script>
+    <script nomodule src="/chat.js?v=2025-09-23-1"></script>
 @if($isStudent)
   <!-- Student global prefs boot (runs before CSS to avoid flicker) -->
+  
   <script src="{{ asset('js/chat.js') }}" defer>
     (() => {
       try {
@@ -73,7 +75,7 @@
     .modal-zp { z-index: 2147483647 !important; } /* dialog */
   </style>
 </head>
-
+@stack('scripts')
 <body class="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
   <div class="layout-wrapper">
     {{-- ============================= SIDEBAR ============================= --}}
