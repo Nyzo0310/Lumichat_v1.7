@@ -146,8 +146,6 @@
           <span class="text-gray-700">Remember me</span>
         </label>
       </div>
-
-      <a href="{{ route('password.request') }}" class="text-blue-600 hover:underline">Forgot password?</a>
     </div>
 
     <button id="loginBtn" type="submit"
@@ -180,7 +178,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 (function(){
-  // ===== Password eye toggle =====
+  // ===== Password eye toggle ===== <a href="{{ route('password.request') }}" class="text-blue-600 hover:underline">Forgot password?</a>
   const pwd = document.getElementById('passwordInput');
   const btn = document.getElementById('togglePassword');
   function syncEye(){
