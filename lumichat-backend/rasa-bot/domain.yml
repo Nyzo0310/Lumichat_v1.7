@@ -3429,8 +3429,11 @@ responses:
     - title: No, thanks
       payload: /deny{"confirm_topic":"coping","mood":"time_management"}
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 39327f802976fa9844a0fc768f2da411ac6a2534
   utter_offer_referral:
     - text: |
         It’s okay if this still feels heavy. If you want, we can book time with the counselor so you don’t have to handle this alone.

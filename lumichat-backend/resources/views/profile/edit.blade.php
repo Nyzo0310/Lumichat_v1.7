@@ -32,7 +32,7 @@
   {{-- Cards --}}
   <div class="mt-6 md:mt-8 grid gap-6 md:gap-8 lg:grid-cols-12 items-stretch" data-sync-group="profile-password">
 
-    {{-- Profile Information (read view + slide-over editor inside the partial) --}}
+    {{-- Profile Information --}}
     <section class="lg:col-span-7 card-shell p-5 sm:p-6 lg:p-7 animate-card" data-sync-root>
       @include('profile.partials.update-profile-information-form', [
         'user'         => $user,
@@ -51,28 +51,24 @@
     </section>
   </div>
 </div>
+
+{{-- Enhanced toasts + error SweetAlerts --}}
+@include('profile.partials.alerts')
 @endsection
 
 @push('styles')
 <style>
-  /* Entrance animation for hero + cards */
+  /* Entrance animation */
   .animate-card { animation: fadeSlideUp .35s cubic-bezier(.21,.8,.26,1) both; }
-  @keyframes fadeSlideUp {
-    0%   { opacity:0; transform: translateY(10px) scale(.98); }
-    100% { opacity:1; transform: translateY(0) scale(1); }
-  }
+  @keyframes fadeSlideUp { 0%{opacity:0;transform:translateY(10px) scale(.98)} 100%{opacity:1;transform:translateY(0) scale(1)} }
 
-  /* Shared header row; keeps titles + right-side actions aligned across cards */
-  .form-head{
-    display:flex; align-items:center; justify-content:space-between;
-    gap:.75rem; margin-bottom:.75rem; min-height:44px;
-  }
+  /* Shared header row */
+  .form-head{ display:flex; align-items:center; justify-content:space-between; gap:.75rem; margin-bottom:.75rem; min-height:44px; }
   @media (min-width:640px){ .form-head{ min-height:46px; } }
 
-  /* A fixed-size “button footprint” so headers can align even if one side is empty */
+  /* Button footprint so headers align */
   .btn-size{ height:40px; padding:0 1rem; border-radius:.75rem; display:inline-flex; align-items:center; }
 
-  /* Subtle press effect for CTAs */
   .btn-press{ transition: transform .12s ease, box-shadow .12s ease; }
   .btn-press:active{ transform: translateY(1px) scale(.985); }
 </style>
@@ -81,7 +77,7 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  /* ===== Equalize the card header heights (title + right action) ===== */
+  /* Equalize header heights */
   function equalizeHeads() {
     document.querySelectorAll('[data-sync-group]').forEach(group => {
       const heads = group.querySelectorAll('.form-head');
@@ -92,9 +88,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   equalizeHeads();
   window.addEventListener('resize', equalizeHeads);
-  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(equalizeHeads); }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(equalizeHeads);
 
-  /* ===== Smooth “Saving…” UX on Update Password ===== */
+  /* Smooth “Saving…” UX on Update Password */
   const pwForm = document.querySelector('#update-password-section form');
   if (pwForm) {
     const btn = pwForm.querySelector('button[type="submit"]');
@@ -105,27 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.dataset._label = btn.textContent;
       btn.textContent = 'Saving…';
     }, { once: true });
-  }
-
-  /* ===== Delete Account: SweetAlert confirm → open Alpine modal ===== */
-  const primaryDeleteBtn = document.getElementById('btn-delete-account');
-  const openModal = () => window.dispatchEvent(new CustomEvent('open-delete-modal'));
-  if (primaryDeleteBtn) {
-    primaryDeleteBtn.addEventListener('click', async () => {
-      if (typeof Swal === 'undefined') return openModal();
-      const res = await Swal.fire({
-        icon: 'warning',
-        title: 'Delete account permanently?',
-        html: 'This action <b>cannot be undone</b>. Your account and related data will be deleted forever.',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, delete permanently',
-        cancelButtonText: 'Cancel',
-        confirmButtonColor: '#dc2626',
-        focusCancel: true,
-        reverseButtons: true
-      });
-      if (res.isConfirmed) openModal();
-    });
   }
 });
 </script>
