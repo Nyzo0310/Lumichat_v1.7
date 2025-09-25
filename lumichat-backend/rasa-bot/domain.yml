@@ -3440,7 +3440,6 @@ responses:
         - title: "Not now"
           payload: "/deny{\"confirm_topic\":\"referral\"}"
 
-
   utter_ok_no_referral:
     - text: "No problem. If you change your mind, I’m here for you."
     

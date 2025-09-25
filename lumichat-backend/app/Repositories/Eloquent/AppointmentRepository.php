@@ -33,7 +33,10 @@ class AppointmentRepository implements AppointmentRepositoryInterface
         // optional text search (by counselor name by default; extend as needed)
         if (!empty($filters['q'])) {
             $term = '%' . trim((string)$filters['q']) . '%';
-            $q->where('c.name', 'like', $term);
+            $q->where(function ($w) use ($term) {
+                $w->where('c.name', 'like', $term)
+                ->orWhere('u.name', 'like', $term);
+            });
         }
 
         return $q->orderBy('a.scheduled_at', 'desc')
@@ -181,35 +184,32 @@ class AppointmentRepository implements AppointmentRepositoryInterface
 
     /* ===================== Helpers ===================== */
 
+   // App\Repositories\Eloquent\AppointmentRepository.php
+
     protected function baseSelect(): Builder
     {
-        return DB::table(self::TABLE . ' as a')
-            ->join(self::COUNS_TABLE . ' as c', 'c.id', '=', 'a.counselor_id')
-            ->join(self::STUDENTS_TABLE . ' as u', 'u.id', '=', 'a.student_id')
+        return DB::table(self::TABLE.' as a')
+            ->leftJoin(self::COUNS_TABLE.' as c', 'c.id', '=', 'a.counselor_id') // <— leftJoin
+            ->join(self::STUDENTS_TABLE.' as u', 'u.id', '=', 'a.student_id')
             ->select([
-                'a.id',
-                'a.scheduled_at',
-                'a.created_at as booked_at',
-                'a.status',
-                'c.name as counselor_name',
+                'a.id','a.scheduled_at','a.created_at as booked_at','a.status',
+                DB::raw('COALESCE(c.name,"—") as counselor_name'),
                 'u.name as student_name',
             ]);
     }
 
     protected function baseSelectForShow(): Builder
     {
-        return DB::table(self::TABLE . ' as a')
-            ->join(self::COUNS_TABLE . ' as c', 'c.id', '=', 'a.counselor_id')
-            ->join(self::STUDENTS_TABLE . ' as u', 'u.id', '=', 'a.student_id')
+        return DB::table(self::TABLE.' as a')
+            ->leftJoin(self::COUNS_TABLE.' as c', 'c.id', '=', 'a.counselor_id') // <— leftJoin
+            ->join(self::STUDENTS_TABLE.' as u', 'u.id', '=', 'a.student_id')
             ->select([
                 'a.*',
-                'c.name  as counselor_name',
-                'c.email as counselor_email',
-                'c.phone as counselor_phone',
-                'u.name  as student_name',
-                'u.email as student_email',
+                'c.name  as counselor_name','c.email as counselor_email','c.phone as counselor_phone',
+                'u.name  as student_name','u.email as student_email',
             ]);
     }
+
 
     protected function applyCommonFilters(Builder $q, array $filters): void
     {
@@ -235,4 +235,79 @@ class AppointmentRepository implements AppointmentRepositoryInterface
             }
         }
     }
+
+    // ==== NEW: who is free at a specific datetime (HH:MM slot) ====
+public function counselorIdsFreeAt(Carbon $scheduledAt): array
+{
+    $date = $scheduledAt->copy()->startOfDay();
+    $dow  = (int) $date->isoWeekday();
+    $end  = $scheduledAt->copy()->addMinutes(30); // same STEP_MINUTES as student side
+
+    // active counselors
+    $cids = DB::table('tbl_counselors')->where('is_active', 1)->pluck('id')->all();
+    if (empty($cids)) return [];
+
+    $free = [];
+    foreach ($cids as $cid) {
+        // check availability window fits the 30-min slot
+        $ranges = DB::table('tbl_counselor_availabilities')
+            ->where('counselor_id', $cid)
+            ->where('weekday', $dow)
+            ->get(['start_time','end_time']);
+
+        $fits = false;
+        foreach ($ranges as $r) {
+            $start = Carbon::parse($date->toDateString().' '.$r->start_time);
+            $endW  = Carbon::parse($date->toDateString().' '.$r->end_time);
+            if ($scheduledAt->gte($start) && $end->lte($endW)) { $fits = true; break; }
+        }
+        if (!$fits) continue;
+
+        // ensure not already booked at this exact start time with a blocking status
+        $taken = DB::table('tbl_appointments')
+            ->where('counselor_id', $cid)
+            ->where('scheduled_at', $scheduledAt)
+            ->whereIn('status', ['pending','confirmed','completed'])
+            ->exists();
+
+        if (!$taken) $free[] = (int) $cid;
+    }
+    return $free;
+}
+
+    // ==== NEW: single counselor availability check ====
+    public function counselorIsFreeAt(int $counselorId, Carbon $scheduledAt): bool
+    {
+        return \in_array($counselorId, $this->counselorIdsFreeAt($scheduledAt), true);
+    }
+
+    // ==== NEW: assign (or reassign) counselor to an appointment ====
+    public function assignCounselor(int $appointmentId, int $counselorId): array
+    {
+        $ap = DB::table(self::TABLE)->where('id', $appointmentId)->first();
+        if (!$ap) return ['ok'=>false, 'reason'=>'not_found'];
+
+        $when = Carbon::parse($ap->scheduled_at);
+        if ($when->lte(now())) return ['ok'=>false, 'reason'=>'in_past'];
+
+        if (!$this->counselorIsFreeAt($counselorId, $when)) {
+            return ['ok'=>false, 'reason'=>'not_available'];
+        }
+
+        try {
+            DB::table(self::TABLE)
+                ->where('id', $appointmentId)
+                ->update([
+                    'counselor_id' => $counselorId,
+                    'updated_at'   => now(),
+                ]);
+            return ['ok'=>true];
+        } catch (\Illuminate\Database\QueryException $e) {
+            // 1062: unique key (counselor_id, scheduled_at) race condition
+            $code = (int)($e->errorInfo[1] ?? 0);
+            if ($code === 1062) return ['ok'=>false, 'reason'=>'race_taken'];
+            return ['ok'=>false, 'reason'=>'db_error'];
+        }
+    }
+
 }

@@ -1,9 +1,12 @@
+{{-- resources/views/admin/appointments/show.blade.php --}}
 @extends('layouts.admin')
 @section('title', 'Admin · Appointment #'.$appointment->id)
 
 @section('content')
 @php
   use Carbon\Carbon;
+  use Illuminate\Support\Str;
+
   $dt       = Carbon::parse($appointment->scheduled_at);
   $now      = Carbon::now();
   $bookedAt = $appointment->created_at ? Carbon::parse($appointment->created_at) : null;
@@ -52,7 +55,7 @@
     </a>
 
     {{-- Download PDF --}}
-    <a href="{{ route('admin.appointments.show.export.pdf', $appointment->id) }}"
+    <a href="{{ route('admin.appointments.export.show.pdf', $appointment->id) }}"
        class="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 h-10 rounded-xl shadow-sm hover:bg-emerald-700 active:scale-[.99]">
       <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -96,35 +99,48 @@
           </div>
 
           {{-- Actions --}}
-          <div class="flex items-center gap-2">
-            {{-- Confirm --}}
-            <form method="POST"
-                  action="{{ route('admin.appointments.status', $appointment->id) }}"
-                  onsubmit="return askAction(event, this, 'confirm')">
-              @csrf @method('PATCH')
-              <input type="hidden" name="action" value="confirm">
-              <button type="submit"
-                      title="{{ $canConfirm ? 'Confirm this appointment' : 'Only pending appointments can be confirmed' }}"
-                      class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                      {{ $canConfirm ? '' : 'disabled' }}>
-                Confirm
-              </button>
-            </form>
+          <div class="mt-6 flex items-center gap-3">
+            {{-- Assign button only when unassigned --}}
+            @if(empty($appointment->counselor_id))
+              <a href="{{ route('admin.appointments.assign.form', $appointment->id) }}"
+                 class="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700">
+                Assign Counselor
+              </a>
+            @endif
 
-            {{-- Done --}}
-            <form method="POST"
-                  action="{{ route('admin.appointments.status', $appointment->id) }}"
-                  @if(!$canDone) onsubmit="return false" @else onsubmit="return askAction(event, this, 'done')" @endif
-                  class="{{ $canDone ? '' : 'pointer-events-none' }}">
-              @csrf @method('PATCH')
-              <input type="hidden" name="action" value="done">
-              <button type="submit"
-                      title="{{ $doneTitle }}"
-                      class="px-4 py-2 rounded-lg text-white disabled:opacity-50 disabled:cursor-not-allowed {{ $canDone ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-emerald-600' }}"
-                      {{ $canDone ? '' : 'disabled' }}>
-                Done
-              </button>
-            </form>
+            {{-- Confirm / Done --}}
+            <div class="flex items-center gap-2">
+              {{-- Confirm --}}
+              <form method="POST"
+                    action="{{ route('admin.appointments.status', $appointment->id) }}"
+                    onsubmit="return askAction(event, this, 'confirm')">
+                @csrf
+                @method('PATCH')
+                <input type="hidden" name="action" value="confirm">
+                <button type="submit"
+                        title="{{ $canConfirm ? 'Confirm this appointment' : 'Only pending appointments can be confirmed' }}"
+                        class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        {{ $canConfirm ? '' : 'disabled' }}>
+                  Confirm
+                </button>
+              </form>
+
+              {{-- Done --}}
+              <form method="POST"
+                    action="{{ route('admin.appointments.status', $appointment->id) }}"
+                    @if(!$canDone) onsubmit="return false" @else onsubmit="return askAction(event, this, 'done')" @endif
+                    class="{{ $canDone ? '' : 'pointer-events-none' }}">
+                @csrf
+                @method('PATCH')
+                <input type="hidden" name="action" value="done">
+                <button type="submit"
+                        title="{{ $doneTitle }}"
+                        class="px-4 py-2 rounded-lg text-white disabled:opacity-50 disabled:cursor-not-allowed {{ $canDone ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-emerald-600' }}"
+                        {{ $canDone ? '' : 'disabled' }}>
+                  Done
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </div>
@@ -177,7 +193,9 @@
             </div>
             <div class="min-w-0">
               <div class="text-[13px] uppercase tracking-wide text-slate-500">Counselor</div>
-              <div class="font-medium text-slate-900">{{ $appointment->counselor_name }}</div>
+              <div class="font-medium text-slate-900">
+                {{ $appointment->counselor_name ?: '—' }}
+              </div>
               <div class="text-sm text-slate-600">
                 {{ $appointment->counselor_email }}
                 @if(!empty($appointment->counselor_phone)) · {{ $appointment->counselor_phone }} @endif
@@ -254,8 +272,8 @@
 
         <div class="px-4 pb-4">
           @if($appointment->status === 'completed')
-            <form method="POST" action="{{ route('admin.appointments.saveReport', $appointment->id) }}" class="space-y-5">
-              @csrf @method('PATCH')
+            <form method="POST" action="{{ route('admin.appointments.report', $appointment->id) }}" class="space-y-5">
+              @csrf
 
               {{-- Diagnosis --}}
               <div>
@@ -321,10 +339,7 @@
 
     {{-- Footer --}}
     <div class="px-6 pb-6 border-t border-slate-200 flex items-center justify-between">
-      <a href="{{ route('admin.appointments.index') }}"
-         class="px-4 py-2 rounded-lg bg-slate-100 text-slate-800 hover:bg-slate-200">
-        Close
-      </a>
+      <a href="{{ route('admin.appointments.index') }}" class=""></a>
       <div class="text-xs text-slate-500">
         Status: <span class="font-medium">{{ ucfirst($appointment->status) }}</span>
       </div>

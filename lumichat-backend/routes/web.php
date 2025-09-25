@@ -66,7 +66,10 @@ Route::middleware('auth')->group(function () {
 
     // Actions / APIs
     Route::post('/appointment',                  [AppointmentController::class, 'store'])->name('appointment.store');
-    Route::get('/appointment/slots/{counselor}', [AppointmentController::class, 'slots'])->name('appointment.slots');
+    Route::get('/appointment/slots', [\App\Http\Controllers\AppointmentController::class, 'slots'])
+    ->name('appointment.slots');
+    Route::get('/appointment/slots-pooled', [\App\Http\Controllers\AppointmentController::class, 'slotsPooled'])
+    ->name('appointment.slots.pooled');
     Route::get('/appointment/view/{id}',         [AppointmentController::class, 'show'])->name('appointment.view');
     Route::patch('/appointment/{id}/cancel',     [AppointmentController::class, 'cancel'])->name('appointment.cancel');
 

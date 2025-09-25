@@ -209,4 +209,43 @@ class AppointmentController extends Controller
 
         return $pdf->download('Appointment_'.$appointment->id.'.pdf');
     }
+    public function assignForm(int $id)
+    {
+        $appointment = $this->appointments->findDetailedById($id);
+        abort_unless($appointment, 404);
+
+        // list active counselors to choose from
+        $counselors = \DB::table('tbl_counselors')
+            ->where('is_active', 1)
+            ->orderBy('name')
+            ->get(['id','name','email']);
+
+        return view('admin.appointments.assign', compact('appointment', 'counselors'));
+    }
+
+    public function assign(Request $request, int $id): RedirectResponse
+    {
+        $data = $request->validate([
+            'counselor_id' => ['required', 'exists:tbl_counselors,id'],
+        ]);
+
+        // (optional) block assigning if already assigned
+        $appt = \DB::table('tbl_appointments')->where('id', $id)->first();
+        abort_unless($appt, 404);
+
+        \DB::table('tbl_appointments')
+            ->where('id', $id)
+            ->update([
+                'counselor_id' => $data['counselor_id'],
+                'updated_at'   => now(),
+            ]);
+
+        return redirect()
+            ->route('admin.appointments.show', $id)
+            ->with(self::FLASH_SWAL, [
+                'icon'  => 'success',
+                'title' => 'Assigned',
+                'text'  => 'Counselor has been assigned to this appointment.',
+            ]);
+    }
 }

@@ -1,3 +1,4 @@
+{{-- resources/views/appointment/history.blade.php --}}
 @extends('layouts.app')
 @section('title','Appointment History')
 
@@ -29,7 +30,7 @@
     </a>
   </div>
 
-  {{-- Filter bar --}}
+  {{-- Filters --}}
   @php
     $status = $status ?? request('status','all');
     $period = $period ?? request('period','all');
@@ -132,20 +133,32 @@
               $countdown = $mins===0 ? 'Starting now' : ($mins>0 ? ('Starts in '.implode(' ', $parts)) : (implode(' ', $parts).' ago'));
 
               $statusMap = [
-                'pending'   => ['bg'=>'bg-amber-50','text'=>'text-amber-700','ring'=>'ring-amber-200','dot'=>'bg-amber-500'],
-                'confirmed' => ['bg'=>'bg-blue-50','text'=>'text-blue-700','ring'=>'ring-blue-200','dot'=>'bg-blue-500'],
-                'completed' => ['bg'=>'bg-emerald-50','text'=>'text-emerald-700','ring'=>'ring-emerald-200','dot'=>'bg-emerald-500'],
-                'canceled'  => ['bg'=>'bg-rose-50','text'=>'text-rose-700','ring'=>'ring-rose-200','dot'=>'bg-rose-500'],
+                'pending'   => ['bg'=>'bg-amber-50','text'=>'text-amber-700','ring'=>'ring-amber-200','dot'=>'bg-amber-500','label'=>'Pending'],
+                'confirmed' => ['bg'=>'bg-blue-50','text'=>'text-blue-700','ring'=>'ring-blue-200','dot'=>'bg-blue-500','label'=>'Confirmed'],
+                'completed' => ['bg'=>'bg-emerald-50','text'=>'text-emerald-700','ring'=>'ring-emerald-200','dot'=>'bg-emerald-500','label'=>'Completed'],
+                'canceled'  => ['bg'=>'bg-rose-50','text'=>'text-rose-700','ring'=>'ring-rose-200','dot'=>'bg-rose-500','label'=>'Canceled'],
               ];
-              $s   = $statusMap[$row->status] ?? ['bg'=>'bg-slate-50','text'=>'text-slate-700','ring'=>'ring-slate-200','dot'=>'bg-slate-400'];
+              $s   = $statusMap[$row->status] ?? ['bg'=>'bg-slate-50','text'=>'text-slate-700','ring'=>'ring-slate-200','dot'=>'bg-slate-400','label'=>ucfirst($row->status ?? '—')];
               $cls = $s['bg'].' '.$s['text'].' ring-1 '.$s['ring'];
               $dot = $s['dot'];
+
+              // If controller uses LEFT JOIN, $row->counselor_name may be null.
+              $noCounselor = empty($row->counselor_name);
             @endphp
 
             <tr class="align-middle even:bg-slate-50 hover:bg-slate-100/60 transition">
               <td class="px-6 py-4 font-semibold text-slate-900">{{ $row->id }}</td>
 
-              <td class="px-6 py-4 whitespace-nowrap text-slate-700">{{ $row->counselor_name }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                @if ($noCounselor)
+                  <span class="inline-flex items-center gap-2 rounded-lg bg-slate-100 px-2.5 py-1 text-[13px] text-slate-700 ring-1 ring-slate-200">
+                    <span class="inline-block size-1.5 rounded-full bg-slate-400"></span>
+                    Awaiting admin assignment
+                  </span>
+                @else
+                  <span class="text-slate-700">{{ $row->counselor_name }}</span>
+                @endif
+              </td>
 
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="leading-tight">
@@ -155,9 +168,9 @@
               </td>
 
               <td class="px-6 py-4 whitespace-nowrap">
-                <span class="relative inline-flex items-center h-7 w-[112px] rounded-full text-xs font-medium leading-none {{ $cls }}">
+                <span class="relative inline-flex items-center h-7 w-[128px] rounded-full text-xs font-medium leading-none {{ $cls }}">
                   <span class="absolute left-3 inline-block size-2 rounded-full {{ $dot }}"></span>
-                  <span class="mx-auto">{{ ucfirst($row->status) }}</span>
+                  <span class="mx-auto">{{ $s['label'] }}</span>
                 </span>
               </td>
 
@@ -188,27 +201,15 @@
   </div>
 </div>
 
-{{-- SweetAlert toasts + debounced search --}}
-@push('scripts')
-@if (session('booked'))
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  window.showBookedModal(@json(session('booked')));
-});
-</script>
-@endif
-@endpush
-
+{{-- SweetAlert + search debounce --}}
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  // success toast
   const successMsg = @json(session('success') ?? session('status'));
   if (successMsg) {
     Swal.fire({ icon:'success', title:'Success', text: successMsg, timer:2200, showConfirmButton:false });
   }
 
-  // validation errors
   const errs = @json($errors->all());
   if (Array.isArray(errs) && errs.length) {
     const html = '<ul style="text-align:left;margin:0;padding-left:1rem">' +
@@ -229,42 +230,4 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 @endpush
-
-@push('scripts')
-@if (session('swal'))
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const cfg = @json(session('swal'));
-  const go = () => Swal.fire(cfg);
-  if (typeof Swal === 'undefined') {
-    const s=document.createElement('script');
-    s.src='https://cdn.jsdelivr.net/npm/sweetalert2@11';
-    s.onload=go; document.head.appendChild(s);
-  } else go();
-});
-</script>
-@endif
-
-@if (session('success'))
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const msg = @json(session('success'));
-  const go  = () => Swal.fire({ toast:true, position:'top-end', icon:'success', title: msg, timer:2200, showConfirmButton:false });
-  if (typeof Swal === 'undefined') { const s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/sweetalert2@11'; s.onload=go; document.head.appendChild(s);} else go();
-});
-</script>
-@endif
-
-@if ($errors->any())
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const items = @json($errors->all());
-  const html  = '<ul style="text-align:left;margin:0;padding-left:1rem">' + items.map(i => `<li>• ${i}</li>`).join('') + '</ul>';
-  const go    = () => Swal.fire({ icon:'error', title:'Please fix the following', html });
-  if (typeof Swal === 'undefined') { const s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/sweetalert2@11'; s.onload=go; document.head.appendChild(s);} else go();
-});
-</script>
-@endif
-@endpush
-
 @endsection

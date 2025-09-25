@@ -268,7 +268,7 @@
             box.innerHTML = isCoping
               ? `<button class="qr-btn" data-qr='/deny{"confirm_topic":"coping"}'>No, thanks</button>
                  <button class="qr-btn" data-variant="primary" data-qr='/affirm{"confirm_topic":"coping"}'>Yes, show tips</button>`
-              : `<a class="qr-btn" data-variant="primary" href="http://127.0.0.1:8000/appointment/book" target="_blank" rel="noopener">Book counselor</a>
+              : `<a class="qr-btn" data-variant="primary" href="http://127.0.0.1:8000/appointment/book" rel="noopener">Book counselor</a>
                  <button class="qr-btn" data-qr='/deny{"confirm_topic":"referral"}'>Not now</button>`;
             box.addEventListener('click', (ev)=>{
               const btn = ev.target.closest('.qr-btn'); 

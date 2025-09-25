@@ -33,77 +33,58 @@ Route::prefix('admin')->name('admin.')->middleware('guest')->group(function () {
 */
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
 
-    /* ========== DASHBOARD ========== */
+    /* DASHBOARD */
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/stats', [DashboardController::class, 'stats'])->name('dashboard.stats');
 
-    /* ========== COUNSELORS ========== */
+    /* COUNSELORS */
     Route::resource('counselors', CounselorController::class)
         ->parameters(['counselors' => 'counselor']);
 
-    /* ========== STUDENTS (read-only) ========== */
-    Route::resource('students', StudentController::class)
-        ->only(['index', 'show'])
+    /* STUDENTS */
+    Route::resource('students', StudentController::class)->only(['index','show'])
         ->parameters(['students' => 'student']);
-    Route::get('/students/export/pdf', [StudentController::class, 'exportPdf'])
-        ->name('students.export.pdf');
+    Route::get('/students/export/pdf', [StudentController::class, 'exportPdf'])->name('students.export.pdf');
 
-    /* ========== CHATBOT SESSIONS (read-only) ========== */
-    Route::resource('chatbot-sessions', ChatbotSessionController::class)
-        ->only(['index', 'show'])
+    /* CHATBOT SESSIONS */
+    Route::resource('chatbot-sessions', ChatbotSessionController::class)->only(['index','show'])
         ->parameters(['chatbot-sessions' => 'session']);
-
-    Route::get('chatbot-sessions/{session}/calendar',
-        [ChatbotSessionController::class, 'calendarCounts']
-    )->name('chatbot-sessions.calendar')->whereNumber('session');
-
+    Route::get('chatbot-sessions/{session}/calendar', [ChatbotSessionController::class, 'calendarCounts'])
+        ->whereNumber('session')->name('chatbot-sessions.calendar');
     Route::get('chatbot-sessions/export/pdf', [ChatbotSessionController::class, 'exportPdf'])
-    ->name('chatbot-sessions.export.pdf');
+        ->name('chatbot-sessions.export.pdf');
 
+    /* APPOINTMENTS (Admin) — NO extra prefix/as here */
+    Route::get('/appointments',                 [AdminAppointmentController::class, 'index'])->name('appointments.index');
+    Route::get('/appointments/{id}',            [AdminAppointmentController::class, 'show'])->name('appointments.show');
+    Route::get('/appointments/{id}/assign',     [AdminAppointmentController::class, 'assignForm'])->name('appointments.assign.form');
+    Route::patch('/appointments/{id}/assign',   [AdminAppointmentController::class, 'assign'])->name('appointments.assign');
+    Route::patch('/appointments/{id}/status',   [AdminAppointmentController::class, 'updateStatus'])->name('appointments.status');
+    Route::post('/appointments/{id}/report',    [AdminAppointmentController::class, 'saveReport'])->name('appointments.report');
+    Route::get('/appointments/export/pdf',      [AdminAppointmentController::class, 'exportPdf'])->name('appointments.export.pdf');
+    Route::get('/appointments/{id}/export/pdf', [AdminAppointmentController::class, 'exportShowPdf'])->name('appointments.export.show.pdf');
+    Route::get('/appointments/{id}/assign',  [AdminAppointmentController::class,'assignForm'])->name('appointments.assign.form');
+    Route::post('/appointments/{id}/assign', [AdminAppointmentController::class,'assign'])->name('appointments.assign');
 
-    /* ========== APPOINTMENTS (Admin) ========== */
-    Route::get('/appointments', [AdminAppointmentController::class, 'index'])->name('appointments.index');
-    Route::get('/appointments/{appointment}', [AdminAppointmentController::class, 'show'])
-        ->name('appointments.show')->whereNumber('appointment');
-    Route::patch('/appointments/{appointment}/status', [AdminAppointmentController::class, 'updateStatus'])
-        ->name('appointments.status')->whereNumber('appointment');
-    Route::patch('/appointments/{appointment}/final-note', [AdminAppointmentController::class, 'saveNote'])
-        ->name('appointments.saveNote')->whereNumber('appointment');
-    Route::patch('/appointments/{appointment}/report', [AdminAppointmentController::class, 'saveReport'])
-        ->name('appointments.saveReport')->whereNumber('appointment');
-
-    // ✅ Correct export route & name (matches your Blade)
-    Route::get('/appointments/export/pdf', [AdminAppointmentController::class, 'exportPdf'])
-        ->name('appointments.export.pdf');
-
-    Route::get('/appointments/{appointment}/export/pdf', [AdminAppointmentController::class, 'exportShowPdf'])
-        ->whereNumber('appointment')
-        ->name('appointments.show.export.pdf');
-
-    /* ========== COUNSELOR LOGS ========== */
+    /* COUNSELOR LOGS */
     Route::get('/counselor-logs', [CounselorLogController::class, 'index'])->name('counselor-logs.index');
     Route::get('/counselor-logs/{counselor}', [CounselorLogController::class, 'show'])
         ->whereNumber('counselor')->name('counselor-logs.show');
     Route::get('/counselor-logs/export/pdf', [CounselorLogController::class, 'exportPdf'])
         ->name('counselor-logs.export.pdf');
 
-    /* ========== DIAGNOSIS REPORTS ========== */
-    Route::resource('diagnosis-reports', DiagnosisReportController::class)
-        ->only(['index','show'])
+    /* DIAGNOSIS REPORTS */
+    Route::resource('diagnosis-reports', DiagnosisReportController::class)->only(['index','show'])
         ->parameters(['diagnosis-reports' => 'report']);
     Route::get('/diagnosis-reports/export/pdf', [DiagnosisReportController::class, 'exportPdf'])
         ->name('diagnosis-reports.export.pdf');
 
-        // ========== COURSE ANALYTICS ==========
-        Route::get('course-analytics', [CourseAnalyticsController::class, 'index'])
-            ->name('course-analytics.index');
-
-        Route::get('course-analytics/{course}', [CourseAnalyticsController::class, 'show'])
-            ->whereNumber('course')->name('course-analytics.show');
-
-        Route::get('course-analytics/export/pdf', [CourseAnalyticsController::class, 'exportPdf'])
-            ->name('course-analytics.export.pdf');
-
-        Route::get('course-analytics/{course}/export/pdf', [CourseAnalyticsController::class, 'exportShowPdf'])
-            ->whereNumber('course')->name('course-analytics.show.export.pdf');
+    /* COURSE ANALYTICS */
+    Route::get('course-analytics', [CourseAnalyticsController::class, 'index'])->name('course-analytics.index');
+    Route::get('course-analytics/{course}', [CourseAnalyticsController::class, 'show'])
+        ->whereNumber('course')->name('course-analytics.show');
+    Route::get('course-analytics/export/pdf', [CourseAnalyticsController::class, 'exportPdf'])
+        ->name('course-analytics.export.pdf');
+    Route::get('course-analytics/{course}/export/pdf', [CourseAnalyticsController::class, 'exportShowPdf'])
+        ->whereNumber('course')->name('course-analytics.show.export.pdf');
 });

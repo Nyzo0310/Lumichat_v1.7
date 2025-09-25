@@ -1,31 +1,33 @@
+{{-- resources/views/appointment/index.blade.php --}}
 @extends('layouts.app')
 @section('title','Appointment')
 
 @section('content')
-<div class="mx-auto max-w-6xl px-4 pt-0 pb-8">
+<div class="mx-auto max-w-6xl px-4 pt-0 pb-8 animate-fadeup">
+  {{-- Banner --}}
   <div class="mb-2">
     <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 p-6 shadow-sm mb-4">
-    <div class="flex items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <div class="rounded-2xl bg-white/15 p-2 text-white">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M7 2a1 1 0 0 0-1 1v1H5a3 3 0 0 0-3 3v11a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3h-1V3a1 1 0 1 0-2 0v1H8V3a1 1 0 0 0-1-1Zm12 7H5v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9Z"/>
-          </svg>
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="rounded-2xl bg-white/15 p-2 text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M7 2a1 1 0 0 0-1 1v1H5a3 3 0 0 0-3 3v11a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3h-1V3a1 1 0 1 0-2 0v1H8V3a1 1 0 0 0-1-1ZM5 9h14v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V9Z"/>
+            </svg>
+          </div>
+          <div class="-mt-0.5">
+            <h1 class="text-lg font-semibold tracking-tight text-white">Book Appointment</h1>
+            <p class="text-white/80 text-sm">Pick a date and time. A counselor will be assigned by the admin.</p>
+          </div>
         </div>
-        <div class="-mt-0.5">
-          {{-- smaller, normal-sized title --}}
-          <h1 class="text-lg font-semibold tracking-tight text-white">Book Appointment</h1>
-          <p class="text-white/80 text-sm">Pick a counselor, date, and time.</p>
-        </div>
-      </div>
 
-      <a href="{{ route('appointment.history') }}"
-        class="self-center inline-flex items-center gap-2 rounded-xl bg-white/20 px-4 py-2.5 text-sm font-medium text-white backdrop-blur transition hover:bg-white/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60">
-        View Appointment
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-        </svg>
-      </a>
+        <a href="{{ route('appointment.history') }}"
+           class="self-center inline-flex items-center gap-2 rounded-xl bg-white/20 px-4 py-2.5 text-sm font-medium text-white backdrop-blur transition hover:bg-white/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60">
+          View Appointment
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
     </div>
   </div>
 
@@ -39,22 +41,22 @@
           <li class="flex items-start gap-3">
             <span class="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-xs font-bold text-white">1</span>
             <div>
-              <p class="font-medium text-gray-900 dark:text-gray-100">Choose counselor</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400">Availability varies by counselor and weekday.</p>
-            </div>
-          </li>
-          <li class="flex items-start gap-3">
-            <span class="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-xs font-bold text-white">2</span>
-            <div>
               <p class="font-medium text-gray-900 dark:text-gray-100">Pick date</p>
               <p class="text-sm text-gray-500 dark:text-gray-400">Weekends are closed (Mon–Fri only).</p>
             </div>
           </li>
           <li class="flex items-start gap-3">
-            <span class="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-xs font-bold text-white">3</span>
+            <span class="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-xs font-bold text-white">2</span>
             <div>
               <p class="font-medium text-gray-900 dark:text-gray-100">Select time</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400">Times load after you choose counselor & date.</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Available pooled time slots will appear for the chosen date.</p>
+            </div>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-xs font-bold text-white">3</span>
+            <div>
+              <p class="font-medium text-gray-900 dark:text-gray-100">Admin assigns counselor</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">You’ll see “Awaiting assignment” until a counselor is set.</p>
             </div>
           </li>
         </ol>
@@ -76,39 +78,30 @@
 
         <h2 class="mb-6 text-lg font-semibold text-gray-900 dark:text-gray-100">Fill Appointment Details</h2>
 
-        {{-- Scoped style to remove any built-in/previous date icon and make our button the only icon --}}
         <style>
           #dateInput{ background-image:none!important; padding-right:3rem; }
           #dateInput::-webkit-calendar-picker-indicator{ display:none!important; }
-          .hidden-error{ display: none !important; }   /* ← add this */
-
+          .hidden-error{ display: none !important; }
+          .time-pill{
+            @apply inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm
+            text-gray-700 transition hover:border-indigo-300 hover:bg-indigo-50 dark:border-gray-700 dark:bg-gray-900
+            dark:text-gray-200 dark:hover:border-indigo-500 dark:hover:bg-gray-800;
+          }
+          .time-pill--selected{
+            @apply border-indigo-600 bg-indigo-600 text-white dark:border-indigo-500 dark:bg-indigo-500;
+          }
+          .slot-cap { @apply inline-flex items-center rounded-md px-1.5 py-0.5 text-[11px] bg-slate-100 text-slate-700 ml-2; }
           .swal2-html-container.lumi{ text-align:left !important; }
-          .swal2-html-container.lumi .lumi-list{ list-style:disc; margin:0; padding-left:1.25rem; line-height:1.6; }
           .swal2-html-container.lumi .lumi-divider{ margin:.5rem 0 1rem; }
         </style>
 
         <form method="POST" action="{{ route('appointment.store') }}" class="space-y-7">
           @csrf
 
-          {{-- STEP 1 --}}
-          <div class="space-y-2">
-            <label for="counselorSelect" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              1. Select a counselor *
-            </label>
-            <select id="counselorSelect" name="counselor_id" class="select-ui">
-              <option value="">Select a counselor</option>
-              @foreach($counselors as $c)
-                <option value="{{ $c->id }}" @selected(old('counselor_id')==$c->id)>{{ $c->name }}</option>
-              @endforeach
-            </select>
-            <p class="text-xs text-gray-500 dark:text-gray-400">After choosing a counselor, pick a date to see available times.</p>
-            @error('counselor_id')<p data-error-for="counselor_id" class="text-sm text-red-600">{{ $message }}</p>@enderror
-          </div>
-
-          {{-- STEP 2 (Custom calendar icon that opens the picker) --}}
+          {{-- STEP 1: Date --}}
           <div class="space-y-2">
             <label for="dateInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              2. Choose a preferred date *
+              1. Choose a preferred date *
             </label>
             <div class="relative">
               <input id="dateInput" type="date" name="date" value="{{ old('date') }}"
@@ -116,7 +109,6 @@
               <button type="button" id="openDateBtn"
                       class="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                       aria-label="Open calendar">
-                {{-- Flaticon-style calendar (clean SVG) --}}
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M7 2a1 1 0 0 0-1 1v1H5a3 3 0 0 0-3 3v11a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3h-1V3a1 1 0 1 0-2 0v1H8V3a1 1 0 0 0-1-1ZM5 9h14v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V9Z"/>
                 </svg>
@@ -125,18 +117,18 @@
             @error('date')<p data-error-for="date" class="text-sm text-red-600">{{ $message }}</p>@enderror
           </div>
 
-          {{-- STEP 3 (Modern time grid + hidden select for submission/logic) --}}
+          {{-- STEP 2: Time (modern grid + hidden select) --}}
           <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              3. Select a time *
+              2. Select a time *
             </label>
 
-            {{-- Hidden native select (kept for accessibility + submission + your logic) --}}
+            {{-- Hidden native select (submission + a11y) --}}
             <select id="timeSelect" name="time" class="sr-only" aria-hidden="true" tabindex="-1">
               <option value="">available slots</option>
             </select>
 
-            {{-- Pretty grid that mirrors #timeSelect --}}
+            {{-- Pretty grid --}}
             <div id="timeGrid" class="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4"></div>
 
             {{-- Loading / empty states --}}
@@ -174,18 +166,17 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const counselorSel = document.getElementById('counselorSelect');
   const dateInput    = document.getElementById('dateInput');
   const openDateBtn  = document.getElementById('openDateBtn');
 
-  const timeSel      = document.getElementById('timeSelect'); // kept for form submit/validation
-  const timeGrid     = document.getElementById('timeGrid');   // pretty UI
+  const timeSel      = document.getElementById('timeSelect');
+  const timeGrid     = document.getElementById('timeGrid');
   const loadingEl    = document.getElementById('timeLoading');
   const emptyEl      = document.getElementById('timeEmpty');
 
   const consentCbx   = document.getElementById('consent-cbx');
+  const formEl       = document.querySelector('form[action="{{ route('appointment.store') }}"]');
 
-  const formEl = document.querySelector('form[action="{{ route('appointment.store') }}"]');
   const clearAllErrors = () => {
     document.querySelectorAll('[data-error-for]').forEach(el => el.classList.add('hidden-error'));
     if (window.Swal && Swal.isVisible()) Swal.close();
@@ -196,47 +187,27 @@ document.addEventListener('DOMContentLoaded', () => {
     formEl.addEventListener('focusin', clearAllErrors, { capture: true });
   }
 
-  // GUARANTEED trailing slash
-  const slotsBase = (@json(url('/appointment/slots')) + '/');
+  // Use the pooled endpoint that returns { slots: [{value, label, available}] }
+  const slotsBase = @json(route('appointment.slots'));
+
   // SweetAlert helpers (Lumi theme)
   const toast = (title, icon='info', timer=2500) =>
-    Swal.fire({
-      toast:true, position:'top-end', showConfirmButton:false, timer, icon, title,
-      customClass:{ popup:'lumi' }
-    });
+    Swal.fire({ toast:true, position:'top-end', showConfirmButton:false, timer, icon, title });
 
-  // ❗ New: error modal that matches the profile screenshot (big red X + gradient OK)
   const showFormErrors = (title, items) => {
-  const iconSvg = `
-    <div class="lumi-x">
-      <svg viewBox="0 0 24 24" width="44" height="44" aria-hidden="true">
-        <circle cx="12" cy="12" r="10" fill="none" stroke="rgba(244,63,94,.35)" stroke-width="2"></circle>
-        <path d="M8 8l8 8M16 8l-8 8" fill="none" stroke="rgb(244,63,94)" stroke-width="2.5" stroke-linecap="round"></path>
-      </svg>
-    </div>`;
-
-  const html = `
-    <div class="lumi-divider"></div>
-    <ul style="text-align:left;margin:0;padding-left:1rem;line-height:1.6">
-      ${items.map(i => `<li>• ${i}</li>`).join('')}
-    </ul>`;
-
-  Swal.fire({
-    icon: 'error',              // keeps a11y + aria role
-    iconHtml: iconSvg,          // replaces default tiny X (prevents duplicate)
-    iconColor: 'transparent',   // no default fill
-    title,
-    html,
-    customClass: { popup:'lumi', title:'lumi', htmlContainer:'lumi' },
-    buttonsStyling: false,
-    confirmButtonText: 'OK',
-    showClass: { popup: 'swal2-show' },
-    hideClass:  { popup: 'swal2-hide' },
-    didRender: () => {
-      Swal.getConfirmButton().classList.add('btn-pill','btn-primary');
-    }
-  });
-};
+    const html = '<div class="lumi-divider"></div><ul style="text-align:left;margin:0;padding-left:1rem;line-height:1.6">'
+      + items.map(i => `<li>• ${i}</li>`).join('') + '</ul>';
+    Swal.fire({
+      icon: 'error',
+      title,
+      html,
+      confirmButtonText: 'OK',
+      buttonsStyling: false,
+      didRender: () => {
+        Swal.getConfirmButton().classList.add('btn-pill','btn-primary');
+      }
+    });
+  };
 
   const successMsg = @json(session('status'));
   const pageErrors = @json($errors->all());
@@ -248,17 +219,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (Swal.isVisible()) Swal.close();
   };
 
-  // Open the native date picker when clicking our custom icon
   openDateBtn.addEventListener('click', () => {
-    if (dateInput.showPicker) { dateInput.showPicker(); } // modern browsers
-    else { dateInput.focus(); dateInput.click(); }        // fallback
+    if (dateInput.showPicker) { dateInput.showPicker(); }
+    else { dateInput.focus(); dateInput.click(); }
   });
 
-  counselorSel.addEventListener('change', () => { hideError('counselor_id'); loadSlots(); });
-  dateInput.addEventListener('change',   () => { hideError('date');        loadSlots(); });
-  consentCbx.addEventListener('change',  () => hideError('consent'));
-
-  // helpers for time UI
   function clearTimeUI(placeholder='available slots'){
     timeSel.innerHTML = '';
     const opt = document.createElement('option');
@@ -298,20 +263,19 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function loadSlots(){
-    const cid  = counselorSel.value;
     const date = dateInput.value;
-
-    if (!cid){ clearTimeUI('select counselor first'); return; }
     if (!date){ clearTimeUI('pick a date'); return; }
     if (isWeekend(date)){
-      clearTimeUI('closed (Mon–Fri only)'); toast('Counselors are available Mon–Fri only.','info'); return;
+      clearTimeUI('closed (Mon–Fri only)');
+      toast('Appointments are available Mon–Fri only.','info');
+      return;
     }
 
     loadingEl.classList.remove('hidden');
     clearTimeUI('loading…');
 
     try{
-      const url = slotsBase + encodeURIComponent(cid) + '?date=' + encodeURIComponent(date);
+      const url = slotsBase + '?date=' + encodeURIComponent(date);
       const res = await fetch(url, { headers:{'X-Requested-With':'XMLHttpRequest'} });
       if(!res.ok){ clearTimeUI('unable to load'); toast('Failed to load time slots.','error'); return; }
 
@@ -324,14 +288,17 @@ document.addEventListener('DOMContentLoaded', () => {
         timeSel.appendChild(ph);
 
         data.slots.forEach(s => {
+          // s = { value:"HH:MM", label:"g:i A", available:int }
           const opt = document.createElement('option');
           opt.value = s.value;
-          opt.textContent = s.label;
+          opt.textContent = s.label + (s.available > 1 ? `  (${s.available} slots)` : '');
           timeSel.appendChild(opt);
         });
 
-        const oldVal = @json(old('time'));
-        if(oldVal){ [...timeSel.options].forEach(o => { if(o.value === oldVal) o.selected = true; }); }
+        const oldTime = @json(old('time'));
+        if(oldTime){
+          [...timeSel.options].forEach(o => { if(o.value === oldTime) o.selected = true; });
+        }
 
         buildTimeGridFromSelect();
       }else{
@@ -355,7 +322,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  if(counselorSel.value && dateInput.value) loadSlots();
+  dateInput.addEventListener('change', () => { hideError('date'); loadSlots(); });
+  consentCbx.addEventListener('change', () => hideError('consent'));
+
+  if(dateInput.value) loadSlots();
 });
 </script>
 @endpush

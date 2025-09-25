@@ -18,12 +18,10 @@
     <script nomodule src="/chat.js?v=2025-09-23-1"></script>
 @if($isStudent)
   <!-- Student global prefs boot (runs before CSS to avoid flicker) -->
-<<<<<<< HEAD
-  
+
   <script src="{{ asset('js/chat.js') }}" defer>
 =======
   <script>
->>>>>>> 39327f802976fa9844a0fc768f2da411ac6a2534
     (() => {
       try {
         const root = document.documentElement;
@@ -437,29 +435,30 @@
   @include('profile.partials.alerts')
 
   <!-- ✅ Clear Lumi welcome state whenever user clicks New Chat -->
-  <script>
-  (function(){
-    function clearWelcomeOnNewChat(){
-      try {
-        const wrap = document.querySelector('#chat-wrapper');
-        const threadId = (wrap && wrap.dataset.threadId) || location.pathname;
-        sessionStorage.removeItem(`lumi_welcome_${threadId}`);
-        // also clear any stale keys from other threads
-        const keys = [];
-        for (let i = 0; i < sessionStorage.length; i++) {
-          const k = sessionStorage.key(i);
-          if (k && k.startsWith('lumi_welcome_')) keys.push(k);
-        }
-        keys.forEach(k => sessionStorage.removeItem(k));
-      } catch(_){}
-    }
-    document.addEventListener('DOMContentLoaded', () => {
-      document.querySelectorAll('[data-new-chat="1"]').forEach(el => {
-        el.addEventListener('click', clearWelcomeOnNewChat, { capture: true });
-      });
+ <!-- ✅ Clear Lumi welcome state whenever user clicks New Chat -->
+<script>
+(function(){
+  function clearWelcomeOnNewChat(){
+    try {
+      const wrap = document.querySelector('#chat-wrapper');
+      const threadId = (wrap && wrap.dataset.threadId) || location.pathname;
+
+      // Clear per-thread key (what chat uses)
+      sessionStorage.removeItem(`lumi_welcome_${threadId}`);
+
+      // Also clear the legacy global key just in case
+      sessionStorage.removeItem('lumi_welcome');
+    } catch(_) {}
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('[data-new-chat="1"]').forEach(el => {
+      el.addEventListener('click', clearWelcomeOnNewChat, { capture: true });
     });
-  })();
-  </script>
+  });
+})();
+</script>
+
 
 <script>
 (function () {
