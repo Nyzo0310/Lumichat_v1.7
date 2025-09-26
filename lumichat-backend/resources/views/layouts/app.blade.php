@@ -434,7 +434,6 @@
 
   @include('profile.partials.alerts')
 
-  <!-- ✅ Clear Lumi welcome state whenever user clicks New Chat -->
  <!-- ✅ Clear Lumi welcome state whenever user clicks New Chat -->
 <script>
 (function(){
@@ -541,5 +540,14 @@
     });
   };
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@if (session('swal'))
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      Swal.fire(@json(session('swal')));
+    });
+  </script>
+@endif
 </body>
 </html>

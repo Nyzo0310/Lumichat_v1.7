@@ -16,7 +16,7 @@ class AppointmentController extends Controller
     private const BLOCKING_STATUSES = ['pending', 'confirmed', 'completed'];
 
     /** Student “active” statuses that block new bookings */
-    private const STUDENT_ACTIVE_STATUSES = ['pending'];
+    private const STUDENT_ACTIVE_STATUSES = ['pending', 'confirmed'];
 
     /** Mon–Fri only (1=Mon ... 5=Fri with isoWeekday) */
     private const WEEKDAY_MIN = 1; // Monday
@@ -26,9 +26,9 @@ class AppointmentController extends Controller
     public function index()
     {
         // If the student already has an active appointment, send to History with a blocking modal
-        if ($uid = Auth::id()) {
+        if (Auth::check()) {
             $hasActive = DB::table('tbl_appointments')
-                ->where('student_id', $uid)
+                ->where('student_id', Auth::id())
                 ->whereIn('status', self::STUDENT_ACTIVE_STATUSES)
                 ->exists();
 
@@ -36,17 +36,14 @@ class AppointmentController extends Controller
                 return redirect()
                     ->route('appointment.history')
                     ->with('swal', [
-                        'icon'               => 'warning',
-                        'title'              => 'You already have a pending appointment',
-                        'text'               => 'Complete or cancel it before booking another.',
-                        'confirmButtonText'  => 'OK',
-                        'allowOutsideClick'  => false,
-                        'allowEscapeKey'     => false,
+                        'icon'  => 'warning',
+                        'title' => 'You already have an active appointment',
+                        'text'  => 'Complete or cancel it before booking another.',
                     ]);
             }
         }
 
-        // ✅ No counselor list here anymore (pooled availability)
+        // No counselor list (pooled availability)
         return view('appointment.index');
     }
 
@@ -65,7 +62,7 @@ class AppointmentController extends Controller
                 ->route('appointment.history')
                 ->with('swal', [
                     'icon'               => 'warning',
-                    'title'              => 'You already have a pending appointment',
+                    'title'              => 'You already have a pending/confirmed appointment',
                     'text'               => 'Complete or cancel it before booking another.',
                     'confirmButtonText'  => 'OK',
                     'allowOutsideClick'  => false,
@@ -87,14 +84,14 @@ class AppointmentController extends Controller
         }
 
         $date  = Carbon::parse($dateStr)->startOfDay();
-        $today = Carbon::now();
+        $today = now();
         $dow   = $date->isoWeekday(); // 1..7 (Mon..Sun)
 
         if ($dow < self::WEEKDAY_MIN || $dow > self::WEEKDAY_MAX) {
             return response()->json(['slots'=>[], 'reason'=>'weekend', 'message'=>'Appointments are available Monday to Friday only.']);
         }
 
-        // If the student already has an ACTIVE appointment (pending), do not offer slots
+        // If the student already has an ACTIVE appointment (pending/confirmed), do not offer slots
         if ($studentId = Auth::id()) {
             $hasActiveAny = DB::table('tbl_appointments')
                 ->where('student_id', $studentId)
@@ -105,40 +102,25 @@ class AppointmentController extends Controller
                 return response()->json([
                     'slots'   => [],
                     'reason'  => 'active_appointment',
-                    'message' => 'You already have a pending appointment. Complete or cancel it before booking another.',
+                    'message' => 'You already have a pending/confirmed appointment. Complete or cancel it before booking another.',
                 ]);
             }
         }
 
         // Active counselors
-        $counselors = DB::table('tbl_counselors')
-            ->where('is_active', 1)
-            ->pluck('id')
-            ->all();
-
+        $counselors = DB::table('tbl_counselors')->where('is_active', 1)->pluck('id')->all();
         if (empty($counselors)) {
             return response()->json(['slots'=>[], 'reason'=>'no_counselor', 'message'=>'No counselors are currently available.']);
         }
 
-        // Build availability per counselor
-        $timeBuckets = []; // 'HH:MM' => [counselor_id, ...]
+        // For each counselor, build ALL schedule-based slots first (don’t remove booked yet)
+        $availBuckets = [];   // 'HH:MM' => [counselor_id, ...] (total counselors who can work at that minute)
         foreach ($counselors as $cid) {
-            // availability ranges for that weekday
             $ranges = DB::table('tbl_counselor_availabilities')
                 ->where('counselor_id', $cid)
                 ->where('weekday', $dow)
-                ->orderBy('start_time')->get(['start_time','end_time']);
-
-            if ($ranges->isEmpty()) continue;
-
-            // Booked times for that counselor and date
-            $bookedTimes = DB::table('tbl_appointments')
-                ->where('counselor_id', $cid)
-                ->whereDate('scheduled_at', $date->toDateString())
-                ->whereIn('status', self::BLOCKING_STATUSES)
-                ->pluck(DB::raw("DATE_FORMAT(scheduled_at, '%H:%i')"))
-                ->all();
-            $booked = array_flip($bookedTimes);
+                ->orderBy('start_time')
+                ->get(['start_time', 'end_time']);
 
             foreach ($ranges as $r) {
                 $start  = Carbon::parse($date->toDateString().' '.$r->start_time);
@@ -149,54 +131,42 @@ class AppointmentController extends Controller
                     $next = $cursor->copy()->addMinutes(self::STEP_MINUTES);
                     if ($next->gt($end)) break;
 
-                    // prevent past times on same day
+                    // hide past times on same day
                     if ($date->isSameDay($today) && $cursor->lte($today)) {
                         $cursor->addMinutes(self::STEP_MINUTES);
                         continue;
                     }
 
-                    $value = $cursor->format('H:i');
-                    if (!isset($booked[$value])) {
-                        $timeBuckets[$value] = $timeBuckets[$value] ?? [];
-                        $timeBuckets[$value][] = $cid; // counselor free at this time
-                    }
+                    $hhmm = $cursor->format('H:i');
+                    $availBuckets[$hhmm] = $availBuckets[$hhmm] ?? [];
+                    $availBuckets[$hhmm][] = $cid;
+
                     $cursor->addMinutes(self::STEP_MINUTES);
                 }
             }
         }
 
-        if (empty($timeBuckets)) {
-            return response()->json([
-                'slots'   => [],
-                'reason'  => 'no_slots',
-                'message' => 'No available slots within working hours.',
-            ]);
-        }
-
-        // Reduce to pooled list with capacity = counselors free at that time MINUS already-held anonymous reservations
+        // Build final list: available = total counselors scheduled at that time − already booked at that time
         $slots = [];
-        foreach ($timeBuckets as $hhmm => $freeCounselors) {
+        foreach ($availBuckets as $hhmm => $scheduledCounselors) {
             $t = Carbon::parse($date->toDateString().' '.$hhmm);
 
-            // count how many total appointments exist at this exact date&time with blocking statuses (regardless of counselor assignment)
             $takenAtTime = DB::table('tbl_appointments')
                 ->whereDate('scheduled_at', $t->toDateString())
                 ->whereTime('scheduled_at', $t->format('H:i:s'))
                 ->whereIn('status', self::BLOCKING_STATUSES)
                 ->count();
 
-            $capacity = max(0, count($freeCounselors) - $takenAtTime);
-            if ($capacity > 0) {
-                $slots[] = [
-                    'value'     => $hhmm,
-                    'label'     => $t->format('g:i A'),
-                    'available' => $capacity,
-                ];
-            }
+            $capacity = max(0, count($scheduledCounselors) - $takenAtTime);
+
+            $slots[] = [
+                'value'     => $hhmm,
+                'label'     => $t->format('g:i A'),
+                'available' => $capacity, // can be 0 (full)
+            ];
         }
 
         usort($slots, fn($a,$b)=>strcmp($a['value'],$b['value']));
-
         return response()->json(['slots'=>$slots]);
     }
 
@@ -214,14 +184,14 @@ class AppointmentController extends Controller
         $studentId   = Auth::id();
         $scheduledAt = Carbon::parse($request->date.' '.$request->time.':00');
 
-        // One ACTIVE appointment at a time (pending)
+        // One ACTIVE appointment at a time (pending or confirmed)
         $hasActiveAny = DB::table('tbl_appointments')
             ->where('student_id', $studentId)
             ->whereIn('status', self::STUDENT_ACTIVE_STATUSES)
             ->exists();
         if ($hasActiveAny) {
             return back()->withErrors([
-                'error' => 'You already have a pending appointment. Complete or cancel it before booking another.',
+                'error' => 'You already have a pending/confirmed appointment. Complete or cancel it before booking another.',
             ])->withInput();
         }
 
@@ -252,8 +222,7 @@ class AppointmentController extends Controller
 
         // Capacity control (race-safe using transaction + recheck)
         try {
-            DB::transaction(function () use ($studentId, $scheduledAt, $freeCounselors) {
-                // Re-count blockers at the exact second (00) to avoid races
+            DB::transaction(function () use ($studentId, $scheduledAt, $scheduledCapacity) {
                 $takenAtTime = DB::table('tbl_appointments')
                     ->whereDate('scheduled_at', $scheduledAt->toDateString())
                     ->whereTime('scheduled_at', $scheduledAt->format('H:i:s'))
@@ -261,12 +230,11 @@ class AppointmentController extends Controller
                     ->lockForUpdate()
                     ->count();
 
-                $capacity = count($freeCounselors) - $takenAtTime;
-                if ($capacity <= 0) {
+                if ($takenAtTime >= $scheduledCapacity) {
+                    // throw so the catch below can show a nice SweetAlert
                     throw new \RuntimeException('FULL');
                 }
 
-                // Insert WITHOUT counselor_id; admin will assign later
                 DB::table('tbl_appointments')->insert([
                     'student_id'   => $studentId,
                     'counselor_id' => null,
@@ -276,19 +244,45 @@ class AppointmentController extends Controller
                     'updated_at'   => now(),
                 ]);
             });
+        } catch (\RuntimeException $e) {
+            // Graceful alert for “slot just filled”
+            if ($e->getMessage() === 'FULL') {
+                return back()
+                    ->withInput()
+                    ->with('swal', [
+                        'icon'  => 'info',
+                        'title' => 'Time slot unavailable',
+                        'text'  => 'That time just filled up. Please pick another slot.',
+                    ]);
+            }
+            throw $e; // anything else = real error
         } catch (\Illuminate\Database\QueryException $e) {
-        \Log::error('APPT INSERT FAILED', [
-            'code' => $e->errorInfo[1] ?? null,
-            'sqlstate' => $e->errorInfo[0] ?? null,
-            'message' => $e->getMessage(),
-        ]);
+            \Log::error('APPT INSERT FAILED', [
+                'code'     => $e->errorInfo[1] ?? null,
+                'sqlstate' => $e->errorInfo[0] ?? null,
+                'message'  => $e->getMessage(),
+            ]);
 
-        if ((int)($e->errorInfo[1] ?? 0) !== 1062) {
-            return back()->withErrors([
-                'error' => 'Unable to book the appointment right now. (ERR#'.((int)($e->errorInfo[1] ?? 0)).')'
-            ])->withInput();
+            // Treat duplicate race as “full”
+            if ((int)($e->errorInfo[1] ?? 0) === 1062) {
+                return back()
+                    ->withInput()
+                    ->with('swal', [
+                        'icon'  => 'info',
+                        'title' => 'Time slot unavailable',
+                        'text'  => 'That time just filled up. Please pick another slot.',
+                    ]);
+            }
+
+            return back()
+                ->withInput()
+                ->with('swal', [
+                    'icon'  => 'error',
+                    'title' => 'Unable to book right now',
+                    'text'  => 'Please try again in a moment.',
+                ]);
         }
-    }
+
 
         // Success → neutral message (no counselor shown)
         return redirect()
@@ -319,7 +313,7 @@ class AppointmentController extends Controller
         $now = now();
 
         $query = DB::table('tbl_appointments as a')
-            ->leftJoin('tbl_counselors as c', 'c.id', '=', 'a.counselor_id') // <-- leftJoin to allow null counselor
+            ->leftJoin('tbl_counselors as c', 'c.id', '=', 'a.counselor_id') // allow null counselor
             ->select([
                 'a.id','a.student_id','a.counselor_id','a.scheduled_at','a.status',
                 'c.name as counselor_name','c.email as counselor_email','c.phone as counselor_phone',
@@ -331,24 +325,15 @@ class AppointmentController extends Controller
 
         switch ($period) {
             case 'today':
-                $query->whereDate('a.scheduled_at', $now->toDateString());
-                break;
+                $query->whereDate('a.scheduled_at', $now->toDateString()); break;
             case 'upcoming':
-                $query->where('a.scheduled_at', '>=', $now);
-                break;
+                $query->where('a.scheduled_at', '>=', $now); break;
             case 'this_week':
-                $query->whereBetween('a.scheduled_at', [
-                    $now->copy()->startOfWeek(), $now->copy()->endOfWeek()
-                ]);
-                break;
+                $query->whereBetween('a.scheduled_at', [$now->copy()->startOfWeek(), $now->copy()->endOfWeek()]); break;
             case 'this_month':
-                $query->whereBetween('a.scheduled_at', [
-                    $now->copy()->startOfMonth(), $now->copy()->endOfMonth()
-                ]);
-                break;
+                $query->whereBetween('a.scheduled_at', [$now->copy()->startOfMonth(), $now->copy()->endOfMonth()]); break;
             case 'past':
-                $query->where('a.scheduled_at', '<', $now);
-                break;
+                $query->where('a.scheduled_at', '<', $now); break;
             case 'all':
             default:
                 // no date filter
@@ -358,7 +343,7 @@ class AppointmentController extends Controller
         if ($q !== '') {
             $query->where(function($w) use ($q) {
                 $w->where('c.name', 'like', "%{$q}%")
-                  ->orWhereNull('c.id'); // include “awaiting assignment” in searches
+                  ->orWhereNull('c.id'); // include “awaiting assignment”
             });
         }
 

@@ -187,10 +187,8 @@ document.addEventListener('DOMContentLoaded', () => {
     formEl.addEventListener('focusin', clearAllErrors, { capture: true });
   }
 
-  // Use the pooled endpoint that returns { slots: [{value, label, available}] }
   const slotsBase = @json(route('appointment.slots'));
 
-  // SweetAlert helpers (Lumi theme)
   const toast = (title, icon='info', timer=2500) =>
     Swal.fire({ toast:true, position:'top-end', showConfirmButton:false, timer, icon, title });
 
@@ -198,14 +196,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const html = '<div class="lumi-divider"></div><ul style="text-align:left;margin:0;padding-left:1rem;line-height:1.6">'
       + items.map(i => `<li>• ${i}</li>`).join('') + '</ul>';
     Swal.fire({
-      icon: 'error',
-      title,
-      html,
-      confirmButtonText: 'OK',
-      buttonsStyling: false,
-      didRender: () => {
-        Swal.getConfirmButton().classList.add('btn-pill','btn-primary');
-      }
+      icon: 'error', title, html, confirmButtonText: 'OK', buttonsStyling: false,
+      didRender: () => Swal.getConfirmButton().classList.add('btn-pill','btn-primary')
     });
   };
 
@@ -237,23 +229,40 @@ document.addEventListener('DOMContentLoaded', () => {
   function buildTimeGridFromSelect(){
     timeGrid.innerHTML = '';
     const current = timeSel.value;
+
     [...timeSel.options].forEach(o => {
       if (!o.value) return;
+
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'time-pill';
       btn.dataset.value = o.value;
+
+      const available = parseInt(o.dataset.available || '0', 10);
       btn.textContent = o.textContent;
+
+      if (available === 0) {
+        btn.disabled = true;
+        btn.classList.add('opacity-50', 'cursor-not-allowed');
+        btn.title = 'Fully booked';
+      }
+
       if (o.value === current) btn.classList.add('time-pill--selected');
+
       btn.addEventListener('click', () => {
+        if (btn.disabled) return;
         timeSel.value = o.value;
         hideError('time');
         document.querySelectorAll('.time-pill--selected').forEach(el => el.classList.remove('time-pill--selected'));
         btn.classList.add('time-pill--selected');
       });
+
       timeGrid.appendChild(btn);
     });
-    if (timeGrid.children.length === 0){ emptyEl.classList.remove('hidden'); }
+
+    if (timeGrid.children.length === 0) {
+      emptyEl.classList.remove('hidden');
+    }
   }
 
   function isWeekend(dateStr){
@@ -280,44 +289,39 @@ document.addEventListener('DOMContentLoaded', () => {
       if(!res.ok){ clearTimeUI('unable to load'); toast('Failed to load time slots.','error'); return; }
 
       const data = await res.json();
+
       timeSel.innerHTML = '';
+      const ph = document.createElement('option');
+      ph.value = '';
+      ph.textContent = 'Choose a preferred time *';
+      timeSel.appendChild(ph);
 
-      if(Array.isArray(data.slots) && data.slots.length){
-        const ph = document.createElement('option');
-        ph.value = ''; ph.textContent = 'Choose a preferred time *';
-        timeSel.appendChild(ph);
-
+      if (Array.isArray(data.slots) && data.slots.length) {
         data.slots.forEach(s => {
-          // s = { value:"HH:MM", label:"g:i A", available:int }
           const opt = document.createElement('option');
           opt.value = s.value;
-          opt.textContent = s.label + (s.available > 1 ? `  (${s.available} slots)` : '');
+          opt.textContent = s.label + (s.available > 1 ? `  (${s.available} slots)` : (s.available === 1 ? '  (1 slot)' : '  (full)'));
+          opt.dataset.available = String(s.available);
           timeSel.appendChild(opt);
         });
-
-        const oldTime = @json(old('time'));
-        if(oldTime){
-          [...timeSel.options].forEach(o => { if(o.value === oldTime) o.selected = true; });
-        }
-
         buildTimeGridFromSelect();
-      }else{
+      } else {
         const reason = data.reason || '';
         const message = data.message || '';
-        if(reason === 'weekend')             clearTimeUI('Mon–Fri only');
-        else if(reason === 'no_availability') clearTimeUI('no availability on this day');
-        else if(reason === 'fully_booked')    clearTimeUI('fully booked');
-        else if(reason === 'no_slots')        clearTimeUI('no working-hour slots');
-        else clearTimeUI('no available slots');
-        if(message) toast(message,'info');
+        if      (reason === 'weekend')          clearTimeUI('Mon–Fri only');
+        else if (reason === 'no_availability')  clearTimeUI('no availability on this day');
+        else if (reason === 'fully_booked')     clearTimeUI('fully booked');
+        else if (reason === 'no_slots')         clearTimeUI('no working-hour slots');
+        else                                    clearTimeUI('no available slots');
+        if (message) toast(message,'info');
         buildTimeGridFromSelect();
       }
-    }catch(e){
+    } catch(e){
       console.error('Failed to load slots', e);
       clearTimeUI('unable to load');
       toast('Something went wrong while loading slots.','error');
       buildTimeGridFromSelect();
-    }finally{
+    } finally{
       loadingEl.classList.add('hidden');
     }
   }
