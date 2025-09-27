@@ -54,7 +54,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('chatbot-sessions/export/pdf', [ChatbotSessionController::class, 'exportPdf'])
         ->name('chatbot-sessions.export.pdf');
 
-    /* APPOINTMENTS (Admin) — NO extra prefix/as here */
+    /* APPOINTMENTS (Admin) */
     Route::get('/appointments',                 [AdminAppointmentController::class, 'index'])->name('appointments.index');
     Route::get('/appointments/{id}',            [AdminAppointmentController::class, 'show'])->name('appointments.show');
     Route::get('/appointments/{id}/assign',     [AdminAppointmentController::class, 'assignForm'])->name('appointments.assign.form');
@@ -63,6 +63,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('/appointments/{id}/report',    [AdminAppointmentController::class, 'saveReport'])->name('appointments.report');
     Route::get('/appointments/export/pdf',      [AdminAppointmentController::class, 'exportPdf'])->name('appointments.export.pdf');
     Route::get('/appointments/{id}/export/pdf', [AdminAppointmentController::class, 'exportShowPdf'])->name('appointments.export.show.pdf');
+
+    // ✅ FOLLOW-UP routes (correct)
+    Route::get ('/appointments/{id}/follow-up', [AdminAppointmentController::class, 'followUpForm'])->name('appointments.follow.form');
+    Route::post('/appointments/{id}/follow-up', [AdminAppointmentController::class, 'followUpStore'])->name('appointments.follow.store');
 
     /* COUNSELOR LOGS */
     Route::get('/counselor-logs', [CounselorLogController::class, 'index'])->name('counselor-logs.index');

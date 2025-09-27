@@ -18,6 +18,7 @@
   $hasStarted = $now->gte($dt);
   $canConfirm = ($appointment->status === 'pending');
   $canDone    = ($appointment->status === 'confirmed') && $hasStarted;
+  $canFollowUp = ($appointment->status === 'completed') && !empty($appointment->counselor_id);
 
   $doneTitle = $appointment->status !== 'confirmed'
       ? 'You can only mark confirmed appointments as done'
@@ -105,6 +106,14 @@
               <a href="{{ route('admin.appointments.assign.form', $appointment->id) }}"
                  class="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700">
                 Assign Counselor
+              </a>
+            @endif
+
+            {{-- Follow-up (Completed only, and must have counselor) --}}
+            @if ($canFollowUp)
+              <a href="{{ route('admin.appointments.follow.form', $appointment->id) }}"
+                class="inline-flex items-center rounded-lg bg-indigo-50 px-4 py-2 text-indigo-700 ring-1 ring-indigo-200 hover:bg-indigo-100">
+                Create Follow-up
               </a>
             @endif
 
