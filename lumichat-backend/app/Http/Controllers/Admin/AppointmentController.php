@@ -214,24 +214,61 @@ class AppointmentController extends Controller
         $appointment = $this->appointments->findDetailedById($id);
         abort_unless($appointment, 404);
 
-        // list active counselors to choose from
+        $slotStart = \Carbon\Carbon::parse($appointment->scheduled_at);
+        $slotEnd   = $slotStart->copy()->addMinutes(30); // matches your slot length
+        $dow       = $slotStart->isoWeekday();           // 1..7
+
         $counselors = \DB::table('tbl_counselors')
             ->where('is_active', 1)
             ->orderBy('name')
             ->get(['id','name','email']);
 
+        foreach ($counselors as $c) {
+            // fits counselor’s weekly schedule?
+            $fits = \DB::table('tbl_counselor_availabilities')
+                ->where('counselor_id', $c->id)
+                ->where('weekday', $dow)
+                ->where('start_time', '<=', $slotStart->format('H:i:s'))
+                ->where('end_time',   '>=', $slotEnd->format('H:i:s'))
+                ->exists();
+
+            // already booked at that exact time?
+            $booked = \DB::table('tbl_appointments')
+                ->where('counselor_id', $c->id)
+                ->where('scheduled_at', $appointment->scheduled_at)
+                ->whereIn('status', ['pending','confirmed','completed'])
+                ->exists();
+
+            $c->available = ($fits && !$booked) ? 1 : 0;
+        }
+
         return view('admin.appointments.assign', compact('appointment', 'counselors'));
     }
 
-    public function assign(Request $request, int $id): RedirectResponse
+    public function assign(Request $request, int $id): \Illuminate\Http\RedirectResponse
     {
         $data = $request->validate([
             'counselor_id' => ['required', 'exists:tbl_counselors,id'],
         ]);
 
-        // (optional) block assigning if already assigned
         $appt = \DB::table('tbl_appointments')->where('id', $id)->first();
         abort_unless($appt, 404);
+
+        // race-proof: prevent double booking at submit time
+        $busy = \DB::table('tbl_appointments')
+            ->where('counselor_id', $data['counselor_id'])
+            ->where('scheduled_at', $appt->scheduled_at)
+            ->whereIn('status', ['pending','confirmed','completed'])
+            ->lockForUpdate()
+            ->exists();
+
+        if ($busy) {
+            return back()->withInput()->with(self::FLASH_SWAL, [
+                'icon'  => 'error',
+                'title' => 'Counselor not available',
+                'text'  => 'Selected counselor has just been booked in this time slot.',
+            ]);
+        }
 
         \DB::table('tbl_appointments')
             ->where('id', $id)
@@ -240,12 +277,10 @@ class AppointmentController extends Controller
                 'updated_at'   => now(),
             ]);
 
-        return redirect()
-            ->route('admin.appointments.show', $id)
-            ->with(self::FLASH_SWAL, [
-                'icon'  => 'success',
-                'title' => 'Assigned',
-                'text'  => 'Counselor has been assigned to this appointment.',
-            ]);
+        return redirect()->route('admin.appointments.show', $id)->with(self::FLASH_SWAL, [
+            'icon'  => 'success',
+            'title' => 'Counselor assigned',
+            'text'  => 'The appointment has been updated.',
+        ]);
     }
 }

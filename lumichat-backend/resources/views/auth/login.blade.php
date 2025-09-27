@@ -9,7 +9,7 @@
   $postRoute = $ctx === 'admin' ? route('admin.login.post') : route('login');
 @endphp
 
-<div class="bg-white p-10 rounded-2xl shadow-xl w-full max-w-md animate__animated animate__fadeIn">
+<div class="bg-white p-10 rounded-2xl shadow-xl w-full max-w-md animate-fadeup">
   <div class="flex flex-col items-center mb-6">
     <div class="relative">
       <span class="absolute inset-0 -top-1 -left-1 -right-1 -bottom-1 rounded-full blur-xl opacity-30"

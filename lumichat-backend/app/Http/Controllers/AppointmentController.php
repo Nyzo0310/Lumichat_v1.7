@@ -217,12 +217,16 @@ class AppointmentController extends Controller
         // Determine how many counselors are actually free at that slot
         $freeCounselors = $this->counselorsFreeAt($scheduledAt);
         if (empty($freeCounselors)) {
-            return back()->withErrors(['time'=>'Sorry, that time is no longer available.'])->withInput();
+            return back()->withErrors(['time' => 'Sorry, that time is no longer available.'])->withInput();
         }
+
+        // Capacity for this slot is the number of free counselors at submit time
+        $scheduledCapacity = count($freeCounselors);
 
         // Capacity control (race-safe using transaction + recheck)
         try {
             DB::transaction(function () use ($studentId, $scheduledAt, $scheduledCapacity) {
+                // Re-count blockers at the exact second (00) to avoid races
                 $takenAtTime = DB::table('tbl_appointments')
                     ->whereDate('scheduled_at', $scheduledAt->toDateString())
                     ->whereTime('scheduled_at', $scheduledAt->format('H:i:s'))
@@ -245,42 +249,14 @@ class AppointmentController extends Controller
                 ]);
             });
         } catch (\RuntimeException $e) {
-            // Graceful alert for “slot just filled”
             if ($e->getMessage() === 'FULL') {
-                return back()
-                    ->withInput()
-                    ->with('swal', [
-                        'icon'  => 'info',
-                        'title' => 'Time slot unavailable',
-                        'text'  => 'That time just filled up. Please pick another slot.',
-                    ]);
-            }
-            throw $e; // anything else = real error
-        } catch (\Illuminate\Database\QueryException $e) {
-            \Log::error('APPT INSERT FAILED', [
-                'code'     => $e->errorInfo[1] ?? null,
-                'sqlstate' => $e->errorInfo[0] ?? null,
-                'message'  => $e->getMessage(),
-            ]);
-
-            // Treat duplicate race as “full”
-            if ((int)($e->errorInfo[1] ?? 0) === 1062) {
-                return back()
-                    ->withInput()
-                    ->with('swal', [
-                        'icon'  => 'info',
-                        'title' => 'Time slot unavailable',
-                        'text'  => 'That time just filled up. Please pick another slot.',
-                    ]);
-            }
-
-            return back()
-                ->withInput()
-                ->with('swal', [
-                    'icon'  => 'error',
-                    'title' => 'Unable to book right now',
-                    'text'  => 'Please try again in a moment.',
+                return back()->withInput()->with('swal', [
+                    'icon'  => 'info',
+                    'title' => 'Time slot unavailable',
+                    'text'  => 'That time just filled up. Please pick another slot.',
                 ]);
+            }
+            throw $e;
         }
 
 

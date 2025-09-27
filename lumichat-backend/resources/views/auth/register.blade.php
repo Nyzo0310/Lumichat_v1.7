@@ -25,8 +25,8 @@
 .swal2-confirm.btn-primary-ghost:hover{ filter:brightness(0.96); }
 </style>
 
-<main class="bg-gray-100">
-  <div class="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8 py-12 page-pad">
+<main class="bg-gray-100 animate-fadeup">
+  <div class="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8 py-12 page-pad animate-fadeup">
     {{-- Banner --}}
     <div class="rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-6 py-5 sm:px-8 sm:py-6 text-white shadow-sm banner">
       <h1 class="title-sm text-xl sm:text-2xl font-semibold leading-tight">Registration Form</h1>
