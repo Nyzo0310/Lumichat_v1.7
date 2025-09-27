@@ -150,13 +150,21 @@
               <td class="px-6 py-4 font-semibold text-slate-900">{{ $row->id }}</td>
 
               <td class="px-6 py-4 whitespace-nowrap">
-                @if ($noCounselor)
-                  <span class="inline-flex items-center gap-2 rounded-lg bg-slate-100 px-2.5 py-1 text-[13px] text-slate-700 ring-1 ring-slate-200">
-                    <span class="inline-block size-1.5 rounded-full bg-slate-400"></span>
-                    Awaiting admin assignment
+                @if ($row->status === 'canceled')
+                  <span class="inline-flex items-center gap-2 rounded-lg bg-rose-50 px-2.5 py-1 text-[13px] text-rose-700 ring-1 ring-rose-200">
+                    <span class="inline-block size-1.5 rounded-full bg-rose-500"></span>
+                    Appointment Canceled
                   </span>
                 @else
-                  <span class="text-slate-700">{{ $row->counselor_name }}</span>
+                  @php $cname = trim((string) ($row->counselor_name ?? '')); @endphp
+                  @if ($cname === '')
+                    <span class="inline-flex items-center gap-2 rounded-lg bg-slate-100 px-2.5 py-1 text-[13px] text-slate-700 ring-1 ring-slate-200">
+                      <span class="inline-block size-1.5 rounded-full bg-slate-400"></span>
+                      Awaiting admin assignment
+                    </span>
+                  @else
+                    <span class="text-slate-700">{{ $cname }}</span>
+                  @endif
                 @endif
               </td>
 

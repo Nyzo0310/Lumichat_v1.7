@@ -23,6 +23,11 @@ class AppointmentController extends Controller
     private const WEEKDAY_MAX = 5; // Friday
 
     /* --------------------------- Booking page --------------------------- */
+    private function apptRepo(): \App\Repositories\Contracts\AppointmentRepositoryInterface
+    {
+        return app(\App\Repositories\Contracts\AppointmentRepositoryInterface::class);
+    }
+
     public function index()
     {
         // If the student already has an active appointment, send to History with a blocking modal
@@ -83,93 +88,63 @@ class AppointmentController extends Controller
             return response()->json(['slots'=>[], 'reason'=>'bad_request', 'message'=>'Provide date=YYYY-MM-DD.'], 400);
         }
 
-        $date  = Carbon::parse($dateStr)->startOfDay();
+        $date  = \Carbon\Carbon::parse($dateStr)->startOfDay();
         $today = now();
-        $dow   = $date->isoWeekday(); // 1..7 (Mon..Sun)
+        $dow   = $date->dayOfWeek; // 0..6 ✅
 
-        if ($dow < self::WEEKDAY_MIN || $dow > self::WEEKDAY_MAX) {
+        if ($dow < 1 || $dow > 5) { // Mon..Fri only
             return response()->json(['slots'=>[], 'reason'=>'weekend', 'message'=>'Appointments are available Monday to Friday only.']);
         }
 
-        // If the student already has an ACTIVE appointment (pending/confirmed), do not offer slots
-        if ($studentId = Auth::id()) {
-            $hasActiveAny = DB::table('tbl_appointments')
-                ->where('student_id', $studentId)
-                ->whereIn('status', self::STUDENT_ACTIVE_STATUSES)
-                ->exists();
-
-            if ($hasActiveAny) {
-                return response()->json([
-                    'slots'   => [],
-                    'reason'  => 'active_appointment',
-                    'message' => 'You already have a pending/confirmed appointment. Complete or cancel it before booking another.',
-                ]);
-            }
-        }
-
-        // Active counselors
-        $counselors = DB::table('tbl_counselors')->where('is_active', 1)->pluck('id')->all();
+        // Build the “grid” of candidate HH:MM times from counselors’ weekly schedules (same as before)
+        $counselors = \DB::table('tbl_counselors')->where('is_active', 1)->pluck('id')->all();
         if (empty($counselors)) {
             return response()->json(['slots'=>[], 'reason'=>'no_counselor', 'message'=>'No counselors are currently available.']);
         }
 
-        // For each counselor, build ALL schedule-based slots first (don’t remove booked yet)
-        $availBuckets = [];   // 'HH:MM' => [counselor_id, ...] (total counselors who can work at that minute)
+        $avail = [];
         foreach ($counselors as $cid) {
-            $ranges = DB::table('tbl_counselor_availabilities')
+            $ranges = \DB::table('tbl_counselor_availabilities')
                 ->where('counselor_id', $cid)
-                ->where('weekday', $dow)
+                ->where('weekday', $dow) // 0..6 ✅
                 ->orderBy('start_time')
-                ->get(['start_time', 'end_time']);
+                ->get(['start_time','end_time']);
 
             foreach ($ranges as $r) {
-                $start  = Carbon::parse($date->toDateString().' '.$r->start_time);
-                $end    = Carbon::parse($date->toDateString().' '.$r->end_time);
+                $start  = \Carbon\Carbon::parse($date->toDateString().' '.$r->start_time);
+                $end    = \Carbon\Carbon::parse($date->toDateString().' '.$r->end_time);
                 $cursor = $start->copy();
-
                 while ($cursor->lt($end)) {
                     $next = $cursor->copy()->addMinutes(self::STEP_MINUTES);
                     if ($next->gt($end)) break;
 
-                    // hide past times on same day
-                    if ($date->isSameDay($today) && $cursor->lte($today)) {
+                    if ($date->isSameDay($today) && $cursor->lte($today)) { // hide past
                         $cursor->addMinutes(self::STEP_MINUTES);
                         continue;
                     }
-
                     $hhmm = $cursor->format('H:i');
-                    $availBuckets[$hhmm] = $availBuckets[$hhmm] ?? [];
-                    $availBuckets[$hhmm][] = $cid;
-
+                    $avail[$hhmm] = true;
                     $cursor->addMinutes(self::STEP_MINUTES);
                 }
             }
         }
 
-        // Build final list: available = total counselors scheduled at that time − already booked at that time
+        // Final list using the SAME calculation as admin/repo:
+        $repo  = $this->apptRepo();
         $slots = [];
-        foreach ($availBuckets as $hhmm => $scheduledCounselors) {
-            $t = Carbon::parse($date->toDateString().' '.$hhmm);
-
-            $takenAtTime = DB::table('tbl_appointments')
-                ->whereDate('scheduled_at', $t->toDateString())
-                ->whereTime('scheduled_at', $t->format('H:i:s'))
-                ->whereIn('status', self::BLOCKING_STATUSES)
-                ->count();
-
-            $capacity = max(0, count($scheduledCounselors) - $takenAtTime);
-
+        foreach (array_keys($avail) as $hhmm) {
+            $t = \Carbon\Carbon::parse($date->toDateString().' '.$hhmm.':00');
+            $available = count($repo->counselorIdsFreeAt($t)); // single source of truth ✅
             $slots[] = [
                 'value'     => $hhmm,
                 'label'     => $t->format('g:i A'),
-                'available' => $capacity, // can be 0 (full)
+                'available' => $available,
             ];
         }
 
         usort($slots, fn($a,$b)=>strcmp($a['value'],$b['value']));
         return response()->json(['slots'=>$slots]);
     }
-
     /* --------------------------- Store booking -------------------------- */
     // Student submits date + time + consent; system DOES NOT assign counselor
     // We reserve capacity anonymously; admin assigns counselor later.
@@ -196,8 +171,8 @@ class AppointmentController extends Controller
         }
 
         // Mon–Fri only + not past
-        $dow = $scheduledAt->isoWeekday();
-        if ($dow < self::WEEKDAY_MIN || $dow > self::WEEKDAY_MAX) {
+        $dow = $scheduledAt->dayOfWeek; // 0..6
+        if ($dow < 1 || $dow > 5) { // Mon..Fri
             return back()->withErrors(['date'=>'Appointments are available Monday to Friday only.'])->withInput();
         }
         if ($scheduledAt->lte(now())) {
@@ -215,7 +190,8 @@ class AppointmentController extends Controller
         }
 
         // Determine how many counselors are actually free at that slot
-        $freeCounselors = $this->counselorsFreeAt($scheduledAt);
+        $repo = $this->apptRepo();
+        $freeCounselors = $repo->counselorIdsFreeAt($scheduledAt);
         if (empty($freeCounselors)) {
             return back()->withErrors(['time' => 'Sorry, that time is no longer available.'])->withInput();
         }
@@ -225,17 +201,9 @@ class AppointmentController extends Controller
 
         // Capacity control (race-safe using transaction + recheck)
         try {
-            DB::transaction(function () use ($studentId, $scheduledAt, $scheduledCapacity) {
-                // Re-count blockers at the exact second (00) to avoid races
-                $takenAtTime = DB::table('tbl_appointments')
-                    ->whereDate('scheduled_at', $scheduledAt->toDateString())
-                    ->whereTime('scheduled_at', $scheduledAt->format('H:i:s'))
-                    ->whereIn('status', self::BLOCKING_STATUSES)
-                    ->lockForUpdate()
-                    ->count();
-
-                if ($takenAtTime >= $scheduledCapacity) {
-                    // throw so the catch below can show a nice SweetAlert
+            DB::transaction(function () use ($studentId, $scheduledAt, $repo) {
+                // Recheck inside the transaction to be race-safe
+                if (count($repo->counselorIdsFreeAt($scheduledAt)) === 0) {
                     throw new \RuntimeException('FULL');
                 }
 
@@ -258,7 +226,6 @@ class AppointmentController extends Controller
             }
             throw $e;
         }
-
 
         // Success → neutral message (no counselor shown)
         return redirect()

@@ -24,7 +24,7 @@ class AppointmentController extends Controller
 
     public function __construct(
         protected AppointmentRepositoryInterface $appointments
-    ) {}
+    ) {}  
 
     /** List appointments with optional filters + search (counselor name). */
     public function index(Request $r): View
@@ -209,10 +209,21 @@ class AppointmentController extends Controller
 
         return $pdf->download('Appointment_'.$appointment->id.'.pdf');
     }
+
     public function assignForm(int $id)
     {
         $appointment = $this->appointments->findDetailedById($id);
         abort_unless($appointment, 404);
+
+        if ($appointment->status !== 'pending') {
+            return redirect()
+                ->route('admin.appointments.show', $appointment->id)
+                ->with(self::FLASH_SWAL, [
+                    'icon'  => 'warning',
+                    'title' => 'Not allowed',
+                    'text'  => 'You can only assign a counselor to pending appointments.',
+                ]);
+        }
 
         $slotStart = \Carbon\Carbon::parse($appointment->scheduled_at);
         $slotEnd   = $slotStart->copy()->addMinutes(30); // matches your slot length
@@ -245,42 +256,42 @@ class AppointmentController extends Controller
         return view('admin.appointments.assign', compact('appointment', 'counselors'));
     }
 
-    public function assign(Request $request, int $id): \Illuminate\Http\RedirectResponse
+    public function assign(Request $request, int $id): RedirectResponse
     {
         $data = $request->validate([
             'counselor_id' => ['required', 'exists:tbl_counselors,id'],
         ]);
 
-        $appt = \DB::table('tbl_appointments')->where('id', $id)->first();
-        abort_unless($appt, 404);
+        $ap = \DB::table('tbl_appointments')->where('id', $id)->first();
+        abort_unless($ap, 404);
 
-        // race-proof: prevent double booking at submit time
-        $busy = \DB::table('tbl_appointments')
-            ->where('counselor_id', $data['counselor_id'])
-            ->where('scheduled_at', $appt->scheduled_at)
-            ->whereIn('status', ['pending','confirmed','completed'])
-            ->lockForUpdate()
-            ->exists();
-
-        if ($busy) {
-            return back()->withInput()->with(self::FLASH_SWAL, [
-                'icon'  => 'error',
-                'title' => 'Counselor not available',
-                'text'  => 'Selected counselor has just been booked in this time slot.',
+        if ($ap->status !== 'pending') {
+            return back()->with(self::FLASH_SWAL, [
+                'icon'  => 'warning',
+                'title' => 'Not allowed',
+                'text'  => 'Only pending appointments can be assigned.',
             ]);
         }
 
-        \DB::table('tbl_appointments')
-            ->where('id', $id)
-            ->update([
-                'counselor_id' => $data['counselor_id'],
-                'updated_at'   => now(),
-            ]);
+        $res = $this->appointments->assignCounselor($id, (int)$data['counselor_id']);
+        if (!$res['ok']) {
+            $map = [
+                'not_found'     => ['warning','Not found','Appointment not found.'],
+                'in_past'       => ['warning','Not allowed','Cannot assign in the past.'],
+                'not_available' => ['error','Counselor busy','Selected counselor is no longer free.'],
+                'race_taken'    => ['error','Just taken','That slot was taken moments ago.'],
+            ];
+            [$icon,$title,$text] = $map[$res['reason']] ?? ['error','Error','Unable to assign counselor.'];
+            return back()->with(self::FLASH_SWAL, compact('icon','title','text'));
+        }
 
-        return redirect()->route('admin.appointments.show', $id)->with(self::FLASH_SWAL, [
+        // Auto-confirm after successful assign (optional business rule)
+        $this->appointments->updateStatusByAction($id, 'confirm');
+
+        return redirect()->route('admin.appointments.index')->with(self::FLASH_SWAL, [
             'icon'  => 'success',
             'title' => 'Counselor assigned',
-            'text'  => 'The appointment has been updated.',
+            'text'  => 'Appointment has been confirmed.',
         ]);
     }
 }

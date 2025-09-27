@@ -237,43 +237,40 @@ class AppointmentRepository implements AppointmentRepositoryInterface
     }
 
     // ==== NEW: who is free at a specific datetime (HH:MM slot) ====
-public function counselorIdsFreeAt(Carbon $scheduledAt): array
-{
-    $date = $scheduledAt->copy()->startOfDay();
-    $dow  = (int) $date->isoWeekday();
-    $end  = $scheduledAt->copy()->addMinutes(30); // same STEP_MINUTES as student side
+    public function counselorIdsFreeAt(Carbon $scheduledAt): array
+    {
+        $date = $scheduledAt->copy()->startOfDay();
+        $dow  = (int) $scheduledAt->dayOfWeek;   // 0..6 ✅
+        $end  = $scheduledAt->copy()->addMinutes(30);
 
-    // active counselors
-    $cids = DB::table('tbl_counselors')->where('is_active', 1)->pluck('id')->all();
-    if (empty($cids)) return [];
+        $cids = DB::table('tbl_counselors')->where('is_active', 1)->pluck('id')->all();
+        if (empty($cids)) return [];
 
-    $free = [];
-    foreach ($cids as $cid) {
-        // check availability window fits the 30-min slot
-        $ranges = DB::table('tbl_counselor_availabilities')
-            ->where('counselor_id', $cid)
-            ->where('weekday', $dow)
-            ->get(['start_time','end_time']);
+        $free = [];
+        foreach ($cids as $cid) {
+            $ranges = DB::table('tbl_counselor_availabilities')
+                ->where('counselor_id', $cid)
+                ->where('weekday', $dow)          // 0..6 ✅
+                ->get(['start_time','end_time']);
 
-        $fits = false;
-        foreach ($ranges as $r) {
-            $start = Carbon::parse($date->toDateString().' '.$r->start_time);
-            $endW  = Carbon::parse($date->toDateString().' '.$r->end_time);
-            if ($scheduledAt->gte($start) && $end->lte($endW)) { $fits = true; break; }
+            $fits = false;
+            foreach ($ranges as $r) {
+                $start = Carbon::parse($date->toDateString().' '.$r->start_time);
+                $endW  = Carbon::parse($date->toDateString().' '.$r->end_time);
+                if ($scheduledAt->gte($start) && $end->lte($endW)) { $fits = true; break; }
+            }
+            if (!$fits) continue;
+
+            $taken = DB::table('tbl_appointments')
+                ->where('counselor_id', $cid)
+                ->where('scheduled_at', $scheduledAt)
+                ->whereIn('status', ['pending','confirmed','completed'])
+                ->exists();
+
+            if (!$taken) $free[] = (int) $cid;
         }
-        if (!$fits) continue;
-
-        // ensure not already booked at this exact start time with a blocking status
-        $taken = DB::table('tbl_appointments')
-            ->where('counselor_id', $cid)
-            ->where('scheduled_at', $scheduledAt)
-            ->whereIn('status', ['pending','confirmed','completed'])
-            ->exists();
-
-        if (!$taken) $free[] = (int) $cid;
+        return $free;
     }
-    return $free;
-}
 
     // ==== NEW: single counselor availability check ====
     public function counselorIsFreeAt(int $counselorId, Carbon $scheduledAt): bool

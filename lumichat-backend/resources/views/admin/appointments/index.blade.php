@@ -172,16 +172,43 @@
 
               <tr class="align-middle even:bg-slate-50 hover:bg-slate-100/60 transition">
                 <td class="px-6 py-4 font-semibold text-slate-900">{{ $row->id }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-slate-700">{{ $row->student_name }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-slate-700">{{ $row->student_name }} 
+                </td>
+                
+                {{-- Counselor --}}
                 <td class="px-6 py-4 whitespace-nowrap">
-                  @php $cname = trim((string) $row->counselor_name); @endphp
-                  @if ($cname === '' || $cname === '—')
-                    <span class="inline-flex items-center gap-2 rounded-lg bg-slate-100 px-2.5 py-1 text-[13px] text-slate-700 ring-1 ring-slate-200">
-                      <span class="inline-block size-1.5 rounded-full bg-slate-400"></span>
-                      To be assigned
+                  @if ($row->status === 'canceled')
+                    <span class="inline-flex items-center gap-2 rounded-lg bg-rose-50 px-2.5 py-1 text-[13px] text-rose-700 ring-1 ring-rose-200">
+                      <span class="inline-block size-1.5 rounded-full bg-rose-500"></span>
+                      Appointment Canceled
                     </span>
+
                   @else
-                    <span class="text-slate-700">{{ $cname }}</span>
+                    @php $cname = trim((string) $row->counselor_name); @endphp
+
+                    {{-- Unassigned --}}
+                    @if ($cname === '' || $cname === '—')
+                      @if ($row->status === 'pending')
+                        {{-- Make it clickable only when pending --}}
+                        <a href="{{ route('admin.appointments.assign.form', $row->id) }}"
+                          class="inline-flex items-center gap-2 rounded-lg bg-slate-100 px-2.5 py-1 text-[13px] text-indigo-700 ring-1 ring-slate-200
+                                  hover:bg-indigo-50 hover:ring-indigo-200 transition cursor-pointer"
+                          title="Assign counselor">
+                          <span class="inline-block size-1.5 rounded-full bg-indigo-500"></span>
+                          Assign counselor
+                        </a>
+                      @else
+                        {{-- Not pending: just a neutral chip (not clickable) --}}
+                        <span class="inline-flex items-center gap-2 rounded-lg bg-slate-100 px-2.5 py-1 text-[13px] text-slate-700 ring-1 ring-slate-200">
+                          <span class="inline-block size-1.5 rounded-full bg-slate-400"></span>
+                          To be assigned
+                        </span>
+                      @endif
+
+                    {{-- Already assigned --}}
+                    @else
+                      <span class="text-slate-700">{{ $cname }}</span>
+                    @endif
                   @endif
                 </td>
 
