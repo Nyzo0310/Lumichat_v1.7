@@ -54,20 +54,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('chatbot-sessions/export/pdf', [ChatbotSessionController::class, 'exportPdf'])
         ->name('chatbot-sessions.export.pdf');
 
- /* CHATBOT SESSIONS */
-    Route::resource('chatbot-sessions', ChatbotSessionController::class)->only(['index','show'])
-        ->parameters(['chatbot-sessions' => 'session']);
-
-    Route::get('chatbot-sessions/{session}/calendar', [ChatbotSessionController::class, 'calendarCounts'])
-        ->whereNumber('session')->name('chatbot-sessions.calendar');
-
-    // ✅ ADD THESE TWO LINES (no extra nested group, no extra "admin." name)
-    Route::get('chatbot-sessions/{session}/slots', [ChatbotSessionController::class, 'slots'])
-        ->whereNumber('session')->name('chatbot-sessions.slots');
-
-    Route::post('chatbot-sessions/{session}/book', [ChatbotSessionController::class, 'book'])
-        ->whereNumber('session')->name('chatbot-sessions.book');
-        
     /* APPOINTMENTS (Admin) — NO extra prefix/as here */
     Route::get('/appointments',                 [AdminAppointmentController::class, 'index'])->name('appointments.index');
     Route::get('/appointments/{id}',            [AdminAppointmentController::class, 'show'])->name('appointments.show');
@@ -78,7 +64,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('/appointments/export/pdf',      [AdminAppointmentController::class, 'exportPdf'])->name('appointments.export.pdf');
     Route::get('/appointments/{id}/export/pdf', [AdminAppointmentController::class, 'exportShowPdf'])->name('appointments.export.show.pdf');
 
-    
     /* COUNSELOR LOGS */
     Route::get('/counselor-logs', [CounselorLogController::class, 'index'])->name('counselor-logs.index');
     Route::get('/counselor-logs/{counselor}', [CounselorLogController::class, 'show'])
