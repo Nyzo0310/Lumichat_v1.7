@@ -46,7 +46,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         ->parameters(['students' => 'student']);
     Route::get('/students/export/pdf', [StudentController::class, 'exportPdf'])->name('students.export.pdf');
 
-   /* CHATBOT SESSIONS */
+    /* CHATBOT SESSIONS */
     Route::resource('chatbot-sessions', ChatbotSessionController::class)->only(['index','show'])
         ->parameters(['chatbot-sessions' => 'session']);
     Route::get('chatbot-sessions/{session}/calendar', [ChatbotSessionController::class, 'calendarCounts'])
@@ -54,15 +54,41 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('chatbot-sessions/export/pdf', [ChatbotSessionController::class, 'exportPdf'])
         ->name('chatbot-sessions.export.pdf');
 
-    /* APPOINTMENTS (Admin) — NO extra prefix/as here */
-    Route::get('/appointments',                 [AdminAppointmentController::class, 'index'])->name('appointments.index');
-    Route::get('/appointments/{id}',            [AdminAppointmentController::class, 'show'])->name('appointments.show');
-    Route::get('/appointments/{id}/assign',     [AdminAppointmentController::class, 'assignForm'])->name('appointments.assign.form');
-    Route::patch('/appointments/{id}/assign',   [AdminAppointmentController::class, 'assign'])->name('appointments.assign');
-    Route::patch('/appointments/{id}/status',   [AdminAppointmentController::class, 'updateStatus'])->name('appointments.status');
-    Route::post('/appointments/{id}/report',    [AdminAppointmentController::class, 'saveReport'])->name('appointments.report');
-    Route::get('/appointments/export/pdf',      [AdminAppointmentController::class, 'exportPdf'])->name('appointments.export.pdf');
-    Route::get('/appointments/{id}/export/pdf', [AdminAppointmentController::class, 'exportShowPdf'])->name('appointments.export.show.pdf');
+   /* APPOINTMENTS (Admin) */
+
+    // Put capacity BEFORE the {id} routes (or keep it here and also add whereNumber below)
+    Route::get('/appointments/capacity', [AdminAppointmentController::class, 'capacity'])
+        ->name('appointments.capacity');
+
+    Route::get('/appointments', [AdminAppointmentController::class, 'index'])
+        ->name('appointments.index');
+
+    Route::get('/appointments/{id}', [AdminAppointmentController::class, 'show'])
+        ->whereNumber('id')->name('appointments.show');
+
+    Route::get('/appointments/{id}/assign', [AdminAppointmentController::class, 'assignForm'])
+        ->whereNumber('id')->name('appointments.assign.form');
+
+    Route::patch('/appointments/{id}/assign', [AdminAppointmentController::class, 'assign'])
+        ->whereNumber('id')->name('appointments.assign');
+
+    Route::patch('/appointments/{id}/status', [AdminAppointmentController::class, 'updateStatus'])
+        ->whereNumber('id')->name('appointments.status');
+
+    Route::post('/appointments/{id}/report', [AdminAppointmentController::class, 'saveReport'])
+        ->whereNumber('id')->name('appointments.report');
+
+    Route::get('/appointments/{id}/export/pdf', [AdminAppointmentController::class, 'exportShowPdf'])
+        ->whereNumber('id')->name('appointments.export.show.pdf');
+
+    Route::get('/appointments/{id}/follow-up', [AdminAppointmentController::class, 'followUpForm'])
+        ->whereNumber('id')->name('appointments.follow.form');
+
+    Route::post('/appointments/{id}/follow-up', [AdminAppointmentController::class, 'followUpStore'])
+        ->whereNumber('id')->name('appointments.follow.store');
+
+    Route::get('/appointments/export/pdf', [AdminAppointmentController::class, 'exportPdf'])
+        ->name('appointments.export.pdf');
 
     /* COUNSELOR LOGS */
     Route::get('/counselor-logs', [CounselorLogController::class, 'index'])->name('counselor-logs.index');

@@ -110,7 +110,7 @@
             @endif
 
             {{-- Follow-up (Completed only, and must have counselor) --}}
-            @if ($canFollowUp)
+            @if ($appointment->status === 'completed')
               <a href="{{ route('admin.appointments.follow.form', $appointment->id) }}"
                 class="inline-flex items-center rounded-lg bg-indigo-50 px-4 py-2 text-indigo-700 ring-1 ring-indigo-200 hover:bg-indigo-100">
                 Create Follow-up

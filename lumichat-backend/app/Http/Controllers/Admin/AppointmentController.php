@@ -10,6 +10,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 
 class AppointmentController extends Controller
 {
@@ -293,5 +296,201 @@ class AppointmentController extends Controller
             'title' => 'Counselor assigned',
             'text'  => 'Appointment has been confirmed.',
         ]);
+    }
+
+    /* ===================== Follow-up ===================== */
+
+    public function followUpForm(int $id)
+    {
+        $appointment = $this->appointments->findDetailedById($id);
+        abort_unless($appointment, 404);
+
+        // Only allow after completion
+        if ($appointment->status !== 'completed') {
+            return redirect()
+                ->route('admin.appointments.show', $appointment->id)
+                ->with('swal', [
+                    'icon'  => 'warning',
+                    'title' => 'Not allowed',
+                    'text'  => 'You can create a follow-up only after the appointment is completed.',
+                ]);
+        }
+
+        // Start with same time next week
+        $when = Carbon::parse($appointment->scheduled_at)->addWeek();
+
+        // Snap to 30-min grid
+        $when->second(0);
+        $m = (int) $when->minute;
+        $when->minute($m < 30 ? 30 : 0);
+        if ($m >= 30) $when->addHour();
+
+        // Move to next weekday (Mon–Fri)
+        $when = $this->nextWeekdayMonToFri($when);
+
+        // Find the next soonest slot that still has capacity
+        $repo = $this->appointments;
+        $limit = 200; // safety loop guard
+        while ($limit--) {
+            $freeIds = $repo->counselorIdsFreeAt($when);
+            if (!empty($freeIds)) break;
+
+            // try next 30-min slot; skip weekends
+            $when->addMinutes(30);
+            $when = $this->nextWeekdayMonToFri($when);
+        }
+
+        $suggest = [
+            'date' => $when->toDateString(),        // 'YYYY-MM-DD'
+            'time' => $when->format('H:i'),         // 'HH:MM'
+            'nice' => $when->format('M d, Y g:i A') // pretty
+        ];
+
+        return view('admin.appointments.follow-up', compact('appointment', 'suggest'));
+    }
+
+    /** Ensure date is Mon–Fri. If Sat/Sun, jump to Monday 9:00 AM. */
+    private function nextWeekdayMonToFri(Carbon $dt): Carbon
+    {
+        $dow = (int) $dt->dayOfWeek; // 0=Sun .. 6=Sat
+        if ($dow === 0) { // Sunday -> Monday 9:00
+            return $dt->addDay()->setTime(9, 0, 0);
+        }
+        if ($dow === 6) { // Saturday -> Monday 9:00 (+2 days)
+            return $dt->addDays(2)->setTime(9, 0, 0);
+        }
+        return $dt;
+    }
+
+    public function followUpStore(Request $request, int $id)
+    {
+        $appointment = $this->appointments->findById($id);
+        abort_unless($appointment, 404);
+
+        // Only after completion
+        if ($appointment->status !== 'completed') {
+            return back()->with(self::FLASH_SWAL, [
+                'icon'  => 'warning',
+                'title' => 'Not allowed',
+                'text'  => 'You can create a follow-up only after the appointment is completed.',
+            ]);
+        }
+
+        $data = $request->validate([
+            'date' => ['required','date_format:Y-m-d'],
+            'time' => ['required','regex:/^\d{2}:\d{2}$/'],
+            'note' => ['nullable','string','max:4000'],
+        ]);
+
+        $scheduledAt = Carbon::parse($data['date'].' '.$data['time'].':00');
+        if ($scheduledAt->lte(now())) {
+            return back()->withErrors(['time' => 'Please pick a future time.'])->withInput();
+        }
+
+        $originalCounselorId = $appointment->counselor_id ?: null;
+
+        try {
+            DB::transaction(function () use ($appointment, $scheduledAt, $originalCounselorId, $data) {
+
+                // counselors free at that exact slot (pooled capacity)
+                $freeIds = $this->appointments->counselorIdsFreeAt($scheduledAt);
+
+                if ($originalCounselorId) {
+                    // keep same counselor only if free
+                    if (!in_array((int)$originalCounselorId, $freeIds, true)) {
+                        throw new \RuntimeException('COUNSELOR_BUSY');
+                    }
+                    $counselorId = (int)$originalCounselorId;
+                } else {
+                    // pooled capacity required
+                    if (empty($freeIds)) {
+                        throw new \RuntimeException('FULL');
+                    }
+                    $counselorId = null; // assign later
+                }
+
+                DB::table('tbl_appointments')->insert([
+                    'student_id'   => $appointment->student_id,
+                    'counselor_id' => $counselorId,
+                    'scheduled_at' => $scheduledAt,
+                    'status'       => 'confirmed', // auto-confirm so student can’t cancel
+                    'note'         => $data['note'] ?? null,
+                    'parent_id'    => $appointment->id,
+                    'created_at'   => now(),
+                    'updated_at'   => now(),
+                ]);
+            });
+        } catch (\RuntimeException $e) {
+            if ($e->getMessage() === 'FULL') {
+                return back()->with(self::FLASH_SWAL, [
+                    'icon'  => 'info',
+                    'title' => 'Time slot unavailable',
+                    'text'  => 'That time has no remaining capacity. Please pick another slot.',
+                ])->withInput();
+            }
+            if ($e->getMessage() === 'COUNSELOR_BUSY') {
+                return back()->with(self::FLASH_SWAL, [
+                    'icon'  => 'warning',
+                    'title' => 'Counselor not available',
+                    'text'  => 'The original counselor is busy at that time. Please pick a different time.',
+                ])->withInput();
+            }
+            throw $e;
+        }
+
+        return redirect()
+            ->route('admin.appointments.index')
+            ->with(self::FLASH_SWAL, [
+                'icon'  => 'success',
+                'title' => 'Follow-up confirmed',
+                'text'  => 'The follow-up appointment has been created and confirmed.',
+            ]);
+    }
+
+    /** JSON: pooled capacity and (optional) specific counselor availability */
+    public function capacity(Request $r): JsonResponse
+    {
+        try {
+            $r->validate([
+                'date'         => ['required','date_format:Y-m-d'],
+                'time'         => ['required','date_format:H:i'],
+                'counselor_id' => ['nullable','integer'],
+            ]);
+
+            $scheduledAt = Carbon::parse($r->input('date').' '.$r->input('time').':00');
+
+            // always an array
+            $freeIds = (array) ($this->appointments->counselorIdsFreeAt($scheduledAt) ?? []);
+            $pooled  = count($freeIds);
+
+            // cross-version safe int read
+            $rawCid = $r->input('counselor_id', null);
+            $cid    = ($rawCid === null || $rawCid === '') ? null : (int) $rawCid;
+
+            $counselorFree = null;
+            if ($cid !== null) {
+                $counselorFree = in_array($cid, $freeIds, true);
+            }
+
+            return response()->json([
+                'ok'                  => true,
+                'pooled_available'    => $pooled,
+                'counselor_available' => $counselorFree, // true/false/null
+                'at'                  => $scheduledAt->toDateTimeString(),
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'ok'    => false,
+                'error' => 'validation',
+                'msg'   => $e->getMessage(),
+            ], 422);
+        } catch (\Throwable $e) {
+            \Log::error('capacity error', ['exception' => $e]);
+            return response()->json([
+                'ok'    => false,
+                'error' => 'server',
+                'msg'   => 'Something went wrong.',
+            ], 500);
+        }
     }
 }

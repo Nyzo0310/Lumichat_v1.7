@@ -101,3 +101,4 @@ Route::view('/support/bug', 'support.bug')->name('support.bug');
 |--------------------------------------------------------------------------
 */
 require __DIR__ . '/auth.php';
+require __DIR__.'/admin.php'; 

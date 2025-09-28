@@ -72,7 +72,7 @@
           </div>
         @endif
       </div>
-
+        
       <div>
         <h3 class="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">Scheduled</h3>
         <p class="text-sm text-gray-900 dark:text-gray-100 font-medium">
@@ -80,6 +80,21 @@
         </p>
       </div>
     </div>
+    
+  {{-- Admin/Counselor note to the student --}}
+  @if(!empty($appointment->note))
+    <div class="mt-6 rounded-xl border border-indigo-200 bg-indigo-50/60 p-4">
+      <div class="flex items-center gap-2 text-indigo-800 font-medium text-sm">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 2a10 10 0 100 20 10 10 0 000-20zM11 6h2v7h-2V6zm0 9h2v2h-2v-2z"/>
+        </svg>
+        Note from Counseling Office
+      </div>
+      <div class="mt-2 text-slate-800 text-sm leading-relaxed">
+        {!! nl2br(e($appointment->note)) !!}
+      </div>
+    </div>
+  @endif
 
     @if(!empty($appointment->final_note))
       <div class="mt-6">

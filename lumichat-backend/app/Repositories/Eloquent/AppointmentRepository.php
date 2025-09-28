@@ -239,36 +239,70 @@ class AppointmentRepository implements AppointmentRepositoryInterface
     // ==== NEW: who is free at a specific datetime (HH:MM slot) ====
     public function counselorIdsFreeAt(Carbon $scheduledAt): array
     {
-        $date = $scheduledAt->copy()->startOfDay();
-        $dow  = (int) $scheduledAt->dayOfWeek;   // 0..6 ✅
-        $end  = $scheduledAt->copy()->addMinutes(30);
+        // 30-min slot end
+        $slotEnd = $scheduledAt->copy()->addMinutes(30);
+
+        // Use 1..7 (Mon..Sun) to match the rest of the codebase and DB data
+        $dow = (int) $scheduledAt->isoWeekday();
+
+        // Base date used to stitch time strings into a datetime
+        $dateStr = $scheduledAt->toDateString();
 
         $cids = DB::table('tbl_counselors')->where('is_active', 1)->pluck('id')->all();
         if (empty($cids)) return [];
 
         $free = [];
+
         foreach ($cids as $cid) {
+            // Get availability ranges for that weekday, ignore rows with NULL/empty times
             $ranges = DB::table('tbl_counselor_availabilities')
                 ->where('counselor_id', $cid)
-                ->where('weekday', $dow)          // 0..6 ✅
+                ->where('weekday', $dow)           // 1..7 ✅
+                ->whereNotNull('start_time')
+                ->whereNotNull('end_time')
                 ->get(['start_time','end_time']);
 
+            // Must fit in at least one range
             $fits = false;
             foreach ($ranges as $r) {
-                $start = Carbon::parse($date->toDateString().' '.$r->start_time);
-                $endW  = Carbon::parse($date->toDateString().' '.$r->end_time);
-                if ($scheduledAt->gte($start) && $end->lte($endW)) { $fits = true; break; }
-            }
-            if (!$fits) continue;
+                // Skip malformed rows safely
+                if (!\is_string($r->start_time) || !\is_string($r->end_time) ||
+                    $r->start_time === '' || $r->end_time === '') {
+                    continue;
+                }
 
+                // Protect against parse errors
+                try {
+                    $rangeStart = Carbon::parse($dateStr.' '.$r->start_time);
+                    $rangeEnd   = Carbon::parse($dateStr.' '.$r->end_time);
+                } catch (\Throwable $e) {
+                    // Malformed time; ignore this range
+                    continue;
+                }
+
+                // Slot is within availability window?
+                if ($scheduledAt->gte($rangeStart) && $slotEnd->lte($rangeEnd)) {
+                    $fits = true;
+                    break;
+                }
+            }
+
+            if (!$fits) {
+                continue;
+            }
+
+            // Not already taken at that exact slot?
             $taken = DB::table('tbl_appointments')
                 ->where('counselor_id', $cid)
                 ->where('scheduled_at', $scheduledAt)
                 ->whereIn('status', ['pending','confirmed','completed'])
                 ->exists();
 
-            if (!$taken) $free[] = (int) $cid;
+            if (!$taken) {
+                $free[] = (int) $cid;
+            }
         }
+
         return $free;
     }
 
