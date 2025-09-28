@@ -355,10 +355,25 @@ class AppointmentController extends Controller
             });
         }
 
-        $appointments = $query
-            ->orderByDesc('a.scheduled_at')
-            ->paginate(10)
-            ->withQueryString();
+// Completed at bottom + period-aware ordering
+$query->orderByRaw("CASE WHEN a.status = 'completed' THEN 1 ELSE 0 END ASC");
+
+if ($period === 'past') {
+    // Past view: newest past first, completed still at the bottom bucket
+    $query->orderBy('a.scheduled_at', 'desc');
+} elseif (in_array($period, ['today','upcoming','this_week','this_month'], true)) {
+    // Upcoming views: soonest first, completed still at the bottom bucket
+    $query->orderBy('a.scheduled_at', 'asc');
+} else {
+    // 'all' (default): future first (ASC), then past (DESC); completed block is at the end
+    $query->orderByRaw("CASE WHEN a.scheduled_at >= ? THEN 0 ELSE 1 END", [$now]) // future then past
+          ->orderByRaw("CASE WHEN a.scheduled_at >= ? THEN a.scheduled_at END ASC",  [$now]) // future asc
+          ->orderByRaw("CASE WHEN a.scheduled_at <  ? THEN a.scheduled_at END DESC", [$now]) // past desc
+          ->orderByRaw("CASE WHEN a.status = 'completed' THEN a.scheduled_at END DESC");      // completed desc at bottom
+}
+
+$appointments = $query->paginate(10)->withQueryString();
+
 
         return view('appointment.history', [
             'appointments' => $appointments,

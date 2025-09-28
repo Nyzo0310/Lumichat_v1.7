@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 class AppointmentRepository implements AppointmentRepositoryInterface
 {
     private const TABLE          = 'tbl_appointments';
-    private const STUDENTS_TABLE = 'tbl_users';       // your schema
+    private const STUDENTS_TABLE = 'tbl_users';
     private const COUNS_TABLE    = 'tbl_counselors';
 
     public function __construct(
@@ -22,6 +22,7 @@ class AppointmentRepository implements AppointmentRepositoryInterface
 
     public function all(): Collection
     {
+        // If you also want completed at bottom here, switch to the smart ordering helper.
         return $this->baseSelect()->orderByDesc('a.scheduled_at')->get();
     }
 
@@ -30,18 +31,18 @@ class AppointmentRepository implements AppointmentRepositoryInterface
         $q = $this->baseSelect();
         $this->applyCommonFilters($q, $filters);
 
-        // optional text search (by counselor name by default; extend as needed)
         if (!empty($filters['q'])) {
             $term = '%' . trim((string)$filters['q']) . '%';
             $q->where(function ($w) use ($term) {
                 $w->where('c.name', 'like', $term)
-                ->orWhere('u.name', 'like', $term);
+                  ->orWhere('u.name', 'like', $term);
             });
         }
 
-        return $q->orderBy('a.scheduled_at', 'desc')
-                 ->paginate($perPage)
-                 ->withQueryString();
+        // ✅ completed last + period-aware date ordering
+        $this->applySmartOrderingWithCompletedLast($q, (string)($filters['period'] ?? 'all'));
+
+        return $q->paginate($perPage)->withQueryString();
     }
 
     public function findDetailedById(int $id): ?object
@@ -102,7 +103,7 @@ class AppointmentRepository implements AppointmentRepositoryInterface
     public function statsByStatus(array $filters = []): array
     {
         $q = DB::table(self::TABLE);
-        $this->applyCommonFilters($q, $filters); // do not filter by 'status' here
+        $this->applyCommonFilters($q, $filters);
 
         return $q->selectRaw('status, COUNT(*) as total')
                  ->groupBy('status')
@@ -113,22 +114,16 @@ class AppointmentRepository implements AppointmentRepositoryInterface
     public function saveFinalReport(int $appointmentId, string $diagnosis, ?string $finalNote, int $finalizedBy): array
     {
         $ap = DB::table(self::TABLE)->where('id', $appointmentId)->first();
-        if (!$ap) {
-            return ['ok' => false, 'reason' => 'not_found'];
-        }
-        if ($ap->status !== 'completed') {
-            return ['ok' => false, 'reason' => 'not_completed'];
-        }
+        if (!$ap) return ['ok' => false, 'reason' => 'not_found'];
+        if ($ap->status !== 'completed') return ['ok' => false, 'reason' => 'not_completed'];
 
         DB::transaction(function () use ($appointmentId, $ap, $diagnosis, $finalNote, $finalizedBy) {
-            DB::table(self::TABLE)
-                ->where('id', $appointmentId)
-                ->update([
-                    'final_note'   => $finalNote,
-                    'finalized_by' => $finalizedBy,
-                    'finalized_at' => now(),
-                    'updated_at'   => now(),
-                ]);
+            DB::table(self::TABLE)->where('id', $appointmentId)->update([
+                'final_note'   => $finalNote,
+                'finalized_by' => $finalizedBy,
+                'finalized_at' => now(),
+                'updated_at'   => now(),
+            ]);
 
             DB::table('tbl_diagnosis_reports')->insert([
                 'student_id'       => $ap->student_id,
@@ -139,7 +134,6 @@ class AppointmentRepository implements AppointmentRepositoryInterface
                 'updated_at'       => now(),
             ]);
 
-            // refresh analytics for the student’s course/year
             $this->analytics->refreshForStudent((int) $ap->student_id);
         });
 
@@ -149,9 +143,7 @@ class AppointmentRepository implements AppointmentRepositoryInterface
     public function updateStatusByAction(int $appointmentId, string $action): array
     {
         $map = ['confirm' => 'confirmed', 'done' => 'completed'];
-        if (!isset($map[$action])) {
-            return ['ok' => false, 'reason' => 'invalid_action'];
-        }
+        if (!isset($map[$action])) return ['ok' => false, 'reason' => 'invalid_action'];
 
         $newStatus = $map[$action];
 
@@ -161,35 +153,25 @@ class AppointmentRepository implements AppointmentRepositoryInterface
                 ->where('id', $appointmentId)
                 ->first();
 
-            if (!$row) {
-                return ['ok' => false, 'reason' => 'not_found'];
-            }
-            if ($row->status !== 'confirmed') {
-                return ['ok' => false, 'reason' => 'must_be_confirmed'];
-            }
-            if (Carbon::parse($row->scheduled_at)->isFuture()) {
-                return ['ok' => false, 'reason' => 'too_early'];
-            }
+            if (!$row) return ['ok' => false, 'reason' => 'not_found'];
+            if ($row->status !== 'confirmed') return ['ok' => false, 'reason' => 'must_be_confirmed'];
+            if (Carbon::parse($row->scheduled_at)->isFuture()) return ['ok' => false, 'reason' => 'too_early'];
         }
 
-        DB::table(self::TABLE)
-            ->where('id', $appointmentId)
-            ->update([
-                'status'     => $newStatus,
-                'updated_at' => now(),
-            ]);
+        DB::table(self::TABLE)->where('id', $appointmentId)->update([
+            'status'     => $newStatus,
+            'updated_at' => now(),
+        ]);
 
         return ['ok' => true];
     }
 
     /* ===================== Helpers ===================== */
 
-   // App\Repositories\Eloquent\AppointmentRepository.php
-
     protected function baseSelect(): Builder
     {
         return DB::table(self::TABLE.' as a')
-            ->leftJoin(self::COUNS_TABLE.' as c', 'c.id', '=', 'a.counselor_id') // <— leftJoin
+            ->leftJoin(self::COUNS_TABLE.' as c', 'c.id', '=', 'a.counselor_id')
             ->join(self::STUDENTS_TABLE.' as u', 'u.id', '=', 'a.student_id')
             ->select([
                 'a.id','a.scheduled_at','a.created_at as booked_at','a.status',
@@ -201,7 +183,7 @@ class AppointmentRepository implements AppointmentRepositoryInterface
     protected function baseSelectForShow(): Builder
     {
         return DB::table(self::TABLE.' as a')
-            ->leftJoin(self::COUNS_TABLE.' as c', 'c.id', '=', 'a.counselor_id') // <— leftJoin
+            ->leftJoin(self::COUNS_TABLE.' as c', 'c.id', '=', 'a.counselor_id')
             ->join(self::STUDENTS_TABLE.' as u', 'u.id', '=', 'a.student_id')
             ->select([
                 'a.*',
@@ -210,15 +192,12 @@ class AppointmentRepository implements AppointmentRepositoryInterface
             ]);
     }
 
-
     protected function applyCommonFilters(Builder $q, array $filters): void
     {
-        // status
         if (!empty($filters['status']) && $filters['status'] !== 'all') {
             $q->where('a.status', $filters['status']);
         }
 
-        // period
         $period = $filters['period'] ?? 'all';
         if ($period && $period !== 'all') {
             $now = Carbon::now();
@@ -236,83 +215,92 @@ class AppointmentRepository implements AppointmentRepositoryInterface
         }
     }
 
-    // ==== NEW: who is free at a specific datetime (HH:MM slot) ====
+    /**
+     * Completed at bottom + period-aware ordering:
+     * - Always: completed last (status bucket).
+     * - 'today'/'upcoming'/'this_week'/'this_month' → ASC inside bucket.
+     * - 'past' → DESC inside bucket.
+     * - 'all' → Future first (ASC), then Past (DESC), completed (DESC) at the bottom.
+     */
+    protected function applySmartOrderingWithCompletedLast(Builder $q, string $period): void
+    {
+        $now = now();
+
+        // Bucket 1: non-completed (0) | Bucket 2: completed (1)
+        $q->orderByRaw("CASE WHEN a.status = 'completed' THEN 1 ELSE 0 END ASC");
+
+        if ($period === 'past') {
+            // Within each bucket: newest past first
+            $q->orderBy('a.scheduled_at', 'desc');
+            return;
+        }
+
+        if (in_array($period, ['today','upcoming','this_week','this_month'], true)) {
+            // Within each bucket: soonest first
+            $q->orderBy('a.scheduled_at', 'asc');
+            return;
+        }
+
+        // 'all' or anything else:
+        // Sub-bucket inside non-completed: future first (ASC), then past (DESC)
+        // Completed will also be ordered by date DESC at the very end.
+        $q->orderByRaw("CASE WHEN a.scheduled_at >= ? THEN 0 ELSE 1 END", [$now]) // future then past
+          ->orderByRaw("CASE WHEN a.scheduled_at >= ? THEN a.scheduled_at END ASC",  [$now]) // future asc
+          ->orderByRaw("CASE WHEN a.scheduled_at <  ? THEN a.scheduled_at END DESC", [$now]) // past desc
+          ->orderByRaw("CASE WHEN a.status = 'completed' THEN a.scheduled_at END DESC");      // completed desc
+    }
+
+    // ==== Availability helpers (unchanged) ====
     public function counselorIdsFreeAt(Carbon $scheduledAt): array
     {
-        // 30-min slot end
         $slotEnd = $scheduledAt->copy()->addMinutes(30);
-
-        // Use 1..7 (Mon..Sun) to match the rest of the codebase and DB data
         $dow = (int) $scheduledAt->isoWeekday();
-
-        // Base date used to stitch time strings into a datetime
         $dateStr = $scheduledAt->toDateString();
 
         $cids = DB::table('tbl_counselors')->where('is_active', 1)->pluck('id')->all();
         if (empty($cids)) return [];
 
         $free = [];
-
         foreach ($cids as $cid) {
-            // Get availability ranges for that weekday, ignore rows with NULL/empty times
             $ranges = DB::table('tbl_counselor_availabilities')
                 ->where('counselor_id', $cid)
-                ->where('weekday', $dow)           // 1..7 ✅
+                ->where('weekday', $dow)
                 ->whereNotNull('start_time')
                 ->whereNotNull('end_time')
                 ->get(['start_time','end_time']);
 
-            // Must fit in at least one range
             $fits = false;
             foreach ($ranges as $r) {
-                // Skip malformed rows safely
-                if (!\is_string($r->start_time) || !\is_string($r->end_time) ||
-                    $r->start_time === '' || $r->end_time === '') {
+                if (!\is_string($r->start_time) || !\is_string($r->end_time) || $r->start_time === '' || $r->end_time === '') {
                     continue;
                 }
-
-                // Protect against parse errors
                 try {
                     $rangeStart = Carbon::parse($dateStr.' '.$r->start_time);
                     $rangeEnd   = Carbon::parse($dateStr.' '.$r->end_time);
                 } catch (\Throwable $e) {
-                    // Malformed time; ignore this range
                     continue;
                 }
-
-                // Slot is within availability window?
-                if ($scheduledAt->gte($rangeStart) && $slotEnd->lte($rangeEnd)) {
-                    $fits = true;
-                    break;
-                }
+                if ($scheduledAt->gte($rangeStart) && $slotEnd->lte($rangeEnd)) { $fits = true; break; }
             }
+            if (!$fits) continue;
 
-            if (!$fits) {
-                continue;
-            }
-
-            // Not already taken at that exact slot?
             $taken = DB::table('tbl_appointments')
                 ->where('counselor_id', $cid)
                 ->where('scheduled_at', $scheduledAt)
                 ->whereIn('status', ['pending','confirmed','completed'])
                 ->exists();
 
-            if (!$taken) {
-                $free[] = (int) $cid;
-            }
+            if (!$taken) $free[] = (int) $cid;
         }
 
         return $free;
     }
 
-    // ==== NEW: single counselor availability check ====
     public function counselorIsFreeAt(int $counselorId, Carbon $scheduledAt): bool
     {
         return \in_array($counselorId, $this->counselorIdsFreeAt($scheduledAt), true);
     }
 
-    // ==== NEW: assign (or reassign) counselor to an appointment ====
     public function assignCounselor(int $appointmentId, int $counselorId): array
     {
         $ap = DB::table(self::TABLE)->where('id', $appointmentId)->first();
@@ -334,11 +322,9 @@ class AppointmentRepository implements AppointmentRepositoryInterface
                 ]);
             return ['ok'=>true];
         } catch (\Illuminate\Database\QueryException $e) {
-            // 1062: unique key (counselor_id, scheduled_at) race condition
             $code = (int)($e->errorInfo[1] ?? 0);
             if ($code === 1062) return ['ok'=>false, 'reason'=>'race_taken'];
             return ['ok'=>false, 'reason'=>'db_error'];
         }
     }
-
 }
