@@ -49,10 +49,24 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     /* CHATBOT SESSIONS */
     Route::resource('chatbot-sessions', ChatbotSessionController::class)->only(['index','show'])
         ->parameters(['chatbot-sessions' => 'session']);
-    Route::get('chatbot-sessions/{session}/calendar', [ChatbotSessionController::class, 'calendarCounts'])
-        ->whereNumber('session')->name('chatbot-sessions.calendar');
-    Route::get('chatbot-sessions/export/pdf', [ChatbotSessionController::class, 'exportPdf'])
-        ->name('chatbot-sessions.export.pdf');
+
+    Route::get('chatbot-sessions/{session}/calendar',
+        [ChatbotSessionController::class, 'calendarCounts']
+    )->whereNumber('session')->name('chatbot-sessions.calendar');
+
+    Route::get('chatbot-sessions/export/pdf',
+        [ChatbotSessionController::class, 'exportPdf']
+    )->name('chatbot-sessions.export.pdf');
+
+    /* 🔹 Add these two: */
+    Route::get('chatbot-sessions/{session}/slots',
+        [ChatbotSessionController::class, 'slots']
+    )->whereNumber('session')->name('chatbot-sessions.slots');
+
+    Route::post('chatbot-sessions/{session}/book',
+        [ChatbotSessionController::class, 'book']
+    )->whereNumber('session')->name('chatbot-sessions.book');
+
 
    /* APPOINTMENTS (Admin) */
 

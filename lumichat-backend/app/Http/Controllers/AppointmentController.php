@@ -11,9 +11,12 @@ class AppointmentController extends Controller
 {
     /** Minutes per slot */
     private const STEP_MINUTES = 30;
+    /** Minimum step for availability ranges (must divide SLOT_MINUTES) */
+    private const SLOT_MINUTES = 30;
 
     /** Statuses that block a time from being offered again */
     private const BLOCKING_STATUSES = ['pending', 'confirmed', 'completed'];
+    
 
     /** Student “active” statuses that block new bookings */
     private const STUDENT_ACTIVE_STATUSES = ['pending', 'confirmed'];
@@ -23,6 +26,12 @@ class AppointmentController extends Controller
     private const WEEKDAY_MAX = 5; // Friday
 
     /* --------------------------- Booking page --------------------------- */
+    private function floorToSlot(\Carbon\Carbon $dt): \Carbon\Carbon
+    {
+        $m = (int) floor($dt->minute / self::SLOT_MINUTES) * self::SLOT_MINUTES;
+        return $dt->copy()->setTime($dt->hour, $m, 0);
+    }
+
     private function apptRepo(): \App\Repositories\Contracts\AppointmentRepositoryInterface
     {
         return app(\App\Repositories\Contracts\AppointmentRepositoryInterface::class);
@@ -53,6 +62,55 @@ class AppointmentController extends Controller
     }
 
     /* -------------- Optional landing: decide index vs history ----------- */
+    private function workingCounselorsAt(\Carbon\Carbon $slotStart): int
+    {
+        $date    = $slotStart->copy()->startOfDay();
+        $dowIso  = $slotStart->isoWeekday();      // 1..7 ✅
+        $slotEnd = $slotStart->copy()->addMinutes(self::SLOT_MINUTES);
+
+        $cids = \DB::table('tbl_counselors')->where('is_active', 1)->pluck('id')->all();
+        if (empty($cids)) return 0;
+
+        $count = 0;
+        foreach ($cids as $cid) {
+            $ranges = \DB::table('tbl_counselor_availabilities')
+                ->where('counselor_id', $cid)
+                ->where('weekday', $dowIso)        // 1..7 ✅
+                ->get(['start_time','end_time']);
+
+            foreach ($ranges as $r) {
+                if (!\is_string($r->start_time) || !\is_string($r->end_time) || $r->start_time === '' || $r->end_time === '') {
+                    continue;
+                }
+                $start = \Carbon\Carbon::parse($date->toDateString().' '.$r->start_time);
+                $end   = \Carbon\Carbon::parse($date->toDateString().' '.$r->end_time);
+
+                // slot fully inside range (end is exclusive)
+                if ($slotStart->gte($start) && $slotEnd->lte($end)) {
+                    $count++;
+                    break; // no need to check other ranges for the same counselor
+                }
+            }
+        }
+        return $count;
+    }
+
+    // --- NEW: pooled capacity remaining at this exact slot ---
+    private function remainingCapacityAt(\Carbon\Carbon $slotStart): int
+    {
+        $working = $this->workingCounselorsAt($slotStart);
+
+        // Any appointment at this exact time (assigned or not) consumes capacity
+        $booked = \DB::table('tbl_appointments')
+            ->where('scheduled_at', $slotStart)
+            ->whereIn('status', self::BLOCKING_STATUSES)
+            ->count();
+
+        $remain = $working - $booked;
+        return $remain > 0 ? $remain : 0;
+    }
+
+
     public function entrypoint(Request $request)
     {
         $userId = Auth::id();
@@ -90,55 +148,61 @@ class AppointmentController extends Controller
 
         $date  = \Carbon\Carbon::parse($dateStr)->startOfDay();
         $today = now();
-        $dow   = $date->dayOfWeek; // 0..6 ✅
 
-        if ($dow < 1 || $dow > 5) { // Mon..Fri only
+        // Mon..Fri only (isoWeekday 1..5)
+        $dowIso = $date->isoWeekday();
+        if ($dowIso < 1 || $dowIso > 5) {
             return response()->json(['slots'=>[], 'reason'=>'weekend', 'message'=>'Appointments are available Monday to Friday only.']);
         }
 
-        // Build the “grid” of candidate HH:MM times from counselors’ weekly schedules (same as before)
-        $counselors = \DB::table('tbl_counselors')->where('is_active', 1)->pluck('id')->all();
-        if (empty($counselors)) {
+        // Build candidate HH:MM from active counselors’ weekly windows (using iso weekday)
+        $cids = \DB::table('tbl_counselors')->where('is_active', 1)->pluck('id')->all();
+        if (empty($cids)) {
             return response()->json(['slots'=>[], 'reason'=>'no_counselor', 'message'=>'No counselors are currently available.']);
         }
 
-        $avail = [];
-        foreach ($counselors as $cid) {
+        // Collect unique candidate times for the day
+        $candidate = [];
+        foreach ($cids as $cid) {
             $ranges = \DB::table('tbl_counselor_availabilities')
                 ->where('counselor_id', $cid)
-                ->where('weekday', $dow) // 0..6 ✅
+                ->where('weekday', $dowIso) // 1..7 ✅
                 ->orderBy('start_time')
                 ->get(['start_time','end_time']);
 
             foreach ($ranges as $r) {
-                $start  = \Carbon\Carbon::parse($date->toDateString().' '.$r->start_time);
-                $end    = \Carbon\Carbon::parse($date->toDateString().' '.$r->end_time);
-                $cursor = $start->copy();
+                if (!\is_string($r->start_time) || !\is_string($r->end_time) || $r->start_time === '' || $r->end_time === '') {
+                    continue;
+                }
+                $cursor = \Carbon\Carbon::parse($date->toDateString().' '.$r->start_time)->second(0);
+                $end    = \Carbon\Carbon::parse($date->toDateString().' '.$r->end_time)->second(0);
+
+                // walk by 30 minutes
                 while ($cursor->lt($end)) {
-                    $next = $cursor->copy()->addMinutes(self::STEP_MINUTES);
+                    $slot = $this->floorToSlot($cursor);
+                    $next = $slot->copy()->addMinutes(self::SLOT_MINUTES);
                     if ($next->gt($end)) break;
 
-                    if ($date->isSameDay($today) && $cursor->lte($today)) { // hide past
-                        $cursor->addMinutes(self::STEP_MINUTES);
+                    // Hide past times for today
+                    if ($date->isSameDay($today) && $slot->lte($today)) {
+                        $cursor = $cursor->addMinutes(self::SLOT_MINUTES);
                         continue;
                     }
-                    $hhmm = $cursor->format('H:i');
-                    $avail[$hhmm] = true;
-                    $cursor->addMinutes(self::STEP_MINUTES);
+
+                    $candidate[$slot->format('H:i')] = $slot->copy(); // de-duplicate by HH:MM
+                    $cursor = $cursor->addMinutes(self::SLOT_MINUTES);
                 }
             }
         }
 
-        // Final list using the SAME calculation as admin/repo:
-        $repo  = $this->apptRepo();
+        // Compute remaining pooled capacity per unique candidate time
         $slots = [];
-        foreach (array_keys($avail) as $hhmm) {
-            $t = \Carbon\Carbon::parse($date->toDateString().' '.$hhmm.':00');
-            $available = count($repo->counselorIdsFreeAt($t)); // single source of truth ✅
+        foreach ($candidate as $hhmm => $slotStart) {
+            $remaining = $this->remainingCapacityAt($slotStart);
             $slots[] = [
-                'value'     => $hhmm,
-                'label'     => $t->format('g:i A'),
-                'available' => $available,
+                'value'     => $hhmm,                 // 'HH:MM'
+                'label'     => $slotStart->format('g:i A'),
+                'available' => $remaining,            // 0..N (pooled)
             ];
         }
 
@@ -151,16 +215,24 @@ class AppointmentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'date'    => 'required|date_format:Y-m-d',
-            'time'    => 'required|regex:/^\d{2}:\d{2}$/',
-            'consent' => 'accepted',
+            'date'    => ['required','date_format:Y-m-d'],
+            'time'    => ['required','regex:/^\d{2}:\d{2}$/'],
+            'consent' => ['accepted'],
         ], [], ['date'=>'date', 'time'=>'time']);
 
-        $studentId   = Auth::id();
-        $scheduledAt = Carbon::parse($request->date.' '.$request->time.':00');
+        $studentId = \Auth::id();
 
-        // One ACTIVE appointment at a time (pending or confirmed)
-        $hasActiveAny = DB::table('tbl_appointments')
+        // Parse & snap to 30-min slot
+        $raw     = \Carbon\Carbon::parse($request->date.' '.$request->time.':00')->second(0);
+        $slot    = $this->floorToSlot($raw); // snaps (e.g., 09:17 -> 09:00)
+
+        // Reject off-grid inputs (e.g., 09:15) to keep UI honest
+        if ($raw->ne($slot)) {
+            return back()->withErrors(['time'=>'Please choose a 30-minute step (e.g., 09:00, 09:30).'])->withInput();
+        }
+
+        // One ACTIVE appointment at a time (pending/confirmed)
+        $hasActiveAny = \DB::table('tbl_appointments')
             ->where('student_id', $studentId)
             ->whereIn('status', self::STUDENT_ACTIVE_STATUSES)
             ->exists();
@@ -171,51 +243,44 @@ class AppointmentController extends Controller
         }
 
         // Mon–Fri only + not past
-        $dow = $scheduledAt->dayOfWeek; // 0..6
-        if ($dow < 1 || $dow > 5) { // Mon..Fri
+        $dowIso = $slot->isoWeekday(); // 1..7
+        if ($dowIso < 1 || $dowIso > 5) {
             return back()->withErrors(['date'=>'Appointments are available Monday to Friday only.'])->withInput();
         }
-        if ($scheduledAt->lte(now())) {
+        if ($slot->lte(now())) {
             return back()->withErrors(['time'=>'Please choose a future time.'])->withInput();
         }
 
         // One appointment per day (any blocking status)
-        $hasSameDay = DB::table('tbl_appointments')
+        $hasSameDay = \DB::table('tbl_appointments')
             ->where('student_id', $studentId)
-            ->whereDate('scheduled_at', $scheduledAt->toDateString())
+            ->whereDate('scheduled_at', $slot->toDateString())
             ->whereIn('status', self::BLOCKING_STATUSES)
             ->exists();
         if ($hasSameDay) {
             return back()->withErrors(['date'=>'You already have an appointment on this date.'])->withInput();
         }
 
-        // Determine how many counselors are actually free at that slot
-        $repo = $this->apptRepo();
-        $freeCounselors = $repo->counselorIdsFreeAt($scheduledAt);
-        if (empty($freeCounselors)) {
-            return back()->withErrors(['time' => 'Sorry, that time is no longer available.'])->withInput();
-        }
-
-        // Capacity for this slot is the number of free counselors at submit time
-        $scheduledCapacity = count($freeCounselors);
-
-        // Capacity control (race-safe using transaction + recheck)
+        // RACE-SAFE pooled capacity reservation
         try {
-            DB::transaction(function () use ($studentId, $scheduledAt, $repo) {
-                // Recheck inside the transaction to be race-safe
-                if (count($repo->counselorIdsFreeAt($scheduledAt)) === 0) {
+            \DB::transaction(function () use ($studentId, $slot) {
+
+                // Re-check remaining capacity **inside** the transaction
+                $remaining = $this->remainingCapacityAt($slot);
+                if ($remaining <= 0) {
                     throw new \RuntimeException('FULL');
                 }
 
-                DB::table('tbl_appointments')->insert([
+                // Insert a pending appointment WITHOUT counselor (consumes pooled capacity)
+                \DB::table('tbl_appointments')->insert([
                     'student_id'   => $studentId,
-                    'counselor_id' => null,
-                    'scheduled_at' => $scheduledAt,
+                    'counselor_id' => null,            // assigned later by admin
+                    'scheduled_at' => $slot,           // exact slot start
                     'status'       => 'pending',
                     'created_at'   => now(),
                     'updated_at'   => now(),
                 ]);
-            });
+            }, 3); // retry deadlocks up to 3 times
         } catch (\RuntimeException $e) {
             if ($e->getMessage() === 'FULL') {
                 return back()->withInput()->with('swal', [
@@ -227,7 +292,7 @@ class AppointmentController extends Controller
             throw $e;
         }
 
-        // Success → neutral message (no counselor shown)
+        // Success
         return redirect()
             ->route('appointment.history')
             ->with('swal', [
@@ -235,12 +300,12 @@ class AppointmentController extends Controller
                 'title' => 'Appointment booked!',
                 'html'  => sprintf(
                     '<div style="text-align:left">
-                       <div><b>Date:</b> %s</div>
-                       <div><b>Time:</b> %s</div>
-                       <div style="margin-top:.25rem;color:#475569"><em>A counselor has not been assigned yet. You’ll be notified once an admin assigns one.</em></div>
-                     </div>',
-                    e($scheduledAt->format('M d, Y')),
-                    e($scheduledAt->format('g:i A'))
+                    <div><b>Date:</b> %s</div>
+                    <div><b>Time:</b> %s</div>
+                    <div style="margin-top:.25rem;color:#475569"><em>A counselor has not been assigned yet. You’ll be notified once an admin assigns one.</em></div>
+                    </div>',
+                    e($slot->format('M d, Y')),
+                    e($slot->format('g:i A'))
                 ),
                 'confirmButtonText' => 'OK',
             ]);

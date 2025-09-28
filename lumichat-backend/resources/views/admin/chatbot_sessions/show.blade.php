@@ -9,8 +9,8 @@
   $isHighRisk = in_array(strtolower((string)($session->risk_level ?? $session->risk ?? '')), ['high','high-risk','high_risk'], true)
                 || (int)($session->risk_score ?? 0) >= 80;
 
-  // Book button only for high-risk *and* no active appointment
-  $canBook = $isHighRisk && empty($hasActive);
+  // Book button only for high-risk *and* no active appointment for THIS session
+  $canBook = $isHighRisk && empty($hasActiveForThisSession);
 @endphp
 
 <div class="max-w-5xl mx-auto p-6 space-y-6">
@@ -19,19 +19,17 @@
   <div class="flex items-center justify-between no-print">
     <h2 class="text-2xl font-bold tracking-tight text-slate-800">Chatbot Session</h2>
     <div class="flex items-center gap-2">
-
-      {{-- ADMIN BOOKING --}}
+      {{-- ADMIN BOOKING (High-Risk only and no active appt yet for this session) --}}
       @if($canBook)
         <button type="button" id="btnAdminBook"
-          class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">
+          class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
             <path d="M7 2a1 1 0 0 0-1 1v1H5a3 3 0 0 0-3 3v11a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3h-1V3a1 1 0 1 0-2 0v1H8V3a1 1 0 0 0-1-1ZM5 9h14v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V9Z"/>
           </svg>
           Book (High-Risk)
         </button>
       @elseif($isHighRisk)
-        <span class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-200 text-slate-700 cursor-not-allowed"
-              title="Student already has an active appointment">
+        <span class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-200 text-slate-700 cursor-not-allowed">
           Already booked
         </span>
       @endif
@@ -154,6 +152,33 @@
   </div>
 </div>
 
+{{-- Lightweight modal styles to increase weight/contrast --}}
+<style>
+  .pill {
+    font-weight: 600;
+    border-radius: 0.75rem;
+    padding: .7rem .9rem;
+    line-height: 1.1;
+    box-shadow: 0 1px 0 0 rgba(2,6,23,.06), 0 0 0 1px rgba(15,23,42,.06) inset;
+  }
+  .pill .time {
+    display:block; font-size:.95rem;
+  }
+  .pill .cap {
+    display:block; font-size:.72rem; opacity:.8; margin-top:.15rem;
+  }
+  .pill[disabled] { opacity:.5; cursor:not-allowed; }
+  .pill--active { outline: 3px solid rgba(79,70,229,.8); }
+  .pill:hover:not([disabled]) {
+    background: #EEF2FF;
+    border-color: #C7D2FE;
+  }
+  .grid-times {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  @media (min-width: 640px){ .grid-times{ grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+</style>
+
 <script>
   function copyText(selector){
     const el = document.querySelector(selector);
@@ -180,7 +205,9 @@ function printNode(selector, title = document.title) {
   `);
   w.document.close(); w.focus(); w.onload = () => w.print();
 }
+</script>
 
+<script>
 (() => {
   const endpoint = @json(route('admin.chatbot-sessions.calendar', $session->id));
   const rangeEl = document.getElementById('calRange');
@@ -229,6 +256,7 @@ function printNode(selector, title = document.title) {
   loadWeek(); setInterval(loadWeek, 30000);
 })();
 </script>
+
 <script>
 (() => {
   const btn = document.getElementById('btnAdminBook');
@@ -237,8 +265,27 @@ function printNode(selector, title = document.title) {
   const slotsEndpoint = @json(route('admin.chatbot-sessions.slots', $session->id));
   const bookEndpoint  = @json(route('admin.chatbot-sessions.book', $session->id));
 
+  // --- helpers: sanitize & guard ---
+  const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+  const TIME_RE = /^\d{2}:\d{2}$/;
+  const pad = n => String(n).padStart(2,'0');
+
+  function isWeekday(ymd){
+    const [y,m,d] = ymd.split('-').map(Number);
+    const dt = new Date(y, m-1, d);
+    const day = dt.getDay(); // 0..6
+    return day >= 1 && day <= 5;
+  }
+  function notPast(ymd){
+    const [y,m,d] = ymd.split('-').map(Number);
+    const dt = new Date(y, m-1, d, 23, 59, 59, 999);
+    const now = new Date();
+    return dt >= new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  }
+  function plural(n){ return Number(n) === 1 ? 'slot' : 'slots'; }
+
   function renderModal(date='', counselors=[], slotsMap={}) {
-    const options = (counselors || []).map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    const options = (counselors || []).map(c => `<option value="${String(c.id).replace(/"/g,'')}">${String(c.name).replace(/</g,'&lt;')}</option>`).join('');
     return `
       <div style="text-align:left">
         <label class="text-sm font-medium text-slate-700">1) Pick date *</label>
@@ -254,7 +301,7 @@ function printNode(selector, title = document.title) {
           </div>
           <div>
             <label class="text-sm font-medium text-slate-700">3) Time *</label>
-            <div id="adm-times" class="mt-1 grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+            <div id="adm-times" class="mt-1 grid grid-times gap-2" data-selected="" tabindex="0" aria-label="Available times"></div>
             <div id="adm-empty" class="text-xs text-slate-500 mt-1 hidden">No available times.</div>
           </div>
         </div>
@@ -266,22 +313,40 @@ function printNode(selector, title = document.title) {
     container.innerHTML = '';
     const emptyEl = document.getElementById('adm-empty');
     const times = Array.isArray(arr) ? arr : [];
-    if (!times.length) { emptyEl.classList.remove('hidden'); container.dataset.selected = ''; return; }
+    if (!times.length) { emptyEl.classList.remove('hidden'); container.dataset.selected=''; return; }
     emptyEl.classList.add('hidden');
+
     times.forEach(s => {
       const b = document.createElement('button');
       b.type = 'button';
-      b.className = 'time-pill inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:border-indigo-300 hover:bg-indigo-50';
+      b.className = 'pill inline-flex flex-col items-center justify-center border border-slate-200 bg-white text-slate-800';
       b.dataset.value = s.value;
-      b.textContent = s.label;
-      if (s.value === selected) b.classList.add('ring-2','ring-indigo-500');
-      b.addEventListener('click', () => {
-        [...container.querySelectorAll('button')].forEach(x=>x.classList.remove('ring-2','ring-indigo-500'));
-        b.classList.add('ring-2','ring-indigo-500');
-        container.dataset.selected = s.value;
-      });
+
+      const cap = Number.isFinite(s.pooled) ? s.pooled : 0;
+      b.innerHTML = `<span class="time">${s.label}</span><span class="cap">(${cap} ${plural(cap)})</span>`;
+
+      if (s.disabled) {
+        b.disabled = true;
+      } else {
+        b.addEventListener('click', () => {
+          [...container.querySelectorAll('button')].forEach(x=>x.classList.remove('pill--active'));
+          b.classList.add('pill--active');
+          container.dataset.selected = s.value;
+          b.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+        });
+        // keyboard selection
+        b.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); b.click(); }
+        });
+      }
+
+      if (!s.disabled && s.value === selected) b.classList.add('pill--active');
       container.appendChild(b);
     });
+
+    if (selected && !times.some(t => !t.disabled && t.value === selected)) {
+      container.dataset.selected = '';
+    }
   }
 
   async function loadSlots(date) {
@@ -289,12 +354,12 @@ function printNode(selector, title = document.title) {
     url.searchParams.set('date', date);
     const res = await fetch(url, { headers:{'X-Requested-With':'XMLHttpRequest'} });
     if (!res.ok) throw new Error('Failed to load slots');
-    return await res.json(); // { counselors:[{id,name}], slots:{ [counselorId]:[{value,label}] } }
+    return await res.json(); // { counselors:[{id,name}], slots:{[cid]:[{value,label,disabled}]}, pooled:{'HH:MM':N} }
   }
 
   btn.addEventListener('click', async () => {
     try {
-      const today = new Date(); const pad=n=>String(n).padStart(2,'0');
+      const today = new Date();
       const defaultDate = `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`;
 
       const first = await loadSlots(defaultDate);
@@ -302,55 +367,93 @@ function printNode(selector, title = document.title) {
       const { value: form } = await Swal.fire({
         title: 'Book appointment',
         html: renderModal(defaultDate, first.counselors || [], first.slots || {}),
-        width: 720,
+        width: 780,
         showCancelButton: true,
         confirmButtonText: 'Confirm Booking',
         focusConfirm: false,
         didOpen: async () => {
-          const dateEl  = document.getElementById('adm-date');
-          const counEl  = document.getElementById('adm-counselor');
+          const dateEl   = document.getElementById('adm-date');
+          const counEl   = document.getElementById('adm-counselor');
           const timeWrap = document.getElementById('adm-times');
 
-          // 🔑 Always use the latest slots map
-          let slotsMap = first.slots || {};
-
-          const refreshTimes = () => {
-            const id = counEl.value;
-            buildTimePills(timeWrap, slotsMap?.[id] || []);
+          // Loading indicator
+          const showLoading = (on=true) => {
+            Swal.showLoading();
+            if (!on) Swal.hideLoading();
           };
 
-          // Seed initial times
-          refreshTimes();
+          let slotsMap  = first.slots  || {};
+          let pooledMap = first.pooled || {};
+          const compose = (cid, keepSelected=true) => {
+            const prevSel = keepSelected ? (timeWrap.dataset.selected || '') : '';
+            const items = (slotsMap?.[cid] || []).map(s => ({ ...s, pooled: pooledMap?.[s.value] ?? 0 }));
+            buildTimePills(timeWrap, items, prevSel);
+          };
 
-          // On date change → refetch (updates BOTH counselors + slots), keep selection if possible
-          dateEl.addEventListener('change', async () => {
-            const data = await loadSlots(dateEl.value);
-            slotsMap = data.slots || {};
-
-            const prev = counEl.value;
-            const list = data.counselors || [];
-            counEl.innerHTML = list.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
-
-            if (list.length) {
-              const keep = list.some(c => String(c.id) === String(prev));
-              counEl.value = keep ? prev : String(list[0].id);
+          const refetch = async () => {
+            const val = dateEl.value;
+            // client-side date sanitation
+            if (!DATE_RE.test(val) || !isWeekday(val) || !notPast(val)) {
+              buildTimePills(timeWrap, [], '');
+              return;
             }
-            refreshTimes();
-          });
+            showLoading(true);
+            try{
+              const data = await loadSlots(val);
+              slotsMap  = data.slots  || {};
+              pooledMap = data.pooled || {};
+              const list = data.counselors || [];
+              const prev = counEl.value;
+              counEl.innerHTML = list.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+              if (list.length) {
+                const keep = list.some(c => String(c.id) === String(prev));
+                counEl.value = keep ? prev : String(list[0].id);
+              }
+              compose(counEl.value, true);
+            } finally {
+              showLoading(false);
+            }
+          };
 
-          // On counselor change → rebuild times from the CURRENT slotsMap
-          counEl.addEventListener('change', () => {
-            refreshTimes();
-          });
+          // initial render
+          compose(counEl.value);
+
+          // changes
+          dateEl.addEventListener('change', refetch);
+          counEl.addEventListener('change', () => compose(counEl.value, false));
+
+          // live polling every 5s while modal is open
+          const poll = setInterval(refetch, 5000);
+          const stop = () => clearInterval(poll);
+          window.addEventListener('swal:willClose', stop, { once:true });
+
+          // patch SweetAlert close to emit event
+          const origClose = Swal.close;
+          Swal.close = function() {
+            window.dispatchEvent(new CustomEvent('swal:willClose'));
+            return origClose.apply(this, arguments);
+          };
         },
         preConfirm: () => {
           const date = /** @type {HTMLInputElement} */(document.getElementById('adm-date')).value;
           const counselorId = /** @type {HTMLSelectElement} */(document.getElementById('adm-counselor')).value;
           const time = /** @type {HTMLElement} */(document.getElementById('adm-times')).dataset.selected || '';
-          if (!date || !counselorId || !time) {
-            Swal.showValidationMessage('Please select date, counselor, and time.');
+
+          // Strict sanitation (show real SweetAlert toasts instead of inline validation)
+          if (!DATE_RE.test(date)) { swalToast('error','Invalid date format'); return false; }
+          if (!isWeekday(date))    { swalToast('warning','Weekends are closed','Please choose Mon–Fri.'); return false; }
+          if (!notPast(date))      { swalToast('warning','Pick a future date'); return false; }
+          if (!TIME_RE.test(time)) { swalToast('error','Invalid time selected'); return false; }
+          if (!counselorId)        { swalToast('warning','Please choose a counselor'); return false; }
+
+          // Verify chosen time still exists for current counselor/date (prevents tampering)
+          const buttons = Array.from(document.querySelectorAll('#adm-times button:not([disabled])'))
+                              .map(b => b.dataset.value);
+          if (!buttons.includes(time)) {
+            swalToast('info','That time just filled','Please pick another slot.');
             return false;
           }
+
           return { date, counselorId, time };
         }
       });
@@ -377,5 +480,18 @@ function printNode(selector, title = document.title) {
 })();
 </script>
 
+<script>
+  function swalToast(icon, title, text='') {
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon,
+      title,
+      text,
+      timer: 2200,
+      showConfirmButton: false,
+    });
+  }
+</script>
 @endpush
 @endsection
