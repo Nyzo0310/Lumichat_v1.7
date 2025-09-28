@@ -17,13 +17,21 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Schema;
 
+// ✅ Bind the dashboard repo interface to the eloquent implementation
+use App\Repositories\Contracts\DashboardRepositoryInterface;
+use App\Repositories\Eloquent\DashboardRepository;
+
 class AppServiceProvider extends ServiceProvider
 {
-    public function register(): void {}
+    public function register(): void
+    {
+        // Put bindings here (inside the class)
+        $this->app->bind(DashboardRepositoryInterface::class, DashboardRepository::class);
+    }
 
     public function boot(): void
     {
-        // ✅ Force HTTPS in production
+        // Force HTTPS in production
         if (app()->environment('production')) {
             URL::forceScheme('https');
         }
@@ -40,16 +48,19 @@ class AppServiceProvider extends ServiceProvider
             $appointmentEnabled = false;
 
             if ($user) {
-                $hasAppointments = DB::table('tbl_appointments')
-                    ->where('student_id', $user->id)
-                    ->exists();
+                // Only query if table exists (prevents errors during fresh installs / early migrations)
+                if (Schema::hasTable('tbl_appointments')) {
+                    $hasAppointments = DB::table('tbl_appointments')
+                        ->where('student_id', $user->id)
+                        ->exists();
+                }
 
                 // Session unlock (set by signed link)
                 $appointmentEnabled = (bool) session('appointment_enabled', false);
 
                 // Persisted column (optional): users.appointment_enabled
                 try {
-                    if (Schema::hasColumn('users', 'appointment_enabled')) {
+                    if (Schema::hasTable('users') && Schema::hasColumn('users', 'appointment_enabled')) {
                         $appointmentEnabled = $appointmentEnabled || (bool) (
                             DB::table('users')->where('id', $user->id)->value('appointment_enabled') ?? false
                         );
@@ -69,7 +80,7 @@ class AppServiceProvider extends ServiceProvider
         });
         // =================================================================
 
-        // --- your existing model events below (kept intact) ---
+        // --- existing model events ---
 
         User::created(function (User $user) {
             ActivityLog::create([

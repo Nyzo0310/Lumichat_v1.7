@@ -1,7 +1,6 @@
 @extends('layouts.admin')
 @section('title','Admin · Chatbot Sessions')
 
-
 @php
   $q = $q ?? request('q', '');
   $dateKey = $dateKey ?? request('date','all');
@@ -11,7 +10,7 @@
 @section('content')
 <div class="max-w-7xl mx-auto p-6 space-y-6">
 
-  {{-- ========= Page Header (consistent) ========= --}}
+  {{-- Header --}}
   <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between animate-fadeup screen-only">
     <div>
       <h2 class="text-2xl font-bold tracking-tight text-slate-900">Chatbot Sessions</h2>
@@ -23,24 +22,22 @@
     </div>
 
     <a href="{{ route('admin.chatbot-sessions.export.pdf', request()->only('date','q')) }}"
-   class="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 h-10 rounded-xl shadow-sm hover:bg-emerald-700 active:scale-[.99] transition">
-  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M7 10l5 5 5-5M12 15V3M5 19h14a2 2 0 002-2v-2H3v2a2 2 0 002 2z"/>
-  </svg>
-  Download PDF
-</a>
+       class="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 h-10 rounded-xl shadow-sm hover:bg-emerald-700 active:scale-[.99] transition">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M7 10l5 5 5-5M12 15V3M5 19h14a2 2 0 002-2v-2H3v2a2 2 0 002 2z"/>
+      </svg>
+      Download PDF
+    </a>
   </div>
 
-  {{-- ========= Filter Bar ========= --}}
+  {{-- Filter Bar --}}
   <form method="GET" action="{{ route('admin.chatbot-sessions.index') }}" class="mb-6 screen-only">
     <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end animate-fadeup">
-
-      {{-- Date Range --}}
       <div class="md:col-span-3 min-w-0">
         <label class="block text-xs font-medium text-slate-600 mb-1">Date Range</label>
         <select name="date"
-                class="w-full h-10 bg-white border border-slate-200 rounded-xl px-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+          class="w-full h-10 bg-white border border-slate-200 rounded-xl px-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
           <option value="all"    @selected($dateKey==='all')>All Dates</option>
           <option value="7d"     @selected($dateKey==='7d')>Last 7 days</option>
           <option value="30d"    @selected($dateKey==='30d')>Last 30 days</option>
@@ -48,12 +45,11 @@
         </select>
       </div>
 
-      {{-- Search --}}
       <div class="md:col-span-3 min-w-0">
         <label class="block text-xs font-medium text-slate-600 mb-1">Search</label>
         <div class="relative">
           <input type="text" name="q" value="{{ $q }}" placeholder="Search student or session ID"
-                class="w-full h-10 bg-white border border-slate-200 rounded-xl pl-10 pr-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+            class="w-full h-10 bg-white border border-slate-200 rounded-xl pl-10 pr-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
           <svg class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <circle cx="11" cy="11" r="7" stroke-width="2"/>
             <path d="M21 21l-4.3-4.3" stroke-width="2" stroke-linecap="round"/>
@@ -61,26 +57,23 @@
         </div>
       </div>
 
-      {{-- right side: Reset / Apply (push to the far right) --}}
       <div class="md:col-span-6 md:col-start-7 flex items-center justify-end gap-2">
         <a href="{{ route('admin.chatbot-sessions.index') }}"
-          class="h-11 inline-flex items-center gap-2 rounded-xl bg-white px-4 text-slate-700 ring-1 ring-slate-200
-                  shadow-sm hover:bg-slate-50 hover:ring-slate-300 active:scale-[.99] transition">
+           class="h-11 inline-flex items-center gap-2 rounded-xl bg-white px-4 text-slate-700 ring-1 ring-slate-200 shadow-sm hover:bg-slate-50 hover:ring-slate-300 active:scale-[.99] transition">
           <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4h7M4 10h16M4 16h10"/>
           </svg>
           Reset
         </a>
 
-        <button
-          class="inline-flex items-center justify-center h-10 px-5 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm text-sm">
+        <button class="inline-flex items-center justify-center h-10 px-5 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm text-sm">
           Apply
         </button>
       </div>
     </div>
   </form>
 
-  {{-- ========= Table ========= --}}
+  {{-- Table --}}
   <div id="cb-print-root" class="bg-white rounded-2xl shadow-sm border border-slate-200/70 overflow-hidden">
     <div class="relative overflow-x-auto">
       <table class="min-w-full text-sm leading-6 table-auto">
@@ -89,7 +82,7 @@
           <col style="width:26%">
           <col style="width:28%">
           <col style="width:16%">
-          <col class="col-action" style="width:8%"> {{-- hidden in print --}}
+          <col class="col-action" style="width:8%">
         </colgroup>
 
         <thead class="bg-slate-100 border-b border-slate-200 text-slate-700">
@@ -106,12 +99,34 @@
           @forelse ($sessions as $s)
             @php
               $code = 'LMC-' . now()->format('Y') . '-' . str_pad($s->id, 4, '0', STR_PAD_LEFT);
+
+              $riskRaw   = strtolower((string) ($s->risk_level ?? ''));
+              $handled   = in_array($s->id, $handledSessionIds ?? [], true);
+              $isHigh    = in_array($riskRaw, ['high','high-risk','high_risk'], true);
+              $showRed   = $isHigh && !$handled;
             @endphp
-            <tr class="align-middle even:bg-slate-50 hover:bg-slate-100/60 transition">
-              <td class="px-6 py-4 font-semibold text-slate-900">{{ $code }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-slate-700">{{ $s->user->name ?? '—' }}</td>
-              <td class="px-6 py-4 text-slate-700">{{ $s->topic_summary ?? '—' }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-slate-700">{{ $s->created_at?->format('M d, Y') }}</td>
+
+            <tr class="align-middle even:bg-slate-50 hover:bg-slate-100/60 transition {{ $showRed ? 'bg-rose-50/40' : '' }}">
+              <td class="px-6 py-4 font-semibold text-slate-900">
+                <div class="flex items-center gap-2">
+                  @if($showRed)
+                    <span class="inline-block size-2.5 rounded-full bg-rose-600 ring-4 ring-rose-100/70" title="High risk" aria-label="High risk"></span>
+                  @endif
+                  <span class="{{ $showRed ? 'text-rose-700' : '' }}">{{ $code }}</span>
+                </div>
+              </td>
+
+              <td class="px-6 py-4 whitespace-nowrap text-slate-700">
+                {{ $s->user->name ?? '—' }}
+              </td>
+
+              <td class="px-6 py-4 text-slate-700">
+                {{ $s->topic_summary ?? '—' }}
+              </td>
+
+              <td class="px-6 py-4 whitespace-nowrap text-slate-700">
+                {{ $s->created_at?->format('M d, Y') }}
+              </td>
 
               <td class="px-6 py-4 text-right col-action">
                 <div class="flex items-center justify-end gap-2 whitespace-nowrap">
@@ -144,7 +159,7 @@
   </div>
 </div>
 
-{{-- ========= PRINT ONLY (mirror other pages) ========= --}}
+{{-- Print styles kept --}}
 <style media="print">
   @page { margin: 12mm; }
   body * { visibility: hidden !important; }
@@ -156,7 +171,6 @@
   #cb-print-root .rounded-2xl, #cb-print-root .shadow-sm, #cb-print-root .border { border:0 !important; box-shadow:none !important; }
   #cb-print-root .overflow-hidden, #cb-print-root .overflow-x-auto { overflow: visible !important; }
 
-  /* Hide Action column on print */
   #cb-print-root th.col-action,
   #cb-print-root td.col-action,
   #cb-print-root col.col-action,

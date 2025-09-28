@@ -5,15 +5,38 @@
 @php
   $codeYear = $session->created_at?->format('Y') ?? now()->format('Y');
   $code     = 'LMC-' . $codeYear . '-' . str_pad($session->id, 4, '0', STR_PAD_LEFT);
+
+  $isHighRisk = in_array(strtolower((string)($session->risk_level ?? $session->risk ?? '')), ['high','high-risk','high_risk'], true)
+                || (int)($session->risk_score ?? 0) >= 80;
+
+  // Book button only for high-risk *and* no active appointment
+  $canBook = $isHighRisk && empty($hasActive);
 @endphp
 
 <div class="max-w-5xl mx-auto p-6 space-y-6">
 
-  {{-- Header row (Back + Print) --}}
+  {{-- Header row --}}
   <div class="flex items-center justify-between no-print">
     <h2 class="text-2xl font-bold tracking-tight text-slate-800">Chatbot Session</h2>
     <div class="flex items-center gap-2">
-        <button type="button"
+
+      {{-- ADMIN BOOKING --}}
+      @if($canBook)
+        <button type="button" id="btnAdminBook"
+          class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M7 2a1 1 0 0 0-1 1v1H5a3 3 0 0 0-3 3v11a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3h-1V3a1 1 0 1 0-2 0v1H8V3a1 1 0 0 0-1-1ZM5 9h14v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V9Z"/>
+          </svg>
+          Book (High-Risk)
+        </button>
+      @elseif($isHighRisk)
+        <span class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-200 text-slate-700 cursor-not-allowed"
+              title="Student already has an active appointment">
+          Already booked
+        </span>
+      @endif
+
+      <button type="button"
               class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white ring-1 ring-slate-200 text-slate-800 hover:bg-slate-50"
               onclick="printNode('#sessionPrintable', 'Chatbot Session {{ $code }}')">
         Print
@@ -23,7 +46,7 @@
     </div>
   </div>
 
-  {{-- PRINTABLE AREA (summary + weekly counts) --}}
+  {{-- PRINTABLE AREA --}}
   <div id="sessionPrintable" class="space-y-6 print-area">
 
     {{-- Summary card --}}
@@ -131,7 +154,6 @@
   </div>
 </div>
 
-{{-- tiny helper to copy text --}}
 <script>
   function copyText(selector){
     const el = document.querySelector(selector);
@@ -147,34 +169,18 @@
 
 @push('scripts')
 <script>
-/* ---------- Print helper shared by both pages ---------- */
 function printNode(selector, title = document.title) {
   const node = document.querySelector(selector) || document.body;
   const w = window.open('', '_blank', 'width=1024,height=700');
-  const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
-    .map(n => n.outerHTML).join('\n');
+  const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style')).map(n => n.outerHTML).join('\n');
   w.document.write(`
-    <html>
-      <head>
-        <meta charset="utf-8">
-        <title>${title}</title>
-        ${styles}
-        <style>
-          @page { margin: 1.2cm; }
-          @media print {
-            .no-print { display: none !important; }
-            body { background:#fff !important; }
-            .print-area { box-shadow:none!important; }
-          }
-        </style>
-      </head>
-      <body>${node.outerHTML}</body>
-    </html>
+    <html><head><meta charset="utf-8"><title>${title}</title>${styles}
+      <style>@page{margin:1.2cm}@media print{.no-print{display:none!important}body{background:#fff!important}.print-area{box-shadow:none!important}}</style>
+    </head><body>${node.outerHTML}</body></html>
   `);
   w.document.close(); w.focus(); w.onload = () => w.print();
 }
 
-/* ---------- Weekly counts JS (unchanged) ---------- */
 (() => {
   const endpoint = @json(route('admin.chatbot-sessions.calendar', $session->id));
   const rangeEl = document.getElementById('calRange');
@@ -223,5 +229,153 @@ function printNode(selector, title = document.title) {
   loadWeek(); setInterval(loadWeek, 30000);
 })();
 </script>
+<script>
+(() => {
+  const btn = document.getElementById('btnAdminBook');
+  if (!btn) return;
+
+  const slotsEndpoint = @json(route('admin.chatbot-sessions.slots', $session->id));
+  const bookEndpoint  = @json(route('admin.chatbot-sessions.book', $session->id));
+
+  function renderModal(date='', counselors=[], slotsMap={}) {
+    const options = (counselors || []).map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    return `
+      <div style="text-align:left">
+        <label class="text-sm font-medium text-slate-700">1) Pick date *</label>
+        <input id="adm-date" type="date" value="${date}" min="{{ now()->toDateString() }}"
+               class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
+
+        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="text-sm font-medium text-slate-700">2) Counselor *</label>
+            <select id="adm-counselor" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              ${options}
+            </select>
+          </div>
+          <div>
+            <label class="text-sm font-medium text-slate-700">3) Time *</label>
+            <div id="adm-times" class="mt-1 grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+            <div id="adm-empty" class="text-xs text-slate-500 mt-1 hidden">No available times.</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function buildTimePills(container, arr, selected='') {
+    container.innerHTML = '';
+    const emptyEl = document.getElementById('adm-empty');
+    const times = Array.isArray(arr) ? arr : [];
+    if (!times.length) { emptyEl.classList.remove('hidden'); container.dataset.selected = ''; return; }
+    emptyEl.classList.add('hidden');
+    times.forEach(s => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'time-pill inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:border-indigo-300 hover:bg-indigo-50';
+      b.dataset.value = s.value;
+      b.textContent = s.label;
+      if (s.value === selected) b.classList.add('ring-2','ring-indigo-500');
+      b.addEventListener('click', () => {
+        [...container.querySelectorAll('button')].forEach(x=>x.classList.remove('ring-2','ring-indigo-500'));
+        b.classList.add('ring-2','ring-indigo-500');
+        container.dataset.selected = s.value;
+      });
+      container.appendChild(b);
+    });
+  }
+
+  async function loadSlots(date) {
+    const url = new URL(slotsEndpoint, window.location.origin);
+    url.searchParams.set('date', date);
+    const res = await fetch(url, { headers:{'X-Requested-With':'XMLHttpRequest'} });
+    if (!res.ok) throw new Error('Failed to load slots');
+    return await res.json(); // { counselors:[{id,name}], slots:{ [counselorId]:[{value,label}] } }
+  }
+
+  btn.addEventListener('click', async () => {
+    try {
+      const today = new Date(); const pad=n=>String(n).padStart(2,'0');
+      const defaultDate = `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`;
+
+      const first = await loadSlots(defaultDate);
+
+      const { value: form } = await Swal.fire({
+        title: 'Book appointment',
+        html: renderModal(defaultDate, first.counselors || [], first.slots || {}),
+        width: 720,
+        showCancelButton: true,
+        confirmButtonText: 'Confirm Booking',
+        focusConfirm: false,
+        didOpen: async () => {
+          const dateEl  = document.getElementById('adm-date');
+          const counEl  = document.getElementById('adm-counselor');
+          const timeWrap = document.getElementById('adm-times');
+
+          // 🔑 Always use the latest slots map
+          let slotsMap = first.slots || {};
+
+          const refreshTimes = () => {
+            const id = counEl.value;
+            buildTimePills(timeWrap, slotsMap?.[id] || []);
+          };
+
+          // Seed initial times
+          refreshTimes();
+
+          // On date change → refetch (updates BOTH counselors + slots), keep selection if possible
+          dateEl.addEventListener('change', async () => {
+            const data = await loadSlots(dateEl.value);
+            slotsMap = data.slots || {};
+
+            const prev = counEl.value;
+            const list = data.counselors || [];
+            counEl.innerHTML = list.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+
+            if (list.length) {
+              const keep = list.some(c => String(c.id) === String(prev));
+              counEl.value = keep ? prev : String(list[0].id);
+            }
+            refreshTimes();
+          });
+
+          // On counselor change → rebuild times from the CURRENT slotsMap
+          counEl.addEventListener('change', () => {
+            refreshTimes();
+          });
+        },
+        preConfirm: () => {
+          const date = /** @type {HTMLInputElement} */(document.getElementById('adm-date')).value;
+          const counselorId = /** @type {HTMLSelectElement} */(document.getElementById('adm-counselor')).value;
+          const time = /** @type {HTMLElement} */(document.getElementById('adm-times')).dataset.selected || '';
+          if (!date || !counselorId || !time) {
+            Swal.showValidationMessage('Please select date, counselor, and time.');
+            return false;
+          }
+          return { date, counselorId, time };
+        }
+      });
+
+      if (!form) return;
+
+      const fd = new FormData();
+      fd.append('_token', @json(csrf_token()));
+      fd.append('date', form.date);
+      fd.append('time', form.time);
+      fd.append('counselor_id', form.counselorId);
+
+      const resp = await fetch(bookEndpoint, { method:'POST', body: fd, headers:{'X-Requested-With':'XMLHttpRequest'} });
+      const data = await resp.json().catch(()=>({}));
+      if (!resp.ok) throw new Error(data?.message || 'Booking failed.');
+
+      Swal.fire({ icon:'success', title:'Booked', html:data.html || 'Appointment created.', confirmButtonText:'OK' })
+        .then(() => window.location.reload());
+    } catch (e) {
+      console.error(e);
+      Swal.fire({ icon:'error', title:'Unable to book', text: e.message || 'Please try again.' });
+    }
+  });
+})();
+</script>
+
 @endpush
 @endsection

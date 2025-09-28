@@ -9,28 +9,34 @@ use Illuminate\Support\Facades\Schema;
 
 class DashboardRepository implements DashboardRepositoryInterface
 {
-    // ==== Constants (kept from controller) ====
-    private const APPT_TABLE_CANDIDATES = ['tbl_appointment', 'appointments', 'tbl_appointments'];
-    private const APPT_WEEK_COL_CANDIDATES = ['created_at', 'scheduled_at', 'appointment_at', 'datetime'];
+    /** Try these in order to find the appointments table present in your DB */
+    private const APPT_TABLE_CANDIDATES = ['tbl_appointments', 'appointments', 'tbl_appointment'];
+
+    /** Try these to find a datetime column for week-over-week calculations */
+    private const APPT_WEEK_COL_CANDIDATES = ['scheduled_at', 'created_at', 'appointment_at', 'datetime'];
+
+    /** Fallbacks for pure date+time schemas */
     private const APPT_DATE_FALLBACK_COL = 'date';
     private const APPT_TIME_FALLBACK_COL = 'time';
+
+    /** Any of these mean the session is considered “handled” if an appt exists for that session */
+    private const HANDLED_APPT_STATUSES = ['pending','confirmed','completed'];
 
     public function stats(): array
     {
         $now         = Carbon::now();
-        $startOfWeek = $now->copy()->startOfWeek();
-        $endOfWeek   = $now->copy()->endOfWeek();
+        $startOfWeek = $now->copy()->startOfWeek(); // Mon
+        $endOfWeek   = $now->copy()->endOfWeek();   // Sun
         $lastStart   = $now->copy()->subWeek()->startOfWeek();
         $lastEnd     = $now->copy()->subWeek()->endOfWeek();
 
-        /* ---------- KPIs: Appointments ---------- */
+        /* ---------- Appointments KPI ---------- */
         $apptTable         = $this->resolveApptTable();
         $appointmentsTotal = $apptTable ? DB::table($apptTable)->count() : 0;
         $apptWeekCol       = $apptTable ? $this->resolveApptWeekColumn($apptTable) : null;
 
         $apptsThisWeek = 0;
         $apptsLastWeek = 0;
-
         if ($apptTable && $apptWeekCol) {
             $apptsThisWeek = DB::table($apptTable)
                 ->whereBetween($apptWeekCol, [$startOfWeek, $endOfWeek])
@@ -40,10 +46,9 @@ class DashboardRepository implements DashboardRepositoryInterface
                 ->whereBetween($apptWeekCol, [$lastStart, $lastEnd])
                 ->count();
         }
-
         $appointmentsTrend = $this->compareTrend($apptsThisWeek, $apptsLastWeek);
 
-        /* ---------- KPIs: Active Counselors ---------- */
+        /* ---------- Active Counselors KPI ---------- */
         $activeCounselors = Schema::hasTable('tbl_counselors')
             ? DB::table('tbl_counselors')
                 ->when(Schema::hasColumn('tbl_counselors', 'status'),   fn ($q) => $q->where('status', 'active'))
@@ -51,10 +56,9 @@ class DashboardRepository implements DashboardRepositoryInterface
                 ->count()
             : 0;
 
-        /* ---------- KPIs: Chat Sessions ---------- */
+        /* ---------- Chat Sessions KPI (this week) ---------- */
         $sessionsThisWeek = 0;
         $sessionsLastWeek = 0;
-
         if (Schema::hasTable('chat_sessions')) {
             $sessionsThisWeek = DB::table('chat_sessions')
                 ->whereBetween('created_at', [$startOfWeek, $endOfWeek])
@@ -64,24 +68,17 @@ class DashboardRepository implements DashboardRepositoryInterface
                 ->whereBetween('created_at', [$lastStart, $lastEnd])
                 ->count();
         }
-
         $sessionsTrend = $this->compareTrend($sessionsThisWeek, $sessionsLastWeek);
 
-        /* ---------- KPI: Critical Cases (HIGH risk chat sessions) ---------- */
+        /* ---------- Critical Cases KPI (UNHANDLED high-risk sessions, distinct users) ---------- */
         $criticalCasesTotal = 0;
         if (Schema::hasTable('chat_sessions')) {
-            $criticalCasesTotal = DB::table('chat_sessions')
-                ->where('risk_level', 'high')
-                ->count();
+            $criticalCasesTotal = $this->countUnhandledHighRiskUsers($apptTable);
         }
 
-        /* ---------- Activities ---------- */
-        $activities = $this->recentActivities();
-
-        /* ---------- Recent Appointments (newest first) ---------- */
+        /* ---------- Lists ---------- */
+        $activities         = $this->recentActivities();
         $recentAppointments = $this->recentAppointments($apptTable);
-
-        /* ---------- Recent Chat Sessions ---------- */
         $recentChatSessions = $this->recentChatSessions();
 
         return [
@@ -100,9 +97,39 @@ class DashboardRepository implements DashboardRepositoryInterface
         ];
     }
 
+    /* ===================== High-risk logic ===================== */
+
+    /**
+     * Count DISTINCT users who have at least one HIGH-risk chat session
+     * that does NOT have any appointment for that SAME session (via chatbot_session_id)
+     * in a handled status (pending/confirmed/completed).
+     */
+    private function countUnhandledHighRiskUsers(?string $apptTable): int
+    {
+        // Base: only high-risk chat sessions
+        $cs = DB::table('chat_sessions as cs')
+            ->whereIn(DB::raw("LOWER(COALESCE(cs.risk_level,''))"), ['high','high-risk','high_risk']);
+
+        // If appointments table exists and has the needed columns, exclude sessions that are already handled
+        if ($apptTable
+            && Schema::hasColumn($apptTable, 'chatbot_session_id')
+            && Schema::hasColumn($apptTable, 'status')) {
+
+            $cs->whereNotExists(function ($q) use ($apptTable) {
+                $q->select(DB::raw(1))
+                  ->from($apptTable . ' as a')
+                  ->whereColumn('a.chatbot_session_id', 'cs.id')
+                  ->whereIn('a.status', self::HANDLED_APPT_STATUSES);
+            });
+        }
+
+        // Distinct users still needing attention
+        return $cs->distinct('cs.user_id')->count('cs.user_id');
+    }
+
     /* ===================== Helpers ===================== */
 
-    /** Resolve which appointments table exists. */
+    /** Resolve which appointments table exists (first found wins). */
     private function resolveApptTable(): ?string
     {
         foreach (self::APPT_TABLE_CANDIDATES as $name) {
@@ -130,10 +157,10 @@ class DashboardRepository implements DashboardRepositoryInterface
     /** Compare week-over-week and return a human label. */
     private function compareTrend(int $thisWeek, int $lastWeek): string
     {
-        if ($lastWeek === 0 && $thisWeek > 0)  return '↑ Higher than last week';
-        if ($lastWeek === 0 && $thisWeek === 0) return '= Same as last week';
-        if ($thisWeek > $lastWeek)              return '↑ Higher than last week';
-        if ($thisWeek < $lastWeek)              return '↓ Lower than last week';
+        if ($lastWeek === 0 && $thisWeek > 0)    return '↑ Higher than last week';
+        if ($lastWeek === 0 && $thisWeek === 0)  return '= Same as last week';
+        if ($thisWeek > $lastWeek)               return '↑ Higher than last week';
+        if ($thisWeek < $lastWeek)               return '↓ Lower than last week';
         return '= Same as last week';
     }
 
@@ -145,12 +172,10 @@ class DashboardRepository implements DashboardRepositoryInterface
                 return Carbon::parse($row[$k])->toIso8601String();
             }
         }
-
         if (Schema::hasColumn($table, self::APPT_DATE_FALLBACK_COL) && !empty($row[self::APPT_DATE_FALLBACK_COL])) {
             $dt = trim(($row[self::APPT_DATE_FALLBACK_COL] ?? '') . ' ' . ($row[self::APPT_TIME_FALLBACK_COL] ?? '00:00:00'));
             return Carbon::parse($dt)->toIso8601String();
         }
-
         return null;
     }
 
@@ -161,15 +186,11 @@ class DashboardRepository implements DashboardRepositoryInterface
             $parts = [];
             if (Schema::hasColumn($table, 'name'))      $parts[] = "$alias.name";
             if (Schema::hasColumn($table, 'full_name')) $parts[] = "$alias.full_name";
-
             $hasFirst = Schema::hasColumn($table, 'first_name');
             $hasLast  = Schema::hasColumn($table, 'last_name');
             if ($hasFirst && $hasLast)                  $parts[] = "CONCAT($alias.first_name,' ',$alias.last_name)";
-
             if (Schema::hasColumn($table, 'email'))     $parts[] = "$alias.email";
-
             $parts[] = "'User'";
-
             return 'COALESCE(' . implode(', ', $parts) . ')';
         };
 
@@ -210,7 +231,6 @@ class DashboardRepository implements DashboardRepositoryInterface
                 ->map(function ($r) {
                     $name    = trim(($r->first_name ?? '') . ' ' . ($r->last_name ?? ''));
                     $display = $name !== '' ? $name : ($r->email ?? 'User');
-
                     return [
                         'event'      => 'user.registered',
                         'actor'      => $display,
@@ -218,7 +238,6 @@ class DashboardRepository implements DashboardRepositoryInterface
                         'created_at' => Carbon::parse($r->created_at)->toIso8601String(),
                     ];
                 });
-
             $activities = $activities->merge($regActs);
         }
 
@@ -234,25 +253,14 @@ class DashboardRepository implements DashboardRepositoryInterface
     {
         if (!$apptTable) return [];
 
-        // Choose the best order column
-        $orderCol = Schema::hasColumn($apptTable, 'created_at') ? 'created_at' : null;
-        if (!$orderCol) {
-            if (Schema::hasColumn($apptTable, 'id')) {
-                $orderCol = 'id';
-            } else {
-                foreach (['scheduled_at', 'appointment_at', 'datetime'] as $c) {
-                    if (Schema::hasColumn($apptTable, $c)) {
-                        $orderCol = $c;
-                        break;
-                    }
-                }
-            }
+        // Choose best order column
+        $orderCol = null;
+        foreach (['scheduled_at', 'created_at', 'appointment_at', 'datetime', 'id'] as $c) {
+            if (Schema::hasColumn($apptTable, $c)) { $orderCol = $c; break; }
         }
 
         $q = DB::table($apptTable);
-        if ($orderCol) {
-            $q->orderByDesc($orderCol);
-        }
+        if ($orderCol) $q->orderByDesc($orderCol);
 
         $rows = $q->limit(5)->get();
 
@@ -281,15 +289,11 @@ class DashboardRepository implements DashboardRepositoryInterface
             $parts = [];
             if (Schema::hasColumn($table, 'name'))      $parts[] = "$alias.name";
             if (Schema::hasColumn($table, 'full_name')) $parts[] = "$alias.full_name";
-
             $hasFirst = Schema::hasColumn($table, 'first_name');
             $hasLast  = Schema::hasColumn($table, 'last_name');
             if ($hasFirst && $hasLast)                  $parts[] = "CONCAT($alias.first_name,' ',$alias.last_name)";
-
             if (Schema::hasColumn($table, 'email'))     $parts[] = "$alias.email";
-
             $parts[] = "'User'";
-
             return 'COALESCE(' . implode(', ', $parts) . ')';
         };
 

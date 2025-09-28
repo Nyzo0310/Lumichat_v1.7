@@ -14,7 +14,17 @@ class ChatbotSessionRepository implements ChatbotSessionRepositoryInterface
 
     public function all(): Collection
     {
-        return ChatSession::orderByDesc('created_at')->get();
+        return ChatSession::with('user')
+            ->orderByRaw("
+                CASE LOWER(COALESCE(risk_level,'')) 
+                    WHEN 'high' THEN 0 
+                    WHEN 'moderate' THEN 1 
+                    WHEN 'low' THEN 2 
+                    ELSE 3 
+                END
+            ")
+            ->orderByDesc('created_at')
+            ->get();
     }
 
     public function findById(int $id, array $with = []): ?object
@@ -43,28 +53,37 @@ class ChatbotSessionRepository implements ChatbotSessionRepositoryInterface
 
     public function paginateWithFilters(string $q = '', string $dateKey = 'all', int $perPage = 10): LengthAwarePaginator
     {
-        $query = ChatSession::query()->with('user');
-
-        // free text search across id, topic_summary, user name/email
-        if ($q !== '') {
-            $like = "%{$q}%";
-            $query->where(function (Builder $sub) use ($like) {
-                $sub->where('id', 'like', $like)
-                    ->orWhere('topic_summary', 'like', $like)
-                    ->orWhereHas('user', function (Builder $uq) use ($like) {
-                        $uq->where('name', 'like', $like)
-                           ->orWhere('email', 'like', $like);
-                    });
-            });
-        }
-
-        // relative date filters
-        $this->applyDateKeyFilter($query, $dateKey);
+        $query = $this->baseFilteredQuery($q, $dateKey);
 
         return $query
+            ->orderByRaw("
+                CASE LOWER(COALESCE(risk_level,'')) 
+                    WHEN 'high' THEN 0 
+                    WHEN 'moderate' THEN 1 
+                    WHEN 'low' THEN 2 
+                    ELSE 3 
+                END
+            ")
             ->orderByDesc('created_at')
             ->paginate($perPage)
             ->withQueryString();
+    }
+
+    /** -------- Used by PDF export (same filters, no pagination) -------- */
+
+    public function allWithFilters(string $q = '', string $dateKey = 'all'): Collection
+    {
+        return $this->baseFilteredQuery($q, $dateKey)
+            ->orderByRaw("
+                CASE LOWER(COALESCE(risk_level,'')) 
+                    WHEN 'high' THEN 0 
+                    WHEN 'moderate' THEN 1 
+                    WHEN 'low' THEN 2 
+                    ELSE 3 
+                END
+            ")
+            ->orderByDesc('created_at')
+            ->get();
     }
 
     /** -------- Admin show: one session + ordered chats -------- */
@@ -97,7 +116,38 @@ class ChatbotSessionRepository implements ChatbotSessionRepositoryInterface
         return ChatSession::query()->where('id', $sessionId)->value('user_id');
     }
 
-    /** -------- Private: date-key filter logic (mirrors your controller) -------- */
+    /** -------- Private helpers -------- */
+
+    private function baseFilteredQuery(string $q, string $dateKey): Builder
+    {
+        $query = ChatSession::query()->with('user');
+
+        // free text search across id, topic_summary, user name/email
+        $q = trim($q);
+        if ($q !== '') {
+            $like = "%{$q}%";
+            $query->where(function (Builder $sub) use ($like, $q) {
+                // numeric id search (keeps your existing behavior but stricter)
+                if (ctype_digit($q)) {
+                    $sub->orWhere('id', (int) $q);
+                }
+                // support codes like LMC-YYYY-#### (extract last 4 digits)
+                if (preg_match('/^LMC-\d{4}-(\d{4})$/i', $q, $m)) {
+                    $sub->orWhere('id', (int) $m[1]);
+                }
+                $sub->orWhere('topic_summary', 'like', $like)
+                    ->orWhereHas('user', function (Builder $uq) use ($like) {
+                        $uq->where('name', 'like', $like)
+                           ->orWhere('email', 'like', $like);
+                    });
+            });
+        }
+
+        // relative date filters
+        $this->applyDateKeyFilter($query, $dateKey);
+
+        return $query;
+    }
 
     private function applyDateKeyFilter(Builder $query, string $dateKey): Builder
     {

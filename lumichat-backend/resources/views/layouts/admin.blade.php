@@ -375,6 +375,144 @@
       applyMode();
     })();
   </script>
+  <script>
+/* ---------- ADMIN BOOKING FLOW (date → counselor → time) ---------- */
+(() => {
+  const btn = document.getElementById('btnAdminBook');
+  if (!btn) return;
+
+  @if (isset($session))
+
+    const slotsEndpoint = @json(route('admin.chatbot-sessions.slots', $session->id));
+    const bookEndpoint  = @json(route('admin.chatbot-sessions.book',  $session->id));
+    // …rest of booking code…
+
+@endif
+
+  function buildTimePills(container, arr, selected='') {
+    container.innerHTML = '';
+    const emptyEl = document.getElementById('adm-empty');
+    if (!arr || !arr.length) { emptyEl.classList.remove('hidden'); return; }
+    emptyEl.classList.add('hidden');
+    arr.forEach(s => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'time-pill inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:border-indigo-300 hover:bg-indigo-50';
+      b.dataset.value = s.value;
+      b.textContent   = s.label;
+      if (s.value === selected) b.classList.add('ring-2','ring-indigo-500');
+      b.addEventListener('click', () => {
+        container.querySelectorAll('button').forEach(x=>x.classList.remove('ring-2','ring-indigo-500'));
+        b.classList.add('ring-2','ring-indigo-500');
+        container.dataset.selected = s.value;
+      });
+      container.appendChild(b);
+    });
+  }
+
+  async function fetchSlots(date) {
+    const url = new URL(slotsEndpoint, window.location.origin);
+    url.searchParams.set('date', date);
+    const res = await fetch(url, { headers:{'X-Requested-With':'XMLHttpRequest'} });
+    if (!res.ok) throw new Error('Failed to load slots');
+    return res.json(); // { counselors:[{id,name}], slots: { [id]: [{value,label}] } }
+  }
+
+  btn.addEventListener('click', async () => {
+    try {
+      const today = new Date(); const pad = n => String(n).padStart(2,'0');
+      const defaultDate = `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`;
+
+      // initial fetch
+      let slotsData = await fetchSlots(defaultDate);
+
+      const { value: form } = await Swal.fire({
+        title: 'Book appointment',
+        html: `
+          <div style="text-align:left">
+            <label class="text-sm font-medium text-slate-700">1) Pick date *</label>
+            <input id="adm-date" type="date" value="${defaultDate}" min="{{ now()->toDateString() }}"
+                   class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
+
+            <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="text-sm font-medium text-slate-700">2) Counselor *</label>
+                <select id="adm-counselor" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  ${(slotsData.counselors || []).map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}
+                </select>
+              </div>
+              <div>
+                <label class="text-sm font-medium text-slate-700">3) Time *</label>
+                <div id="adm-times" class="mt-1 grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+                <div id="adm-empty" class="text-xs text-slate-500 mt-1 hidden">No available times.</div>
+              </div>
+            </div>
+          </div>
+        `,
+        width: 720,
+        showCancelButton: true,
+        confirmButtonText: 'Confirm Booking',
+        focusConfirm: false,
+        didOpen: () => {
+          const dateEl  = document.getElementById('adm-date');
+          const counEl  = document.getElementById('adm-counselor');
+          const timeEl  = document.getElementById('adm-times');
+
+          // seed times for initially selected counselor
+          buildTimePills(timeEl, (slotsData.slots || {})[counEl.value] || []);
+
+          // on date change → refetch and rebuild both counselor list + time pills
+          dateEl.addEventListener('change', async () => {
+            slotsData = await fetchSlots(dateEl.value);
+            // rebuild counselor list
+            counEl.innerHTML = (slotsData.counselors || []).map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+            buildTimePills(timeEl, (slotsData.slots || {})[counEl.value] || []);
+          });
+
+          // on counselor change → rebuild time pills from latest slotsData
+          counEl.addEventListener('change', () => {
+            buildTimePills(timeEl, (slotsData.slots || {})[counEl.value] || []);
+          });
+        },
+        preConfirm: () => {
+          const dateEl = document.getElementById('adm-date');
+          const counEl = document.getElementById('adm-counselor');
+          const timeEl = document.getElementById('adm-times');
+
+          const date = dateEl ? dateEl.value : '';
+          const counselorId = counEl ? counEl.value : '';
+          const time = (timeEl && timeEl.dataset.selected) ? timeEl.dataset.selected : '';
+
+          if (!date || !counselorId || !time) {
+            Swal.showValidationMessage('Please select date, counselor, and time.');
+            return false;
+          }
+          return { date, counselorId, time };
+        }
+      });
+
+      if (!form) return;
+
+      // POST
+      const fd = new FormData();
+      fd.append('_token', @json(csrf_token()));
+      fd.append('date', form.date);
+      fd.append('time', form.time);
+      fd.append('counselor_id', form.counselorId);
+
+      const resp = await fetch(bookEndpoint, { method:'POST', body: fd, headers:{'X-Requested-With':'XMLHttpRequest'} });
+      const data = await resp.json().catch(()=>({}));
+      if (!resp.ok) throw new Error(data.message || 'Booking failed.');
+
+      Swal.fire({ icon:'success', title:'Booked', html:data.html || 'Appointment created.', confirmButtonText:'OK' });
+    } catch (e) {
+      console.error(e);
+      Swal.fire({ icon:'error', title:'Unable to book', text: e.message || 'Please try again.' });
+    }
+  });
+})();
+</script>
+
 @stack('scripts')
 </body>
 </html>

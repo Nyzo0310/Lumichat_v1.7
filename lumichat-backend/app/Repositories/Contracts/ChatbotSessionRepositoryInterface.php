@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 
 interface ChatbotSessionRepositoryInterface
 {
-    /** Basic CRUD (kept consistent across repos) */
+    /** Basic CRUD */
     public function all(): Collection;
     public function findById(int $id, array $with = []): ?object;
     public function create(array $data): object;
@@ -16,6 +16,9 @@ interface ChatbotSessionRepositoryInterface
 
     /** List with search + date filters + pagination for the Admin index */
     public function paginateWithFilters(string $q = '', string $dateKey = 'all', int $perPage = 10): LengthAwarePaginator;
+
+    /** Same filters w/o pagination (used by PDF export) */
+    public function allWithFilters(string $q = '', string $dateKey = 'all'): Collection;
 
     /** One session with user + chats ordered oldest→newest for the Admin show page */
     public function findWithOrderedChats(int $id): ?object;

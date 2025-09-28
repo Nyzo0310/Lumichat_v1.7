@@ -5,22 +5,20 @@ namespace App\Repositories\Contracts;
 interface DashboardRepositoryInterface
 {
     /**
-     * Build the complete dashboard payload (used by Blade + JSON).
-     *
      * Returns:
      * [
      *   'kpis' => [
-     *      'appointmentsTotal'    => int,
-     *      'criticalCasesTotal'   => int,
-     *      'activeCounselors'     => int,
-     *      'chatSessionsThisWeek' => int,
-     *      'appointmentsTrend'    => string,
-     *      'sessionsTrend'        => string,
+     *     'appointmentsTotal'    => int,
+     *     'criticalCasesTotal'   => int,   // DISTINCT users who still have at least one UNHANDLED high-risk chat session
+     *     'activeCounselors'     => int,
+     *     'chatSessionsThisWeek' => int,
+     *     'appointmentsTrend'    => string,
+     *     'sessionsTrend'        => string,
      *   ],
-     *   'recentAppointments' => array<array>,
-     *   'activities'         => array<array>,
-     *   'recentChatSessions' => array<array>,
-     *   'generatedAt'        => string ISO8601,
+     *   'recentAppointments'   => array<array>,  // [{ status, notes, when, ... }]
+     *   'activities'           => array<array>,  // [{ event, meta, actor, created_at }]
+     *   'recentChatSessions'   => array<array>,  // [{ topic_summary, actor, risk_level, created_at }]
+     *   'generatedAt'          => string (ISO8601),
      * ]
      */
     public function stats(): array;
