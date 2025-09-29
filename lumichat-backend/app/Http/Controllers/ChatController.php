@@ -317,12 +317,21 @@ HTML;
                 "It’s okay to feel that way. I’m here to listen. Would you like to share more? / Sige ra na, ania ko maminaw. Gusto nimo isulti pa ug dugang?"
             ];
         }
-
         if (empty($botReplies)) {
             $botReplies = [
-                "I didn’t quite get that, but I’m here to listen. Could you say it another way? / Wala kaayo nako masabti, pero ania ko maminaw. Pwede nimo usbon pagpasabot?"
+                "I’m here to support you. Would you like to share more about how you’re feeling? / Ania ko para motabang. Gusto nimo isulti pa ug dugang kung unsa imong gibati?"
             ];
+            $this->logActivity('rasa_no_reply', 'Rasa returned no replies', $sessionId, [
+                'response' => $r->body() ?? null,
+            ]); 
+        } else {
+            if (count($botReplies) > 3) {
+                $this->logActivity('rasa_multiple_replies', count($botReplies) . ' replies from Rasa', $sessionId, [
+                    'sample'   => array_slice($botReplies, 0, 3),
+                    'full'     => $botReplies,
+                ]);
         }
+    }
 
         // 6) Risk elevation + crisis prompt
         $current = $session->risk_level ?: 'low';
@@ -367,7 +376,7 @@ HTML;
                 ? route('appointment.index')    // <-- your /appointment page
                 : url('/appointment'));
 
-        $ctaHtml = '<a href="' . e($link) . '" class="mt-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition">Book an appointment</a>';
+        $ctaHtml = '<a href="'.e($link).'">Book an appointment</a>';
 
         $botPayload = [];
         foreach ($botReplies as $reply) {

@@ -1,75 +1,90 @@
+{{-- resources/views/chat.blade.php --}}
 @extends('layouts.app')
 @section('title', 'Chat')
 
 @section('content')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
+{{-- tiny CSS just for typing dots --}}
 <style>
-/* --- typing dots animation (kept your styles) --- */
-@keyframes bounceDots{0%,80%,100%{transform:translateY(0);opacity:.6}40%{transform:translateY(-4px);opacity:1}}
-#bot-typing .dot{display:inline-block;animation:bounceDots 1.3s infinite}
-#bot-typing .dot:nth-child(2){animation-delay:.2s}
-#bot-typing .dot:nth-child(3){animation-delay:.4s}
-
-/* Quick replies (kept) */
-.bot-actions{margin-top:.5rem;display:flex;gap:.5rem;flex-wrap:wrap}
-.bot-actions .qr-btn{font-size:.75rem;padding:.375rem .75rem;border-radius:.75rem;border:1px solid rgba(99,102,241,.35);background:rgba(99,102,241,.06)}
-.bot-actions .qr-btn[data-variant="primary"]{background:#4f46e5;color:#fff;border-color:#4f46e5}
-.bot-actions .qr-btn:hover{background:rgba(99,102,241,.12)}
-
-/* header typing moved into bubbles */
-#bot-typing{display:none!important}
-
-/* make in-bubble dots readable without changing theme */
-.bubble-ai{ color:#6b7280; } /* neutral gray; dots inherit currentColor */
+  @keyframes lumiBounceDots {0%,80%,100%{transform:translateY(0);opacity:.55}40%{transform:translateY(-4px);opacity:1}}
+  .typing-dots{display:inline-flex;gap:6px;align-items:center}
+  .typing-dots .dot{width:6px;height:6px;border-radius:999px;background:currentColor;animation:lumiBounceDots 1.1s infinite}
+  .typing-dots .dot:nth-child(2){animation-delay:.15s}
+  .typing-dots .dot:nth-child(3){animation-delay:.30s}
 </style>
 
 <div class="px-4 sm:px-6">
   <div class="mx-auto w-full max-w-5xl h-[80vh]">
 
     {{-- ===================== Chat Panel ===================== --}}
-  <div id="chat-wrapper"
-     class="chat-panel card-shell rounded-2xl overflow-hidden flex flex-col w-full chat-appear"
-     style="height:80vh"
-     data-thread-id="{{ $thread->id ?? ('draft-'.\Illuminate\Support\Str::uuid()) }}">
+    <div id="chat-wrapper"
+         class="card-shell rounded-2xl overflow-hidden flex flex-col w-full"
+         style="height:80vh"
+         data-thread-id="{{ $thread->id ?? ('draft-'.\Illuminate\Support\Str::uuid()) }}">
 
       {{-- ===================== Header ===================== --}}
-      <div class="chat-header flex items-center gap-3 bg-gradient-to-r from-indigo-600 to-purple-600
+      <div class="flex items-center gap-3 bg-gradient-to-r from-indigo-600 to-purple-600
                   text-white px-5 py-3 shadow">
         <img src="{{ asset('images/chatbot.png') }}" class="w-6 h-6" alt="Bot">
         <div class="min-w-0">
           <strong class="text-lg leading-tight">LumiCHAT Assistant</strong>
           <div class="text-xs text-white/80 hidden sm:block">Friendly support that respects your privacy</div>
         </div>
-
-        {{-- legacy header typing (hidden; dots now appear inside chat bubble) --}}
-        <div id="bot-typing"
-             class="ml-auto hidden items-center gap-2 select-none"
-             aria-live="polite" aria-atomic="true">
-          <span class="inline-flex items-center gap-1">
-            <span class="dot w-2 h-2 rounded-full bg-white/90"></span>
-            <span class="dot w-2 h-2 rounded-full bg-white/80"></span>
-            <span class="dot w-2 h-2 rounded-full bg-white/70"></span>
-          </span>
-          <span class="text-xs sm:text-sm text-white/90">LumiCHAT is typing…</span>
-        </div>
       </div>
 
       {{-- ===================== Messages ===================== --}}
-      <div id="chat-messages"
-           class="flex-1 min-h-0 flex flex-col gap-3 p-4 overflow-y-auto bg-gray-50 dark:bg-gray-900">
-        @foreach ($chats as $chat)
-          @php($mine = $chat->sender !== 'bot')
-          {{-- Flex column row; side alignment is on the ROW, not the bubble --}}
-          <div class="msg-row flex flex-col w-full min-w-0 {{ $mine ? 'items-end text-right' : 'items-start' }}">
-            <div class="bubble {{ $mine ? 'bubble-user' : 'bubble-ai' }} px-4 py-2 rounded-2xl text-base text-left">
-              {{ $chat->message }}
+      <div class="flex-1 min-h-0 flex flex-col">
+        <div id="chat-messages"
+             class="flex-1 min-h-0 flex flex-col gap-3 p-4 overflow-y-auto bg-gray-50 dark:bg-gray-900">
+
+          @foreach ($chats as $chat)
+            @php
+              $mine = $chat->sender !== 'bot';
+
+              // sanitize bot HTML (allow only http(s) links + <br>)
+              $msg = $mine ? $chat->message : strip_tags($chat->message, '<a><br>');
+              if (!$mine) {
+                $msg = preg_replace_callback(
+                  '/<a\b([^>]*?)href="([^"]+)"([^>]*)>(.*?)<\/a>/i',
+                  function ($m) {
+                    $href = $m[2];
+                    $text = strip_tags($m[4]);
+                    if (!preg_match('~^https?://~i', $href)) return e($text);
+                    return '<a href="'.e($href).'" style="color:#4f46e5;text-decoration:underline">'.e($text).'</a>';
+                  },
+                  $msg
+                );
+              }
+
+              // HARD inline bubble styles (protect against global overrides)
+              $base = 'display:inline-block !important;box-sizing:border-box !important;'.
+                      'width:auto !important;max-width:min(520px,46ch) !important;'.
+                      'min-height:0 !important;padding:6px 10px !important;margin:0 !important;'.
+                      'border-radius:16px !important;white-space:pre-wrap !important;'.
+                      'word-break:normal !important;overflow-wrap:anywhere !important;'.
+                      'font-size:15px !important;line-height:22px !important;text-align:left !important;';
+              $bot  = $base.'background:#f3f4f6 !important;color:#111827 !important;align-self:flex-start !important;';
+              $user = $base.'background:#4f46e5 !important;color:#ffffff !important;align-self:flex-end !important;margin-left:auto !important;';
+
+              $timeStyle = 'font-size:10px;color:#9ca3af;margin-top:4px;'
+                         . ($mine ? 'text-align:right;align-self:flex-end;' : 'text-align:left;align-self:flex-start;');
+            @endphp
+
+            <div class="msg-row flex flex-col w-full min-w-0">
+              <div
+                class="bubble {{ $mine ? 'bubble-user' : 'bubble-ai' }}"
+                data-sender="{{ $mine ? 'user' : 'bot' }}"
+                style="{{ $mine ? $user : $bot }}"
+              >{!! $mine ? e($chat->message) : $msg !!}</div>
+
+              <div style="{{ $timeStyle }}">
+                {{ \Carbon\Carbon::parse($chat->sent_at ?? $chat->created_at)->format('H:i') }}
+              </div>
             </div>
-            <div class="msg-time text-[10px] text-gray-400 dark:text-gray-500 mt-1">
-              {{ \Carbon\Carbon::parse($chat->sent_at ?? $chat->created_at)->format('H:i') }}
-            </div>
-          </div>
-        @endforeach
+          @endforeach
+
+        </div>
       </div>
 
       {{-- ===================== Composer ===================== --}}
@@ -102,7 +117,7 @@
       </form>
     </div>
 
-    <p class="chat-footer-note text-center text-gray-400 dark:text-gray-500 text-xs mt-3">
+    <p class="text-center text-gray-400 dark:text-gray-500 text-xs mt-3">
       Your conversations are encrypted and private.
     </p>
   </div>
@@ -110,272 +125,359 @@
 @endsection
 
 @push('scripts')
-  {{-- LumiCHAT scripts (module + nomodule fallback) --}}
-  <script type="module" src="/build/assets/chat.js?v=2025-09-23-1"></script>
-  <script nomodule src="/chat.js?v=2025-09-23-1"></script>
+<script>
+/* ========= Inline fallback (runs only if resources/js/chat.js is not active) ========= */
+(function(){
+  if (window.LUMI_CHAT_JS_ACTIVE) return;
+  window.LUMI_CHAT_JS_ACTIVE = true;
 
-  <script>
-  /* ===== Inline fallback (full features). 
-     It will ONLY run if an external chat.js is not already active. ===== */
-  (function(){
-    if (window.LUMI_CHAT_JS_ACTIVE) return;   // if external file already bound, skip
-    window.LUMI_CHAT_JS_ACTIVE = true;
+  document.addEventListener('DOMContentLoaded', () => {
+    const $ = s => document.querySelector(s);
+    const messages = $('#chat-messages');
+    const form     = $('#chat-form');
+    const input    = $('#chat-message');
+    const counter  = $('#char-counter');
+    const sendBtn  = $('#sendBtn');
+    const idemEl   = $('#idem');
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const messages = document.getElementById('chat-messages');
-      const form     = document.getElementById('chat-form');
-      const input    = document.getElementById('chat-message');
-      const counter  = document.getElementById('char-counter');
-      const sendBtn  = document.getElementById('sendBtn');
-      const idemEl   = document.getElementById('idem');
-      const chatWrapper = document.getElementById('chat-wrapper');
+    const STORE_URL = @json(route('chat.store'));
+    const MAXLEN    = 2000;
+    const APPT_URL  = @json(\Illuminate\Support\Facades\Route::has('appointment.index')
+                      ? route('appointment.index')
+                      : url('/appointment/book'));
+        
+    // Compact style only while the dots are showing
+    const TYPING_TWEAKS = [
+      'display:inline-flex!important',
+      'align-items:center!important',
+      'justify-content:center!important',
+      'padding:6px 8px!important',
+      'min-width:36px!important',
+      'min-height:22px!important',
+      'width:auto!important',
+      'height:auto!important',
+      'border-radius:14px!important'
+    ].join(';') + ';';
 
-      const STORE_URL = @json(route('chat.store'));
-      const MAXLEN = 2000;
+    // Base bubble style (make sure this is one single string)
+    const BASE = [
+      'display:inline-block!important',
+      'box-sizing:border-box!important',
+      'width:auto!important',
+      'max-width:min(520px,46ch)!important',
+      'min-height:0!important',
+      'padding:6px 10px!important',
+      'margin:0!important',
+      'border-radius:16px!important',
+      'white-space:pre-wrap!important',
+      'word-break:normal!important',
+      'overflow-wrap:anywhere!important',
+      'font-size:15px!important',
+      'line-height:22px!important',
+      'text-align:left!important'
+    ].join(';') + ';';
 
-      // ---- Panel exit (kept)
-      document.querySelectorAll('a[href*="chat/new"]').forEach(link => {
-        link.addEventListener('click', (e) => {
-          e.preventDefault();
-          chatWrapper?.classList.remove('chat-appear');
-          chatWrapper?.classList.add('chat-disappear');
-          setTimeout(() => { window.location = link.href; }, 900);
-        });
-      });
+    // User & bot bubble styles (explicit rounding kept)
+    const userStyle = `${BASE}background:#4f46e5!important;color:#ffffff!important;align-self:flex-end!important;margin-left:auto!important;border-radius:16px!important;`;
+    const botStyle  = () => {
+      const dark = document.documentElement.classList.contains('dark');
+      return `${BASE}background:${dark ? '#1f2937' : '#f3f4f6'}!important;color:${dark ? '#f8fafc' : '#111827'}!important;align-self:flex-start!important;border-radius:16px!important;`;
+    };
 
-      // ---- Helpers
-      const INVISIBLE_RE = /[\u200B\u200C\u200D\u2060\uFEFF]/g;
-      const URL_RE = /(https?:\/\/[^\s<>"']+)/gi;
-      const sanitizeClient = raw => (raw || '').replace(INVISIBLE_RE,'').replace(/\s+/g,' ').trim();
-      const linkify = t => String(t).replace(URL_RE, m => `<a href="${m}" target="_blank" rel="noopener noreferrer">${m}</a>`);
+    /* Sanitizers */
+    const INVISIBLE_RE = /[\u200B\u200C\u200D\u2060\uFEFF]/g;
+    const URL_RE = /(https?:\/\/[^\s<>"']+)/gi;
+    const sanitizeClient = raw => (raw || '').replace(INVISIBLE_RE,'').replace(/\s+/g,' ').trim();
+    const linkify = t => String(t||'').replace(URL_RE, m => `<a href="${m}" style="color:#4f46e5;text-decoration:underline">${m}</a>`);
 
-      function sanitizeBotHtml(html) {
-        const tmp = document.createElement('div'); tmp.innerHTML = html;
-        const walk = (node) => {
-          for (const child of Array.from(node.childNodes)) {
-            if (child.nodeType === Node.ELEMENT_NODE) {
-              const tag = child.tagName.toLowerCase();
-              if (tag === 'a') {
-                const href = child.getAttribute('href') || '';
-                if (!/^https?:\/\//i.test(href)) { child.replaceWith(document.createTextNode(child.textContent)); continue; }
-                child.setAttribute('target','_blank'); child.setAttribute('rel','noopener noreferrer');
-              } else if (tag !== 'br') {
-                child.replaceWith(document.createTextNode(child.textContent));
-              }
-              walk(child);
+    function sanitizeBotHtml(html){
+      const tmp = document.createElement('div'); tmp.innerHTML = html;
+      const walk = (node) => {
+        for (const child of Array.from(node.childNodes)) {
+          if (child.nodeType === Node.ELEMENT_NODE) {
+            const tag = child.tagName.toLowerCase();
+            if (tag === 'a') {
+              const href = child.getAttribute('href') || '';
+              if (!/^https?:\/\//i.test(href)) { child.replaceWith(document.createTextNode(child.textContent)); continue; }
+              child.setAttribute('style','color:#4f46e5;text-decoration:underline');
+              Array.from(child.attributes).forEach(a => { if (!['href','style'].includes(a.name)) child.removeAttribute(a.name); });
+            } else if (tag !== 'br') {
+              child.replaceWith(document.createTextNode(child.textContent));
             }
+            walk(child);
           }
-        };
-        walk(tmp); 
-        return tmp.innerHTML;
-      }
-      const renderBotContent = s => /[<>]/.test(s) ? sanitizeBotHtml(s) : sanitizeBotHtml(linkify(s));
-
-      // ---- Counter
-      function updateCounter(){
-        let v = input.value || '';
-        if (v.length > MAXLEN){ v = v.slice(0, MAXLEN); input.value = v; }
-        counter.textContent = `${v.length}/${MAXLEN}`;
-        sendBtn.disabled = sanitizeClient(v).length === 0;
-        counter.classList.toggle('text-red-600', v.length >= MAXLEN);
-      }
-      input.addEventListener('input', updateCounter);
-      input.addEventListener('paste', (e)=>{
-        const cd = e.clipboardData || window.clipboardData; if (!cd) return; e.preventDefault();
-        const clip = cd.getData('text'); if (clip == null) return;
-        const sanitized = String(clip).replace(INVISIBLE_RE, '');
-        const start = input.selectionStart ?? input.value.length, end = input.selectionEnd ?? input.value.length;
-        const before = input.value.slice(0, start), after = input.value.slice(end);
-        const remaining = Math.max(0, MAXLEN - (before.length + after.length));
-        const toInsert  = sanitized.slice(0, remaining);
-        input.value = before + toInsert + after;
-        const caret  = start + toInsert.length; input.setSelectionRange?.(caret, caret);
-        updateCounter();
-      });
-
-      // ---- Append bubbles (match server DOM)
-      function appendUserBubble(text, time=''){
-        messages.insertAdjacentHTML('beforeend', `
-          <div class="msg-row flex flex-col w-full min-w-0 items-end text-right">
-            <div class="bubble bubble-user px-4 py-2 rounded-2xl text-base text-left"></div>
-            <div class="msg-time text-[10px] text-gray-400 dark:text-gray-500 mt-1">${time}</div>
-          </div>`);
-        const row = messages.lastElementChild, bubble = row.querySelector('.bubble-user'), timeEl = row.querySelector('.msg-time');
-        bubble.textContent = text;
-        messages.scrollTop = messages.scrollHeight;
-        return {row, timeEl};
-      }
-      function appendBotBubbleShell(time=''){
-        messages.insertAdjacentHTML('beforeend', `
-          <div class="msg-row flex flex-col w-full min-w-0 items-start">
-            <div class="bubble bubble-ai px-4 py-2 rounded-2xl text-base text-left"></div>
-            <div class="msg-time text-[10px] text-gray-400 dark:text-gray-500 mt-1">${time}</div>
-          </div>`);
-        return messages.lastElementChild.querySelector('.bubble-ai');
-      }
-
-      // ---- Dots + typewriter + queue
-      function typewriter(bubble, finalHTML, speed=25, minDotsMs=900){
-        const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        return new Promise((resolve)=>{
-          if (reduced){ bubble.innerHTML = finalHTML; resolve(); return; }
-          const start = performance.now();
-          const waitDots = () => {
-            if (performance.now() - start < minDotsMs) return requestAnimationFrame(waitDots);
-            const tmp = document.createElement('div'); tmp.innerHTML = finalHTML;
-            const plain = tmp.textContent || tmp.innerText || '';
-            bubble.textContent = '';
-            let i = 0;
-            (function tick(){
-              bubble.textContent = plain.slice(0, i+1);
-              i++; messages.scrollTop = messages.scrollHeight;
-              if (i < plain.length) setTimeout(tick, speed);
-              else { bubble.innerHTML = finalHTML; messages.scrollTop = messages.scrollHeight; resolve(); }
-            })();
-          };
-          requestAnimationFrame(waitDots);
-        });
-      }
-
-      async function appendBotBubble(payload, time=''){
-        const bubble = appendBotBubbleShell(time);
-        // dots inside bubble
-        bubble.innerHTML = `
-          <span class="inline-flex items-center gap-1">
-            <span class="dot w-2 h-2 rounded-full"></span>
-            <span class="dot w-2 h-2 rounded-full"></span>
-            <span class="dot w-2 h-2 rounded-full"></span>
-          </span>
-          <span class="sr-only">Assistant is typing…</span>`;
-        messages.scrollTop = messages.scrollHeight;
-
-        // natural think time
-        await new Promise(r => setTimeout(r, 320 + Math.floor(Math.random()*420)));
-
-        // final text (safe)
-        const text = (typeof payload === 'object' && payload) ? (payload.text ?? payload.bot_reply ?? payload.message ?? '') : payload;
-        const html = renderBotContent(text || '');
-        await typewriter(bubble, html, 24, 650);
-
-        // (optional) domain quick actions – based on message content
-        try{
-          const raw = (bubble.textContent || '').toLowerCase();
-          const isCoping   = /share\s+coping\s+tips/.test(bubble.textContent) || (/coping\s+mechanism/.test(raw) && /want(\s+them)?\s+now\??/.test(raw));
-          const isReferral = /open the appointment page\??/i.test(bubble.textContent) || /book\s+counselor/.test(raw);
-          if (isCoping || isReferral){
-            const box = document.createElement('div');
-            box.className = 'bot-actions';
-            box.innerHTML = isCoping
-              ? `<button class="qr-btn" data-qr='/deny{"confirm_topic":"coping"}'>No, thanks</button>
-                 <button class="qr-btn" data-variant="primary" data-qr='/affirm{"confirm_topic":"coping"}'>Yes, show tips</button>`
-              : `<a class="qr-btn" data-variant="primary" href="http://127.0.0.1:8000/appointment/book" rel="noopener">Book counselor</a>
-                 <button class="qr-btn" data-qr='/deny{"confirm_topic":"referral"}'>Not now</button>`;
-            box.addEventListener('click', (ev)=>{
-              const btn = ev.target.closest('.qr-btn'); 
-              if (!btn || btn.tagName === 'A') return;
-              const payload = btn.getAttribute('data-qr') || btn.textContent.trim();
-              appendUserBubble(payload, new Date().toLocaleTimeString());
-              send(payload);
-            });
-            bubble.appendChild(box);
-          }
-        }catch{}
-
-        return bubble;
-      }
-
-      // strict queue so replies never overlap
-      let Q = Promise.resolve();
-      const runQ = (task) => (Q = Q.then(task).catch(e => console.warn('[LumiCHAT] queue error', e)));
-
-      function sendQuick(text){
-        appendUserBubble(text, new Date().toLocaleTimeString());
-        send(text);
-      }
-
-      async function send(message){
-        try{
-          sendBtn && (sendBtn.disabled = true);
-          const idem = (window.crypto?.randomUUID?.() ?? (Date.now() + '-' + Math.random().toString(16).slice(2)));
-          idemEl.value = idem;
-
-          const res = await fetch(STORE_URL, {
-            method:'POST',
-            headers:{
-              'Content-Type':'application/json',
-              'Accept':'application/json',
-              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({ message, _idem: idem })
-          });
-
-          if (!res.ok){ await runQ(()=>appendBotBubble('No reply from LumiCHAT Assistant.', '')); return; }
-          const data = await res.json();
-
-          let replies = data?.bot_reply;
-          if (!Array.isArray(replies)) replies = [replies];
-
-          for (const r of (replies || [])){
-            await runQ(() => appendBotBubble(r, data?.time_human || ''));
-            await runQ(() => new Promise(done => setTimeout(done, 240))); // tiny post pause
-          }
-        } catch (e){
-          console.error(e);
-          await runQ(()=>appendBotBubble('No reply from LumiCHAT Assistant.', ''));
-        } finally {
-          sendBtn && (sendBtn.disabled = false);
-          input && input.focus();
         }
-      }
+      };
+      walk(tmp);
+      return tmp.innerHTML;
+    }
+    const renderBotContent = s => /[<>]/.test(s) ? sanitizeBotHtml(s) : sanitizeBotHtml(linkify(s));
 
-      // enter-to-send
-      input.addEventListener('keydown', (e) => {
-        if (e.isComposing) return;
-        if (e.key === 'Enter' && !e.shiftKey){
-          e.preventDefault();
-          const raw = input.value;
-          input.value = '';
-          updateCounter();
-          const cleaned = sanitizeClient(raw);
-          if (!cleaned) return;
-          appendUserBubble(cleaned, new Date().toLocaleTimeString());
-          send(cleaned);
-        }
-      });
-
-      // submit handler (button click)
-      if (!form.dataset.bound){
-        form.dataset.bound = '1';
-        form.addEventListener('submit', (e)=>{
-          e.preventDefault();
-          const raw = input.value;
-          input.value = '';
-          updateCounter();
-          const cleaned = sanitizeClient(raw);
-          if (!cleaned) return;
-          appendUserBubble(cleaned, new Date().toLocaleTimeString());
-          send(cleaned);
-        });
-      }
-
-      // ---- Init
-      function updateCounter(){ /* defined earlier; reattached to keep scope */ }
-      // Call the actual one now:
-      (function(){ const evt=new Event('input'); input.dispatchEvent(evt); })();
-      if (messages) messages.scrollTop = messages.scrollHeight;
-
-      /* === Auto-welcome on first load (only if no messages) === */
-      try {
-        const hasMessages = !!messages.querySelector('.msg-row');
-        if (!hasMessages && !sessionStorage.getItem('lumi_welcome')) {
-          sessionStorage.setItem('lumi_welcome','1');
-          runQ(() => appendBotBubble("Hi! I’m Lumi — how can I help you today?", ""));
-        }
-      } catch (e) { console.warn("Welcome message skipped:", e); }
-
-      console.log('%c[LumiCHAT] inline chat script active', 'color:#4f46e5;font-weight:bold');
+    /* Counter */
+    function updateCounter(){
+      let v = input.value || '';
+      if (v.length > MAXLEN){ v = v.slice(0, MAXLEN); input.value = v; }
+      counter.textContent = `${v.length}/${MAXLEN}`;
+      sendBtn.disabled = sanitizeClient(v).length === 0;
+      counter.classList.toggle('text-red-600', v.length >= MAXLEN);
+    }
+    input.addEventListener('input', updateCounter);
+    input.addEventListener('paste', (e)=>{
+      const cd = e.clipboardData || window.clipboardData; if (!cd) return; e.preventDefault();
+      const clip = cd.getData('text'); if (clip == null) return;
+      const sanitized = String(clip).replace(INVISIBLE_RE, '');
+      const start = input.selectionStart ?? input.value.length, end = input.selectionEnd ?? input.value.length;
+      const before = input.value.slice(0, start), after = input.value.slice(end);
+      const remaining = Math.max(0, MAXLEN - (before.length + after.length));
+      const toInsert  = sanitized.slice(0, remaining);
+      input.value = before + toInsert + after;
+      const caret  = start + toInsert.length; input.setSelectionRange?.(caret, caret);
+      updateCounter();
     });
 
-  })();
-  </script>
+    /* Bubble appenders */
+    function appendUserBubble(text, time=''){
+      messages.insertAdjacentHTML('beforeend', `
+        <div class="msg-row flex flex-col w-full min-w-0">
+          <div class="bubble bubble-user" data-sender="user" style="${userStyle}"></div>
+          <div style="font-size:10px;color:#9ca3af;margin-top:4px;text-align:right;align-self:flex-end;">${time}</div>
+        </div>`);
+      const bubble = messages.lastElementChild.querySelector('.bubble-user');
+      bubble.textContent = text;
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function appendBotBubbleShell(time=''){
+      messages.insertAdjacentHTML('beforeend', `
+        <div class="msg-row flex flex-col w-full min-w-0">
+          <div class="bubble bubble-ai is-typing" data-sender="bot" style="${botStyle()}${TYPING_TWEAKS}">
+            <span class="typing-dots" aria-hidden="true" style="color:#6b7280">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            </span>
+          </div>
+          <div style="font-size:10px;color:#9ca3af;margin-top:4px;text-align:left;align-self:flex-start;">${time}</div>
+        </div>`);
+      messages.scrollTop = messages.scrollHeight;
+      return messages.lastElementChild.querySelector('.bubble-ai');
+    }
+
+    /* Typewriter */
+    function typewriter(bubble, finalHTML, speed=24, minDotsMs=650){
+      const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+      return new Promise((resolve)=>{
+        const finish = () => {
+          bubble.style.cssText = botStyle();           // ← revert size & style
+          bubble.innerHTML = finalHTML;
+          addQuickActions(bubble);
+          messages.scrollTop = messages.scrollHeight;
+          resolve();
+        };
+
+        if (reduced){ finish(); return; }
+
+        const start = performance.now();
+        const waitDots = () => {
+          if (performance.now() - start < minDotsMs) return requestAnimationFrame(waitDots);
+          const tmp = document.createElement('div'); tmp.innerHTML = finalHTML;
+          const plain = tmp.textContent || tmp.innerText || '';
+          bubble.classList.remove('is-typing');
+          bubble.textContent = '';
+          let i = 0;
+          (function tick(){
+            bubble.textContent = plain.slice(0, i+1);
+            i++; messages.scrollTop = messages.scrollHeight;
+            if (i < plain.length) setTimeout(tick, speed);
+            else finish();
+          })();
+        };
+        requestAnimationFrame(waitDots);
+      });
+    }
+
+    function renderButtons(buttons, bubble){
+      if (!Array.isArray(buttons) || !buttons.length) return;
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'margin-top:8px;display:flex;flex-wrap:wrap;gap:8px';
+      buttons.forEach(b => {
+        if (b?.url){
+          const a = document.createElement('a');
+          a.textContent = b.title || 'Open';
+          a.href = b.url; a.rel = 'noopener';
+          a.style.cssText = 'font-size:12px;padding:6px 10px;border-radius:12px;border:1px solid rgba(99,102,241,.35);background:rgba(99,102,241,.06)';
+          wrap.appendChild(a);
+        }else{
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.textContent = b.title || 'Select';
+          btn.style.cssText = 'font-size:12px;padding:6px 10px;border-radius:12px;border:1px solid rgba(99,102,241,.35);background:rgba(99,102,241,.06)';
+          btn.addEventListener('click', ()=> sendQuick(String(b.payload || b.title || '')));
+          wrap.appendChild(btn);
+        }
+      });
+      bubble.appendChild(wrap);
+    }
+
+    /* Quick actions (tips / referral) */
+    function addQuickActions(bubble){
+      // Avoid duplicates
+      if (bubble.querySelector('[data-qa="qr"]')) return;
+
+      const raw = (bubble.textContent || '').trim();
+      const plain = raw.toLowerCase();
+
+      const asksForTips =
+        /share\s+coping\s+tips/i.test(raw) ||
+        (plain.includes('coping') && /want(\s+them)?\s*now\??/.test(plain));
+
+      // Only trigger referral CTA when message explicitly mentions booking/appointment
+      const mentionsReferral =
+        /book\s+(a\s*)?counselor|appointment\s+page|open\s+the\s+appointment|schedule\s+an?\s*appointment/i.test(plain);
+
+      const box = document.createElement('div');
+      box.setAttribute('data-qa','qr');
+      box.style.cssText = 'margin-top:8px;display:flex;flex-wrap:wrap;gap:8px';
+
+      const pill = 'font-size:12px;padding:6px 10px;border-radius:12px;border:1px solid rgba(99,102,241,.35);background:rgba(99,102,241,.06);cursor:pointer';
+      const pillPrimary = 'font-size:12px;padding:6px 10px;border-radius:12px;border:1px solid #4f46e5;background:#4f46e5;color:#fff;cursor:pointer;text-decoration:none;display:inline-block';
+
+      if (asksForTips){
+        const noBtn = document.createElement('button');
+        noBtn.style.cssText = pill; noBtn.textContent = 'No, thanks';
+        noBtn.addEventListener('click', ()=> sendQuick('/deny{"confirm_topic":"coping"}'));
+        box.appendChild(noBtn);
+
+        const yesBtn = document.createElement('button');
+        yesBtn.style.cssText = pillPrimary; yesBtn.textContent = 'Yes, show tips';
+        yesBtn.addEventListener('click', ()=> sendQuick('/affirm{"confirm_topic":"coping"}'));
+        box.appendChild(yesBtn);
+      } else if (mentionsReferral){
+        const a = document.createElement('a');
+        a.style.cssText = pillPrimary; a.textContent = 'Book counselor';
+        a.href = APPT_URL; a.rel = 'noopener';
+        box.appendChild(a);
+
+        const laterBtn = document.createElement('button');
+        laterBtn.style.cssText = pill; laterBtn.textContent = 'Not now';
+        laterBtn.addEventListener('click', ()=> sendQuick('/deny{"confirm_topic":"referral"}'));
+        box.appendChild(laterBtn);
+      } else {
+        return;
+      }
+
+      bubble.appendChild(box);
+    }
+
+    // Rehydrate quick actions for server-rendered history (on refresh)
+    function rehydrateQuickActions(){
+      try{
+        const bots = Array.from(messages.querySelectorAll('.bubble-ai[data-sender="bot"]'));
+        bots.slice(-6).forEach(addQuickActions);
+      }catch(_){}
+    }
+
+    async function appendBotBubble(payload, time=''){
+      const bubble = appendBotBubbleShell(time);
+      await new Promise(r => setTimeout(r, 300 + Math.floor(Math.random()*420))); // typing dots pause
+
+      const obj  = (payload && typeof payload === 'object') ? payload : { text: payload };
+      const text = obj.text ?? obj.bot_reply ?? obj.message ?? '';
+      const html = renderBotContent(text || '');
+
+      await typewriter(bubble, html, 24, 650);
+
+      if (Array.isArray(obj.buttons) && obj.buttons.length) renderButtons(obj.buttons, bubble);
+      if (obj?.custom?.open_url) window.open(obj.custom.open_url, '_blank');
+
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    /* Send queue */
+    let Q = Promise.resolve();
+    const runQ = (task) => (Q = Q.then(task).catch(()=>{}));
+
+    function sendQuick(text){
+      appendUserBubble(text, new Date().toLocaleTimeString());
+      send(text);
+    }
+
+    async function send(message){
+      try{
+        if (sendBtn) sendBtn.disabled = true;
+        const idem = (crypto?.randomUUID?.() ?? (Date.now() + '-' + Math.random().toString(16).slice(2)));
+        if (idemEl) idemEl.value = idem;
+
+        const res = await fetch(STORE_URL, {
+          method:'POST',
+          headers:{
+            'Content-Type':'application/json',
+            'Accept':'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+          },
+          body: JSON.stringify({ message, _idem: idem })
+        });
+
+        if (!res.ok){ await runQ(()=>appendBotBubble('No reply from LumiCHAT Assistant.', '')); return; }
+        const data = await res.json();
+
+        let replies = data?.bot_reply;
+        if (!Array.isArray(replies)) replies = [replies];
+
+        for (const r of (replies || [])){
+          await runQ(() => appendBotBubble(r, data?.time_human || ''));
+          await runQ(() => new Promise(done => setTimeout(done, 220)));
+        }
+      } catch {
+        await runQ(()=>appendBotBubble('Sorry, I’m having trouble right now.', ''));
+      } finally {
+        if (sendBtn) sendBtn.disabled = false;
+        input?.focus();
+      }
+    }
+
+    /* Enter to send + Submit */
+    input.addEventListener('keydown', (e) => {
+      if (e.isComposing) return;
+      if (e.key === 'Enter' && !e.shiftKey){
+        e.preventDefault();
+        const raw = input.value; input.value = ''; updateCounter();
+        const cleaned = sanitizeClient(raw); if (!cleaned) return;
+        appendUserBubble(cleaned, new Date().toLocaleTimeString());
+        send(cleaned);
+      }
+    });
+    if (!form.dataset.bound){
+      form.dataset.bound = '1';
+      form.addEventListener('submit', (e)=>{
+        e.preventDefault();
+        const raw = input.value; input.value = ''; updateCounter();
+        const cleaned = sanitizeClient(raw); if (!cleaned) return;
+        appendUserBubble(cleaned, new Date().toLocaleTimeString());
+        send(cleaned);
+      });
+    }
+
+    /* Init */
+    input.dispatchEvent(new Event('input'));
+    updateCounter();
+    messages && (messages.scrollTop = messages.scrollHeight);
+    rehydrateQuickActions();
+
+    // One-time auto welcome (per thread, 60 min)
+    try {
+      const hasMessages = !!messages.querySelector('.msg-row');
+      const wrap = document.getElementById('chat-wrapper');
+      const threadId = wrap?.dataset.threadId || location.pathname;
+      const KEY = `lumi_welcome_${threadId}`;
+      const now = Date.now();
+      let last = 0;
+      try { last = JSON.parse(sessionStorage.getItem(KEY))?.ts || 0; } catch {}
+      const elapsedMin = (now - last) / 60000;
+      if (!hasMessages && (!last || elapsedMin >= 60)){
+        sessionStorage.setItem(KEY, JSON.stringify({ ts: now }));
+        runQ(() => appendBotBubble("Hi! I’m Lumi — how can I help you today?", ""));
+      }
+    } catch {}
+  });
+})();
+</script>
 @endpush
