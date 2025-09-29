@@ -51,50 +51,102 @@ class CounselorLogController extends Controller
         ]);
     }
 
-    /** Export filtered list to PDF */
-    public function exportPdf(Request $request)
-    {
-        $month = (int) $request->integer('month') ?: null;
-        $year  = (int) $request->integer('year')  ?: null;
-        $cid   = (int) $request->integer('counselor_id') ?: null;
+   public function exportPdf(Request $request)
+{
+    $month = (int) $request->integer('month') ?: null;
+    $year  = (int) $request->integer('year')  ?: null;
+    $cid   = (int) $request->integer('counselor_id') ?: null;
 
-        if (method_exists($this->logs, 'allLogs')) {
-            $rows = $this->logs->allLogs([
-                'month'        => $month,
-                'year'         => $year,
-                'counselor_id' => $cid,
-            ]);
-        } else {
-            $p    = $this->logs->paginateLogs([
-                'month'        => $month,
-                'year'         => $year,
-                'counselor_id' => $cid,
-                'per_page'     => PHP_INT_MAX,
-            ]);
-            $rows = method_exists($p, 'items') ? collect($p->items()) : collect($p);
-        }
-
-        $counselors = $this->logs->listCounselors();
-        $cName = $cid ? optional($counselors->firstWhere('id',$cid))->full_name : 'All';
-        $mName = $month ? \Carbon\Carbon::create(null,$month,1)->format('F') : 'All';
-        $yName = $year ?: 'All';
-
-        $generatedAt = now()->format('Y-m-d H:i');
-
-        // Dompdf wrapper + explicit default font (match your PDF blade font)
-        $pdf = app('dompdf.wrapper');
-        $pdf->getDomPDF()->getOptions()->set('defaultFont', 'DejaVu Sans');
-        $pdf->getDomPDF()->getOptions()->set('isRemoteEnabled', true);
-        $pdf->setPaper('a4', 'portrait');
-
-        $pdf->loadView('admin.counselor-logs.pdf', [
-            'rows'        => $rows,
-            'cName'       => $cName,
-            'mName'       => $mName,
-            'yName'       => $yName,
-            'generatedAt' => $generatedAt,
+    if (method_exists($this->logs, 'allLogs')) {
+        $rows = $this->logs->allLogs([
+            'month'        => $month,
+            'year'         => $year,
+            'counselor_id' => $cid,
         ]);
-
-        return $pdf->download('Counselor_Logs_'.now()->format('Ymd_His').'.pdf');
+    } else {
+        $p    = $this->logs->paginateLogs([
+            'month'        => $month,
+            'year'         => $year,
+            'counselor_id' => $cid,
+            'per_page'     => PHP_INT_MAX,
+        ]);
+        $rows = method_exists($p, 'items') ? collect($p->items()) : collect($p);
     }
+
+    $counselors = $this->logs->listCounselors();
+    $cName = $cid ? optional($counselors->firstWhere('id',$cid))->full_name : 'All';
+    $mName = $month ? \Carbon\Carbon::create(null,$month,1)->format('F') : 'All';
+    $yName = $year ?: 'All';
+    $generatedAt = now()->format('Y-m-d H:i');
+
+    // Build base64 logo (public/images/chatbot.png – adjust if needed)
+    $logoData = null;
+    $logoPath = public_path('images/chatbot.png');
+    if (is_file($logoPath)) {
+        $logoData = 'data:image/png;base64,' . base64_encode(@file_get_contents($logoPath));
+    }
+
+    $pdf = app('dompdf.wrapper');
+    $pdf->setPaper('a4', 'portrait');
+    $pdf->setOptions([
+        'defaultFont'          => 'DejaVu Sans',
+        'isHtml5ParserEnabled' => true,
+        'isRemoteEnabled'      => true,
+        'chroot'               => public_path(),
+    ]);
+
+    $pdf->loadView('admin.counselor-logs.pdf', [
+        'rows'        => $rows,
+        'cName'       => $cName,
+        'mName'       => $mName,
+        'yName'       => $yName,
+        'generatedAt' => $generatedAt,
+        'logoData'    => $logoData,  // ← pass to Blade
+    ]);
+
+    return $pdf->download('Counselor_Logs_'.now()->format('Ymd_His').'.pdf');
+}
+// app/Http/Controllers/Admin/CounselorLogController.php
+
+public function exportShowPdf(Request $request, int $counselor)
+{
+    $month = (int) $request->integer('month') ?: (int) now()->format('n');
+    $year  = (int) $request->integer('year')  ?: (int) now()->year;
+
+    $data = $this->logs->counselorMonthDetail($counselor, $month, $year);
+    abort_unless($data['counselor'] ?? null, 404);
+
+    $label       = \Carbon\Carbon::create($year, $month, 1)->format('F Y');
+    $generatedAt = now()->format('Y-m-d H:i');
+
+    // Inline (base64) logo so Dompdf shows it reliably
+    $logoData = null;
+    $logoPath = public_path('images/chatbot.png'); // adjust if your logo lives elsewhere
+    if (is_file($logoPath)) {
+        $logoData = 'data:image/png;base64,' . base64_encode(@file_get_contents($logoPath));
+    }
+
+    $pdf = app('dompdf.wrapper');
+    $pdf->setPaper('a4', 'portrait');
+    $pdf->setOptions([
+        'defaultFont'          => 'DejaVu Sans',
+        'isHtml5ParserEnabled' => true,
+        'isRemoteEnabled'      => true,
+        'chroot'               => public_path(),
+    ]);
+
+    $pdf->loadView('admin.counselor-logs.pdf-show', [
+        'counselor'  => $data['counselor'],
+        'students'   => $data['students'],
+        'dxCounts'   => $data['dxCounts'],
+        'month'      => $month,
+        'year'       => $year,
+        'label'      => $label,
+        'generatedAt'=> $generatedAt,
+        'logoData'   => $logoData,
+    ]);
+
+    return $pdf->download('Counselor_Log_'.$data['counselor']->full_name.'_'.$year.'-'.$month.'_'.now()->format('Ymd_His').'.pdf');
+}
+
 }

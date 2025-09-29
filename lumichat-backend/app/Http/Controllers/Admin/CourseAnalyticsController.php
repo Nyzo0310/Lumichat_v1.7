@@ -44,26 +44,35 @@ class CourseAnalyticsController extends Controller
         ]);
     }
 
-    /** Export the INDEX list to PDF (matches route: admin.course-analytics.export.pdf) */
-    public function exportIndexPdf(Request $request)
-    {
-        $yearKey = (string) $request->query('year', 'all');
-        $q       = trim((string) $request->query('q', ''));
+   public function exportIndexPdf(Request $request)
+{
+    $yearKey = (string) $request->query('year', 'all');
+    $q       = trim((string) $request->query('q', ''));
+    $courses = $this->analytics->listCourses($yearKey, $q);
 
-        $courses = $this->analytics->listCourses($yearKey, $q);
+    $logoData = null;
+    $logoPath = public_path('images/chatbot.png');
+    if (is_file($logoPath)) $logoData = 'data:image/png;base64,'.base64_encode(@file_get_contents($logoPath));
 
-        $pdf = app('dompdf.wrapper');
-        $pdf->setPaper('a4', 'portrait');
-        // Ensure you have: resources/views/admin/course-analytics/index-pdf.blade.php
-        $pdf->loadView('admin.course-analytics.index-pdf', [
-            'courses'     => $courses,
-            'yearKey'     => $yearKey,
-            'q'           => $q,
-            'generatedAt' => now()->format('Y-m-d H:i'),
-        ]);
+    $pdf = app('dompdf.wrapper');
+    $pdf->setPaper('a4', 'portrait');
+    $pdf->setOptions([
+        'defaultFont'          => 'DejaVu Sans',
+        'isHtml5ParserEnabled' => true,
+        'isRemoteEnabled'      => true,
+        'chroot'               => public_path(),
+    ]);
 
-        return $pdf->download('Course_Analytics_' . now()->format('Ymd_His') . '.pdf');
-    }
+    $pdf->loadView('admin.course-analytics.index-pdf', [
+        'courses'     => $courses,
+        'yearKey'     => $yearKey,
+        'q'           => $q,
+        'generatedAt' => now()->format('Y-m-d H:i'),
+        'logoData'    => $logoData,
+    ]);
+
+    return $pdf->download('Course_Analytics_'.now()->format('Ymd_His').'.pdf');
+}
 
     /**
      * Alias so the existing route pointing at exportPdf still works.

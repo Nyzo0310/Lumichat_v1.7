@@ -110,6 +110,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         ->whereNumber('counselor')->name('counselor-logs.show');
     Route::get('/counselor-logs/export/pdf', [CounselorLogController::class, 'exportPdf'])
         ->name('counselor-logs.export.pdf');
+     // Counselor Logs (list export already exists)
+    Route::get('counselor-logs/export', [\App\Http\Controllers\Admin\CounselorLogController::class, 'exportPdf'])
+        ->name('counselor-logs.export');
+
+    // ✅ NEW: export the single counselor/month view
+    Route::get('counselor-logs/{counselor}/export', [\App\Http\Controllers\Admin\CounselorLogController::class, 'exportShowPdf'])
+        ->name('counselor-logs.show.export');
+
 
     /* DIAGNOSIS REPORTS */
     Route::resource('diagnosis-reports', DiagnosisReportController::class)->only(['index','show'])

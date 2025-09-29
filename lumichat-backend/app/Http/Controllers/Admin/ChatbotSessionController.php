@@ -84,29 +84,45 @@ class ChatbotSessionController extends Controller
         return response()->json(['counts' => $counts]);
     }
 
-    public function exportPdf(Request $request)
-    {
-        $q       = trim((string) $request->input('q', ''));
-        $dateReq = (string) $request->input('date', self::DATE_KEY_ALL);
-        $dateKey = in_array($dateReq, self::DATE_KEYS, true) ? $dateReq : self::DATE_KEY_ALL;
+  public function exportPdf(Request $request)
+{
+    $q       = trim((string) $request->input('q', ''));
+    $dateReq = (string) $request->input('date', self::DATE_KEY_ALL);
+    $dateKey = in_array($dateReq, self::DATE_KEYS, true) ? $dateReq : self::DATE_KEY_ALL;
 
-        $rows = method_exists($this->sessions, 'allWithFilters')
-            ? $this->sessions->allWithFilters($q, $dateKey)
-            : (function () use ($q, $dateKey) {
-                $p = $this->sessions->paginateWithFilters($q, $dateKey, PHP_INT_MAX);
-                return method_exists($p, 'items') ? collect($p->items()) : collect($p);
-            })();
+    $rows = method_exists($this->sessions, 'allWithFilters')
+        ? $this->sessions->allWithFilters($q, $dateKey)
+        : (function () use ($q, $dateKey) {
+            $p = $this->sessions->paginateWithFilters($q, $dateKey, PHP_INT_MAX);
+            return method_exists($p, 'items') ? collect($p->items()) : collect($p);
+        })();
 
-        $pdf = app('dompdf.wrapper');
-        $pdf->setPaper('a4', 'portrait');
-        $pdf->loadView('admin.chatbot_sessions.pdf', [
-            'rows'        => $rows,
-            'q'           => $q,
-            'dateKey'     => $dateKey,
-            'generatedAt' => now()->format('Y-m-d H:i'),
-        ]);
-        return $pdf->download('Chatbot_Sessions_'.now()->format('Ymd_His').'.pdf');
+    // inline base64 logo so Dompdf always shows it
+    $logoData = null;
+    $logoPath = public_path('images/chatbot.png');   // adjust if your logo lives elsewhere
+    if (is_file($logoPath)) {
+        $logoData = 'data:image/png;base64,' . base64_encode(@file_get_contents($logoPath));
     }
+
+    $pdf = app('dompdf.wrapper');
+    $pdf->setPaper('a4', 'portrait');
+    $pdf->setOptions([
+        'defaultFont'          => 'DejaVu Sans',
+        'isHtml5ParserEnabled' => true,
+        'isRemoteEnabled'      => true,
+        'chroot'               => public_path(),
+    ]);
+
+    $pdf->loadView('admin.chatbot_sessions.pdf', [
+        'rows'        => $rows,
+        'q'           => $q,
+        'dateKey'     => $dateKey,
+        'generatedAt' => now()->format('Y-m-d H:i'),
+        'logoData'    => $logoData,
+    ]);
+
+    return $pdf->download('Chatbot_Sessions_'.now()->format('Ymd_His').'.pdf');
+}
 
     /** Get counselor-wise slots for a date (Mon–Fri). */
     // inside ChatbotSessionController.php

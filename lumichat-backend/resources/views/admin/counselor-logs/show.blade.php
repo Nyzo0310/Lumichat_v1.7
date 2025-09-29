@@ -15,11 +15,11 @@
       <p class="text-sm text-slate-500">Logs for <span class="font-medium text-slate-700">{{ $label }}</span></p>
     </div>
     <div class="flex items-center gap-2">
-      <button type="button"
-              onclick="window.print()"
-              class="inline-flex items-center h-10 px-3 rounded-lg text-sm font-medium bg-green-600 text-white hover:bg-green-700">
-        Print
-      </button>
+   <a href="{{ route('admin.counselor-logs.show.export', ['counselor'=>$counselor->id, 'month'=>$month, 'year'=>$year]) }}"
+   class="inline-flex items-center h-10 px-3 rounded-lg text-sm font-medium bg-emerald-600 text-white hover:bg-emerald-700">
+  Download PDF
+</a>
+
       <a href="{{ route('admin.counselor-logs.index') }}"
          class="inline-flex items-center h-10 px-3 rounded-lg text-sm font-medium border border-slate-200 text-slate-700 hover:bg-slate-50">
         ← Back

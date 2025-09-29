@@ -12,6 +12,11 @@
   <style>
     * { box-sizing: border-box; font-family: DejaVu Sans, sans-serif; }
     body { margin: 18mm 14mm; font-size: 12px; color: #111827; }
+    .brandbar { margin:0 0 8px; text-align:left; }
+  .brand { display:inline-block; }
+  .brand-logo { width:50px; height:50px; border-radius:50%; vertical-align:middle; }
+  .brand-title { display:inline-block; vertical-align:middle; margin-left:10px; font:700 18px/1 DejaVu Sans, sans-serif; white-space:nowrap; }
+
     h1 { margin: 0 0 6px; font-size: 20px; }
     .meta { font-size: 11px; color: #6b7280; margin-bottom: 12px; }
     table { width:100%; border-collapse: collapse; }
@@ -24,6 +29,17 @@
     .small { font-size: 10px; color:#6b7280; }
   </style>
 </head>
+
+
+<div class="brandbar">
+  <div class="brand">
+    @if(!empty($logoData))
+      <img class="brand-logo" src="{{ $logoData }}" alt="LumiCHAT">
+    @endif
+    <span class="brand-title">LumiCHAT</span>
+  </div>
+</div>
+
 <body>
   <h1>Appointments</h1>
   <div class="meta">

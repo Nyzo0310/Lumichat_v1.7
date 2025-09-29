@@ -2,11 +2,9 @@
 @php
   use Carbon\Carbon;
 
-  // Keep all formatting here like your list PDF
   $dt       = Carbon::parse($appointment->scheduled_at);
   $bookedAt = $appointment->created_at ? Carbon::parse($appointment->created_at) : null;
 
-  // Optional: if controller passed $latestReport
   $hasReport = isset($latestReport) && ($latestReport->diagnosis_result ?? '') !== '';
 @endphp
 <!DOCTYPE html>
@@ -15,14 +13,21 @@
   <meta charset="utf-8">
   <title>Appointment #{{ $appointment->id }}</title>
   <style>
-    /* Dompdf-safe: use DejaVu Sans only */
+    /* Dompdf-safe */
     * { box-sizing: border-box; font-family: "DejaVu Sans"; }
-    body { margin: 18mm 14mm; font-size: 12px; color: #111827; }
-    h1   { margin: 0 0 6px; font-size: 20px; }
+    body { margin: 16mm 14mm; font-size: 12px; color: #111827; }
+
+    /* Brand header (same as students PDF) */
+    .brandbar { margin:0 0 8px; text-align:left; }
+    .brand { display:inline-block; }
+    .brand-logo { width:50px; height:50px; border-radius:50%; vertical-align:middle; }
+    .brand-title { display:inline-block; vertical-align:middle; margin-left:10px; font:700 18px/1 "DejaVu Sans", sans-serif; white-space:nowrap; }
+
+    h1   { margin: 8px 0 6px; font-size: 20px; }
     h2   { margin: 0 0 8px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: #475569; }
 
     .meta { font-size: 11px; color: #6b7280; margin-bottom: 12px; }
-    .chip { display:inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; border:1px solid #cbd5e1; color:#334155; }
+    .chip { display:inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; border:1px solid #cbd5e1; color:#334155; background:#f8fafc; }
 
     table    { width:100%; border-collapse: collapse; }
     .card    { border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; }
@@ -32,11 +37,10 @@
     .kv b    { display:block; font-size: 11px; color:#475569; text-transform:uppercase; margin-bottom: 2px; }
     .kv span { font-size: 13px; }
 
-    /* 2-column layout via table (Dompdf-friendly) */
+    /* Two-column layout */
     .twocol { width:100%; border-collapse: separate; border-spacing: 12px 0; }
     .twocol td { vertical-align: top; width: 50%; }
 
-    /* inner tables for neat rows */
     .info { width:100%; border-collapse: collapse; }
     .info td { padding: 2px 0; vertical-align: top; }
     .section { margin-bottom: 10px; }
@@ -44,13 +48,22 @@
 </head>
 <body>
 
-  {{-- Header --}}
+  {{-- Brand header (logo + title side-by-side) --}}
+  <div class="brandbar">
+    <div class="brand">
+      @if(!empty($logoData))
+        <img class="brand-logo" src="{{ $logoData }}" alt="LumiCHAT">
+      @endif
+      <span class="brand-title">LumiCHAT</span>
+    </div>
+  </div>
+
+  {{-- Title + meta --}}
   <h1>Appointment #{{ $appointment->id }}</h1>
   <div class="meta">
     Status: <span class="chip">{{ ucfirst($appointment->status) }}</span>
     &nbsp; • &nbsp;
-    Created on:
-    <strong>{{ $bookedAt ? $bookedAt->format('F d, Y · g:i A') : '—' }}</strong>
+    Created on: <strong>{{ $bookedAt ? $bookedAt->format('F d, Y · g:i A') : '—' }}</strong>
   </div>
 
   {{-- Two columns: Participants / Appointment Timing --}}
@@ -65,10 +78,10 @@
               <tr><td class="small" style="text-transform:uppercase;">Student</td></tr>
               <tr><td><strong>{{ $appointment->student_name }}</strong></td></tr>
               @if(!empty($appointment->student_email))
-              <tr><td class="small">{{ $appointment->student_email }}</td></tr>
+                <tr><td class="small">{{ $appointment->student_email }}</td></tr>
               @endif
               @if(!empty($appointment->student_id))
-              <tr><td class="small">Student ID: {{ $appointment->student_id }}</td></tr>
+                <tr><td class="small">Student ID: {{ $appointment->student_id }}</td></tr>
               @endif
             </table>
           </div>
@@ -84,7 +97,7 @@
                 </td>
               </tr>
               @if(!empty($appointment->counselor_dept))
-              <tr><td class="small">{{ $appointment->counselor_dept }}</td></tr>
+                <tr><td class="small">{{ $appointment->counselor_dept }}</td></tr>
               @endif
             </table>
           </div>
@@ -116,7 +129,7 @@
     </tr>
   </table>
 
-  {{-- Optional Final Diagnosis, if provided --}}
+  {{-- Optional Final Diagnosis --}}
   @if($hasReport)
     <div class="spacer"></div>
     <div class="card">
@@ -126,10 +139,10 @@
         <span>{!! nl2br(e($latestReport->diagnosis_result)) !!}</span>
       </div>
       @if(($latestReport->notes ?? '') !== '')
-      <div class="kv" style="margin-top:6px;">
-        <b>Note</b>
-        <span>{!! nl2br(e($latestReport->notes)) !!}</span>
-      </div>
+        <div class="kv" style="margin-top:6px;">
+          <b>Note</b>
+          <span>{!! nl2br(e($latestReport->notes)) !!}</span>
+        </div>
       @endif
     </div>
   @endif

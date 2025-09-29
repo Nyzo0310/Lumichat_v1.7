@@ -4,23 +4,33 @@
   <meta charset="utf-8">
   <title>Course Analytics</title>
   <style>
-    * { box-sizing: border-box; font-family: DejaVu Sans, sans-serif; }
-    body { margin: 18mm 14mm; font-size: 12px; color: #111827; }
-    h1 { margin: 0 0 6px; font-size: 20px; }
-    .meta { font-size: 11px; color: #6b7280; margin-bottom: 12px; }
-    .chip { display:inline-block; padding:2px 8px; border-radius:12px; font-size:10px; border:1px solid #c7d2fe; color:#4338ca; background:#eef2ff; }
-    .chip.violet { border-color:#ddd6fe; color:#6d28d9; background:#f5f3ff; }
-    table { width:100%; border-collapse: collapse; }
-    thead { background:#f1f5f9; color:#334155; }
-    th, td { padding: 8px 10px; border-bottom: 1px solid #e5e7eb; text-align: left; }
-    th:last-child, td:last-child { text-align: right; }
-    thead { display: table-header-group; } /* repeat header each page */
-    tfoot { display: table-row-group; }
-    tr { page-break-inside: avoid; }
-    .small { font-size: 10px; color:#6b7280; }
+    *{ box-sizing:border-box; font-family:DejaVu Sans, sans-serif; }
+    body{ margin:16mm 14mm; font-size:12.5px; color:#111827; line-height:1.45; }
+
+    .brandbar{ margin:0 0 10px; text-align:left; }
+    .brand{ display:inline-block; }
+    .brand-logo{ width:50px; height:50px; border-radius:50%; vertical-align:middle; }
+    .brand-title{ display:inline-block; vertical-align:middle; margin-left:10px; font:700 18px/1 DejaVu Sans, sans-serif; white-space:nowrap; }
+
+    h1{ margin:10px 0 6px; font-size:20px; }
+    .meta{ font-size:11px; color:#6b7280; margin-bottom:12px; }
+
+    table{ width:100%; border-collapse:collapse; }
+    thead{ background:#f1f5f9; color:#334155; display:table-header-group; }
+    th,td{ padding:10px 12px; border-bottom:1px solid #e5e7eb; text-align:left; }
+    tr{ page-break-inside:avoid; }
+    .small{ font-size:10px; color:#6b7280; }
   </style>
 </head>
 <body>
+
+  <div class="brandbar">
+    <div class="brand">
+      @if(!empty($logoData)) <img class="brand-logo" src="{{ $logoData }}" alt="LumiCHAT">@endif
+      <span class="brand-title">LumiCHAT</span>
+    </div>
+  </div>
+
   <h1>Course Analytics</h1>
   <div class="meta">
     Filters — Year: <strong>{{ $yearKey }}</strong>
@@ -31,7 +41,7 @@
   <table>
     <thead>
       <tr>
-        <th style="width:32%;">Course</th>
+        <th style="width:10%;">Course</th>
         <th style="width:12%;">Year</th>
         <th style="width:14%;">Students</th>
         <th style="width:42%;">Common Diagnosis</th>
@@ -53,9 +63,7 @@
           <td>{{ $diagnoses }}</td>
         </tr>
       @empty
-        <tr>
-          <td colspan="4" style="text-align:center; color:#666; padding:16px;">No course analytics found.</td>
-        </tr>
+        <tr><td colspan="4" class="small" style="text-align:center; padding:18px 0;">No course analytics found.</td></tr>
       @endforelse
     </tbody>
   </table>

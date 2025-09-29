@@ -87,28 +87,47 @@ class StudentController extends Controller
     /**
      * Export the filtered Student list to PDF (all matching rows, no pagination).
      */
-    public function exportPdf(Request $request)
-    {
-        $q    = trim((string) $request->input('q', ''));
-        $year = $request->input('year');
+public function exportPdf(Request $request)
+{
+    $q    = trim((string) $request->input('q', ''));
+    $year = $request->input('year');
 
-        // Prefer a non-paginated fetch; fallback if your repo lacks it.
-        $students = method_exists($this->students, 'allWithFilters')
-            ? $this->students->allWithFilters(['q' => $q, 'year' => $year])
-            : $this->students->paginateWithFilters(['q' => $q, 'year' => $year], PHP_INT_MAX);
+    $students = method_exists($this->students, 'allWithFilters')
+        ? $this->students->allWithFilters(['q' => $q, 'year' => $year])
+        : $this->students->paginateWithFilters(['q' => $q, 'year' => $year], PHP_INT_MAX);
 
-        $generatedAt = now()->format('Y-m-d H:i');
+    $generatedAt = now()->format('Y-m-d H:i');
 
-        $pdf = Pdf::loadView('admin.students.pdf', [
-            'students'    => $students,
-            'q'           => $q,
-            'year'        => $year,
-            'generatedAt' => $generatedAt,
-        ])->setPaper('a4', 'portrait');
-
-        $filename = 'Student_Records_' . now()->format('Ymd_His') . '.pdf';
-        return $pdf->download($filename);
+    // Read logo from public/images/chatbot.png and encode as data URI
+    $logoData = null;
+    $logoPath = public_path('images/chatbot.png');   // C:\xampp\htdocs\...\public\images\chatbot.png
+    if (is_file($logoPath)) {
+        $logoData = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
     }
+
+    $pdf = app('dompdf.wrapper');
+    $pdf->setPaper('a4', 'portrait');
+    $pdf->setOptions([
+        'defaultFont'          => 'DejaVu Sans',
+        'isHtml5ParserEnabled' => true,
+        'isRemoteEnabled'      => true,
+        // Optional: let DomPDF access /public just in case you later use file paths
+        'chroot'               => public_path(),
+        'dpi'                  => 96,
+    ]);
+
+    $pdf->loadView('admin.students.pdf', [
+        'students'    => $students,
+        'q'           => $q,
+        'year'        => $year,
+        'generatedAt' => $generatedAt,
+        'logoData'    => $logoData,   // <-- pass Base64 to Blade
+    ]);
+
+    return $pdf->download('Student_Records_' . now()->format('Ymd_His') . '.pdf');
+}
+
+
 
     // ==== Private helpers ====
 

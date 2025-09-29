@@ -36,29 +36,36 @@ class DiagnosisReportController extends Controller
     /**
      * Export Diagnosis Reports to PDF (honors current filters, returns all rows).
      */
-    public function exportPdf(Request $request)
-    {
-        $dateKey = (string) $request->input('date', 'all');
-        $q       = trim((string) $request->input('q', ''));
+public function exportPdf(Request $request)
+{
+    $dateKey = (string) $request->input('date', 'all');
+    $q       = trim((string) $request->input('q', ''));
 
-        // Prefer a non-paginated fetch if your repo exposes it; otherwise fallback.
-        $reports = method_exists($this->reportsRepo, 'allWithFilters')
-            ? $this->reportsRepo->allWithFilters($dateKey, $q)
-            : $this->reportsRepo->paginateWithFilters($dateKey, $q, PHP_INT_MAX);
+    $reports = method_exists($this->reportsRepo, 'allWithFilters')
+        ? $this->reportsRepo->allWithFilters($dateKey, $q)
+        : $this->reportsRepo->paginateWithFilters($dateKey, $q, PHP_INT_MAX);
 
-        $generatedAt = now()->format('Y-m-d H:i');
+    $logoData = null;
+    $logoPath = public_path('images/chatbot.png');
+    if (is_file($logoPath)) $logoData = 'data:image/png;base64,'.base64_encode(@file_get_contents($logoPath));
 
-        // Use dompdf wrapper (no facade needed)
-        $pdf = app('dompdf.wrapper');
-        $pdf->setPaper('a4', 'portrait');
-        $pdf->loadView('admin.diagnosis-reports.pdf', [
-            'reports'     => $reports,
-            'dateKey'     => $dateKey,
-            'q'           => $q,
-            'generatedAt' => $generatedAt,
-        ]);
+    $pdf = app('dompdf.wrapper');
+    $pdf->setPaper('a4', 'portrait');
+    $pdf->setOptions([
+        'defaultFont'          => 'DejaVu Sans',
+        'isHtml5ParserEnabled' => true,
+        'isRemoteEnabled'      => true,
+        'chroot'               => public_path(),
+    ]);
 
-        $filename = 'Diagnosis_Reports_' . now()->format('Ymd_His') . '.pdf';
-        return $pdf->download($filename);
-    }
+    $pdf->loadView('admin.diagnosis-reports.pdf', [
+        'reports'     => $reports,
+        'dateKey'     => $dateKey,
+        'q'           => $q,
+        'generatedAt' => now()->format('Y-m-d H:i'),
+        'logoData'    => $logoData,
+    ]);
+
+    return $pdf->download('Diagnosis_Reports_'.now()->format('Ymd_His').'.pdf');
+}
 }
