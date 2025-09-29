@@ -10,7 +10,7 @@
                 || (int)($session->risk_score ?? 0) >= 80;
 
   // Book button only for high-risk *and* no active appointment for THIS session
-  $canBook = $isHighRisk && empty($hasActiveForThisSession);
+  $canBook = $isHighRisk && empty($hasActiveForStudent);
 @endphp
 
 <div class="max-w-5xl mx-auto p-6 space-y-6">
@@ -30,7 +30,7 @@
         </button>
       @elseif($isHighRisk)
         <span class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-200 text-slate-700 cursor-not-allowed">
-          Already booked
+          Student already has an active appointment
         </span>
       @endif
 

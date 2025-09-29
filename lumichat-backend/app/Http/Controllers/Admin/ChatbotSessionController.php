@@ -9,6 +9,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Schema;
 
 class ChatbotSessionController extends Controller
 {
@@ -37,17 +39,36 @@ class ChatbotSessionController extends Controller
         $dateReq = (string) $request->input('date', self::DATE_KEY_ALL);
         $dateKey = in_array($dateReq, self::DATE_KEYS, true) ? $dateReq : self::DATE_KEY_ALL;
 
+        // inside index()
         $sessions = $this->sessions->paginateWithFilters($q, $dateKey, self::PER_PAGE);
 
-        // Session IDs that already have any appointment (pending/confirmed/completed) -> handled
+        // Sessions already linked to any blocking appointment (existing behavior)
         $handledSessionIds = DB::table('tbl_appointments')
             ->whereNotNull('chatbot_session_id')
-            ->whereIn('status', self::BLOCKING_STATUSES)
+            ->whereIn('status', self::BLOCKING_STATUSES) // ['pending','confirmed','completed']
             ->pluck('chatbot_session_id')
             ->unique()
             ->all();
 
-        return view('admin.chatbot_sessions.index', compact('sessions', 'q', 'dateKey', 'handledSessionIds'));
+        // 🔒 NEW: per-student guards
+        $studentsWithActive = DB::table('tbl_appointments')
+            ->whereIn('status', ['pending','confirmed'])
+            ->pluck('student_id')
+            ->unique()
+            ->all();
+
+        $studentsWithCompleted = DB::table('tbl_appointments')
+            ->where('status', 'completed')
+            ->pluck('student_id')
+            ->unique()
+            ->all();
+
+        return view('admin.chatbot_sessions.index', compact(
+            'sessions', 'q', 'dateKey',
+            'handledSessionIds',
+            'studentsWithActive',
+            'studentsWithCompleted'
+        ));
     }
 
     /** Show a single session with ordered chats. */
@@ -58,10 +79,20 @@ class ChatbotSessionController extends Controller
 
         $hasActiveForThisSession = DB::table('tbl_appointments')
             ->where('chatbot_session_id', $session->id)
+            ->whereIn('status', self::SESSION_ACTIVE_STATUSES) // ['pending','confirmed']
+            ->exists();
+
+        // 🔒 NEW: If the student already has any active appointment, block booking here too
+        $hasActiveForStudent = DB::table('tbl_appointments')
+            ->where('student_id', $session->user_id)
             ->whereIn('status', self::SESSION_ACTIVE_STATUSES)
             ->exists();
 
-        return view('admin.chatbot_sessions.show', compact('session','hasActiveForThisSession'));
+        return view('admin.chatbot_sessions.show', compact(
+            'session',
+            'hasActiveForThisSession',
+            'hasActiveForStudent' // <-- pass to Blade
+        ));
     }
 
     /** Return per-day counts for a user's sessions (within a date range). */
@@ -235,12 +266,15 @@ class ChatbotSessionController extends Controller
         }
         $studentId = (int) $session->user_id;
 
-        $hasActiveForThisSession = DB::table('tbl_appointments')
-            ->where('chatbot_session_id', $session->id)
+        // Block if student already has pending/confirmed (you added this earlier)
+        $hasActiveForStudent = DB::table('tbl_appointments')
+            ->where('student_id', $studentId)
             ->whereIn('status', self::SESSION_ACTIVE_STATUSES)
             ->exists();
-        if ($hasActiveForThisSession) {
-            return response()->json(['message' => 'This session already has an active appointment (pending/confirmed).'], 409);
+        if ($hasActiveForStudent) {
+            return response()->json([
+                'message' => 'This student already has an active appointment (pending/confirmed).'
+            ], 409);
         }
 
         $validated = $request->validate([
@@ -249,8 +283,8 @@ class ChatbotSessionController extends Controller
             'counselor_id' => ['required','integer','exists:tbl_counselors,id'],
         ]);
 
-        // snap to grid
-        $raw = Carbon::parse($validated['date'].' '.$validated['time'].':00')->second(0);
+        // snap to grid (existing)
+        $raw  = Carbon::parse($validated['date'].' '.$validated['time'].':00')->second(0);
         $slot = (function(Carbon $dt){ $m=(int)floor($dt->minute/30)*30; return $dt->copy()->setTime($dt->hour,$m,0);} )($raw);
         if ($raw->ne($slot)) {
             return response()->json(['message'=>'Please choose a 30-minute step time (e.g., 09:00, 09:30).'], 422);
@@ -264,9 +298,11 @@ class ChatbotSessionController extends Controller
             return response()->json(['message'=>'Please choose a future time.'], 422);
         }
 
-        $counselorId = (int) $validated['counselor_id'];
+        $counselorId   = (int) $validated['counselor_id'];
+        $counselorName = DB::table('tbl_counselors')->where('id',$counselorId)->value('name') ?? null; // ★ NEW
+        $note          = $this->composeBookingNote($session, $slot, $counselorName);                   // ★ NEW
 
-        // verify counselor weekly availability
+        // verify counselor availability (existing)
         $fits = DB::table('tbl_counselor_availabilities')
             ->where('counselor_id', $counselorId)
             ->where('weekday', $dowIso)
@@ -282,8 +318,8 @@ class ChatbotSessionController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($studentId, $counselorId, $slot, $session) {
-                // re-check active for this session (race)
+            DB::transaction(function () use ($studentId, $counselorId, $slot, $session, $note) { // ★ add $note
+                // re-check session active (race)
                 $activeNow = DB::table('tbl_appointments')
                     ->where('chatbot_session_id', $session->id)
                     ->whereIn('status', self::SESSION_ACTIVE_STATUSES)
@@ -291,7 +327,15 @@ class ChatbotSessionController extends Controller
                     ->exists();
                 if ($activeNow) throw new \RuntimeException('SESSION_ACTIVE');
 
-                // counselor not taken at that exact slot?
+                // re-check student active (race)
+                $activeNowForStudent = DB::table('tbl_appointments')
+                    ->where('student_id', $studentId)
+                    ->whereIn('status', self::SESSION_ACTIVE_STATUSES)
+                    ->lockForUpdate()
+                    ->exists();
+                if ($activeNowForStudent) throw new \RuntimeException('STUDENT_ACTIVE');
+
+                // counselor taken?
                 $taken = DB::table('tbl_appointments')
                     ->where('counselor_id', $counselorId)
                     ->where('scheduled_at', $slot)
@@ -300,36 +344,78 @@ class ChatbotSessionController extends Controller
                     ->exists();
                 if ($taken) throw new \RuntimeException('TAKEN');
 
+                // Insert appointment + the heartfelt note ★ NEW
                 DB::table('tbl_appointments')->insert([
                     'student_id'         => $studentId,
                     'counselor_id'       => $counselorId,
                     'scheduled_at'       => $slot,
                     'status'             => 'confirmed',
+                    'note'               => $note,              // ★ NEW
                     'chatbot_session_id' => $session->id,
                     'created_at'         => now(),
                     'updated_at'         => now(),
                 ]);
+
+                // (Optional) also create a notification if such a table exists ★ NEW
+                if (Schema::hasTable('tbl_notifications')) {
+                    DB::table('tbl_notifications')->insert([
+                        'user_id'    => $studentId,
+                        'title'      => 'Appointment Scheduled',
+                        'body'       => $note,
+                        'type'       => 'appointment',
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
             });
         } catch (\RuntimeException $e) {
             if ($e->getMessage() === 'TAKEN')          return response()->json(['message'=>'That counselor/time just filled. Pick another slot.'], 409);
             if ($e->getMessage() === 'SESSION_ACTIVE') return response()->json(['message'=>'This session already has an active appointment (pending/confirmed).'], 409);
+            if ($e->getMessage() === 'STUDENT_ACTIVE') return response()->json(['message'=>'This student already has an active appointment (pending/confirmed).'], 409);
             throw $e;
         }
 
+        // Success payload now previews the message to the admin ★ NEW
         return response()->json([
             'ok'   => true,
             'html' => sprintf(
                 '<div style="text-align:left">
-                <div><b>Student:</b> %s</div>
-                <div><b>Counselor:</b> %s</div>
-                <div><b>Date:</b> %s</div>
-                <div><b>Time:</b> %s</div>
+                    <div><b>Student:</b> %s</div>
+                    <div><b>Counselor:</b> %s</div>
+                    <div><b>Date:</b> %s</div>
+                    <div><b>Time:</b> %s</div>
+                    <hr style="margin:10px 0; opacity:.25" />
+                    <div style="white-space:pre-wrap"><b>Note sent to student:</b><br>%s</div>
                 </div>',
                 e($session->user->name ?? ('#'.$studentId)),
-                e(DB::table('tbl_counselors')->where('id',$counselorId)->value('name') ?? '—'),
+                e($counselorName ?? '—'),
                 e($slot->format('M d, Y')),
-                e($slot->format('g:i A'))
+                e($slot->format('g:i A')),
+                e($note)
             )
         ]);
+    }
+    
+    private function composeBookingNote(object $session, \Carbon\Carbon $slot, ?string $counselorName = null): string
+    {
+        $studentName = (string) ($session->user->name ?? '');
+        $firstName   = \Illuminate\Support\Str::of($studentName)->trim()->before(' ')->value() ?: 'there';
+
+        $niceDate = $slot->format('l, M d, Y');
+        $niceTime = $slot->format('g:i A');
+        $who      = $counselorName ? "with {$counselorName}" : "with our guidance counselor";
+
+        // You can move this to config if you like:
+        $location = 'Guidance Office, Tagoloan Community College';
+
+        return "Hi {$firstName},\n\n"
+            . "LumiCHAT noticed you might be going through a lot, and we want to support you. "
+            . "We’ve set a confidential check-in for you:\n\n"
+            . "📅 {$niceDate} • ⏰ {$niceTime}\n"
+            . "👤 {$who}\n"
+            . "📍 {$location}\n\n"
+            . "This is 100% confidential and judgment-free. Please arrive about 10 minutes early and bring your school ID if possible. "
+            . "If you need to reschedule, just reply to this message or visit the Guidance Office.\n\n"
+            . "We’re here for you. One step at a time—you are not alone.";
     }
 }

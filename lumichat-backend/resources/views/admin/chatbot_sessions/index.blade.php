@@ -100,10 +100,17 @@
             @php
               $code = 'LMC-' . now()->format('Y') . '-' . str_pad($s->id, 4, '0', STR_PAD_LEFT);
 
-              $riskRaw   = strtolower((string) ($s->risk_level ?? ''));
-              $handled   = in_array($s->id, $handledSessionIds ?? [], true);
-              $isHigh    = in_array($riskRaw, ['high','high-risk','high_risk'], true);
-              $showRed   = $isHigh && !$handled;
+              $riskRaw = strtolower((string) ($s->risk_level ?? ''));
+              $isHigh  = in_array($riskRaw, ['high','high-risk','high_risk'], true);
+
+              $handled = in_array($s->id, $handledSessionIds ?? [], true);
+
+              // 🔒 NEW: per-student guards from controller
+              $blockedByActive    = in_array($s->user_id, $studentsWithActive ?? [], true);
+              $clearedByCompleted = in_array($s->user_id, $studentsWithCompleted ?? [], true);
+
+              // 🔴 show red only if truly actionable
+              $showRed = $isHigh && !$handled && !$blockedByActive && !$clearedByCompleted;
             @endphp
 
             <tr class="align-middle even:bg-slate-50 hover:bg-slate-100/60 transition {{ $showRed ? 'bg-rose-50/40' : '' }}">

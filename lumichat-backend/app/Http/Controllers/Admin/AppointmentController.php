@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\AppointmentRepositoryInterface;
+use App\Models\ChatSession;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\RedirectResponse;
@@ -103,13 +104,25 @@ class AppointmentController extends Controller
 
         if (!$res['ok']) {
             $map = [
-                'invalid_action'   => ['warning','Not allowed','Invalid action.'],
-                'not_found'        => ['warning','Not allowed','Appointment not found.'],
-                'must_be_confirmed'=> ['warning','Not allowed','Appointment must be confirmed before you can mark it as done.'],
-                'too_early'        => ['warning','Too early','You can only mark the appointment as done once it has started.'],
+                'invalid_action'    => ['warning','Not allowed','Invalid action.'],
+                'not_found'         => ['warning','Not allowed','Appointment not found.'],
+                'must_be_confirmed' => ['warning','Not allowed','Appointment must be confirmed before you can mark it as done.'],
+                'too_early'         => ['warning','Too early','You can only mark the appointment as done once it has started.'],
             ];
             [$icon,$title,$text] = $map[$res['reason']] ?? ['error','Error','Unable to update status.'];
             return back()->with(self::FLASH_SWAL, compact('icon','title','text'));
+        }
+
+        // ✅ Success path: fetch the fresh row and clear highs if now completed
+        $appt = DB::table('tbl_appointments')
+            ->select('id','student_id','status')
+            ->where('id', $id)
+            ->first();
+
+        if ($appt && $appt->status === 'completed') {
+            ChatSession::where('user_id', $appt->student_id)
+                ->whereIn(DB::raw('LOWER(COALESCE(risk_level,""))'), ['high','high-risk','high_risk'])
+                ->update(['risk_level' => 'handled_high']); // or set your own handled flag
         }
 
         return back()->with(self::FLASH_SWAL, [
@@ -118,123 +131,124 @@ class AppointmentController extends Controller
             'text'  => 'Appointment status has been updated.',
         ]);
     }
- public function exportPdf(Request $request)
+
+    public function exportPdf(Request $request)
 {
-    $status = (string) $request->query('status', 'all');
-    $period = (string) $request->query('period', 'all');
-    $q      = trim((string) $request->query('q', ''));
+        $status = (string) $request->query('status', 'all');
+        $period = (string) $request->query('period', 'all');
+        $q      = trim((string) $request->query('q', ''));
 
-    $now = now();
+        $now = now();
 
-    $query = DB::table('tbl_appointments as a')
-        ->leftJoin('tbl_users as s', 's.id', '=', 'a.student_id')
-        ->leftJoin('tbl_counselors as c', 'c.id', '=', 'a.counselor_id')
-        ->select([
-            'a.id',
-            'a.scheduled_at',
-            'a.created_at as booked_at',
-            'a.status',
-            DB::raw("COALESCE(s.name,'—') as student_name"),
-            DB::raw("COALESCE(c.name,'—') as counselor_name"),
+        $query = DB::table('tbl_appointments as a')
+            ->leftJoin('tbl_users as s', 's.id', '=', 'a.student_id')
+            ->leftJoin('tbl_counselors as c', 'c.id', '=', 'a.counselor_id')
+            ->select([
+                'a.id',
+                'a.scheduled_at',
+                'a.created_at as booked_at',
+                'a.status',
+                DB::raw("COALESCE(s.name,'—') as student_name"),
+                DB::raw("COALESCE(c.name,'—') as counselor_name"),
+            ]);
+
+        if ($status !== 'all') $query->where('a.status', $status);
+
+        switch ($period) {
+            case 'today':      $query->whereDate('a.scheduled_at', $now->toDateString()); break;
+            case 'upcoming':   $query->where('a.scheduled_at', '>=', $now); break;
+            case 'this_week':  $query->whereBetween('a.scheduled_at', [$now->copy()->startOfWeek(), $now->copy()->endOfWeek()]); break;
+            case 'this_month': $query->whereBetween('a.scheduled_at', [$now->copy()->startOfMonth(), $now->copy()->endOfMonth()]); break;
+            case 'past':       $query->where('a.scheduled_at', '<', $now); break;
+            default: /* all */ break;
+        }
+
+        if ($q !== '') {
+            $query->where(function ($w) use ($q) {
+                $w->where('s.name', 'like', "%{$q}%")
+                ->orWhere('c.name', 'like', "%{$q}%");
+            });
+        }
+
+        // Completed at bottom + period-aware ordering (unchanged)
+        $query->orderByRaw("CASE WHEN a.status = 'completed' THEN 1 ELSE 0 END ASC");
+        if ($period === 'past') {
+            $query->orderBy('a.scheduled_at', 'desc');
+        } elseif (in_array($period, ['today','upcoming','this_week','this_month'], true)) {
+            $query->orderBy('a.scheduled_at', 'asc');
+        } else {
+            $query->orderByRaw("CASE WHEN a.scheduled_at >= ? THEN 0 ELSE 1 END", [$now])
+                ->orderByRaw("CASE WHEN a.scheduled_at >= ? THEN a.scheduled_at END ASC",  [$now])
+                ->orderByRaw("CASE WHEN a.scheduled_at <  ? THEN a.scheduled_at END DESC", [$now])
+                ->orderByRaw("CASE WHEN a.status = 'completed' THEN a.scheduled_at END DESC");
+        }
+
+        $appointments = $query->get();
+
+        // 🔹 Build base64 logo
+        $logoData = null;
+        $logoPath = public_path('images/chatbot.png'); // adjust if you moved it
+        if (is_file($logoPath)) {
+            $logoData = 'data:image/png;base64,' . base64_encode(@file_get_contents($logoPath));
+        }
+
+        $pdf = app('dompdf.wrapper');
+        $pdf->setPaper('a4', 'portrait');
+        $pdf->setOptions([
+            'defaultFont'          => 'DejaVu Sans',
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled'      => true,
+            'chroot'               => public_path(), // safe FS root
         ]);
 
-    if ($status !== 'all') $query->where('a.status', $status);
+        $pdf->loadView('admin.appointments.pdf', [
+            'appointments' => $appointments,
+            'status'       => $status,
+            'period'       => $period,
+            'q'            => $q,
+            'generatedAt'  => now()->format('Y-m-d H:i'),
+            'logoData'     => $logoData,   // ← pass to Blade
+        ]);
 
-    switch ($period) {
-        case 'today':      $query->whereDate('a.scheduled_at', $now->toDateString()); break;
-        case 'upcoming':   $query->where('a.scheduled_at', '>=', $now); break;
-        case 'this_week':  $query->whereBetween('a.scheduled_at', [$now->copy()->startOfWeek(), $now->copy()->endOfWeek()]); break;
-        case 'this_month': $query->whereBetween('a.scheduled_at', [$now->copy()->startOfMonth(), $now->copy()->endOfMonth()]); break;
-        case 'past':       $query->where('a.scheduled_at', '<', $now); break;
-        default: /* all */ break;
+        return $pdf->download('Appointments_'.now()->format('Ymd_His').'.pdf');
     }
 
-    if ($q !== '') {
-        $query->where(function ($w) use ($q) {
-            $w->where('s.name', 'like', "%{$q}%")
-              ->orWhere('c.name', 'like', "%{$q}%");
-        });
-    }
+    public function exportShowPdf(int $id)
+    {
+        $appointment = $this->appointments->findDetailedById($id);
+        abort_unless($appointment, 404);
 
-    // Completed at bottom + period-aware ordering (unchanged)
-    $query->orderByRaw("CASE WHEN a.status = 'completed' THEN 1 ELSE 0 END ASC");
-    if ($period === 'past') {
-        $query->orderBy('a.scheduled_at', 'desc');
-    } elseif (in_array($period, ['today','upcoming','this_week','this_month'], true)) {
-        $query->orderBy('a.scheduled_at', 'asc');
-    } else {
-        $query->orderByRaw("CASE WHEN a.scheduled_at >= ? THEN 0 ELSE 1 END", [$now])
-              ->orderByRaw("CASE WHEN a.scheduled_at >= ? THEN a.scheduled_at END ASC",  [$now])
-              ->orderByRaw("CASE WHEN a.scheduled_at <  ? THEN a.scheduled_at END DESC", [$now])
-              ->orderByRaw("CASE WHEN a.status = 'completed' THEN a.scheduled_at END DESC");
-    }
+        // latest report (optional)
+        $latestReport = \DB::table('tbl_diagnosis_reports')
+            ->where('student_id', $appointment->student_id)
+            ->where('counselor_id', $appointment->counselor_id)
+            ->orderByDesc('id')
+            ->first();
 
-    $appointments = $query->get();
-
-    // 🔹 Build base64 logo
-    $logoData = null;
-    $logoPath = public_path('images/chatbot.png'); // adjust if you moved it
-    if (is_file($logoPath)) {
-        $logoData = 'data:image/png;base64,' . base64_encode(@file_get_contents($logoPath));
-    }
+        // --- brand logo (embed as base64) ---
+        $logoPath = public_path('images/chatbot.png'); // your path
+        $logoData = null;
+        if (is_file($logoPath)) {
+            $mime = \Illuminate\Support\Str::endsWith(strtolower($logoPath), '.svg') ? 'image/svg+xml' : 'image/png';
+            $logoData = 'data:'.$mime.';base64,'.base64_encode(file_get_contents($logoPath));
+        }
 
     $pdf = app('dompdf.wrapper');
     $pdf->setPaper('a4', 'portrait');
     $pdf->setOptions([
-        'defaultFont'          => 'DejaVu Sans',
         'isHtml5ParserEnabled' => true,
         'isRemoteEnabled'      => true,
-        'chroot'               => public_path(), // safe FS root
+        'defaultFont'          => 'DejaVu Sans',   // ✅ important
     ]);
 
-    $pdf->loadView('admin.appointments.pdf', [
-        'appointments' => $appointments,
-        'status'       => $status,
-        'period'       => $period,
-        'q'            => $q,
-        'generatedAt'  => now()->format('Y-m-d H:i'),
-        'logoData'     => $logoData,   // ← pass to Blade
-    ]);
+        $pdf->loadView('admin.appointments.pdf-show', [
+            'appointment'  => $appointment,
+            'latestReport' => $latestReport,
+            'logoData'     => $logoData,      // <<<
+        ]);
 
-    return $pdf->download('Appointments_'.now()->format('Ymd_His').'.pdf');
-}
-
-public function exportShowPdf(int $id)
-{
-    $appointment = $this->appointments->findDetailedById($id);
-    abort_unless($appointment, 404);
-
-    // latest report (optional)
-    $latestReport = \DB::table('tbl_diagnosis_reports')
-        ->where('student_id', $appointment->student_id)
-        ->where('counselor_id', $appointment->counselor_id)
-        ->orderByDesc('id')
-        ->first();
-
-    // --- brand logo (embed as base64) ---
-    $logoPath = public_path('images/chatbot.png'); // your path
-    $logoData = null;
-    if (is_file($logoPath)) {
-        $mime = \Illuminate\Support\Str::endsWith(strtolower($logoPath), '.svg') ? 'image/svg+xml' : 'image/png';
-        $logoData = 'data:'.$mime.';base64,'.base64_encode(file_get_contents($logoPath));
+        return $pdf->download('Appointment_'.$appointment->id.'.pdf');
     }
-
-   $pdf = app('dompdf.wrapper');
-$pdf->setPaper('a4', 'portrait');
-$pdf->setOptions([
-    'isHtml5ParserEnabled' => true,
-    'isRemoteEnabled'      => true,
-    'defaultFont'          => 'DejaVu Sans',   // ✅ important
-]);
-
-    $pdf->loadView('admin.appointments.pdf-show', [
-        'appointment'  => $appointment,
-        'latestReport' => $latestReport,
-        'logoData'     => $logoData,      // <<<
-    ]);
-
-    return $pdf->download('Appointment_'.$appointment->id.'.pdf');
-}
 
 
     public function assignForm(int $id)
