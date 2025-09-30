@@ -14,6 +14,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 class AppointmentController extends Controller
 {
@@ -119,10 +120,27 @@ class AppointmentController extends Controller
             ->where('id', $id)
             ->first();
 
+        // ✅ Success path: fetch the fresh row and clear highs if now completed
+        $appt = DB::table('tbl_appointments')
+            ->select('id','student_id','status')
+            ->where('id', $id)
+            ->first();
+
         if ($appt && $appt->status === 'completed') {
+            // build updates only for columns that exist
+            $updates = [
+                'risk_level' => null,   // or 'low' if you prefer a defined state
+                'updated_at' => now(),
+            ];
+
+            // only set risk_score if the column exists
+            if (Schema::hasColumn((new ChatSession)->getTable(), 'risk_score')) {
+                $updates['risk_score'] = 0;
+            }
+
             ChatSession::where('user_id', $appt->student_id)
-                ->whereIn(DB::raw('LOWER(COALESCE(risk_level,""))'), ['high','high-risk','high_risk'])
-                ->update(['risk_level' => 'handled_high']); // or set your own handled flag
+                ->whereRaw("LOWER(COALESCE(risk_level, '')) IN ('high','high-risk','high_risk')")
+                ->update($updates);
         }
 
         return back()->with(self::FLASH_SWAL, [

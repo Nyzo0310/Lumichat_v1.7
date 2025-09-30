@@ -2,9 +2,9 @@
 @section('title','Admin · Chatbot Sessions')
 
 @php
-  $q = $q ?? request('q', '');
+  $q       = $q ?? request('q', '');
   $dateKey = $dateKey ?? request('date','all');
-  $total = method_exists($sessions,'total') ? $sessions->total() : $sessions->count();
+  $total   = method_exists($sessions,'total') ? $sessions->total() : $sessions->count();
 @endphp
 
 @section('content')
@@ -105,21 +105,42 @@
 
               $handled = in_array($s->id, $handledSessionIds ?? [], true);
 
-              // 🔒 NEW: per-student guards from controller
+              // guards from controller
               $blockedByActive    = in_array($s->user_id, $studentsWithActive ?? [], true);
               $clearedByCompleted = in_array($s->user_id, $studentsWithCompleted ?? [], true);
 
-              // 🔴 show red only if truly actionable
-              $showRed = $isHigh && !$handled && !$blockedByActive && !$clearedByCompleted;
+              // actionable (red) only if: high-risk AND not handled AND not already active
+              $showRed      = $isHigh && !$handled && !$blockedByActive && !$clearedByCompleted;
+              $canQuickBook = $showRed; // quick-book only when actionable
             @endphp
 
             <tr class="align-middle even:bg-slate-50 hover:bg-slate-100/60 transition {{ $showRed ? 'bg-rose-50/40' : '' }}">
-              <td class="px-6 py-4 font-semibold text-slate-900">
+              {{-- SESSION ID (link color forced to black; red only when actionable) --}}
+              <td class="px-6 py-4 font-semibold">
                 <div class="flex items-center gap-2">
                   @if($showRed)
-                    <span class="inline-block size-2.5 rounded-full bg-rose-600 ring-4 ring-rose-100/70" title="High risk" aria-label="High risk"></span>
+                    <span class="inline-block size-2.5 rounded-full bg-rose-600 ring-4 ring-rose-100/70"
+                          title="High risk" aria-label="High risk"></span>
                   @endif
-                  <span class="{{ $showRed ? 'text-rose-700' : '' }}">{{ $code }}</span>
+
+                  @if($canQuickBook)
+                    {{-- Quick book directly from the list --}}
+                    <a href="#"
+                       class="js-fast-book hover:underline focus:underline
+                              text-slate-900 visited:text-slate-900
+                              {{ $showRed ? 'text-rose-700 hover:text-rose-800 focus:text-rose-800' : '' }}"
+                       data-slots="{{ route('admin.chatbot-sessions.slots', $s->id) }}"
+                       data-book="{{ route('admin.chatbot-sessions.book',  $s->id) }}"
+                       data-session="{{ $s->id }}">
+                      {{ $code }}
+                    </a>
+                  @else
+                    {{-- Go to Show page (no quick-book) --}}
+                    <a href="{{ route('admin.chatbot-sessions.show', $s) }}"
+                       class="hover:underline focus:underline text-slate-900 visited:text-slate-900">
+                      {{ $code }}
+                    </a>
+                  @endif
                 </div>
               </td>
 
@@ -166,7 +187,7 @@
   </div>
 </div>
 
-{{-- Print styles kept --}}
+{{-- Print styles --}}
 <style media="print">
   @page { margin: 12mm; }
   body * { visibility: hidden !important; }
@@ -187,3 +208,242 @@
   #cb-print-root tr { page-break-inside: avoid !important; }
 </style>
 @endsection
+@push('scripts')
+<style>
+  /* --- SweetAlert2 look & feel --- */
+  .swal-wide.swal2-popup{
+    width:min(92vw,760px)!important;
+    padding:0!important;
+    border-radius:18px!important;
+    box-shadow:0 30px 60px rgba(2,6,23,.25);
+  }
+  .swal-wide .swal2-title{
+    margin:18px 22px 0!important;
+    font-size:22px!important;
+    font-weight:800!important;
+    color:#0f172a!important;
+  }
+  .swal-wide .swal2-html-container{
+    margin:0!important;
+    padding:16px 22px 22px!important;
+    text-align:left!important;
+  }
+  .swal-wide .swal2-actions{
+    margin:0!important;
+    padding:16px 22px 22px!important;
+  }
+
+  /* Inputs */
+  .swal-field{ width:100%; border:1px solid #e2e8f0; border-radius:12px; padding:.55rem .75rem; }
+  .swal-field:focus{ outline:0; box-shadow:0 0 0 3px rgba(79,70,229,.25); border-color:#c7d2fe; }
+
+  /* Time buttons */
+  .time-grid{ display:grid; gap:.5rem; grid-template-columns:repeat(3,minmax(0,1fr)); }
+  @media (min-width:640px){ .time-grid{ grid-template-columns:repeat(4,minmax(0,1fr)); } }
+
+  .time-btn{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    border:1px solid #e2e8f0; background:#fff; color:#0f172a;
+    padding:.55rem .6rem; border-radius:12px; font-size:.9rem; line-height:1.1; font-weight:600;
+    transition: transform .06s ease, border-color .12s ease, background .12s ease;
+  }
+  .time-btn:hover{ background:#EEF2FF; border-color:#C7D2FE; }
+  .time-btn.is-active{ box-shadow:0 0 0 3px rgba(79,70,229,.35); border-color:#a5b4fc; }
+  .time-btn:disabled{ opacity:.45; background:#f8fafc; cursor:not-allowed; }
+  .time-cap{ margin-top:.15rem; font-size:.72rem; opacity:.75; font-weight:500; }
+
+  .tiny-hint{ font-size:.78rem; color:#64748b; }
+</style>
+
+@push('scripts')
+<script>
+(() => {
+  // Helpers
+  const DATE_RE=/^\d{4}-\d{2}-\d{2}$/; const TIME_RE=/^\d{2}:\d{2}$/;
+  const pad=n=>String(n).padStart(2,'0');
+  const isWeekday=ymd=>{const[y,m,d]=ymd.split('-').map(Number);const t=new Date(y,m-1,d).getDay();return t>=1&&t<=5;}
+  const notPast=ymd=>{const[y,m,d]=ymd.split('-').map(Number);const dt=new Date(y,m-1,d,23,59,59,999);const now=new Date();return dt>=new Date(now.getFullYear(),now.getMonth(),now.getDate());}
+
+  async function loadSlots(url,date){
+    const u=new URL(url,window.location.origin); u.searchParams.set('date',date);
+    const res=await fetch(u,{headers:{'X-Requested-With':'XMLHttpRequest'}});
+    if(!res.ok) throw new Error('Failed to load slots');
+    return res.json();
+  }
+
+  function buildTimeButtons(container, items, pooledMap, selected=''){
+    container.innerHTML='';
+    const empty=document.getElementById('adm-empty');
+    const times=Array.isArray(items)?items:[];
+    if(!times.length){ empty?.classList.remove('hidden'); container.dataset.selected=''; return; }
+    empty?.classList.add('hidden');
+
+    times.forEach(s=>{
+      const cap=Math.max(0, Number((pooledMap && pooledMap[s.value]) ?? s.pooled ?? 0));
+      const b=document.createElement('button');
+      b.type='button'; b.dataset.value=s.value;
+      b.className='time-btn';
+      b.innerHTML=`<span>${s.label}</span><span class="time-cap">(${cap} ${cap===1?'slot':'slots'})</span>`;
+
+      if(s.disabled){ b.disabled=true; }
+      else{
+        b.addEventListener('click',()=>{
+          [...container.querySelectorAll('.time-btn')].forEach(x=>x.classList.remove('is-active'));
+          b.classList.add('is-active');
+          container.dataset.selected=s.value;
+        });
+      }
+      if(!s.disabled && s.value===selected) b.classList.add('is-active');
+      container.appendChild(b);
+    });
+
+    if(selected && !times.some(t=>!t.disabled && t.value===selected)){
+      container.dataset.selected='';
+    }
+  }
+
+  // Fast-book only on actionable session IDs
+  document.querySelectorAll('.js-fast-book').forEach(link=>{
+    link.addEventListener('click', async (e)=>{
+      e.preventDefault();
+
+      const slotsEndpoint=link.dataset.slots;
+      const bookEndpoint =link.dataset.book;
+
+      const today=new Date();
+      const defaultDate=`${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`;
+
+      let first;
+      try{ first=await loadSlots(slotsEndpoint, defaultDate); }
+      catch(err){ return Swal.fire({icon:'error', title:'Unable to load slots', text:String(err)}); }
+
+      let pollId=null;
+
+      const { value: form } = await Swal.fire({
+        title:'Book appointment',
+        html: `
+          <div>
+            <label class="text-sm font-medium text-slate-700">1) Pick date *</label>
+            <input id="adm-date" type="date" value="${defaultDate}" min="{{ now()->toDateString() }}"
+                   class="swal-field mt-1"/>
+
+            <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="text-sm font-medium text-slate-700">2) Counselor *</label>
+                <select id="adm-counselor" class="swal-field mt-1">
+                  ${(first.counselors||[]).map(c=>`<option value="${String(c.id)}">${String(c.name).replace(/</g,'&lt;')}</option>`).join('')}
+                </select>
+                <p class="tiny-hint mt-1">Choose who will take the session.</p>
+              </div>
+              <div>
+                <label class="text-sm font-medium text-slate-700">
+                  3) Time * <small id="adm-total" class="text-slate-500 font-normal"></small>
+                </label>
+                <div id="adm-times" class="time-grid mt-1" data-selected="" tabindex="0" aria-label="Available times"></div>
+                <div id="adm-empty" class="text-xs text-slate-500 mt-1 hidden">No available times.</div>
+                <p class="tiny-hint mt-1">Past times are disabled automatically.</p>
+              </div>
+            </div>
+          </div>
+        `,
+        customClass:{ popup:'swal-wide' },
+        showCancelButton:true,
+        confirmButtonText:'Confirm Booking',
+        focusConfirm:false,
+
+        didOpen:()=> {
+          const dateEl=document.getElementById('adm-date');
+          const counEl=document.getElementById('adm-counselor');
+          const timeWrap=document.getElementById('adm-times');
+
+          let slotsMap=first.slots||{};
+          let pooledMap=first.pooled||{};
+
+          // total pooled capacity
+          const updateTotal=()=>{
+            const total=Object.values(pooledMap||{}).reduce((a,b)=>a+Number(b||0),0);
+            const el=document.getElementById('adm-total');
+            el.textContent = total ? `• ${total} total counselor-slots` : '';
+          };
+
+          const compose=(cid, keepSelected=true)=>{
+            const prevSel=keepSelected?(timeWrap.dataset.selected||''):'';
+            const items=(slotsMap?.[cid]||[]);
+            buildTimeButtons(timeWrap, items, pooledMap, prevSel);
+            updateTotal();
+          };
+
+          const refetch=async ()=>{
+            const val=dateEl.value;
+            if(!DATE_RE.test(val) || !isWeekday(val) || !notPast(val)){
+              buildTimeButtons(timeWrap, [], {}, ''); updateTotal(); return;
+            }
+            Swal.showLoading();
+            try{
+              const data=await loadSlots(slotsEndpoint, val);
+              slotsMap=data.slots||{}; pooledMap=data.pooled||{};
+              const list=data.counselors||[]; const prev=counEl.value;
+              counEl.innerHTML=list.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+              if(list.length){ const keep=list.some(c=>String(c.id)===String(prev)); counEl.value=keep?prev:String(list[0].id); }
+              compose(counEl.value, true);
+            } finally { try{ Swal.hideLoading(); }catch(_){ } }
+          };
+
+          compose(counEl.value);
+          dateEl.addEventListener('change', refetch);
+          counEl.addEventListener('change', ()=>compose(counEl.value, false));
+          pollId=setInterval(refetch, 5000);
+        },
+
+        willClose:()=>{ if(pollId) clearInterval(pollId); },
+
+        preConfirm:()=>{
+          const date=document.getElementById('adm-date')?.value||'';
+          const counselorId=document.getElementById('adm-counselor')?.value||'';
+          const time=document.getElementById('adm-times')?.dataset.selected||'';
+
+          if(!DATE_RE.test(date)) return Swal.showValidationMessage('Invalid date format'), false;
+          if(!isWeekday(date))    return Swal.showValidationMessage('Weekends are closed (Mon–Fri only)'), false;
+          if(!notPast(date))      return Swal.showValidationMessage('Pick a future date'), false;
+          if(!TIME_RE.test(time)) return Swal.showValidationMessage('Please pick a time'), false;
+          if(!counselorId)        return Swal.showValidationMessage('Please choose a counselor'), false;
+
+          const buttons=Array.from(document.querySelectorAll('#adm-times .time-btn:not([disabled])')).map(b=>b.dataset.value);
+          if(!buttons.includes(time)) return Swal.showValidationMessage('That slot just filled. Pick another.'), false;
+
+          return { date, counselorId, time };
+        }
+      });
+
+      if(!form) return;
+
+      const fd=new FormData();
+      fd.append('_token', @json(csrf_token()));
+      fd.append('date', form.date);
+      fd.append('time', form.time);
+      fd.append('counselor_id', form.counselorId);
+
+      try{
+        const resp = await fetch(bookEndpoint,{ method:'POST', body: fd, headers:{'X-Requested-With':'XMLHttpRequest'} });
+        const data = await resp.json().catch(()=>({}));
+        if (!resp.ok) throw new Error(data?.message || 'Booking failed.');
+
+        await Swal.fire({
+          icon: 'success',
+          title: 'Appointment booked!',
+          html: `<div class="appt-compact">${data.html}</div>`,   // <-- keeps our typography & grid styles
+          customClass: { popup: 'swal-success swal-compact' },    // <-- enables styles above
+          width: Math.min(window.innerWidth - 32, 1200),
+          showCloseButton: true,
+          confirmButtonText: 'OK',
+        });
+        
+        window.location.reload();
+        } catch (err) {
+          Swal.fire({ icon:'error', title:'Unable to book', text:String(err) });
+        }
+    });
+  });
+})();
+</script>
+@endpush

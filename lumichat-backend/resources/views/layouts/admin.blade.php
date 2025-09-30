@@ -115,8 +115,7 @@
 
 <body class="bg-slate-50 text-slate-800 antialiased">
 
-  {{-- ===== SIDEBAR / RAIL ===== --}}
- {{-- ===== SIDEBAR / RAIL ===== --}}
+{{-- ===== SIDEBAR / RAIL ===== --}}
 <aside id="adminSidebar"
   class="fixed inset-y-0 left-0 z-40 -translate-x-full lg:translate-x-0 text-white shadow-xl">
 
@@ -375,144 +374,129 @@
       applyMode();
     })();
   </script>
+  {{-- ==== Wide SweetAlert “Appointment booked!” (global) ==== --}}
+<style>
+ /* Force left-aligned body for our compact success modal (use the class you pass in JS) */
+.swal-success .swal2-html-container{
+  text-align: left !important;
+  padding: 18px 24px !important;
+}
+
+/* Optional: constrain body to a readable width */
+.appt-compact{
+  font-size: 14.5px;
+  line-height: 1.45;
+  max-width: 980px;
+  margin: 0 auto; /* center the whole content block inside the modal */
+}
+
+/* ---- Logo strip (top-left) ---- */
+.appt-compact .logo-strip{
+  display:flex; align-items:center; gap:10px;
+  margin: 2px 0 8px;
+}
+.appt-compact .logo{
+  width:40px; height:40px; border-radius:12px; object-fit:cover;
+  box-shadow:0 0 0 1px rgba(0,0,0,.06), 0 4px 10px rgba(0,0,0,.08);
+}
+
+/* ---- Center the 4-field row while keeping its inner text left-aligned ---- */
+.appt-compact .kv-center-wrap{
+  display:flex; justify-content:center; /* centers the grid block */
+}
+
+.appt-compact .kv-grid{
+  display:grid;
+  grid-template-columns: repeat(4, auto); /* columns size to their content */
+  gap: 8px 18px;
+  justify-items: start;                   /* values/labels align left inside each cell */
+  padding: 8px 0;
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+  margin: 6px 0 12px;
+}
+@media (max-width:1100px){
+  .appt-compact .kv-grid{ grid-template-columns: repeat(2, auto); }
+}
+@media (max-width:520px){
+  .appt-compact .kv-grid{ grid-template-columns: 1fr; }
+}
+.appt-compact .kv-grid b{ font-weight:600; color:#111827; margin-right:6px; }
+</style>
+
+<style>
+  /* ------ Shared booking modal styles (used by index & show) ------ */
+  .swal-wide.swal2-popup{
+    width: min(92vw, 760px) !important;
+    padding: 0 !important;
+    border-radius: 18px !important;
+    box-shadow: 0 30px 60px rgba(2,6,23,.25);
+  }
+  .swal-wide .swal2-title{
+    margin: 18px 22px 0 !important;
+    font-size: 22px !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+  }
+  .swal-wide .swal2-html-container{
+    margin: 0 !important;
+    padding: 16px 22px 22px !important;
+    text-align: left !important;
+  }
+  .swal-wide .swal2-actions{
+    margin: 0 !important;
+    padding: 16px 22px 22px !important;
+  }
+
+  /* Inputs */
+  .swal-field{
+    width: 100%;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: .55rem .75rem;
+  }
+  .swal-field:focus{
+    outline: 0;
+    box-shadow: 0 0 0 3px rgba(79,70,229,.25);
+    border-color: #c7d2fe;
+  }
+
+  /* Time buttons */
+  .time-grid{ display:grid; gap:.5rem; grid-template-columns:repeat(3,minmax(0,1fr)); }
+  @media (min-width:640px){ .time-grid{ grid-template-columns:repeat(4,minmax(0,1fr)); } }
+
+  .time-btn{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    border:1px solid #e2e8f0; background:#fff; color:#0f172a;
+    padding:.55rem .6rem; border-radius:12px; font-size:.9rem; line-height:1.1; font-weight:600;
+    transition: transform .06s ease, border-color .12s ease, background .12s ease;
+  }
+  .time-btn:hover{ background:#EEF2FF; border-color:#C7D2FE; }
+  .time-btn.is-active{ box-shadow:0 0 0 3px rgba(79,70,229,.35); border-color:#a5b4fc; }
+  .time-btn:disabled{ opacity:.45; background:#f8fafc; cursor:not-allowed; }
+  .time-cap{ margin-top:.15rem; font-size:.72rem; opacity:.75; font-weight:500; }
+
+  .tiny-hint{ font-size:.78rem; color:#64748b; }
+</style>
+
   <script>
-/* ---------- ADMIN BOOKING FLOW (date → counselor → time) ---------- */
-(() => {
-  const btn = document.getElementById('btnAdminBook');
-  if (!btn) return;
-
-  @if (isset($session))
-
-    const slotsEndpoint = @json(route('admin.chatbot-sessions.slots', $session->id));
-    const bookEndpoint  = @json(route('admin.chatbot-sessions.book',  $session->id));
-    // …rest of booking code…
-
-@endif
-
-  function buildTimePills(container, arr, selected='') {
-    container.innerHTML = '';
-    const emptyEl = document.getElementById('adm-empty');
-    if (!arr || !arr.length) { emptyEl.classList.remove('hidden'); return; }
-    emptyEl.classList.add('hidden');
-    arr.forEach(s => {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'time-pill inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:border-indigo-300 hover:bg-indigo-50';
-      b.dataset.value = s.value;
-      b.textContent   = s.label;
-      if (s.value === selected) b.classList.add('ring-2','ring-indigo-500');
-      b.addEventListener('click', () => {
-        container.querySelectorAll('button').forEach(x=>x.classList.remove('ring-2','ring-indigo-500'));
-        b.classList.add('ring-2','ring-indigo-500');
-        container.dataset.selected = s.value;
-      });
-      container.appendChild(b);
+    /**
+     * Show the “Appointment booked!” dialog with a wide, responsive layout.
+     * @param {string} html - server-rendered HTML preview (e.g., your note + details)
+     * @returns {Promise<void>}
+     */
+    async function showBookedSuccess(html){
+    await Swal.fire({
+      icon: 'success',
+      title: 'Appointment booked!',
+      html, // <-- use the parameter
+      customClass: { popup: 'swal-success' },
+      showCloseButton: true,
+      confirmButtonText: 'OK',
     });
   }
 
-  async function fetchSlots(date) {
-    const url = new URL(slotsEndpoint, window.location.origin);
-    url.searchParams.set('date', date);
-    const res = await fetch(url, { headers:{'X-Requested-With':'XMLHttpRequest'} });
-    if (!res.ok) throw new Error('Failed to load slots');
-    return res.json(); // { counselors:[{id,name}], slots: { [id]: [{value,label}] } }
-  }
-
-  btn.addEventListener('click', async () => {
-    try {
-      const today = new Date(); const pad = n => String(n).padStart(2,'0');
-      const defaultDate = `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`;
-
-      // initial fetch
-      let slotsData = await fetchSlots(defaultDate);
-
-      const { value: form } = await Swal.fire({
-        title: 'Book appointment',
-        html: `
-          <div style="text-align:left">
-            <label class="text-sm font-medium text-slate-700">1) Pick date *</label>
-            <input id="adm-date" type="date" value="${defaultDate}" min="{{ now()->toDateString() }}"
-                   class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
-
-            <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="text-sm font-medium text-slate-700">2) Counselor *</label>
-                <select id="adm-counselor" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                  ${(slotsData.counselors || []).map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}
-                </select>
-              </div>
-              <div>
-                <label class="text-sm font-medium text-slate-700">3) Time *</label>
-                <div id="adm-times" class="mt-1 grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
-                <div id="adm-empty" class="text-xs text-slate-500 mt-1 hidden">No available times.</div>
-              </div>
-            </div>
-          </div>
-        `,
-        width: 720,
-        showCancelButton: true,
-        confirmButtonText: 'Confirm Booking',
-        focusConfirm: false,
-        didOpen: () => {
-          const dateEl  = document.getElementById('adm-date');
-          const counEl  = document.getElementById('adm-counselor');
-          const timeEl  = document.getElementById('adm-times');
-
-          // seed times for initially selected counselor
-          buildTimePills(timeEl, (slotsData.slots || {})[counEl.value] || []);
-
-          // on date change → refetch and rebuild both counselor list + time pills
-          dateEl.addEventListener('change', async () => {
-            slotsData = await fetchSlots(dateEl.value);
-            // rebuild counselor list
-            counEl.innerHTML = (slotsData.counselors || []).map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
-            buildTimePills(timeEl, (slotsData.slots || {})[counEl.value] || []);
-          });
-
-          // on counselor change → rebuild time pills from latest slotsData
-          counEl.addEventListener('change', () => {
-            buildTimePills(timeEl, (slotsData.slots || {})[counEl.value] || []);
-          });
-        },
-        preConfirm: () => {
-          const dateEl = document.getElementById('adm-date');
-          const counEl = document.getElementById('adm-counselor');
-          const timeEl = document.getElementById('adm-times');
-
-          const date = dateEl ? dateEl.value : '';
-          const counselorId = counEl ? counEl.value : '';
-          const time = (timeEl && timeEl.dataset.selected) ? timeEl.dataset.selected : '';
-
-          if (!date || !counselorId || !time) {
-            Swal.showValidationMessage('Please select date, counselor, and time.');
-            return false;
-          }
-          return { date, counselorId, time };
-        }
-      });
-
-      if (!form) return;
-
-      // POST
-      const fd = new FormData();
-      fd.append('_token', @json(csrf_token()));
-      fd.append('date', form.date);
-      fd.append('time', form.time);
-      fd.append('counselor_id', form.counselorId);
-
-      const resp = await fetch(bookEndpoint, { method:'POST', body: fd, headers:{'X-Requested-With':'XMLHttpRequest'} });
-      const data = await resp.json().catch(()=>({}));
-      if (!resp.ok) throw new Error(data.message || 'Booking failed.');
-
-      Swal.fire({ icon:'success', title:'Booked', html:data.html || 'Appointment created.', confirmButtonText:'OK' });
-    } catch (e) {
-      console.error(e);
-      Swal.fire({ icon:'error', title:'Unable to book', text: e.message || 'Please try again.' });
-    }
-  });
-})();
-</script>
-
-@stack('scripts')
-</body>
-</html>
+  </script>
+  @stack('scripts')
+  </body>
+  </html>

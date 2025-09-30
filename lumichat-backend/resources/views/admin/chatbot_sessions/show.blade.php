@@ -152,7 +152,7 @@
   </div>
 </div>
 
-{{-- Lightweight modal styles to increase weight/contrast --}}
+{{-- Styles --}}
 <style>
   .pill {
     font-weight: 600;
@@ -161,21 +161,12 @@
     line-height: 1.1;
     box-shadow: 0 1px 0 0 rgba(2,6,23,.06), 0 0 0 1px rgba(15,23,42,.06) inset;
   }
-  .pill .time {
-    display:block; font-size:.95rem;
-  }
-  .pill .cap {
-    display:block; font-size:.72rem; opacity:.8; margin-top:.15rem;
-  }
+  .pill .time { display:block; font-size:.95rem; }
+  .pill .cap  { display:block; font-size:.72rem; opacity:.8; margin-top:.15rem; }
   .pill[disabled] { opacity:.5; cursor:not-allowed; }
   .pill--active { outline: 3px solid rgba(79,70,229,.8); }
-  .pill:hover:not([disabled]) {
-    background: #EEF2FF;
-    border-color: #C7D2FE;
-  }
-  .grid-times {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
+  .pill:hover:not([disabled]) { background:#EEF2FF; border-color:#C7D2FE; }
+  .grid-times { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   @media (min-width: 640px){ .grid-times{ grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 </style>
 
@@ -191,6 +182,7 @@
     });
   }
 </script>
+
 
 @push('scripts')
 <script>
@@ -259,145 +251,146 @@ function printNode(selector, title = document.title) {
 
 <script>
 (() => {
+  // 🧷 Global guard – prevent double-binding when @stack('scripts') is included twice
+  if (window.__LUMI_BOOK_BOUND__) return;
+  window.__LUMI_BOOK_BOUND__ = true;
+
   const btn = document.getElementById('btnAdminBook');
   if (!btn) return;
 
   const slotsEndpoint = @json(route('admin.chatbot-sessions.slots', $session->id));
   const bookEndpoint  = @json(route('admin.chatbot-sessions.book', $session->id));
 
-  // --- helpers: sanitize & guard ---
   const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
   const TIME_RE = /^\d{2}:\d{2}$/;
   const pad = n => String(n).padStart(2,'0');
+  const isWeekday = ymd => { const [y,m,d]=ymd.split('-').map(Number); const t=new Date(y,m-1,d).getDay(); return t>=1&&t<=5; };
+  const notPast   = ymd => { const [y,m,d]=ymd.split('-').map(Number); const dt=new Date(y,m-1,d,23,59,59,999); const now=new Date(); return dt>=new Date(now.getFullYear(),now.getMonth(),now.getDate()); };
 
-  function isWeekday(ymd){
-    const [y,m,d] = ymd.split('-').map(Number);
-    const dt = new Date(y, m-1, d);
-    const day = dt.getDay(); // 0..6
-    return day >= 1 && day <= 5;
-  }
-  function notPast(ymd){
-    const [y,m,d] = ymd.split('-').map(Number);
-    const dt = new Date(y, m-1, d, 23, 59, 59, 999);
-    const now = new Date();
-    return dt >= new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  }
-  function plural(n){ return Number(n) === 1 ? 'slot' : 'slots'; }
-
-  function renderModal(date='', counselors=[], slotsMap={}) {
-    const options = (counselors || []).map(c => `<option value="${String(c.id).replace(/"/g,'')}">${String(c.name).replace(/</g,'&lt;')}</option>`).join('');
-    return `
-      <div style="text-align:left">
-        <label class="text-sm font-medium text-slate-700">1) Pick date *</label>
-        <input id="adm-date" type="date" value="${date}" min="{{ now()->toDateString() }}"
-               class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
-
-        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="text-sm font-medium text-slate-700">2) Counselor *</label>
-            <select id="adm-counselor" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-              ${options}
-            </select>
-          </div>
-          <div>
-            <label class="text-sm font-medium text-slate-700">3) Time *</label>
-            <div id="adm-times" class="mt-1 grid grid-times gap-2" data-selected="" tabindex="0" aria-label="Available times"></div>
-            <div id="adm-empty" class="text-xs text-slate-500 mt-1 hidden">No available times.</div>
-          </div>
-        </div>
-      </div>
-    `;
+  function updateTotal(pooledMap){
+    const el = document.getElementById('adm-total');
+    if (!el) return;
+    const total = Object.values(pooledMap||{}).reduce((a,b)=>a+Number(b||0),0);
+    el.textContent = total ? `• ${total} total counselor-slots` : '';
   }
 
-  function buildTimePills(container, arr, selected='') {
+  function buildTimePills(container, items, pooledMap, selected=''){
     container.innerHTML = '';
     const emptyEl = document.getElementById('adm-empty');
-    const times = Array.isArray(arr) ? arr : [];
-    if (!times.length) { emptyEl.classList.remove('hidden'); container.dataset.selected=''; return; }
-    emptyEl.classList.add('hidden');
+    const times = Array.isArray(items) ? items : [];
 
-    times.forEach(s => {
+    if (!times.length){
+      emptyEl?.classList.remove('hidden');
+      container.dataset.selected='';
+      updateTotal(pooledMap);
+      return;
+    }
+    emptyEl?.classList.add('hidden');
+    updateTotal(pooledMap);
+
+    times.forEach(s=>{
       const b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'pill inline-flex flex-col items-center justify-center border border-slate-200 bg-white text-slate-800';
-      b.dataset.value = s.value;
+      b.type='button';
+      b.className='pill inline-flex flex-col items-center justify-center border border-slate-200 bg-white text-slate-800';
+      b.dataset.value=s.value;
 
-      const cap = Number.isFinite(s.pooled) ? s.pooled : 0;
-      b.innerHTML = `<span class="time">${s.label}</span><span class="cap">(${cap} ${plural(cap)})</span>`;
+      const cap = Math.max(0, Number((pooledMap && pooledMap[s.value]) ?? s.pooled ?? 0));
+      b.innerHTML = `
+        <span class="time">${s.label}</span>
+        <span class="cap">(${cap} ${cap === 1 ? 'slot' : 'slots'})</span>
+      `;
 
-      if (s.disabled) {
+      if (s.disabled){
         b.disabled = true;
-      } else {
-        b.addEventListener('click', () => {
+        b.classList.add('opacity-50','cursor-not-allowed');
+      }else{
+        b.addEventListener('click', ()=>{
           [...container.querySelectorAll('button')].forEach(x=>x.classList.remove('pill--active'));
           b.classList.add('pill--active');
           container.dataset.selected = s.value;
-          b.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+          b.scrollIntoView({block:'nearest', inline:'nearest', behavior:'smooth'});
         });
-        // keyboard selection
-        b.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); b.click(); }
+        b.addEventListener('keydown', e=>{
+          if (e.key==='Enter'||e.key===' '){ e.preventDefault(); b.click(); }
         });
       }
 
-      if (!s.disabled && s.value === selected) b.classList.add('pill--active');
+      if (!s.disabled && s.value===selected) b.classList.add('pill--active');
       container.appendChild(b);
     });
 
-    if (selected && !times.some(t => !t.disabled && t.value === selected)) {
-      container.dataset.selected = '';
+    if (selected && !times.some(t=>!t.disabled && t.value===selected)){
+      container.dataset.selected='';
     }
   }
 
-  async function loadSlots(date) {
+  async function loadSlots(date){
     const url = new URL(slotsEndpoint, window.location.origin);
     url.searchParams.set('date', date);
     const res = await fetch(url, { headers:{'X-Requested-With':'XMLHttpRequest'} });
     if (!res.ok) throw new Error('Failed to load slots');
-    return await res.json(); // { counselors:[{id,name}], slots:{[cid]:[{value,label,disabled}]}, pooled:{'HH:MM':N} }
+    return res.json(); // { counselors, slots, pooled }
   }
 
-  btn.addEventListener('click', async () => {
-    try {
+  async function onAdminBookClick(){
+    try{
       const today = new Date();
       const defaultDate = `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`;
 
+      // ⏱️ Fetch FIRST, then open modal (prevents empty-first-modal bug)
       const first = await loadSlots(defaultDate);
+
+      let pollId = null;
 
       const { value: form } = await Swal.fire({
         title: 'Book appointment',
-        html: renderModal(defaultDate, first.counselors || [], first.slots || {}),
-        width: 780,
+        html: `
+          <div style="text-align:left">
+            <label class="text-sm font-medium text-slate-700">1) Pick date *</label>
+            <input id="adm-date" type="date" value="${defaultDate}" min="{{ now()->toDateString() }}"
+                   class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
+
+            <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="text-sm font-medium text-slate-700">2) Counselor *</label>
+                <select id="adm-counselor" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  ${(first.counselors||[]).map(c=>`<option value="${String(c.id)}">${String(c.name).replace(/</g,'&lt;')}</option>`).join('')}
+                </select>
+              </div>
+              <div>
+                <label class="text-sm font-medium text-slate-700">3) Time * <small id="adm-total" class="text-slate-500 font-normal"></small></label>
+                <div id="adm-times" class="mt-1 grid grid-times gap-2" data-selected="" tabindex="0" aria-label="Available times"></div>
+                <div id="adm-empty" class="text-xs text-slate-500 mt-1 hidden">No available times.</div>
+              </div>
+            </div>
+          </div>
+        `,
+        customClass: { popup: 'swal-wide' },
         showCancelButton: true,
         confirmButtonText: 'Confirm Booking',
         focusConfirm: false,
-        didOpen: async () => {
+
+        didOpen: () => {
           const dateEl   = document.getElementById('adm-date');
           const counEl   = document.getElementById('adm-counselor');
           const timeWrap = document.getElementById('adm-times');
 
-          // Loading indicator
-          const showLoading = (on=true) => {
-            Swal.showLoading();
-            if (!on) Swal.hideLoading();
-          };
-
           let slotsMap  = first.slots  || {};
           let pooledMap = first.pooled || {};
-          const compose = (cid, keepSelected=true) => {
+
+          const compose = (cid, keepSelected=true)=>{
             const prevSel = keepSelected ? (timeWrap.dataset.selected || '') : '';
-            const items = (slotsMap?.[cid] || []).map(s => ({ ...s, pooled: pooledMap?.[s.value] ?? 0 }));
-            buildTimePills(timeWrap, items, prevSel);
+            const items = (slotsMap?.[cid] || []);
+            buildTimePills(timeWrap, items, pooledMap, prevSel);
           };
 
-          const refetch = async () => {
+          const refetch = async ()=>{
             const val = dateEl.value;
-            // client-side date sanitation
-            if (!DATE_RE.test(val) || !isWeekday(val) || !notPast(val)) {
-              buildTimePills(timeWrap, [], '');
+            if (!DATE_RE.test(val) || !isWeekday(val) || !notPast(val)){
+              buildTimePills(timeWrap, [], {}, '');
               return;
             }
-            showLoading(true);
+            Swal.showLoading();
             try{
               const data = await loadSlots(val);
               slotsMap  = data.slots  || {};
@@ -405,54 +398,45 @@ function printNode(selector, title = document.title) {
               const list = data.counselors || [];
               const prev = counEl.value;
               counEl.innerHTML = list.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
-              if (list.length) {
-                const keep = list.some(c => String(c.id) === String(prev));
+              if (list.length){
+                const keep = list.some(c => String(c.id)===String(prev));
                 counEl.value = keep ? prev : String(list[0].id);
               }
               compose(counEl.value, true);
             } finally {
-              showLoading(false);
+              try { Swal.hideLoading(); } catch(e){}
             }
           };
 
           // initial render
           compose(counEl.value);
 
-          // changes
+          // listeners
           dateEl.addEventListener('change', refetch);
-          counEl.addEventListener('change', () => compose(counEl.value, false));
+          counEl.addEventListener('change', ()=>compose(counEl.value, false));
 
           // live polling every 5s while modal is open
-          const poll = setInterval(refetch, 5000);
-          const stop = () => clearInterval(poll);
-          window.addEventListener('swal:willClose', stop, { once:true });
-
-          // patch SweetAlert close to emit event
-          const origClose = Swal.close;
-          Swal.close = function() {
-            window.dispatchEvent(new CustomEvent('swal:willClose'));
-            return origClose.apply(this, arguments);
-          };
+          pollId = setInterval(refetch, 5000);
         },
+
+        willClose: () => {
+          if (pollId) clearInterval(pollId);
+          try { Swal.hideLoading(); } catch(e) {}
+        },
+
         preConfirm: () => {
           const date = /** @type {HTMLInputElement} */(document.getElementById('adm-date')).value;
           const counselorId = /** @type {HTMLSelectElement} */(document.getElementById('adm-counselor')).value;
           const time = /** @type {HTMLElement} */(document.getElementById('adm-times')).dataset.selected || '';
 
-          // Strict sanitation (show real SweetAlert toasts instead of inline validation)
           if (!DATE_RE.test(date)) { swalToast('error','Invalid date format'); return false; }
           if (!isWeekday(date))    { swalToast('warning','Weekends are closed','Please choose Mon–Fri.'); return false; }
           if (!notPast(date))      { swalToast('warning','Pick a future date'); return false; }
           if (!TIME_RE.test(time)) { swalToast('error','Invalid time selected'); return false; }
           if (!counselorId)        { swalToast('warning','Please choose a counselor'); return false; }
 
-          // Verify chosen time still exists for current counselor/date (prevents tampering)
-          const buttons = Array.from(document.querySelectorAll('#adm-times button:not([disabled])'))
-                              .map(b => b.dataset.value);
-          if (!buttons.includes(time)) {
-            swalToast('info','That time just filled','Please pick another slot.');
-            return false;
-          }
+          const buttons = Array.from(document.querySelectorAll('#adm-times button:not([disabled])')).map(b=>b.dataset.value);
+          if (!buttons.includes(time)) { swalToast('info','That time just filled','Please pick another slot.'); return false; }
 
           return { date, counselorId, time };
         }
@@ -470,13 +454,25 @@ function printNode(selector, title = document.title) {
       const data = await resp.json().catch(()=>({}));
       if (!resp.ok) throw new Error(data?.message || 'Booking failed.');
 
-      Swal.fire({ icon:'success', title:'Booked', html:data.html || 'Appointment created.', confirmButtonText:'OK' })
-        .then(() => window.location.reload());
-    } catch (e) {
-      console.error(e);
-      Swal.fire({ icon:'error', title:'Unable to book', text: e.message || 'Please try again.' });
-    }
-  });
+      await Swal.fire({
+        icon: 'success',
+        title: 'Appointment booked!',
+        html: `<div class="appt-compact">${data.html}</div>`,   // <-- keeps our typography & grid styles
+        customClass: { popup: 'swal-success swal-compact' },    // <-- enables styles above
+        width: Math.min(window.innerWidth - 32, 1200),
+        showCloseButton: true,
+        confirmButtonText: 'OK',
+      });
+      
+      window.location.reload();
+      } catch (e) {
+        console.error(e);
+        Swal.fire({ icon:'error', title:'Unable to book', text: e.message || 'Please try again.' });
+      }
+  }
+
+  // ✅ SINGLE BIND (prevents the double-modal bug)
+  btn.onclick = onAdminBookClick;
 })();
 </script>
 
