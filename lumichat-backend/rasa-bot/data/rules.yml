@@ -97,6 +97,11 @@ rules:
     - intent: greet
     - action: utter_greet
 
+- rule: thanks -> utter_thanks
+  steps:
+    - intent: thanks
+    - action: utter_thanks
+
 - rule: goodbye -> utter_goodbye
   steps:
     - intent: goodbye
@@ -127,6 +132,8 @@ rules:
     - action: utter_offer_coping_academic_pressure
     - intent: affirm
     - action: utter_coping_academic_pressure
+    - action: utter_coping_done
+    - intent: finish
     - action: utter_offer_referral
 
 
@@ -141,7 +148,10 @@ rules:
   steps:
     - action: utter_offer_coping_anxiety
     - intent: affirm
+    - action: utter_coping_done
+    - intent: finish
     - action: utter_coping_anxiety
+
     - action: utter_offer_referral
 
 - rule: coping no -> anxiety
@@ -156,6 +166,8 @@ rules:
     - action: utter_offer_coping_bullying
     - intent: affirm
     - action: utter_coping_bullying
+    - action: utter_coping_done
+    - intent: finish
     - action: utter_offer_referral
 
 - rule: coping no -> bullying
@@ -170,6 +182,8 @@ rules:
     - action: utter_offer_coping_burnout
     - intent: affirm
     - action: utter_coping_burnout
+    - action: utter_coping_done
+    - intent: finish
     - action: utter_offer_referral
 
 - rule: coping no -> burnout
@@ -184,6 +198,8 @@ rules:
     - action: utter_offer_coping_depression
     - intent: affirm
     - action: utter_coping_depression
+    - action: utter_coping_done
+    - intent: finish
     - action: utter_offer_referral
 
 - rule: coping no -> depression
@@ -198,6 +214,8 @@ rules:
     - action: utter_offer_coping_family_problems
     - intent: affirm
     - action: utter_coping_family_problems
+    - action: utter_coping_done
+    - intent: finish
     - action: utter_offer_referral
 
 - rule: coping no -> family_problems
@@ -212,6 +230,8 @@ rules:
     - action: utter_offer_coping_financial_stress
     - intent: affirm
     - action: utter_coping_financial_stress
+    - action: utter_coping_done
+    - intent: finish
     - action: utter_offer_referral
 
 - rule: coping no -> financial_stress
@@ -226,6 +246,8 @@ rules:
     - action: utter_offer_coping_grief_loss
     - intent: affirm
     - action: utter_coping_grief_loss
+    - action: utter_coping_done
+    - intent: finish
     - action: utter_offer_referral
 
 - rule: coping no -> grief_loss
@@ -240,6 +262,8 @@ rules:
     - action: utter_offer_coping_loneliness
     - intent: affirm
     - action: utter_coping_loneliness
+    - action: utter_coping_done
+    - intent: finish
     - action: utter_offer_referral
 
 - rule: coping no -> loneliness
@@ -254,6 +278,8 @@ rules:
     - action: utter_offer_coping_low_self_esteem
     - intent: affirm
     - action: utter_coping_low_self_esteem
+    - action: utter_coping_done
+    - intent: finish
     - action: utter_offer_referral
 
 - rule: coping no -> low_self_esteem
@@ -268,6 +294,8 @@ rules:
     - action: utter_offer_coping_relationship_issues
     - intent: affirm
     - action: utter_coping_relationship_issues
+    - action: utter_coping_done
+    - intent: finish
     - action: utter_offer_referral
 
 - rule: coping no -> relationship_issues
@@ -282,6 +310,8 @@ rules:
     - action: utter_offer_coping_sleep_problems
     - intent: affirm
     - action: utter_coping_sleep_problems
+    - action: utter_coping_done
+    - intent: finish
     - action: utter_offer_referral
 
 - rule: coping no -> sleep_problems
@@ -296,6 +326,8 @@ rules:
     - action: utter_offer_coping_stress
     - intent: affirm
     - action: utter_coping_stress
+    - action: utter_coping_done
+    - intent: finish
     - action: utter_offer_referral
 
 - rule: coping no -> stress
@@ -310,6 +342,8 @@ rules:
     - action: utter_offer_coping_substance_abuse
     - intent: affirm
     - action: utter_coping_substance_abuse
+    - action: utter_coping_done
+    - intent: finish
     - action: utter_offer_referral
 
 - rule: coping no -> substance_abuse
@@ -324,6 +358,8 @@ rules:
     - action: utter_offer_coping_time_management
     - intent: affirm
     - action: utter_coping_time_management
+    - action: utter_coping_done
+    - intent: finish
     - action: utter_offer_referral
 
 - rule: coping no -> time_management

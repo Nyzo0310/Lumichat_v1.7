@@ -30,7 +30,9 @@ intents:
 - family_problems
 - financial_stress
 - goodbye
+- finish
 - greet
+- thanks
 - grief_loss
 - loneliness
 - low_self_esteem
@@ -54,9 +56,17 @@ responses:
 
   utter_greet:
   - text: Hi! How can I help you today?
+  - text: Hi! Unsa imong gibati karon?
+  - text: Hello! How are you feeling today?
+
+  utter_thanks:
+  - text: You're welcome! I'm here to help.
+  - text: Walay sapayan! Ania ra ko aron motabang.
+
 
   utter_goodbye:
   - text: Take care, and thank you for chatting today.
+  - text: Amping, ug salamat sa imong pag-chat karon.
 
 
         
@@ -3509,51 +3519,60 @@ responses:
       payload: /deny{"confirm_topic":"coping","mood":"time_management"}
 
   utter_book_appointment:
-  - text: |
-      Okay, here is the appointment booking page. Please use the button below to schedule your session with a counselor.
-    buttons:
+    - text: |
+        Okay, here is the appointment booking page. Please use the button below to schedule your session with a counselor.
+      buttons:
         - title: "Book counselor"
           url: "http://127.0.0.1:8000/appointment/book"
-  
+
   utter_critical_keyword_appointment:
-  - text: |
-      Critical keyword detected. I'm really concerned about your safety. If you are in immediate danger, please call your local emergency number right away.
+    - text: |
+        Critical keyword detected. I'm really concerned about your safety. If you are in immediate danger, please call your local emergency number right away.
 
-      You are not alone—support is available. Here are trusted hotlines in the Philippines you can reach anytime:
-      • **NCMH Crisis Hotline:** 1553 (landline and cellphone)
-      • **Globe/TM:** 0966-351-4518 or 0917-899-8727
-      • **Smart/Sun/TNT:** 0908-639-2672
+        You are not alone—support is available. Here are trusted hotlines in the Philippines you can reach anytime:
+        • NCMH Crisis Hotline: 1553 (landline and cellphone)
+        • Globe/TM: 0966-351-4518 or 0917-899-8727
+        • Smart/Sun/TNT: 0908-639-2672
 
-      If you feel able, please also book an appointment with a counselor using the link below so you can talk to someone who can help.
-    buttons:
+        If you feel able, please also book an appointment with a counselor using the link below so you can talk to someone who can help.
+      buttons:
         - title: "Book counselor"
           url: "http://127.0.0.1:8000/appointment/book"
-    
+
   utter_crisis_minimizing_warning:
-  - text: |
+    - text: |
         Mental health and safety are not jokes. Statements about self-harm or danger are taken seriously because your well-being matters. If you are in immediate danger, call your local emergency number now.
 
         You can reach trusted hotlines in the Philippines:
-        • NCMH Crisis Hotline: 1553  
-        • Globe/TM: 0966-351-4518 or 0917-899-8727  
+        • NCMH Crisis Hotline: 1553
+        • Globe/TM: 0966-351-4518 or 0917-899-8727
         • Smart/Sun/TNT: 0908-639-2672
 
         If you need support, you can also book an appointment with a counselor below.
-    buttons:
+      buttons:
         - title: "Book counselor"
           url: "http://127.0.0.1:8000/appointment/book"
 
   utter_offer_referral:
-  - text: |
-      It’s okay if this still feels heavy. You can book time with the counselor so you don’t have to handle this alone.
-    buttons:
+    - text: |
+        It’s okay if this still feels heavy. You can book time with the counselor so you don’t have to handle this alone.
+      buttons:
         - title: "Book counselor"
           url: "http://127.0.0.1:8000/appointment/book"
         - title: "Not now"
-          payload: "/deny{\"confirm_topic\":\"referral\"}"
+          payload: '/deny{"confirm_topic":"referral"}'
 
   utter_ok_no_referral:
-    - text: "No problem. Thank you for sharing with me today."
+    - text: |
+        No problem. Thank you for sharing with me today.
+  
+
+  utter_coping_done:
+    - text: |
+        Give at least one tip a try. When you’re finished, tap **Done** below. No rush.
+      buttons:
+        - title: "Done"
+          payload: "/coping_done"
     
 entities:
 - mood

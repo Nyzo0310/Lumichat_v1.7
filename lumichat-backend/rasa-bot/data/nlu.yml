@@ -10,6 +10,25 @@ nlu:
     - good afternoon
     - good evening
 
+- intent: finish
+  examples: |
+    - humana
+    - done na
+    - Done
+    - ok na
+    - mana
+    - done
+
+- intent: thanks
+  examples: |
+    - thanks
+    - thanks you
+    - Thanks
+    - Salamat
+    - salamat kaayu
+    - salamat lumichat
+    - Salamat Lumichat
+
 - intent: goodbye
   examples: |
     - bye
