@@ -41,7 +41,10 @@ intents:
 - substance_abuse
 - time_management
 - affirm         
-- deny   
+- deny
+- crisis_minimizing
+- book_appointment
+   
 
 actions:
 - action_respond_from_sheet
@@ -53,220 +56,285 @@ responses:
   - text: Hi! How can I help you today?
 
   utter_goodbye:
-  - text: Take care! If you need anything else, I’m here.
+  - text: Take care, and thank you for chatting today.
 
-  utter_crisis:
-    - text: |
-        I'm really concerned about your safety. If you're in immediate danger, please contact local emergency services now.
-        You can also reach the NCMH Crisis Hotline (PH): 1553. You're not alone. Would you like the counselor link?
 
         
   utter_anxiety/p0001:
-  - text: I’m sorry you’re feeling this way. If you’d like, we can try a simple grounding
-      exercise together. For example, name five things you see around you right now.
+    - text: |
+        I’m sorry you’re feeling this way. Try a simple grounding exercise: slowly look around and name five things you can see,
+        four things you can touch, three things you can hear, two things you can smell, and one thing you can taste.
+        Breathe steadily as you do it to anchor your attention in the present.
+
   utter_anxiety/p0002:
-  - text: It’s normal to worry sometimes, but constant worrying can be draining. When
-      you notice your mind racing, try writing your worries down in a notebook. This
-      can help organize your thoughts and make them feel more manageable.
+    - text: |
+        It’s normal to worry, and constant worrying can drain your energy. Set a five-minute timer,
+        list the exact worries in a notebook, and beside each one write a next small step you can actually do.
+        Close the notebook when the timer ends and switch to a short, calming activity.
+
   utter_anxiety/p0003:
-  - text: Many students feel this way! Before your presentation, try slow, deep breathing—breathe
-      in for 4 counts, hold for 4, out for 4. Practicing this a few times can help
-      calm your nerves.
+    - text: |
+        Pre-presentation nerves are common. Practice box breathing: 
+        inhale 4 counts, hold 4, exhale 4, hold 4—repeat for one to two minutes. 
+        Pair this with a quick run-through of your opening lines to build calm and momentum.
+
   utter_anxiety/p0004:
-  - text: That’s a common anxiety reaction. A helpful tip is to focus on your feet—feel
-      them on the ground and wiggle your toes. This brings your attention back to
-      the present moment and can slow your heartbeat.
+    - text: |
+        That racing-heart feeling is a typical anxiety response. Plant your feet flat on the floor, 
+        press your toes gently, and notice the pressure shifting from heels to toes for one minute. 
+        Match that focus with slow exhales that are slightly longer than your inhales.
+
   utter_anxiety/p0005:
-  - text: Anxiety can feel overwhelming. Sometimes, practicing mindfulness—like sitting
-      quietly and noticing your breath—can help you feel more in control.
+    - text: |
+        When anxiety swells, a brief mindfulness check-in can help. Sit comfortably, 
+        notice the sensation of air at the tip of your nose, and count ten natural breaths. 
+        If your mind wanders, simply bring it back to breath without judgment.
+
   utter_anxiety/p0006:
-  - text: Feeling tense without a clear reason can be tough. Stretching your shoulders
-      and neck or taking a short walk can sometimes relieve that tension.
+    - text: |
+        Tension without a clear cause can still be eased. Roll your shoulders back and down ten times, 
+        gently stretch your neck side to side, and take a two-minute walk if possible. 
+        Hydrate afterward to support your body’s reset.
+
   utter_anxiety/p0007:
-  - text: Test anxiety is very common. Try preparing a checklist and reviewing one
-      thing at a time. Also, taking a few minutes for deep breathing before the exam
-      can make a big difference.
+    - text: |
+        Test anxiety is common and manageable. Create a mini checklist of three topics to review, 
+        spend focused 15-minute blocks on each, and take two-minute breathing breaks between blocks. 
+        On exam day, do three rounds of slow box breathing before you begin.
+
   utter_anxiety/p0008:
-  - text: 'That’s called catastrophic thinking, and it happens to many people with
-      anxiety. When this happens, try to pause and ask yourself: “What’s the most
-      likely outcome?” Writing down your thoughts can also help you challenge them.'
+    - text: |
+        Catastrophic thoughts can snowball quickly. 
+        Write the thought, then list evidence for and against it, 
+        and finish with the most likely outcome in one sentence. 
+        Keep the card and reread the balanced statement when the thought returns.
+
   utter_anxiety/p0009:
-  - text: Social anxiety can be really challenging. Sometimes, practicing what you’ll
-      say ahead of time or starting with small gatherings can build your confidence.
-     
+    - text: |
+        Social anxiety can feel heavy. Prepare one or two simple openers in advance, 
+        choose a small setting when possible, and give yourself a clear time limit for the event. 
+        Afterward, note one thing that went okay to reinforce progress.
+
   utter_anxiety/p0010:
-  - text: Overthinking can be exhausting. One useful technique is to set a “worry
-      time”—give yourself 10 minutes to think about your worries, then gently shift
-      your focus to something else you enjoy.
+    - text: |
+        Overthinking is exhausting. Schedule a daily ten-minute “worry window,” let your mind list concerns, then close it and shift to a brief absorbing task like a short walk or tidying a small space. Consistency trains your brain to postpone rumination.
+
   utter_anxiety/p0011:
-  - text: Worrying about the future is very common. Focusing on small goals you can
-      achieve today can make things feel less overwhelming.
+    - text: |
+        Worries about the future are common. Pick one small, doable goal for today, write the next two steps, and start the first step within five minutes. Small actions reduce uncertainty and rebuild a sense of control.
+
   utter_anxiety/p0012:
-  - text: Anxiety can affect our bodies too. If you feel sick, try sipping water and
-      taking slow, deep breaths. Grounding techniques, like feeling a cool object
-      in your hand, can also help.
+    - text: |
+        Anxiety can show up in the body as nausea or lightheadedness. Sip water slowly, place a cool object against your palm, and practice gentle belly breathing: hand on stomach, inhale to lift your hand, exhale to lower it. Give yourself a calm five-minute window.
+
   utter_anxiety/p0013:
-  - text: That’s a normal anxiety response. A grounding trick is to count backward
-      from 10 slowly, or focus on describing an object in detail. These can help you
-      get back on track.
+    - text: |
+        When your mind derails, use a quick reset. Count backward from 10 to 1 with steady breaths, then describe one nearby object using color, shape, and texture. This brief focus helps your attention come back online.
+
   utter_anxiety/p0014:
-  - text: 'Nighttime worries are very common. Try writing your thoughts in a journal
-      before bed, or do a simple muscle relaxation exercise: tense and relax each
-      muscle group starting from your toes to your head.'
+    - text: |
+        Nighttime worries like to get louder. Do a two-minute brain dump in a notebook, then try progressive muscle relaxation: starting at your toes, gently tense for five seconds and release, moving up through legs, torso, and face. Keep lights dim and screens away while you wind down.
+
   utter_anxiety/p0015:
-  - text: I’m really sorry you’re feeling this way. Sometimes, doing enjoyable activities—even
-      for just a short time—can help, especially if you do them with a friend or focus
-      on the present moment.
+    - text: |
+        Feeling weighed down is understandable. Schedule one short pleasant activity—music, stretching, or a brief chat with a trusted friend—and give it a clear start and end time. Small doses of positive engagement help nudge mood upward.
+
   utter_anxiety/p0016:
-  - text: Tightness in the chest is a common physical response to anxiety. Box breathing,
-      where you inhale for 4 seconds, hold for 4, exhale for 4, and pause for 4, can
-      help the body relax.
+    - text: |
+        Chest tightness often accompanies anxiety. Practice a few rounds of box breathing (4-4-4-4) and gently place a hand on your chest to track slower exhales. Stand and roll your shoulders to release residual tension.
+
   utter_anxiety/p0017:
-  - text: Replaying uncomfortable situations is normal with anxiety. Journaling these
-      thoughts or practicing self-compassion can help reduce their emotional impact.
+    - text: |
+        Mental replays can be persistent. Write the situation in three sentences, add a compassionate note you would give a friend, and close with one learning you’re taking forward. Revisit this summary when the replay starts.
+
   utter_anxiety/p0018:
-  - text: Racing thoughts can be managed with a technique called thought-stopping—pausing
-      to say “stop” in your mind, then focusing on your breathing or a calming activity.
+    - text: |
+        Racing thoughts respond to a firm pause. Say “stop” in your mind, then shift to a one-minute focus on the feeling of air as you exhale. Follow it with a simple, concrete task like organizing three items on your desk.
+
   utter_anxiety/p0019:
-  - text: Anxiety can appear even during positive times. Practicing gratitude journaling
-      and grounding exercises may help you stay focused on the present moment.
+    - text: |
+        Anxiety can surface even during good times. Try a brief gratitude note with three specific items from today, then do a 1–2 minute grounding scan: feet on floor, seat on chair, breath in and out. This anchors attention in what’s here now.
+
   utter_anxiety/p0020:
-  - text: Fear of disappointing others can cause anxiety. Writing out your feelings
-      in a letter (not to be sent) can help process these emotions and lighten the
-      burden.
+    - text: |
+        Fear of disappointing others can be heavy. Write your feelings in a private letter you won’t send, then identify one boundary or realistic expectation you can set this week. Keep the letter as a reminder that your needs also matter.
+
   utter_anxiety/p0021:
-  - text: Persistent anxiety can be exhausting. Progressive muscle relaxation, where
-      you tense and release muscle groups, can help calm the nervous system.
+    - text: |
+        Persistent anxiety can drain your energy. Try progressive muscle relaxation: tense each muscle group for five seconds, then release slowly from head to toe. Doing this for five minutes can signal safety to your nervous system.
+
   utter_anxiety/p0022:
-  - text: Shortness of breath is a common symptom. The 4-7-8 breathing technique—inhaling
-      for 4 seconds, holding for 7, and exhaling for 8—helps regulate breathing.
+    - text: |
+        Shortness of breath is a common anxiety symptom. Use the 4-7-8 breathing method: inhale through your nose for 4, hold for 7, exhale through your mouth for 8. Repeat this cycle four times to stabilize your breath.
+
   utter_anxiety/p0023:
-  - text: Repetitive checking can help ease uncertainty. Saying out loud what you’ve
-      done or making a checklist can help your mind trust your actions.
+    - text: |
+        Repetitive checking is a way of coping with uncertainty. Create a checklist, say out loud what you’ve already done, and then set the list aside. With practice, your mind learns to trust that the task is complete.
+
   utter_anxiety/p0024:
-  - text: Social anxiety is common and valid. Gradually attending small gatherings
-      and bringing a trusted friend can build confidence over time.
+    - text: |
+        Social anxiety is real and valid. Start by joining smaller gatherings, and bring along a supportive friend if you can. Gradual exposure builds confidence without overwhelming you.
+
   utter_anxiety/p0025:
-  - text: Physical sensations like “butterflies” are natural with anxiety. Visualization
-      of successful outcomes can help channel nervous energy into motivation.
+    - text: |
+        Physical “butterflies” in the stomach are common signs of anxiety. Close your eyes, picture a successful outcome, and replay it a few times. Visualization helps shift nervous energy into motivation.
+
   utter_anxiety/p0026:
-  - text: Fidgeting is a way to release nervous energy. Using a stress ball or gentle
-      stretching are healthy methods to calm your nerves.
+    - text: |
+        Fidgeting releases nervous energy. Channel it into something useful like squeezing a stress ball, stretching your arms, or taking a short walk. These actions let the body discharge tension safely.
+
   utter_anxiety/p0027:
-  - text: Anxiety can make us feel self-conscious. Practicing self-compassion and
-      reminding yourself that most people focus on themselves, not on others, can
-      help reduce these thoughts.
+    - text: |
+        Anxiety often makes us self-conscious. Remind yourself gently that most people are focused on themselves, not on you. Practice self-kindness by affirming one thing you value about yourself today.
+
   utter_anxiety/p0028:
-  - text: Heart palpitations are common with anxiety. Slowing your breath and focusing
-      on your heartbeat can help bring your body back to a calmer state.
+    - text: |
+        Heart palpitations can feel alarming but are a natural anxiety response. Slow your breathing and place your hand gently on your chest while counting each beat. This steady focus helps your heart settle.
+
   utter_anxiety/p0029:
-  - text: Setting aside a daily “worry time” can help give your mind permission to
-      let go of anxious thoughts during relaxation.
+    - text: |
+        A daily “worry time” can reduce intrusive thoughts. Schedule a fixed ten minutes to write down concerns, then deliberately move on to a pleasant activity. Training your brain this way reduces the urge to ruminate all day.
+
   utter_anxiety/p0030:
-  - text: Anxiety and muscle tension can cause headaches. Taking regular breaks, hydrating,
-      and gentle neck stretches may relieve this tension.
+    - text: |
+        Headaches are often linked with anxiety and tension. Take regular breaks from screens, sip water slowly, and do gentle neck stretches. Pair this with steady breathing to ease both body and mind.
+
   utter_anxiety/p0031:
-  - text: The fear of mistakes is common. Practicing positive self-talk and reminding
-      yourself that everyone makes mistakes can help reduce anxiety around performance.
+    - text: |
+        The fear of making mistakes is very common. Practice positive self-talk such as, “Mistakes help me learn.” Remind yourself that nobody performs perfectly all the time.
+
   utter_anxiety/p0032:
-  - text: Crowded environments can feel overwhelming. Planning ahead by identifying
-      quiet areas or carrying headphones may help you feel more comfortable.
+    - text: |
+        Crowded places can feel overwhelming. Plan ahead by noting quiet spots where you can take a break and carry headphones or calming music. Knowing your escape plan reduces the sense of being trapped.
+
   utter_anxiety/p0033:
-  - text: Anxiety often affects appetite. Mindful eating and keeping a food and mood
-      journal may help you find balance and recognize your body’s cues.
+    - text: |
+        Anxiety can affect appetite. Try mindful eating—notice flavors, textures, and pace yourself slowly. Keeping a simple food and mood journal may help you spot patterns and restore balance.
+
   utter_anxiety/p0034:
-  - text: Anxiety can make decision-making hard. Limiting your options to a few choices
-      and reminding yourself that most decisions are not permanent can reduce pressure.
+    - text: |
+        Decision-making feels harder with anxiety. Limit your choices to two or three options, and remind yourself that most decisions aren’t permanent. This lightens the pressure and makes choices more manageable.
+
   utter_anxiety/p0035:
-  - text: Self-comparison can increase anxiety. Focusing on your strengths and achievements,
-      no matter how small, can help improve self-esteem.
+    - text: |
+        Comparing yourself to others can fuel anxiety. Shift focus by listing three personal strengths or achievements from this week. Celebrating even small progress helps boost confidence.
+
   utter_anxiety/p0036:
-  - text: Establishing a bedtime routine, such as reading or journaling before bed,
-      can help calm your mind and improve sleep quality.
+    - text: |
+        Anxiety often disrupts sleep. Establish a bedtime routine like journaling, light reading, or gentle stretches before bed. A consistent routine helps calm the mind and improve rest quality.
+
   utter_anxiety/p0037:
-  - text: Keeping a journal of positive decisions you’ve made can help rebuild your
-      self-trust over time.
+    - text: |
+        Anxiety can weaken self-trust. Keep a journal of positive decisions you’ve made and reread it when doubt creeps in. Over time, you’ll see evidence that you can rely on yourself.
+
   utter_anxiety/p0038:
-  - text: Grounding techniques like touching a familiar object or naming things you
-      see can help bring you back to the present moment.
+    - text: |
+        Grounding techniques bring you back to the present. Hold a familiar object in your hand, notice its texture and weight, or name five things you can see around you. These simple actions reset focus.
+
   utter_anxiety/p0039:
-  - text: Challenging negative thoughts with facts and evidence can help break the
-      cycle of “what if” thinking.
+    - text: |
+        Negative “what if” thoughts can feel endless. Write down the thought, then challenge it with facts and real evidence. Replace it with a balanced statement to help break the cycle.
+
   utter_anxiety/p0040:
-  - text: Sipping cool water, practicing abdominal breathing, and taking slow, deep
-      breaths may help ease nausea caused by anxiety.
+    - text: |
+        Anxiety can cause nausea and stomach discomfort. Sip cool water, place your hand on your stomach, and breathe so your belly rises and falls gently. Pair this with a few slow exhales to ease the sensation.
+
   utter_anxiety/p0041:
-  - text: Breaking projects into smaller steps and celebrating each completed part
-      can make starting tasks less overwhelming.
+    - text: |
+        Anxiety can make starting tasks feel overwhelming. Break projects into smaller parts and celebrate each finished step, no matter how small. Progress builds momentum and reduces pressure.
+
   utter_anxiety/p0042:
-  - text: Reminding yourself that everyone makes mistakes and practicing self-acceptance
-      can help reduce the urge to over-apologize.
+    - text: |
+        Over-apologizing often comes from anxiety. Remind yourself that mistakes are part of being human and that one apology is usually enough. Practice self-acceptance to reduce the urge to repeat apologies.
+
   utter_anxiety/p0043:
-  - text: Keeping a notepad nearby for quick notes can help you stay on track during
-      anxious moments.
+    - text: |
+        Forgetfulness can increase during anxious moments. Keep a small notepad or use your phone for quick notes and reminders. This helps your mind relax, knowing the information is safe.
+
   utter_anxiety/p0044:
-  - text: Loud noises can be triggering. Focusing on slow, deep breathing and visualizing
-      a calm place can help manage the discomfort.
+    - text: |
+        Loud noises can trigger anxiety. Pause, take slow breaths, and picture yourself in a calm, safe place. If possible, use headphones or earplugs to reduce the impact of sound.
+
   utter_anxiety/p0045:
-  - text: Scheduling short breaks throughout your day for mindful breathing or light
-      stretching may help reduce chronic tension.
+    - text: |
+        Ongoing tension adds to anxiety. Schedule short breaks throughout the day for gentle stretches or mindful breathing. Even five minutes can help reset your body and mind.
+
   utter_anxiety/p0046:
-  - text: Shaking is a physical response to anxiety. Sitting down and practicing steady
-      breathing can help your body calm down.
+    - text: |
+        Shaking is a natural response to anxiety. Sit down if you can, steady your breathing, and focus on lengthening each exhale. Your body often calms as your breath slows.
+
   utter_anxiety/p0047:
-  - text: Reaching out for help is a sign of strength. Remember, support systems exist
-      to help you, and everyone needs support at times.
+    - text: |
+        Reaching out for help is a sign of strength, not weakness. Support systems exist to guide you, and everyone needs help at times. Accepting support lightens the weight of anxiety.
+
   utter_anxiety/p0048:
-  - text: Social anxiety can make us feel self-conscious. Refocusing on your surroundings
-      or your own actions can help reduce this feeling.
+    - text: |
+        Social anxiety can make you feel self-conscious. Refocus by observing your surroundings, listening carefully, or noticing small details in the room. Shifting attention outward eases inner pressure.
+
   utter_anxiety/p0049:
-  - text: Freezing is a normal anxiety reaction. Taking a pause and a deep breath
-      before responding can help you regain composure.
+    - text: |
+        Freezing is a normal reaction to anxiety. Pause, take one deep breath, and give yourself permission to respond at your own pace. This gentle reset helps you regain control.
+
   utter_anxiety/p0050:
-  - text: Disagreements are a part of life. Practicing calm and assertive communication
-      can help you express your thoughts without increasing anxiety.
+    - text: |
+        Disagreements can trigger anxious feelings. Practice calm, assertive communication by using clear “I” statements about your needs. This approach reduces tension while expressing your thoughts.
+
   utter_anxiety/p0051:
-  - text: Social interactions can be draining. Taking time to rest and recharge afterward
-      is important for maintaining your well-being.
+    - text: |
+        Social interactions can drain energy. Give yourself time to rest and recharge afterward with a quiet activity you enjoy. Protecting your energy helps maintain balance.
+
   utter_anxiety/p0052:
-  - text: Sitting near the front, taking hand-written notes, and studying in short
-      bursts with breaks can help improve focus.
+    - text: |
+        Staying focused in class can be difficult with anxiety. Try sitting near the front, taking hand-written notes, and studying in short bursts with breaks. These habits can improve concentration.
+
   utter_anxiety/p0053:
-  - text: Unexpected calls can trigger anxiety. It’s okay to let calls go to voicemail
-      and return them when you feel ready.
+    - text: |
+        Unexpected calls can trigger nerves. It’s okay to let them go to voicemail and return the call when you feel ready. Setting boundaries around communication is healthy.
+
   utter_anxiety/p0054:
-  - text: Practicing letting go in small ways, like allowing others to make small
-      decisions, can help build comfort with uncertainty.
+    - text: |
+        Uncertainty can feel uncomfortable. Practice letting go by allowing others to make small decisions, like choosing where to eat. Small steps build tolerance for the unknown.
+
   utter_anxiety/p0055:
-  - text: Gradually introducing relaxation into your day, even in small amounts, can
-      help your mind learn that it’s safe to let go sometimes.
+    - text: |
+        Relaxation can feel unfamiliar if you’re often anxious. Start with just a few minutes of calm time each day, like listening to gentle music. Gradual practice teaches your mind it’s safe to let go.
+
   utter_anxiety/p0056:
-  - text: Taking a few deep breaths and giving yourself a moment to adjust can make
-      sudden changes easier to handle.
+    - text: |
+        Sudden changes can be stressful. Pause, take a deep breath, and give yourself a moment to adjust before responding. This short buffer reduces overwhelm.
+
   utter_anxiety/p0057:
-  - text: Setting a timer for just a few minutes to begin an activity can help overcome
-      anxiety and allow you to enjoy your hobbies.
+    - text: |
+        Anxiety can block hobbies you enjoy. Set a timer for just five minutes to begin the activity, without pressure to finish. Often, starting is enough to ease the hesitation.
+
   utter_anxiety/p0058:
-  - text: Practicing mindfulness and focusing on the present activity can help reduce
-      rumination about past events.
+    - text: |
+        Dwelling on the past can fuel anxiety. Mindfulness—focusing only on the current activity—helps reduce rumination. Practice by giving your full attention to a simple task like washing your hands or eating slowly.
+
   utter_anxiety/p0059:
-  - text: Keeping checklists and using reminders can help manage forgetfulness and
-      ease related anxiety.
+    - text: |
+        Forgetfulness happens when anxiety overloads your thoughts. Keep checklists and set small reminders to stay on track. Writing tasks down frees your mind from carrying them all at once.
+
   utter_anxiety/p0060:
-  - text: Taking on small challenges and acknowledging your efforts, regardless of
-      outcome, helps reduce fear of failure over time.
+    - text: |
+        Fear of failure can hold you back. Take on small challenges and remind yourself that effort matters as much as outcome. Each step forward builds resilience and confidence.
+
   utter_anxiety/p0061:
-  - text: Warming your hands under water or holding a warm drink can help with cold,
-      sweaty hands during anxious moments.
+    - text: |
+        Cold, sweaty hands are a common anxiety symptom. Warm them under running water or hold a warm drink. The comfort signal to your body can reduce stress responses.
+
   utter_anxiety/p0062:
-  - text: Focusing on short-term, manageable goals and practicing staying present
-      can make conversations about the future less stressful.
+    - text: |
+        Thinking about the future can feel overwhelming. Focus on short-term goals you can complete today and practice staying present. Small, achievable actions help calm uncertainty.
+
   utter_anxiety/p0063:
-  - text: Starting with a simple, flexible schedule with just a few tasks per day
-      can make planning less overwhelming.
+    - text: |
+        Planning can feel stressful under anxiety. Start with a flexible schedule of just two or three tasks for the day. Completing them builds momentum without adding pressure.
+
   utter_anxiety/p0064:
-  - text: Preparing a few topics or questions in advance can help ease anxiety when
-      meeting new people in virtual settings.
+    - text: |
+        Meeting new people online can feel intimidating. Prepare a few simple topics or questions in advance to ease the first moments. Planning ahead builds confidence and reduces nerves.
+
   utter_depression/p0001:
   - text: Feeling empty can be a very lonely experience, and it’s a common part of
       depression. It may help to gently reconnect with your senses—listening to music,
@@ -3095,6 +3163,7 @@ responses:
   - text: Healing looks different for everyone, and there’s no deadline. Keep reaching
       out for support, and allow yourself to heal at your own pace. You are not alone
       in your journey.
+
   utter_coping_academic_pressure:
   - text: 'School work can pile up. Try these:
 
@@ -3306,7 +3375,9 @@ responses:
 
       '
   utter_ack_no:
-  - text: Okay. If you want tips later, just say 'coping tips'.
+  - text: |
+      Okay. Thank you for chatting with me today.
+
 
   utter_offer_coping_academic_pressure:
   - text: If you want, I can share coping tips based on how you're feeling. Want them
@@ -3364,6 +3435,7 @@ responses:
       payload: /affirm{"confirm_topic":"coping","mood":"financial_stress"}
     - title: No, thanks
       payload: /deny{"confirm_topic":"coping","mood":"financial_stress"}
+
   utter_offer_coping_grief_loss:
   - text: If you want, I can share coping tips based on how you're feeling. Want them
       now?
@@ -3372,6 +3444,7 @@ responses:
       payload: /affirm{"confirm_topic":"coping","mood":"grief_loss"}
     - title: No, thanks
       payload: /deny{"confirm_topic":"coping","mood":"grief_loss"}
+
   utter_offer_coping_loneliness:
   - text: If you want, I can share coping tips based on how you're feeling. Want them
       now?
@@ -3380,6 +3453,7 @@ responses:
       payload: /affirm{"confirm_topic":"coping","mood":"loneliness"}
     - title: No, thanks
       payload: /deny{"confirm_topic":"coping","mood":"loneliness"}
+
   utter_offer_coping_low_self_esteem:
   - text: If you want, I can share coping tips based on how you're feeling. Want them
       now?
@@ -3388,6 +3462,7 @@ responses:
       payload: /affirm{"confirm_topic":"coping","mood":"low_self_esteem"}
     - title: No, thanks
       payload: /deny{"confirm_topic":"coping","mood":"low_self_esteem"}
+
   utter_offer_coping_relationship_issues:
   - text: If you want, I can share coping tips based on how you're feeling. Want them
       now?
@@ -3397,6 +3472,7 @@ responses:
     - title: No, thanks
       payload: /deny{"confirm_topic":"coping","mood":"relationship_issues"}
   utter_offer_coping_sleep_problems:
+  
   - text: If you want, I can share coping tips based on how you're feeling. Want them
       now?
     buttons:
@@ -3404,6 +3480,7 @@ responses:
       payload: /affirm{"confirm_topic":"coping","mood":"sleep_problems"}
     - title: No, thanks
       payload: /deny{"confirm_topic":"coping","mood":"sleep_problems"}
+
   utter_offer_coping_stress:
   - text: If you want, I can share coping tips based on how you're feeling. Want them
       now?
@@ -3412,6 +3489,7 @@ responses:
       payload: /affirm{"confirm_topic":"coping","mood":"stress"}
     - title: No, thanks
       payload: /deny{"confirm_topic":"coping","mood":"stress"}
+
   utter_offer_coping_substance_abuse:
   - text: If you want, I can share coping tips based on how you're feeling. Want them
       now?
@@ -3420,6 +3498,7 @@ responses:
       payload: /affirm{"confirm_topic":"coping","mood":"substance_abuse"}
     - title: No, thanks
       payload: /deny{"confirm_topic":"coping","mood":"substance_abuse"}
+
   utter_offer_coping_time_management:
   - text: If you want, I can share coping tips based on how you're feeling. Want them
       now?
@@ -3429,19 +3508,52 @@ responses:
     - title: No, thanks
       payload: /deny{"confirm_topic":"coping","mood":"time_management"}
 
+  utter_book_appointment:
+  - text: |
+      Okay, here is the appointment booking page. Please use the button below to schedule your session with a counselor.
+    buttons:
+        - title: "Book counselor"
+          url: "http://127.0.0.1:8000/appointment/book"
+  
+  utter_critical_keyword_appointment:
+  - text: |
+      Critical keyword detected. I'm really concerned about your safety. If you are in immediate danger, please call your local emergency number right away.
+
+      You are not alone—support is available. Here are trusted hotlines in the Philippines you can reach anytime:
+      • **NCMH Crisis Hotline:** 1553 (landline and cellphone)
+      • **Globe/TM:** 0966-351-4518 or 0917-899-8727
+      • **Smart/Sun/TNT:** 0908-639-2672
+
+      If you feel able, please also book an appointment with a counselor using the link below so you can talk to someone who can help.
+    buttons:
+        - title: "Book counselor"
+          url: "http://127.0.0.1:8000/appointment/book"
+    
+  utter_crisis_minimizing_warning:
+  - text: |
+        Mental health and safety are not jokes. Statements about self-harm or danger are taken seriously because your well-being matters. If you are in immediate danger, call your local emergency number now.
+
+        You can reach trusted hotlines in the Philippines:
+        • NCMH Crisis Hotline: 1553  
+        • Globe/TM: 0966-351-4518 or 0917-899-8727  
+        • Smart/Sun/TNT: 0908-639-2672
+
+        If you need support, you can also book an appointment with a counselor below.
+    buttons:
+        - title: "Book counselor"
+          url: "http://127.0.0.1:8000/appointment/book"
 
   utter_offer_referral:
-    - text: |
-        It’s okay if this still feels heavy. If you want, we can book time with the counselor so you don’t have to handle this alone.
-        Would you like me to open the appointment page?
-      buttons:
+  - text: |
+      It’s okay if this still feels heavy. You can book time with the counselor so you don’t have to handle this alone.
+    buttons:
         - title: "Book counselor"
           url: "http://127.0.0.1:8000/appointment/book"
         - title: "Not now"
           payload: "/deny{\"confirm_topic\":\"referral\"}"
 
   utter_ok_no_referral:
-    - text: "No problem. If you change your mind, I’m here for you."
+    - text: "No problem. Thank you for sharing with me today."
     
 entities:
 - mood

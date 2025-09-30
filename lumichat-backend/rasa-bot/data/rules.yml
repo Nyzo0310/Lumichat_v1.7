@@ -102,11 +102,25 @@ rules:
     - intent: goodbye
     - action: utter_goodbye
 
-- rule: safety critical -> crisis
+- rule: safety critical -> utter_critical_keyword_appointment
   steps:
     - intent: safety_critical
-    - action: utter_crisis
+    - action: utter_critical_keyword_appointment
+    - action: action_listen
 
+- rule: After critical warning, user minimizes -> remind seriousness
+  steps:
+    - action: utter_critical_keyword_appointment
+    - intent: crisis_minimizing
+    - action: utter_crisis_minimizing_warning
+    - action: action_listen
+
+- rule: Book Appointment
+  steps:
+    - intent: book_appointment
+    - action: utter_book_appointment
+    - action: action_listen
+    
 # ---- Coping YES/NO (anchored to the specific coping offer), then offer referral ----
 - rule: coping yes -> academic_pressure
   steps:
@@ -114,6 +128,7 @@ rules:
     - intent: affirm
     - action: utter_coping_academic_pressure
     - action: utter_offer_referral
+
 
 - rule: coping no -> academic_pressure
   steps:

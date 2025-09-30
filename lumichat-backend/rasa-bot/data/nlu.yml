@@ -40,12 +40,28 @@ nlu:
     - stop
     - I'd rather not
 
+- intent: book_appointment
+  examples: |
+    - I want to book an appointment
+    - I want to book a appointment
+    - I want to book appointment
+    - I need to schedule a session with a counselor
+    - Can I set up a counseling appointment?
+    - I would like to book a time to talk to a counselor
+    - book an appointment
+    - book appointment
+    - gusto ko makig storya sa counselor
+    - gusto ko magpa appointment
 
 - intent: anxiety/p0001
   examples: |
     - I feel anxious all the time.
     - I feel anxious all the time
     - I feel anxious.
+    - Im anxious
+    - I'm anxious
+    - I am anxious
+    - I get anxious easily.
 
 - intent: anxiety/p0002
   examples: |
@@ -3049,6 +3065,21 @@ nlu:
 - intent: grief_loss/p0048
   examples: |
     - I don’t know if I’ll ever heal from my loss.
+
+- intent: crisis_minimizing
+  examples: |
+    - just kidding
+    - jk
+    - joke
+    - that's a joke
+    - i'm joking
+    - i was only kidding
+    - di tinuod
+    - joke lang
+    - atik lang
+    - char lang
+    - wala ra to
+    
 
 
 - intent: safety_critical
