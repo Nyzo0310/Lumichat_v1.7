@@ -16,7 +16,6 @@
       --rail-collapsed: 84px;   /* compact width */
       --header-h: 56px;
     }
-
     /* Base */
     html, body { height: 100%; }
     body{

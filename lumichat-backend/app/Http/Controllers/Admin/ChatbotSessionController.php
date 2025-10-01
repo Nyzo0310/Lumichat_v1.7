@@ -115,46 +115,6 @@ class ChatbotSessionController extends Controller
         return response()->json(['counts' => $counts]);
     }
 
-  public function exportPdf(Request $request)
-{
-    $q       = trim((string) $request->input('q', ''));
-    $dateReq = (string) $request->input('date', self::DATE_KEY_ALL);
-    $dateKey = in_array($dateReq, self::DATE_KEYS, true) ? $dateReq : self::DATE_KEY_ALL;
-
-    $rows = method_exists($this->sessions, 'allWithFilters')
-        ? $this->sessions->allWithFilters($q, $dateKey)
-        : (function () use ($q, $dateKey) {
-            $p = $this->sessions->paginateWithFilters($q, $dateKey, PHP_INT_MAX);
-            return method_exists($p, 'items') ? collect($p->items()) : collect($p);
-        })();
-
-    // inline base64 logo so Dompdf always shows it
-    $logoData = null;
-    $logoPath = public_path('images/chatbot.png');   // adjust if your logo lives elsewhere
-    if (is_file($logoPath)) {
-        $logoData = 'data:image/png;base64,' . base64_encode(@file_get_contents($logoPath));
-    }
-
-    $pdf = app('dompdf.wrapper');
-    $pdf->setPaper('a4', 'portrait');
-    $pdf->setOptions([
-        'defaultFont'          => 'DejaVu Sans',
-        'isHtml5ParserEnabled' => true,
-        'isRemoteEnabled'      => true,
-        'chroot'               => public_path(),
-    ]);
-
-    $pdf->loadView('admin.chatbot_sessions.pdf', [
-        'rows'        => $rows,
-        'q'           => $q,
-        'dateKey'     => $dateKey,
-        'generatedAt' => now()->format('Y-m-d H:i'),
-        'logoData'    => $logoData,
-    ]);
-
-    return $pdf->download('Chatbot_Sessions_'.now()->format('Ymd_His').'.pdf');
-}
-
     /** Get counselor-wise slots for a date (Mon–Fri). */
     // inside ChatbotSessionController.php
    public function slots(int $id, Request $request): JsonResponse
@@ -244,17 +204,15 @@ class ChatbotSessionController extends Controller
         // 🔢 Pooled capacity per HH:MM (how many counselors are free)
         $repo = app(\App\Repositories\Contracts\AppointmentRepositoryInterface::class);
         $pooled = [];
-        foreach ($slotsByCounselor as $cid => $arr) {
-            foreach ($arr as $s) {
-                $hhmm = $s['value'];
-                $pooled[$hhmm] = ($pooled[$hhmm] ?? 0) + 1;
-            }
+        foreach (array_keys($allTimes) as $hhmm) {
+            $t = Carbon::parse($date->toDateString().' '.$hhmm.':00');
+            $pooled[$hhmm] = count($repo->counselorIdsFreeAt($t));
         }
 
         return response()->json([
             'counselors' => $counselors->map(fn($r)=>['id'=>$r->id,'name'=>$r->name])->values(),
             'slots'      => $slotsByCounselor,
-            'pooled'     => $pooled,
+            'pooled'     => $pooled, // <-- NEW
         ]);
     }
 
@@ -381,26 +339,23 @@ class ChatbotSessionController extends Controller
         return response()->json([
             'ok'   => true,
             'html' => sprintf(
-                '
-                <div class="kv-grid">
-                <div class="kv"><span class="label">Student:</span>   <span class="value">%s</span></div>
-                <div class="kv"><span class="label">Counselor:</span> <span class="value">%s</span></div>
-                <div class="kv"><span class="label">Date:</span>      <span class="value">%s</span></div>
-                <div class="kv"><span class="label">Time:</span>      <span class="value">%s</span></div>
-                </div>
-
-                <div style="margin:6px 0 2px"><b>Note sent to student:</b></div>
-                <div style="white-space:pre-wrap">%s</div>
-                ',
+                '<div style="text-align:left">
+                    <div><b>Student:</b> %s</div>
+                    <div><b>Counselor:</b> %s</div>
+                    <div><b>Date:</b> %s</div>
+                    <div><b>Time:</b> %s</div>
+                    <hr style="margin:10px 0; opacity:.25" />
+                    <div style="white-space:pre-wrap"><b>Note sent to student:</b><br>%s</div>
+                </div>',
                 e($session->user->name ?? ('#'.$studentId)),
                 e($counselorName ?? '—'),
                 e($slot->format('M d, Y')),
                 e($slot->format('g:i A')),
                 e($note)
-            ),
+            )
         ]);
     }
-    
+
     private function composeBookingNote(object $session, \Carbon\Carbon $slot, ?string $counselorName = null): string
     {
         $studentName = (string) ($session->user->name ?? '');
@@ -423,4 +378,88 @@ class ChatbotSessionController extends Controller
             . "If you need to reschedule, just reply to this message or visit the Guidance Office.\n\n"
             . "We’re here for you. One step at a time—you are not alone.";
     }
+    // App\Http\Controllers\Admin\ChatbotSessionController.php
+    public function exportPdf(Request $request)
+    {
+        $q       = trim((string) $request->input('q', ''));
+        $dateReq = (string) $request->input('date', self::DATE_KEY_ALL);
+        $dateKey = in_array($dateReq, self::DATE_KEYS, true) ? $dateReq : self::DATE_KEY_ALL;
+
+        $rows = method_exists($this->sessions, 'allWithFilters')
+            ? $this->sessions->allWithFilters($q, $dateKey)
+            : (function () use ($q, $dateKey) {
+                $p = $this->sessions->paginateWithFilters($q, $dateKey, PHP_INT_MAX);
+                return method_exists($p, 'items') ? collect($p->items()) : collect($p);
+            })();
+
+        // inline logo
+        $logoData = null;
+        $logoPath = public_path('images/chatbot.png');
+        if (is_file($logoPath)) {
+            $logoData = 'data:image/png;base64,' . base64_encode(@file_get_contents($logoPath));
+        }
+
+       $pdf = app('dompdf.wrapper');
+        $pdf->setPaper('a4', 'portrait');
+        $pdf->setOptions([  
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled'      => true,
+        ]);
+
+        // 🔴 was missing
+        $pdf->loadView('admin.chatbot_sessions.pdf', [
+            'rows'        => $rows,
+            'q'           => $q,
+            'dateKey'     => $dateKey,
+            'generatedAt' => now()->format('Y-m-d H:i'),
+            'logoData'    => $logoData,
+        ]);
+
+        return $pdf->download('Chatbot_Sessions'.now()->format('Ymd_His').'.pdf');
+    }
+
+    public function exportOne(int $session)
+    {
+        $row = $this->sessions->findWithOrderedChats($session)
+            ?? DB::table('tbl_chatbot_sessions')->where('id', $session)->first();
+        abort_unless($row, 404);
+
+        // inline logo
+        $logoData = null;
+        $logoPath = public_path('images/chatbot.png');
+        if (is_file($logoPath)) {
+            $logoData = 'data:image/png;base64,' . base64_encode(@file_get_contents($logoPath));
+        }
+
+        // risk & code
+        $riskLevel = strtolower((string)($row->risk_level ?? $row->risk ?? ''));
+        $riskScore = (int)($row->risk_score ?? 0);
+        $isHigh    = in_array($riskLevel, ['high','high-risk','high_risk'], true) || $riskScore >= 80;
+
+        $year = $row->created_at ? \Carbon\Carbon::parse($row->created_at)->format('Y') : now()->format('Y');
+        $code = 'LMC-' . $year . '-' . str_pad((string)$session, 4, '0', STR_PAD_LEFT);
+
+        if (!is_dir(storage_path('fonts'))) {
+            @mkdir(storage_path('fonts'), 0777, true);
+        }
+
+        $pdf = app('dompdf.wrapper');
+        $pdf->setPaper('a4', 'portrait');
+        $pdf->setOptions([
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled'      => true,
+        ]);
+
+        // 🔴 was missing
+        $pdf->loadView('admin.chatbot_sessions.session_pdf', [
+            'session'     => $row,
+            'code'        => $code,
+            'logoData'    => $logoData,
+            'isHighRisk'  => $isHigh,
+            'generatedAt' => now()->format('Y-m-d H:i'),
+        ]);
+
+        return $pdf->download('Chatbot_Session_'.$session.'_'.now()->format('Ymd_His').'.pdf');
+    }
+
 }
