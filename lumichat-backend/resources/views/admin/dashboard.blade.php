@@ -103,8 +103,15 @@
             <div class="mt-1 text-3xl font-bold text-slate-900" id="kpi-critical-number">
               {{ number_format($criticalCasesTotal ?? 0) }}
             </div>
-            <div class="mt-1 text-xs {{ ($criticalCasesTotal ?? 0) > 0 ? 'text-rose-600 font-semibold' : 'text-slate-500' }}">
-              Requires attention
+            <div class="mt-1 text-xs">
+              @if(($criticalCasesTotal ?? 0) > 0)
+                <a href="{{ route('admin.chatbot-sessions.index', ['only' => 'high']) }}"
+                  class="text-rose-600 font-semibold underline decoration-rose-300 hover:decoration-rose-600">
+                  Requires attention
+                </a>
+              @else
+                <span class="text-slate-500">Requires attention</span>
+              @endif
             </div>
           </div>
         </div>

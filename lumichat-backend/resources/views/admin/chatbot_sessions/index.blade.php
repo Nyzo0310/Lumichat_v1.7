@@ -97,21 +97,30 @@
 
         <tbody class="divide-y divide-slate-100">
           @forelse ($sessions as $s)
-            @php
-              $code = 'LMC-' . now()->format('Y') . '-' . str_pad($s->id, 4, '0', STR_PAD_LEFT);
+           @php
+              // Normalize risk fields coming from different repos/columns
+              $riskRaw = strtolower((string) ($s->risk_level ?? $s->risk ?? ''));
+              $score   = (int) ($s->risk_score ?? 0);
 
-              $riskRaw = strtolower((string) ($s->risk_level ?? ''));
-              $isHigh  = in_array($riskRaw, ['high','high-risk','high_risk'], true);
+              // Match the show-page logic: high when label says high OR score >= 80
+              $isHigh  = in_array($riskRaw, ['high','high-risk','high_risk'], true) || $score >= 80;
 
+              // Sessions already linked to blocking appointments (passed from controller)
               $handled = in_array($s->id, $handledSessionIds ?? [], true);
 
-              // guards from controller
+              // Per-student guards (passed from controller)
               $blockedByActive    = in_array($s->user_id, $studentsWithActive ?? [], true);
               $clearedByCompleted = in_array($s->user_id, $studentsWithCompleted ?? [], true);
 
-              // actionable (red) only if: high-risk AND not handled AND not already active
+              // Show red state only when the item is actionable:
+              // high-risk AND not already handled AND no active appt AND not cleared by completed
               $showRed      = $isHigh && !$handled && !$blockedByActive && !$clearedByCompleted;
-              $canQuickBook = $showRed; // quick-book only when actionable
+
+              // Quick-book is available only for actionable (red) rows
+              $canQuickBook = $showRed;
+
+              // Display code (optional, if you use it in the cell)
+              $code = 'LMC-' . (now()->format('Y')) . '-' . str_pad($s->id, 4, '0', STR_PAD_LEFT);
             @endphp
 
             <tr class="align-middle even:bg-slate-50 hover:bg-slate-100/60 transition {{ $showRed ? 'bg-rose-50/40' : '' }}">
