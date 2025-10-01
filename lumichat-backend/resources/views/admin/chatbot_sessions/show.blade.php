@@ -17,146 +17,151 @@
 
   {{-- Header row --}}
   <div class="flex items-center justify-between no-print">
-  <div>
-    <h2 class="text-2xl font-bold tracking-tight text-slate-800 flex items-center gap-2">
-      Chatbot Session
+    <div>
+      <h2 class="text-2xl font-bold tracking-tight text-slate-800 flex items-center gap-2">
+        Chatbot Session
+        @if($isHighRisk)
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-700">
+            HIGH RISK
+          </span>
+        @endif
+      </h2>
+      <div class="mt-1 text-sm text-slate-500">Manage and export a single session record</div>
+    </div>
+
+    <div class="flex items-center gap-2">
+      {{-- High-risk booking / badges --}}
       @if($isHighRisk)
-        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-700">
-          HIGH RISK
-        </span>
+        @if(!empty($hasCompletedForThisSession))
+          <span class="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-100 text-emerald-700 ring-1 ring-emerald-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M9 12.75 11.25 15 15 9.75"/></svg>
+            Appointment Completed
+          </span>
+        @elseif($canBook)
+          <button type="button" id="btnAdminBook"
+            class="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M7 2a1 1 0 0 0-1 1v1H5a3 3 0 0 0-3 3v11a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3h-1V3a1 1 0 1 0-2 0v1H8V3a1 1 0 0 0-1-1ZM5 9h14v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V9Z"/>
+            </svg>
+            Book (High-Risk)
+          </button>
+        @else
+          <span class="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-200 text-slate-700">
+            Student already has an active appointment
+          </span>
+        @endif
       @endif
-    </h2>
-    <div class="mt-1 text-sm text-slate-500">Manage and export a single session record</div>
-  </div>
 
-  <div class="flex items-center gap-2">
-    {{-- High-risk booking / badges --}}
-    @if($isHighRisk)
-      @if(!empty($hasCompletedForThisSession))
-        <span class="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-100 text-emerald-700 ring-1 ring-emerald-300">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M9 12.75 11.25 15 15 9.75"/></svg>
-          Appointment Completed
-        </span>
-      @elseif($canBook)
-        <button type="button" id="btnAdminBook"
-          class="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M7 2a1 1 0 0 0-1 1v1H5a3 3 0 0 0-3 3v11a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3h-1V3a1 1 0 1 0-2 0v1H8V3a1 1 0 0 0-1-1ZM5 9h14v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V9Z"/>
-          </svg>
-          Book (High-Risk)
-        </button>
-      @else
-        <span class="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-200 text-slate-700">
-          Student already has an active appointment
-        </span>
-      @endif
-    @endif
+      {{-- Export PDF (URL fallback) --}}
+      <a href="{{ url('admin/chatbot-sessions/'.$session->id.'/pdf') }}"
+        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white shadow-sm hover:bg-emerald-700 active:scale-[.99] transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M7 10l5 5 5-5M12 15V3M5 19h14a2 2 0 002-2v-2H3v2a2 2 0 002 2z"/>
+        </svg>
+        Download PDF
+      </a>
 
-    {{-- Export PDF (URL fallback) --}}
-    <a href="{{ url('admin/chatbot-sessions/'.$session->id.'/pdf') }}"
-      class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white shadow-sm hover:bg-emerald-700 active:scale-[.99] transition">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M7 10l5 5 5-5M12 15V3M5 19h14a2 2 0 002-2v-2H3v2a2 2 0 002 2z"/>
-      </svg>
-      Download PDF
-    </a>
-
-    {{-- Back --}}
-    <a href="{{ route('admin.chatbot-sessions.index') }}"
-          class="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-white text-slate-700 ring-1 ring-slate-200 shadow-sm
-                  hover:bg-slate-50 hover:ring-slate-300 active:scale-[.99] transition">
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-          </svg>
-          Back to list
-        </a>
+      {{-- Back --}}
+      <a href="{{ route('admin.chatbot-sessions.index') }}"
+         class="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-white text-slate-700 ring-1 ring-slate-200 shadow-sm
+                hover:bg-slate-50 hover:ring-slate-300 active:scale-[.99] transition">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+        Back to list
+      </a>
     </div>
   </div>
-
 
   {{-- PRINTABLE AREA --}}
   <div id="sessionPrintable" class="space-y-6 print-area">
 
-    {{-- Summary card --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/70 p-6">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <div class="text-xs text-slate-500 uppercase">Session ID</div>
-        <div class="mt-1 font-semibold text-slate-900 flex items-center gap-2">
-          <span id="sessionCode">{{ $code }}</span>
-          <button type="button"
-                  onclick="copyText('#sessionCode')"
-                  class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50 no-print"
-                  title="Copy Session ID">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" stroke-width="2"/>
-              <rect x="3" y="3" width="13" height="13" rx="2" ry="2" stroke-width="2"/>
-            </svg>
-          </button>
+    {{-- Summary card (with violet top accent) --}}
+    <div class="relative bg-white rounded-2xl shadow-sm border border-slate-200/70 overflow-hidden">
+      <span class="pointer-events-none absolute inset-x-0 -top-px h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-fuchsia-500"></span>
+
+      <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <div class="text-xs text-slate-500 uppercase">Session ID</div>
+            <div class="mt-1 font-semibold text-slate-900 flex items-center gap-2">
+              <span id="sessionCode">{{ $code }}</span>
+              <button type="button"
+                      onclick="copyText('#sessionCode')"
+                      class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50 no-print"
+                      title="Copy Session ID">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" stroke-width="2"/>
+                  <rect x="3" y="3" width="13" height="13" rx="2" ry="2" stroke-width="2"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <div class="text-xs text-slate-500 uppercase">Initial Result</div>
+            <div class="mt-1 font-medium text-slate-800">{{ $session->topic_summary ?? '—' }}</div>
+          </div>
+
+          <div>
+            <div class="text-xs text-slate-500 uppercase">Student</div>
+            <div class="mt-1 font-medium text-slate-800">{{ $session->user->name ?? '—' }}</div>
+          </div>
+
+          <div>
+            <div class="text-xs text-slate-500 uppercase">Initial Date</div>
+            <div class="mt-1 font-medium text-slate-800">{{ $session->created_at?->format('F d, Y • h:i A') }}</div>
+          </div>
         </div>
-      </div>
-
-      <div>
-        <div class="text-xs text-slate-500 uppercase">Initial Result</div>
-        <div class="mt-1 font-medium text-slate-800">{{ $session->topic_summary ?? '—' }}</div>
-      </div>
-
-      <div>
-        <div class="text-xs text-slate-500 uppercase">Student</div>
-        <div class="mt-1 font-medium text-slate-800">{{ $session->user->name ?? '—' }}</div>
-      </div>
-
-      <div>
-        <div class="text-xs text-slate-500 uppercase">Initial Date</div>
-        <div class="mt-1 font-medium text-slate-800">{{ $session->created_at?->format('F d, Y • h:i A') }}</div>
       </div>
     </div>
-  </div>
 
-    {{-- Session Counts (week) --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/70 p-6">
-      <div class="flex items-center justify-between">
-        <h3 class="text-base font-semibold text-slate-900">Session Counts</h3>
+    {{-- Session Counts (with violet top accent) --}}
+    <div class="relative bg-white rounded-2xl shadow-sm border border-slate-200/70 overflow-hidden">
+      <div class="p-6">
+        <div class="flex items-center justify-between">
+          <h3 class="text-base font-semibold text-slate-900">Session Counts</h3>
 
-        <div class="flex items-center gap-2 no-print">
-          <button id="calPrev"
-                  class="inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm ring-1 ring-slate-200 hover:bg-slate-50">
-            ← Prev
-          </button>
+          <div class="flex items-center gap-2 no-print">
+            <button id="calPrev"
+                    class="inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm ring-1 ring-slate-200 hover:bg-slate-50">
+              ← Prev
+            </button>
 
-          <button id="calToday"
-                  class="inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm bg-indigo-600 text-white hover:bg-indigo-700">
-            Today
-          </button>
+            <button id="calToday"
+                    class="inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm bg-indigo-600 text-white hover:bg-indigo-700">
+              Today
+            </button>
 
-          <button id="calNext"
-                  class="inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm ring-1 ring-slate-200 hover:bg-slate-50">
-            Next →
-          </button>
-        </div>
-      </div>
-
-      <div id="calRange" class="mt-2 text-sm text-slate-500"></div>
-
-      <div class="mt-4 overflow-hidden rounded-xl ring-1 ring-slate-200/70">
-        <div class="grid grid-cols-7 bg-slate-50/60 text-xs font-medium uppercase tracking-wide text-slate-600">
-          <div class="px-3 py-2 text-center">Sun</div>
-          <div class="px-3 py-2 text-center">Mon</div>
-          <div class="px-3 py-2 text-center">Tue</div>
-          <div class="px-3 py-2 text-center">Wed</div>
-          <div class="px-3 py-2 text-center">Thu</div>
-          <div class="px-3 py-2 text-center">Fri</div>
-          <div class="px-3 py-2 text-center">Sat</div>
+            <button id="calNext"
+                    class="inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm ring-1 ring-slate-200 hover:bg-slate-50">
+              Next →
+            </button>
+          </div>
         </div>
 
-        <div class="grid grid-cols-7 divide-x divide-slate-200/70 text-center">
-          @for ($i = 0; $i < 7; $i++)
-            <div class="px-3 py-6">
-              <div id="cnt{{ $i }}" class="text-xl font-semibold text-slate-900">—</div>
-              <div class="mt-1 text-xs text-slate-500">sessions</div>
-            </div>
-          @endfor
+        <div id="calRange" class="mt-2 text-sm text-slate-500"></div>
+
+        <div class="mt-4 overflow-hidden rounded-xl ring-1 ring-slate-200/70">
+          <div class="grid grid-cols-7 bg-slate-50/60 text-xs font-medium uppercase tracking-wide text-slate-600">
+            <div class="px-3 py-2 text-center">Sun</div>
+            <div class="px-3 py-2 text-center">Mon</div>
+            <div class="px-3 py-2 text-center">Tue</div>
+            <div class="px-3 py-2 text-center">Wed</div>
+            <div class="px-3 py-2 text-center">Thu</div>
+            <div class="px-3 py-2 text-center">Fri</div>
+            <div class="px-3 py-2 text-center">Sat</div>
+          </div>
+
+          <div class="grid grid-cols-7 divide-x divide-slate-200/70 text-center">
+            @for ($i = 0; $i < 7; $i++)
+              <div class="px-3 py-6">
+                <div id="cnt{{ $i }}" class="text-xl font-semibold text-slate-900">—</div>
+                <div class="mt-1 text-xs text-slate-500">sessions</div>
+              </div>
+            @endfor
+          </div>
         </div>
       </div>
     </div>
@@ -209,7 +214,6 @@
     });
   }
 </script>
-
 
 @push('scripts')
 <script>
@@ -484,18 +488,18 @@ function printNode(selector, title = document.title) {
       await Swal.fire({
         icon: 'success',
         title: 'Appointment booked!',
-        html: `<div class="appt-compact">${data.html}</div>`,   // <-- keeps our typography & grid styles
-        customClass: { popup: 'swal-success swal-compact' },    // <-- enables styles above
+        html: `<div class="appt-compact">${data.html}</div>`,
+        customClass: { popup: 'swal-success swal-compact' },
         width: Math.min(window.innerWidth - 32, 1200),
         showCloseButton: true,
         confirmButtonText: 'OK',
       });
-      
+
       window.location.reload();
-      } catch (e) {
-        console.error(e);
-        Swal.fire({ icon:'error', title:'Unable to book', text: e.message || 'Please try again.' });
-      }
+    } catch (e) {
+      console.error(e);
+      Swal.fire({ icon:'error', title:'Unable to book', text: e.message || 'Please try again.' });
+    }
   }
 
   // ✅ SINGLE BIND (prevents the double-modal bug)
