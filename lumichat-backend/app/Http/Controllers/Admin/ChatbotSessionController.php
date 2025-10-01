@@ -339,20 +339,23 @@ class ChatbotSessionController extends Controller
         return response()->json([
             'ok'   => true,
             'html' => sprintf(
-                '<div style="text-align:left">
-                    <div><b>Student:</b> %s</div>
-                    <div><b>Counselor:</b> %s</div>
-                    <div><b>Date:</b> %s</div>
-                    <div><b>Time:</b> %s</div>
-                    <hr style="margin:10px 0; opacity:.25" />
-                    <div style="white-space:pre-wrap"><b>Note sent to student:</b><br>%s</div>
-                </div>',
+                '
+                <div class="kv-grid">
+                <div class="kv"><span class="label">Student:</span>   <span class="value">%s</span></div>
+                <div class="kv"><span class="label">Counselor:</span> <span class="value">%s</span></div>
+                <div class="kv"><span class="label">Date:</span>      <span class="value">%s</span></div>
+                <div class="kv"><span class="label">Time:</span>      <span class="value">%s</span></div>
+                </div>
+
+                <div style="margin:6px 0 2px"><b>Note sent to student:</b></div>
+                <div style="white-space:pre-wrap">%s</div>
+                ',
                 e($session->user->name ?? ('#'.$studentId)),
                 e($counselorName ?? '—'),
                 e($slot->format('M d, Y')),
                 e($slot->format('g:i A')),
                 e($note)
-            )
+            ),
         ]);
     }
 

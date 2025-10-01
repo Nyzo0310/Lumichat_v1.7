@@ -375,52 +375,40 @@
   </script>
   {{-- ==== Wide SweetAlert “Appointment booked!” (global) ==== --}}
 <style>
- /* Force left-aligned body for our compact success modal (use the class you pass in JS) */
-.swal-success .swal2-html-container{
-  text-align: left !important;
-  padding: 18px 24px !important;
-}
+  /* Force left-aligned body for our compact success modal */
+  .swal-compact .swal2-html-container{
+    text-align: left !important;       /* <-- stops the centered look */
+    padding: 18px 24px !important;
+  }
 
-/* Optional: constrain body to a readable width */
-.appt-compact{
-  font-size: 14.5px;
-  line-height: 1.45;
-  max-width: 980px;
-  margin: 0 auto; /* center the whole content block inside the modal */
-}
+  /* Optional: constrain body to a readable width */
+  .appt-compact{
+    font-size: 14.5px;
+    line-height: 1.45;
+    max-width: 980px;
+    margin: 0 auto;                    /* center the content block inside the modal */
+  }
 
-/* ---- Logo strip (top-left) ---- */
-.appt-compact .logo-strip{
-  display:flex; align-items:center; gap:10px;
-  margin: 2px 0 8px;
-}
-.appt-compact .logo{
-  width:40px; height:40px; border-radius:12px; object-fit:cover;
-  box-shadow:0 0 0 1px rgba(0,0,0,.06), 0 4px 10px rgba(0,0,0,.08);
-}
+  /* 4-col key/value header that collapses nicely */
+  .appt-compact .kv-grid{
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px 18px;
+    padding: 8px 0;
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+    margin: 6px 0 12px;
+  }
+  @media (max-width: 1100px){
+    .appt-compact .kv-grid{ grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 520px){
+    .appt-compact .kv-grid{ grid-template-columns: 1fr; }
+  }
 
-/* ---- Center the 4-field row while keeping its inner text left-aligned ---- */
-.appt-compact .kv-center-wrap{
-  display:flex; justify-content:center; /* centers the grid block */
-}
-
-.appt-compact .kv-grid{
-  display:grid;
-  grid-template-columns: repeat(4, auto); /* columns size to their content */
-  gap: 8px 18px;
-  justify-items: start;                   /* values/labels align left inside each cell */
-  padding: 8px 0;
-  border-top: 1px solid #e5e7eb;
-  border-bottom: 1px solid #e5e7eb;
-  margin: 6px 0 12px;
-}
-@media (max-width:1100px){
-  .appt-compact .kv-grid{ grid-template-columns: repeat(2, auto); }
-}
-@media (max-width:520px){
-  .appt-compact .kv-grid{ grid-template-columns: 1fr; }
-}
-.appt-compact .kv-grid b{ font-weight:600; color:#111827; margin-right:6px; }
+  .appt-compact .kv{ display:flex; gap:6px; white-space:nowrap; }
+  .appt-compact .kv .label{ font-weight:600; color:#111827; }
+  .appt-compact .kv .value{ color:#374151; }
 </style>
 
 <style>
