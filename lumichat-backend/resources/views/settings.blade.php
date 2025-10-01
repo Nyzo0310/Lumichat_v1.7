@@ -86,34 +86,8 @@
     </div>
   </section>
 
-  {{-- ================= Card: Chat Cleanup ================= --}}
-  <section class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm overflow-hidden">
-    {{-- Section header bar --}}
-    <div class="flex items-center gap-3 px-4 sm:px-6 py-3.5 bg-gray-50/80 dark:bg-white/5 border-b border-gray-100 dark:border-gray-800">
-      <img src="{{ asset('images/icons/trash.png') }}" alt="Chat Cleanup Icon"
-           class="w-6 h-6 dark:invert select-none" draggable="false">
-      <div class="min-w-0">
-        <h3 class="text-[15px] font-semibold tracking-tight text-gray-900 dark:text-gray-100">
-          Chat Cleanup
-        </h3>
-        <p class="text-xs text-gray-500 dark:text-gray-400">Auto-delete old conversations.</p>
-      </div>
-    </div>
 
-    {{-- Section body --}}
-    <div class="px-4 sm:px-6 py-3.5">
-      <div class="flex items-center justify-between gap-4">
-        <div class="min-w-0">
-          <label for="autodelete_days" class="text-sm font-medium text-gray-900 dark:text-gray-100">Auto-delete Old Chats</label>
-          <p id="autodelHelp" class="text-xs text-gray-500 dark:text-gray-400">0–365 days • leave blank to disable.</p>
-        </div>
-        <input type="number" id="autodelete_days" name="autodelete_days"
-               value="{{ old('autodelete_days', $settings->autodelete_days) }}"
-               placeholder="e.g., 30" min="0" max="365" aria-describedby="autodelHelp"
-               class="w-28 h-10 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"/>
-      </div>
-    </div>
-  </section>
+ 
 
   {{-- ================= Card: Support ================= --}}
   <section class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm overflow-hidden">
@@ -136,10 +110,7 @@
            class="inline-flex items-center justify-center h-11 rounded-xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-sm font-medium hover:bg-indigo-100 dark:hover:bg-indigo-900/50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
           Contact Support
         </a>
-        <a href="{{ route('support.bug') }}"
-           class="inline-flex items-center justify-center h-11 rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300 text-sm font-medium hover:bg-rose-100 dark:hover:bg-rose-900/50 focus:outline-none focus:ring-2 focus:ring-rose-500">
-          Report a Bug
-        </a>
+       
       </div>
     </div>
   </section>

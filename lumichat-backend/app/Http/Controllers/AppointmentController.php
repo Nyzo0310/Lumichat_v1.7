@@ -382,6 +382,94 @@ $appointments = $query->paginate(10)->withQueryString();
             'q'            => $q,
         ]);
     }
+    public function exportHistoryPdf(Request $request)
+{
+    $status = (string) $request->query('status', 'all');
+    $period = (string) ($request->query('period', $request->query('preoid', 'all')));
+    $q      = trim((string) $request->query('q', ''));
+
+    $now = now();
+
+    $query = DB::table('tbl_appointments as a')
+        ->leftJoin('tbl_counselors as c', 'c.id', '=', 'a.counselor_id')
+        ->select([
+            'a.id','a.student_id','a.counselor_id','a.scheduled_at','a.status',
+            'c.name as counselor_name','c.email as counselor_email','c.phone as counselor_phone',
+            'a.final_note','a.finalized_at',
+        ])
+        ->where('a.student_id', Auth::id());
+
+    if ($status !== 'all') {
+        $query->where('a.status', $status);
+    }
+
+    switch ($period) {
+        case 'today':
+            $query->whereDate('a.scheduled_at', $now->toDateString()); break;
+        case 'upcoming':
+            $query->where('a.scheduled_at', '>=', $now); break;
+        case 'this_week':
+            $query->whereBetween('a.scheduled_at', [$now->copy()->startOfWeek(), $now->copy()->endOfWeek()]); break;
+        case 'this_month':
+            $query->whereBetween('a.scheduled_at', [$now->copy()->startOfMonth(), $now->copy()->endOfMonth()]); break;
+        case 'past':
+            $query->where('a.scheduled_at', '<', $now); break;
+        case 'all':
+        default:
+            // no date filter
+            break;
+    }
+
+    if ($q !== '') {
+        $query->where(function($w) use ($q) {
+            $w->where('c.name', 'like', "%{$q}%")
+              ->orWhereNull('c.id');
+        });
+    }
+
+    // same ordering rules as history()
+    $query->orderByRaw("CASE WHEN a.status = 'completed' THEN 1 ELSE 0 END ASC");
+
+    if ($period === 'past') {
+        $query->orderBy('a.scheduled_at', 'desc');
+    } elseif (in_array($period, ['today','upcoming','this_week','this_month'], true)) {
+        $query->orderBy('a.scheduled_at', 'asc');
+    } else {
+        $query->orderByRaw("CASE WHEN a.scheduled_at >= ? THEN 0 ELSE 1 END", [$now])
+              ->orderByRaw("CASE WHEN a.scheduled_at >= ? THEN a.scheduled_at END ASC",  [$now])
+              ->orderByRaw("CASE WHEN a.scheduled_at <  ? THEN a.scheduled_at END DESC", [$now])
+              ->orderByRaw("CASE WHEN a.status = 'completed' THEN a.scheduled_at END DESC");
+    }
+
+    $appointments = $query->get();
+
+    // embed logo (public/images/chatbot.png); safe if missing
+    $logoData = null;
+    $logoPath = public_path('images/chatbot.png');
+    if (is_file($logoPath)) {
+        $logoData = 'data:image/png;base64,' . base64_encode(@file_get_contents($logoPath));
+    }
+
+    $pdf = app('dompdf.wrapper');
+    $pdf->setPaper('a4', 'portrait');
+    $pdf->setOptions([
+        'defaultFont'          => 'DejaVu Sans',
+        'isHtml5ParserEnabled' => true,
+        'isRemoteEnabled'      => true,
+        'chroot'               => public_path(),
+    ]);
+
+    $pdf->loadView('appointment.history-pdf', [
+        'appointments' => $appointments,
+        'status'       => $status,
+        'period'       => $period,
+        'q'            => $q,
+        'generatedAt'  => now()->format('Y-m-d H:i'),
+        'logoData'     => $logoData,
+    ]);
+
+    return $pdf->download('My_Appointments_'.now()->format('Ymd_His').'.pdf');
+}
 
     public function show($id)
     {
@@ -403,6 +491,48 @@ $appointments = $query->paginate(10)->withQueryString();
 
         return view('appointment.show', compact('appointment'));
     }
+public function exportShowPdf(Request $request, int $id)
+{
+    $userId = \Auth::id();
+
+    $appointment = \DB::table('tbl_appointments as a')
+        ->leftJoin('tbl_counselors as c', 'c.id', '=', 'a.counselor_id')
+        ->select(
+            'a.*',
+            'c.name  as counselor_name',
+            'c.email as counselor_email',
+            'c.phone as counselor_phone'
+        )
+        ->where('a.id', $id)
+        ->where('a.student_id', $userId)
+        ->first();
+
+    abort_unless($appointment, 404);
+
+    // Optional logo (same pattern you used elsewhere)
+    $logoData = null;
+    $logoPath = public_path('images/chatbot.png'); // adjust if you store it elsewhere
+    if (is_file($logoPath)) {
+        $logoData = 'data:image/png;base64,' . base64_encode(@file_get_contents($logoPath));
+    }
+
+    $pdf = app('dompdf.wrapper');
+    $pdf->setPaper('a4', 'portrait');
+    $pdf->setOptions([
+        'defaultFont'          => 'DejaVu Sans',
+        'isHtml5ParserEnabled' => true,
+        'isRemoteEnabled'      => true,
+        'chroot'               => public_path(),
+    ]);
+
+    $pdf->loadView('appointment.pdf-show', [
+        'appointment' => $appointment,
+        'generatedAt' => now()->format('Y-m-d H:i'),
+        'logoData'    => $logoData,
+    ]);
+
+    return $pdf->download('Appointment_'.$appointment->id.'_'.now()->format('Ymd_His').'.pdf');
+}
 
     /* ------------------------------ Helpers ---------------------------- */
 

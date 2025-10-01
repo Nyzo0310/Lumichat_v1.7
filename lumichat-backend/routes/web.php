@@ -63,7 +63,13 @@ Route::middleware('auth')->group(function () {
     // Explicit pages (use these for buttons/links)
     Route::get('/appointment/book',     [AppointmentController::class, 'index'])->name('appointment.create');   // <-- FORCE booking form
     Route::get('/appointment/history',  [AppointmentController::class, 'history'])->name('appointment.history'); // <-- FORCE history
-
+    Route::middleware('auth')->group(function () {
+    Route::get('/appointment/history/export/pdf', [AppointmentController::class, 'exportHistoryPdf'])
+        ->name('appointment.history.export.pdf');
+    Route::get('/appointment/{id}/export/pdf', [\App\Http\Controllers\AppointmentController::class, 'exportShowPdf'])
+        ->whereNumber('id')
+        ->name('appointment.show.export.pdf');
+});
     // Actions / APIs
     Route::post('/appointment',                  [AppointmentController::class, 'store'])->name('appointment.store');
     Route::get('/appointment/slots', [\App\Http\Controllers\AppointmentController::class, 'slots'])

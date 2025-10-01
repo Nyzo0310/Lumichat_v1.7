@@ -20,7 +20,7 @@
         <span class="text-slate-500">{{ $total }} {{ Str::plural('appointment', $total) }}</span>
       </p>
     </div>
-
+ <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
     <a href="{{ route('appointment.create') }}"
        class="inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 h-10 rounded-xl shadow-sm hover:bg-indigo-700 active:scale-[.99] transition">
       <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -28,6 +28,16 @@
       </svg>
       Book New
     </a>
+    <a href="{{ route('appointment.history.export.pdf', request()->only('status','period','q')) }}"
+   class="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 h-10 rounded-xl shadow-sm hover:bg-green-700 active:scale-[.99] transition">
+  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/>
+  </svg>
+  Download PDF
+</a>
+
+  </div>
   </div>
 
   {{-- Filters --}}
