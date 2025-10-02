@@ -59,6 +59,12 @@ Route::middleware('auth')->group(function () {
     /* -------------------------- Appointment -------------------------- */
     // Unified entrypoint (used by the sidebar): decides view based on whether the user has appointments
     Route::get('/appointment', [AppointmentController::class, 'entrypoint'])->name('appointment.index');
+    // routes/web.php (or your student routes file)
+    Route::middleware(['auth'])->group(function () {
+        // ... your existing routes
+    Route::get('/api/appointments/unseen', [\App\Http\Controllers\AppointmentController::class, 'unseenCount'])
+        ->name('appointments.unseen');
+    });
 
     // Explicit pages (use these for buttons/links)
     Route::get('/appointment/book',     [AppointmentController::class, 'index'])->name('appointment.create');   // <-- FORCE booking form

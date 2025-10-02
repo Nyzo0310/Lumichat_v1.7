@@ -35,6 +35,7 @@ class User extends Authenticatable
         'email_verified_at'   => 'datetime',
         'password'            => 'hashed',
         'appointments_enabled'=> 'boolean',
+         'last_seen_appt_at' => 'datetime',
     ];
 
     // ── Roles ──────────────────────────────────────────────────────────────────

@@ -215,27 +215,45 @@
           <p class="section-label">MAIN</p>
           <ul class="space-y-2">
             @foreach ($mainLinks as $item)
-              @if ($item['label'] === 'Appointment')
-                @php
-                  $showAppointment = $appointmentEnabled ?? false;
-                  if ($showAppointment) {
-                    $has = $hasAppointments ?? false;
-                    $apptLabel = $has ? 'Appointment History' : 'Appointment';
-                    $apptRoute = $has ? route('appointment.history') : route('appointment.index');
-                    $apptIsActive = request()->routeIs('appointment.*');
-                  }
-                @endphp
-                @if ($showAppointment)
-                  <li>
-                    <a href="{{ $apptRoute }}"
-                       @class(['nav-item','nav-item--active' => $apptIsActive])>
-                      <img src="{{ asset('images/icons/appointment.png') }}" alt="" class="sidebar-icon icon-white">
-                      <span>{{ $apptLabel }}</span>
-                    </a>
-                  </li>
-                @endif
-                @continue
-              @endif
+             @if ($item['label'] === 'Appointment')
+  @php
+    // Defaults so nothing is "undefined"
+    $showAppointment = (bool) ($appointmentEnabled ?? false);
+    $hasAppointments = (bool) ($hasAppointments ?? false);
+    $apptLabel       = $hasAppointments ? 'Appointment History' : 'Appointment';
+    $apptRoute       = $hasAppointments ? route('appointment.history') : route('appointment.index');
+    $apptIsActive    = request()->routeIs('appointment.*');
+
+    // Compute unseen updates (only if student + feature visible)
+    $apptUnseen = 0;
+    if ($showAppointment && Auth::check()) {
+        $last = Auth::user()->last_seen_appt_at ?? \Carbon\Carbon::createFromTimestamp(0);
+        $apptUnseen = \DB::table('tbl_appointments')
+            ->where('student_id', Auth::id())
+            ->where('updated_at', '>', $last)
+            ->count();
+    }
+  @endphp
+
+  @if ($showAppointment)
+    <li>
+      <a href="{{ $apptRoute }}"
+         @class(['nav-item', 'nav-item--active' => $apptIsActive, 'relative' => true])
+         id="nav-appointment-link">
+        <img src="{{ asset('images/icons/appointment.png') }}" alt="" class="sidebar-icon icon-white">
+        <span>{{ $apptLabel }}</span>
+
+        {{-- red dot badge --}}
+        <span id="nav-appt-dot"
+              class="absolute left-6 top-2 block w-2 h-2 rounded-full bg-rose-500 ring-2 ring-rose-100 {{ $apptUnseen ? '' : 'hidden' }}"
+              title="New appointment updates"></span>
+      </a>
+    </li>
+  @endif
+
+  @continue
+@endif
+
 
               @php
                 $href = $item['route'] && is_string($item['route']) ? route($item['route']) : '#';

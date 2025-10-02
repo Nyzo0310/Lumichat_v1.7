@@ -372,16 +372,39 @@ if ($period === 'past') {
           ->orderByRaw("CASE WHEN a.status = 'completed' THEN a.scheduled_at END DESC");      // completed desc at bottom
 }
 
-$appointments = $query->paginate(10)->withQueryString();
+ $appointments = $query->paginate(10)->withQueryString();
 
+    // Build the view first
+    $view = view('appointment.history', [
+        'appointments' => $appointments,
+        'status'       => $status,
+        'period'       => $period,
+        'q'            => $q,
+    ]);
 
-        return view('appointment.history', [
-            'appointments' => $appointments,
-            'status'       => $status,
-            'period'       => $period,
-            'q'            => $q,
-        ]);
-    }
+    // Then stamp “seen”
+    \App\Models\User::where('id', \Auth::id())->update([
+        'last_seen_appt_at' => now(),
+    ]);
+
+    return $view;
+}
+// App\Http\Controllers\AppointmentController
+public function unseenCount(Request $request)
+{
+    $user   = \Auth::user();
+    if (!$user) return response()->json(['count' => 0]);
+
+    $last = $user->last_seen_appt_at ?? \Carbon\Carbon::createFromTimestamp(0);
+
+    $count = \DB::table('tbl_appointments')
+        ->where('student_id', $user->id)
+        ->where('updated_at', '>', $last)
+        ->count();
+
+    return response()->json(['count' => $count]);
+}
+
     public function exportHistoryPdf(Request $request)
 {
     $status = (string) $request->query('status', 'all');
