@@ -45,6 +45,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('students', StudentController::class)->only(['index','show'])
         ->parameters(['students' => 'student']);
     Route::get('/students/export/pdf', [StudentController::class, 'exportPdf'])->name('students.export.pdf');
+    
+    // Single-student PDF (details page)
+    Route::get('/students/{student}/export/pdf',
+        [StudentController::class, 'exportShowPdf']
+    )->whereNumber('student')->name('students.show.export.pdf');
 
     /* CHATBOT SESSIONS (custom routes first) */
     Route::get('chatbot-sessions/export/pdf',

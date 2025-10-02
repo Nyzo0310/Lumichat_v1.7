@@ -2,145 +2,153 @@
 @section('title', 'Student Details')
 
 @section('content')
-<div class="max-w-5xl mx-auto p-6 space-y-6">
+<div class="max-w-7xl mx-auto p-6 space-y-6">
 
   {{-- Header --}}
-  <div class="flex items-center justify-between screen-only">
-    <h2 class="text-2xl font-semibold">Student Details</h2>
-    <div class="flex items-center gap-2 screen-only">
-      <button type="button"
-              onclick="printStudentDetails()"
-              class="px-3 py-1.5 rounded-lg bg-green-600 text-white text-sm hover:bg-green-700">
-        Print
-      </button>
+  <div class="flex items-start justify-between screen-only">
+    <div>
+      <h2 class="text-2xl font-semibold text-slate-900">Student Details</h2>
+      <p class="text-sm text-slate-500">
+        {{ $student->course }} • {{ $student->year_level }}
+        <span class="text-slate-400">—</span>
+        <span class="text-slate-600">{{ $student->email }}</span>
+      </p>
+    </div>
+
+    <div class="flex items-center gap-2">
       <a href="{{ route('admin.students.index') }}"
-         class="text-sm text-indigo-600 hover:underline">← Back to list</a>
+         class="h-11 inline-flex items-center gap-2 rounded-xl bg-white px-4 text-slate-700 ring-1 ring-slate-200
+                shadow-sm hover:bg-slate-50 hover:ring-slate-300 active:scale-[.99] transition">
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+        Back to list
+      </a>
+
+      <a href="{{ route('admin.students.show.export.pdf', ['student'=>$student->id, 'year'=>$year]) }}"
+         class="h-11 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 text-white shadow-sm
+                hover:bg-emerald-700 active:scale-[.99] transition">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M7 10l5 5 5-5M12 15V3M5 19h14a2 2 0 002-2v-2H3v2a2 2 0 002 2z"/>
+        </svg>
+        Download PDF
+      </a>
     </div>
   </div>
 
   {{-- ===== PRINT SCOPE START ===== --}}
   <div id="print-details-root" class="space-y-6">
 
-    {{-- print-only title --}}
-    <h1 class="print-title hidden">
-      Student Details — {{ $student->name }}
-    </h1>
+    {{-- Chart Card --}}
+    <div class="relative overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+     <span class="pointer-events-none absolute left-0 right-0 top-0 h-1
+               bg-gradient-to-r from-indigo-500 via-purple-500 to-fuchsia-500"></span>
 
-    {{-- Chart: Appointments by Month (selectable year) --}}
-    <div class="rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
-        <div class="flex items-center gap-3">
-          <h3 class="text-lg font-semibold text-gray-900">
-            Appointments — <span class="font-normal text-gray-600">Monthly totals</span>
-          </h3>
-          @if(config('app.debug') && isset($idDebug))
-    <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
-      IDs: {{ implode(',', $idDebug['candidates'] ?? []) }}
-      @if(!empty($idDebug['matched']))
-        • matched: {{ implode(',', $idDebug['matched']) }}
-      @else
-        • matched: none
-      @endif
-    </span>
-  @endif
-          @if(isset($total))
-            <span class="inline-flex items-center rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-medium text-indigo-700">
-              Total: {{ $total }}
-            </span>
-          @endif
-          @isset($peakLabel)
-            <span class="hidden sm:inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
-              Peak: {{ $peakLabel }}
-            </span>
-          @endisset
+      <div class="p-5">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+          <div class="flex items-center gap-3">
+            <h3 class="text-lg font-semibold text-gray-900">
+              Appointments — <span class="font-normal text-gray-600">Monthly totals</span>
+            </h3>
+
+            @if(isset($total))
+              <span class="inline-flex items-center rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-medium text-indigo-700">
+                Total: {{ $total }}
+              </span>
+            @endif
+
+            @isset($peakLabel)
+              <span class="hidden sm:inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
+                Peak: {{ $peakLabel }}
+              </span>
+            @endisset
+          </div>
+
+          {{-- Year selector (screen only) --}}
+          <form method="GET" action="{{ route('admin.students.show', $student->id) }}" class="flex items-center gap-2 screen-only">
+            <input type="hidden" name="year" id="yearInput" value="{{ $year }}">
+            @php
+              $minYear = min($yearsAvailable);
+              $maxYear = max($yearsAvailable);
+            @endphp
+
+            <button type="button"
+                    class="rounded-lg border px-2.5 py-1 text-sm disabled:opacity-40"
+                    onclick="bumpYear(-1)"
+                    {{ $year <= $minYear ? 'disabled' : '' }}
+                    aria-label="Previous year">‹</button>
+
+            <label for="yearSelect" class="text-sm text-gray-600">Year</label>
+            <select id="yearSelect"
+                    class="rounded-lg border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    onchange="document.getElementById('yearInput').value=this.value; this.form.submit()">
+              @foreach ($yearsAvailable as $y)
+                <option value="{{ $y }}" @selected((int)$year === (int)$y)>{{ $y }}</option>
+              @endforeach
+            </select>
+
+            <button type="button"
+                    class="rounded-lg border px-2.5 py-1 text-sm disabled:opacity-40"
+                    onclick="bumpYear(1)"
+                    {{ $year >= $maxYear ? 'disabled' : '' }}
+                    aria-label="Next year">›</button>
+          </form>
         </div>
 
-        {{-- Year selector (screen only; hidden on print) --}}
-        <form method="GET" action="{{ route('admin.students.show', $student->id) }}" class="flex items-center gap-2 screen-only">
-          <input type="hidden" name="year" id="yearInput" value="{{ $year }}">
-          @php
-            $minYear = min($yearsAvailable);
-            $maxYear = max($yearsAvailable);
-          @endphp
-          <button type="button"
-                  class="rounded-lg border px-2.5 py-1 text-sm disabled:opacity-40"
-                  onclick="bumpYear(-1)"
-                  {{ $year <= $minYear ? 'disabled' : '' }}
-                  aria-label="Previous year">‹</button>
+        <div class="relative h-72 md:h-80">
+          <canvas id="studentApptsChart" role="img" aria-label="Bar chart of monthly appointments for year {{ $year }}"></canvas>
 
-          <label for="yearSelect" class="text-sm text-gray-600">Year</label>
-          <select id="yearSelect"
-                  class="rounded-lg border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"
-                  onchange="document.getElementById('yearInput').value=this.value; this.form.submit()">
-            @foreach ($yearsAvailable as $y)
-              <option value="{{ $y }}" @selected($year === (int)$y)>{{ $y }}</option>
-            @endforeach
-          </select>
-
-          <button type="button"
-                  class="rounded-lg border px-2.5 py-1 text-sm disabled:opacity-40"
-                  onclick="bumpYear(1)"
-                  {{ $year >= $maxYear ? 'disabled' : '' }}
-                  aria-label="Next year">›</button>
-        </form>
-      </div>
-
-      <div class="relative h-72 md:h-80">
-        <canvas id="studentApptsChart" role="img" aria-label="Bar chart of monthly appointments for year {{ $year }}"></canvas>
-
-        {{-- Empty state --}}
-        @if (($total ?? 0) === 0)
-          <div class="absolute inset-0 grid place-items-center">
-            <div class="text-center text-sm text-gray-500">
-              No appointments recorded for {{ $year }}.
+          @if (($total ?? 0) === 0)
+            <div class="absolute inset-0 grid place-items-center">
+              <div class="text-center text-sm text-gray-500">
+                No appointments recorded for {{ $year }}.
+              </div>
             </div>
-          </div>
-        @endif
+          @endif
+        </div>
       </div>
     </div>
 
-    {{-- Card --}}
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8 space-y-6 border">
+    {{-- Info Card --}}
+     <div class="relative overflow-hidden bg-white rounded-2xl shadow-sm p-8 space-y-6 border">
 
-      {{-- Info Grid --}}
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <p class="text-sm text-gray-500">FULL NAME</p>
-          <p class="text-lg font-medium">{{ $student->name }}</p>
+          <p class="text-lg font-medium text-slate-900">{{ $student->name }}</p>
         </div>
         <div>
           <p class="text-sm text-gray-500">EMAIL</p>
-          <p class="text-lg font-medium">{{ $student->email }}</p>
+          <p class="text-lg font-medium text-slate-900">{{ $student->email }}</p>
         </div>
 
         <div>
           <p class="text-sm text-gray-500">CONTACT NUMBER</p>
-          <p class="text-lg font-medium">{{ $student->contact_number }}</p>
+          <p class="text-lg font-medium text-slate-900">{{ $student->contact_number }}</p>
         </div>
         <div>
           <p class="text-sm text-gray-500">COURSE</p>
-          <p class="text-lg font-medium">{{ $student->course }}</p>
+          <p class="text-lg font-medium text-slate-900">{{ $student->course }}</p>
         </div>
 
         <div>
           <p class="text-sm text-gray-500">YEAR LEVEL</p>
-          <p class="text-lg font-medium">{{ $student->year_level }}</p>
+          <p class="text-lg font-medium text-slate-900">{{ $student->year_level }}</p>
         </div>
       </div>
 
-      {{-- Dates --}}
       <div class="border-t pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <p class="text-sm text-gray-500">CREATED</p>
-          <p class="text-lg font-medium">{{ $student->created_at->format('F d, Y • h:i A') }}</p>
+          <p class="text-lg font-medium text-slate-900">{{ \Carbon\Carbon::parse($student->created_at)->format('F d, Y • h:i A') }}</p>
         </div>
         <div>
           <p class="text-sm text-gray-500">UPDATED</p>
-          <p class="text-lg font-medium">{{ $student->updated_at->format('F d, Y • h:i A') }}</p>
+          <p class="text-lg font-medium text-slate-900">{{ \Carbon\Carbon::parse($student->updated_at)->format('F d, Y • h:i A') }}</p>
         </div>
       </div>
 
-      {{-- Actions (screen only; hide on print) --}}
       <div class="flex gap-4 pt-4 screen-only">
         <a href="mailto:{{ $student->email }}"
            class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">
@@ -160,13 +168,12 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script>
-  // expose year bump globally (your buttons use onclick)
-  window.bumpYear = function bumpYear(delta) {
+  window.bumpYear = function(delta){
     const sel = document.getElementById('yearSelect');
-    const values = Array.from(sel.options).map(o => parseInt(o.value, 10)); // DESC
-    const current = parseInt(sel.value, 10);
-    const pos = values.indexOf(current);
-    const target = values[pos + (delta > 0 ? -1 : +1)]; // because values are DESC
+    const values = Array.from(sel.options).map(o=>parseInt(o.value,10));
+    const current = parseInt(sel.value,10);
+    const idx = values.indexOf(current);
+    const target = values[idx + (delta > 0 ? -1 : +1)];
     if (typeof target !== 'undefined') {
       sel.value = String(target);
       document.getElementById('yearInput').value = String(target);
@@ -174,15 +181,14 @@
     }
   };
 
-  (function () {
+  (function(){
     const canvas = document.getElementById('studentApptsChart');
     if (!canvas) return;
 
     const series = (@json($series ?? [])).map(v => parseInt(v, 10) || 0);
     const labels = @json($labels ?? []);
-    const total  = series.reduce((a, b) => a + b, 0);
+    const total = series.reduce((a,b)=>a+b,0);
 
-    // Destroy any previous chart instance bound to this canvas
     if (window.Chart && Chart.getChart) {
       const prev = Chart.getChart(canvas);
       if (prev) prev.destroy();
@@ -190,84 +196,56 @@
 
     if (total === 0) {
       const ctx = canvas.getContext('2d');
-      if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (ctx) ctx.clearRect(0,0,canvas.width, canvas.height);
       return;
     }
 
-    const chart = new Chart(canvas, {
+    new Chart(canvas, {
       type: 'bar',
-      data: {
-        labels,
-        datasets: [{
-          data: series,
-          borderColor: '#4f46e5',
-          backgroundColor: 'rgba(99,102,241,0.35)',
-          hoverBackgroundColor: 'rgba(99,102,241,0.55)',
-          borderWidth: 1.5,
-        }]
-      },
+      data: { labels, datasets: [{
+        data: series,
+        borderColor: '#4f46e5',
+        backgroundColor: 'rgba(99,102,241,0.35)',
+        hoverBackgroundColor: 'rgba(99,102,241,0.55)',
+        borderWidth: 1.5,
+      }]},
       options: {
         responsive: true,
         maintainAspectRatio: false,
         animation: { duration: 300 },
         elements: { bar: { borderRadius: 6 } },
         scales: {
-          x: { grid: { display: false }, ticks: { color: '#334155' } },
-          y: { beginAtZero: true, ticks: { precision: 0, color: '#334155' }, grid: { color: 'rgba(148,163,184,0.25)' } }
+          x: { grid: { display:false }, ticks: { color:'#334155' } },
+          y: { beginAtZero:true, ticks:{ precision:0, color:'#334155' }, grid:{ color:'rgba(148,163,184,0.25)' } }
         },
         plugins: {
-          legend: { display: false },
+          legend: { display:false },
           tooltip: {
-            backgroundColor: '#111827', padding: 10, displayColors: false,
-            callbacks: {
+            backgroundColor:'#111827', padding:10, displayColors:false,
+            callbacks:{
               title: items => `Month: ${items[0].label}`,
               label: ctx => {
                 const y = ctx.parsed.y || 0;
-                return `${y} appointment${y === 1 ? '' : 's'}`;
+                return `${y} appointment${y===1?'':'s'}`;
               }
             }
           },
           title: {
-            display: true, text: 'Appointments in ' + @json($year),
-            color: '#0f172a', font: { size: 14, weight: '600' }, padding: { top: 4, bottom: 10 }
+            display:true, text:'Appointments in ' + @json($year),
+            color:'#0f172a', font:{ size:14, weight:'600' }, padding:{ top:4, bottom:10 }
           }
         }
       }
     });
-
-    window.__studentApptsChart = chart;
   })();
-
-  // Print helpers keep the canvas painted
-  window.printStudentDetails = function(){
-    try { window.__studentApptsChart && window.__studentApptsChart.resize(); } catch(e){}
-    window.print();
-  };
-  window.addEventListener('beforeprint', function(){
-    try { window.__studentApptsChart && window.__studentApptsChart.resize(); } catch(e){}
-  });
 </script>
+
 <style media="print">
-  
-
-  /* Hide everything by default */
   body * { visibility: hidden !important; }
-
-  /* Show only the printable scope */
   #print-details-root, #print-details-root * { visibility: visible !important; }
-
-  
-  /* Remove borders/shadows inside the printable scope */
   #print-details-root .rounded-2xl,
   #print-details-root .shadow-sm,
-  #print-details-root .border {
-    border: 0 !important; box-shadow: none !important;
-  }
-
-  /* Never print screen-only controls just in case */
-  .screen-only { display: none !important; }
-
-  
+  #print-details-root .border { border:0 !important; box-shadow:none !important; }
+  .screen-only { display:none !important; }
 </style>
-
 @endpush

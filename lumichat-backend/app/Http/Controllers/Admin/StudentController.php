@@ -10,6 +10,7 @@ use Barryvdh\DomPDF\Facade\Pdf; // <-- add this
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\Response;
 
 class StudentController extends Controller
 {
@@ -153,5 +154,71 @@ public function exportPdf(Request $request)
         }
 
         return [$labels, $series];
+    }
+    
+    public function exportShowPdf(int $student, \Illuminate\Http\Request $request): Response
+    {
+        $year = (int) $request->query('year', now()->year);
+
+        // Load the same data you use on the HTML show()
+        $studentModel = \App\Models\User::query()
+            ->where('role', 'student')->findOrFail($student);
+
+        // If you compute $labels/$series/$total in show(), replicate here (no charts in PDF).
+        [$labels, $series, $total] = $this->buildMonthlySeriesForStudent($studentModel->id, $year);
+
+        // Optional logo (base64) so Dompdf doesn’t need HTTP
+        $logoData = null;
+        $logoPath = public_path('images/chatbot.png');
+        if (is_file($logoPath)) {
+            $logoData = 'data:image/png;base64,'.base64_encode(@file_get_contents($logoPath));
+        }
+
+        $pdf = app('dompdf.wrapper');
+        $pdf->setPaper('a4', 'portrait');
+        $pdf->setOptions([
+            'defaultFont'          => 'DejaVu Sans',
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled'      => true,
+            'chroot'               => public_path(),
+        ]);
+
+        $pdf->loadView('admin.students.show_pdf', [
+            'student'     => $studentModel,
+            'year'        => $year,
+            'labels'      => $labels,
+            'series'      => $series,
+            'total'       => $total,
+            'generatedAt' => now()->format('Y-m-d H:i'),
+            'logoData'    => $logoData,
+        ]);
+
+        return $pdf->download('Student_'.$studentModel->id.'_'.$year.'_'.now()->format('Ymd_His').'.pdf');
+    }
+
+    /**
+     * Example helper so the PDF has the same numbers as the HTML page.
+     * Return: [$labels, $series, $total]
+     */
+    protected function buildMonthlySeriesForStudent(int $studentId, int $year): array
+    {
+        // Replace with your real query that populates the chart in show()
+        $labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        $series = array_fill(0, 12, 0);
+
+        // Example: count appointments per month
+        $rows = \DB::table('tbl_appointments')
+            ->selectRaw('MONTH(scheduled_at) as m, COUNT(*) as c')
+            ->where('student_id', $studentId)
+            ->whereYear('scheduled_at', $year)
+            ->groupBy('m')
+            ->get();
+
+        foreach ($rows as $r) {
+            $idx = max(0, min(11, ((int)$r->m) - 1));
+            $series[$idx] = (int)$r->c;
+        }
+
+        return [$labels, $series, array_sum($series)];
     }
 }
