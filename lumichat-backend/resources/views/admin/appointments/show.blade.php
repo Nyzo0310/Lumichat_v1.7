@@ -36,8 +36,9 @@
     'canceled'  => 'bg-rose-500',
     'completed' => 'bg-emerald-500',
   ];
-  $cls = $badgeMap[$appointment->status] ?? 'bg-gray-100 text-gray-700';
-  $dot = $dotMap[$appointment->status] ?? 'bg-gray-400';
+  $status = strtolower((string)$appointment->status);
+  $cls = $badgeMap[$status] ?? 'bg-slate-200 text-slate-700';
+  $dot = $dotMap[$status] ?? 'bg-slate-500';
 
   $studentAvatar   = $appointment->student_avatar ?? null;
   $counselorAvatar = $appointment->counselor_avatar ?? null;
@@ -68,17 +69,17 @@
 </div>
 
 <div class="max-w-6xl mx-auto p-6">
-  <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
-
-    {{-- ===== Header ===== --}}
-    <div class="px-6 pt-6">
-      <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-        <div class="min-w-0">
-          <div class="flex items-center gap-3">
-            <h2 class="text-[20px] font-semibold text-slate-900 truncate">
+  {{-- MAIN CARD with violet top line --}}
+  <div class="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <span class="pointer-events-none absolute inset-x-0 -top-px h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-fuchsia-500"></span>
+      <div class="px-6 pt-5">
+        <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+          <div class="min-w-0">
+           <div class="flex items-center gap-3">
+              <h2 class="text-[20px] font-semibold text-slate-900 truncate">
               Appointment #{{ $appointment->id }}
-            </h2>
-            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium {{ $cls }}">
+              </h2>
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium {{ $cls }}">
               <span class="inline-block w-1.5 h-1.5 rounded-full {{ $dot }} mr-1.5"></span>
               {{ ucfirst($appointment->status) }}
             </span>
@@ -361,11 +362,13 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-  function askAction(e, form, action) {
+  function askAction(e, form, action){
     e.preventDefault();
+    const btn = form.querySelector('button[type="submit"]');
+    const disable = (v)=>{ if(btn){ btn.disabled=v; btn.classList.toggle('opacity-50',v);} };
     const cfg = {
-      confirm: { title:'Confirm Appointment?', text:'Are you sure?', icon:'question', confirmButtonColor:'#2563eb' },
-      done:    { title:'Mark as Completed?', text:'This will mark the appointment as done.', icon:'success', confirmButtonColor:'#059669' }
+      confirm:{ title:'Confirm Appointment?', text:'Are you sure?', icon:'question', confirmButtonColor:'#2563eb' },
+      done:{ title:'Mark as Completed?', text:'This will mark the appointment as done.', icon:'success', confirmButtonColor:'#059669' }
     }[action] || { title:'Are you sure?', text:'', icon:'info', confirmButtonColor:'#2563eb' };
 
     Swal.fire({
@@ -373,7 +376,7 @@
       showCancelButton: true, confirmButtonText: 'Yes, proceed', cancelButtonText: 'No, keep it',
       confirmButtonColor: cfg.confirmButtonColor, cancelButtonColor: '#6b7280',
       reverseButtons: true, focusCancel: true
-    }).then(res => { if (res.isConfirmed) form.submit(); });
+    }).then(res => { if (res.isConfirmed){ disable(true); form.submit(); } });
     return false;
   }
 

@@ -6,73 +6,91 @@
   $label = \Carbon\Carbon::create($year,$month,1)->format('F Y');
 @endphp
 
-<div class="space-y-6">
+<div class="max-w-6xl mx-auto space-y-6">
 
-  {{-- Header (hidden on print) --}}
+  {{-- Header (screen only) --}}
   <div class="flex items-start justify-between gap-3 screen-only">
     <div>
-      <h2 class="text-2xl font-semibold text-slate-900">{{ $counselor->full_name }}</h2>
-      <p class="text-sm text-slate-500">Logs for <span class="font-medium text-slate-700">{{ $label }}</span></p>
+      <h2 class="text-2xl font-semibold tracking-tight text-slate-900">{{ $counselor->full_name }}</h2>
+      <p class="text-sm text-slate-500">
+        Logs for <span class="font-medium text-slate-700">{{ $label }}</span>
+      </p>
     </div>
+
     <div class="flex items-center gap-2">
-   <a href="{{ route('admin.counselor-logs.show.export', ['counselor'=>$counselor->id, 'month'=>$month, 'year'=>$year]) }}"
-   class="inline-flex items-center h-10 px-3 rounded-lg text-sm font-medium bg-emerald-600 text-white hover:bg-emerald-700">
-  Download PDF
-</a>
+      <a href="{{ route('admin.counselor-logs.show.export', ['counselor'=>$counselor->id, 'month'=>$month, 'year'=>$year]) }}"
+         class="inline-flex items-center h-10 px-4 rounded-xl text-sm font-medium bg-emerald-600 text-white shadow-sm hover:bg-emerald-700 active:scale-[.99] transition">
+        {{-- download icon --}}
+        <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M7 10l5 5 5-5M12 15V3M5 19h14a2 2 0 002-2v-2H3v2a2 2 0 002 2z"/>
+        </svg>
+        Download PDF
+      </a>
 
       <a href="{{ route('admin.counselor-logs.index') }}"
-         class="inline-flex items-center h-10 px-3 rounded-lg text-sm font-medium border border-slate-200 text-slate-700 hover:bg-slate-50">
+         class="inline-flex items-center h-10 px-4 rounded-xl text-sm font-medium bg-white border border-slate-200 text-slate-700 shadow-sm hover:bg-slate-50 active:scale-[.99] transition">
         ← Back
       </a>
     </div>
   </div>
 
-  {{-- PRINT SCOPE START --}}
-  <div id="print-counselor-show" class="space-y-4">
+  {{-- ===== PRINT SCOPE ===== --}}
+  <div id="print-counselor-show" class="space-y-5">
 
     {{-- Print title --}}
     <h1 class="hidden print:block text-xl font-semibold">Counselor Logs — {{ $counselor->full_name }} ({{ $label }})</h1>
 
     {{-- Diagnosis summary (chips) --}}
     @if($dxCounts->count())
-      <div class="flex flex-wrap gap-2">
-        @foreach($dxCounts as $dx)
-          <span class="px-3 py-1.5 rounded-full border border-sky-200 bg-sky-50 text-sky-700 text-xs">
-            {{ $dx->diagnosis_result }} • {{ $dx->cnt }}
-          </span>
-        @endforeach
+      <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden relative">
+        <span class="pointer-events-none absolute inset-x-0 -top-px h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-fuchsia-500"></span>
+        <div class="px-5 py-4">
+          <div class="text-sm font-semibold text-slate-800 mb-2">Diagnosis Summary</div>
+          <div class="flex flex-wrap gap-2">
+            @foreach($dxCounts as $dx)
+              <span class="px-3 py-1.5 rounded-full border border-sky-200 bg-sky-50 text-sky-700 text-xs">
+                {{ $dx->diagnosis_result }} • {{ $dx->cnt }}
+              </span>
+            @endforeach
+          </div>
+        </div>
       </div>
     @endif
 
-    {{-- Table --}}
-    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-      <div class="px-4 py-3 border-b border-slate-200 text-sm font-semibold text-slate-800">Non-Technical</div>
-      <div class="overflow-x-auto">
+    {{-- Non-Technical table --}}
+    <div class="relative rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      <div class="px-5 py-3 border-b border-slate-200 text-sm font-semibold text-slate-800">
+        Student Diagnosis Summary
+      </div>
+
+      <div class="relative overflow-x-auto">
         <table class="min-w-full text-sm">
           <thead class="bg-slate-50 text-slate-600">
-            <tr>
-              <th class="text-left px-4 py-3 font-medium">Student</th>
-              <th class="text-left px-4 py-3 font-medium">Scheduled</th>
-              <th class="text-left px-4 py-3 font-medium">Diagnosis / Result</th>
+            <tr class="text-left">
+              <th class="px-5 py-3 font-medium">Student</th>
+              <th class="px-5 py-3 font-medium">Scheduled</th>
+              <th class="px-5 py-3 font-medium">Diagnosis / Result</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
             @forelse($students as $row)
               <tr class="hover:bg-slate-50/60">
-                <td class="px-4 py-3">{{ $row->student_name ?? '—' }}</td>
-                <td class="px-4 py-3">{{ $row->scheduled_at_fmt }}</td>
-                <td class="px-4 py-3">{{ $row->diagnosis_result }}</td>
+                <td class="px-5 py-3">{{ $row->student_name ?? '—' }}</td>
+                <td class="px-5 py-3">{{ $row->scheduled_at_fmt }}</td>
+                <td class="px-5 py-3">{{ $row->diagnosis_result }}</td>
               </tr>
             @empty
-              <tr><td colspan="3" class="px-4 py-10 text-center text-slate-500">No appointments this month.</td></tr>
+              <tr>
+                <td colspan="3" class="px-5 py-10 text-center text-slate-500">No appointments this month.</td>
+              </tr>
             @endforelse
           </tbody>
         </table>
       </div>
     </div>
 
-  </div>
-  {{-- PRINT SCOPE END --}}
+  </div>{{-- /print scope --}}
 </div>
 
 {{-- Print rules: isolate this report --}}
